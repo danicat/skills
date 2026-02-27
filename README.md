@@ -1,34 +1,50 @@
-# Skills Library
+# Gemini CLI Skills Repository
 
-This repository is a collection of specialized **Agent Skills** for the Gemini CLI. Each skill provides on-demand expertise, procedural workflows, and task-specific resources to extend your agent's capabilities.
-
-## Available Skills
-
-- **`experiment-analyst`**: Expert data scientist and systems engineer for analyzing agent experiments. Identifies success factors, failure modes, and behavioral patterns from experiment databases.
+This repository contains a collection of specialized skills for the Gemini CLI.
 
 ## Installation
 
-You can install any skill from this library directly using the Gemini CLI:
+### From GitHub (Recommended)
+You can install any skill directly from this repository using its URL and the `--path` flag to specify the skill name:
 
 ```bash
-# Install to User scope (~/.gemini/skills)
-gemini skills install git@github.com:danicat/skills.git --path <skill-name>
-
-# Install to Workspace scope (.gemini/skills)
-gemini skills install git@github.com:danicat/skills.git --path <skill-name> --scope workspace
+gemini skills install https://github.com/danicat/skills --path <skill-name>
 ```
 
-## Creating a New Skill
+### From Local Source
+If you have cloned this repository locally, you can install or link skills from their directory:
 
-A skill is a self-contained directory that packages instructions and assets.
+```bash
+# Full installation
+gemini skills install ./<skill-name>
 
-### Recommended Structure
-- `SKILL.md`: (Required) Metadata and expert procedural guidance.
-- `scripts/`: Executable tools used by the skill.
-- `references/`: Documentation, schemas, or examples.
-- `assets/`: Templates or binary resources.
+# Link for development (symlinks the directory)
+gemini skills link ./<skill-name>
+```
 
-To contribute a new skill, create a folder following this structure and ensure the `SKILL.md` has the required frontmatter (`name` and `description`).
 
----
-For more information on the Agent Skills standard, visit [agentskills.io](https://agentskills.io).
+## Available Skills
+
+### `experiment-analyst`
+Expertise in analyzing Tenkai agent experiments. Use when asked to "analyze experiment X" to determine success factors, failure modes, and behavioral patterns.
+
+### `find-examples`
+Find and inspect real-world code examples from GitHub for specific dependencies and languages.
+
+### `go-best-practices`
+Comprehensive Go (Golang) development best practices and coding style guidelines.
+
+### `go-project-setup`
+Standardized setup for new Go (Golang) projects and services.
+
+### `google-blog-style`
+Official style guide and compliance rules for the Google Developers Blog.
+
+### `google-codelab-authoring`
+Definitive guide for authoring high-quality Google Codelabs.
+
+### `latest-version`
+The definitive real-time source of truth for software and model versions. Bypasses knowledge cutoffs by querying live registries.
+
+### `pyhd`
+Python development workflow for editing, formatting (ruff), and documentation.
