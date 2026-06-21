@@ -18,9 +18,11 @@ All references have been crawled directly from the official [A2UI.org](https://a
 Use the `view_file` tool to read the contents of the relevant reference file before responding:
 
 1.  **Specification & Protocol:**
+    *   [Catalogs Concept](references/catalogs_concept.md): General concepts on what a Catalog is and how it works.
     *   [v0.9.1 Core Specification](references/spec_v0.9.1.md): The absolute source of truth for the A2UI v0.9.1 data models, JSON schemas, component states, and messaging.
     *   [v0.9.1 Extension Specification](references/extension_spec_v0.9.1.md): Details on the A2UI Extension spec.
     *   [v0.9.1 Basic Catalog Implementation](references/basic_catalog_v0.9.1.md): Standard catalog implementation guide.
+    *   [Basic Catalog JSON Schema](references/basic_catalog_schema.json): The raw JSON schema for the Basic Catalog.
 
 2.  **Implementation Guides (Code Samples included):**
     *   [Quickstart](references/quickstart.md): Contains the fastest path to getting a basic A2UI application running.
