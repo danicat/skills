@@ -24,7 +24,9 @@ Use the `view_file` tool to read the contents of the relevant reference file bef
     *   [v0.9.1 Basic Catalog Implementation](references/basic_catalog_v0.9.1.md): Standard catalog implementation guide.
     *   [Basic Catalog JSON Schema](references/basic_catalog_schema.json): The raw JSON schema for the Basic Catalog.
 
-2.  **Implementation Guides (Code Samples included):**
+2.  **Implementation Guides & SDKs (Code Samples included):**
+    *   [Agents SDK Reference (Python/ADK)](references/agents_sdk_reference.md): Information about building Agents on the server-side to emit A2UI components.
+    *   [Renderers SDK Reference (React, Angular, Lit, Flutter)](references/renderers_sdk_reference.md): Reference for the main frontend SDKs used to render A2UI.
     *   [Quickstart](references/quickstart.md): Contains the fastest path to getting a basic A2UI application running.
     *   [Agent Development](references/agent_development.md): Learn how to build Agents that emit A2UI components using Python and ADK (Agent Development Kit).
     *   [Client Setup](references/client_setup.md): Guide on how to consume the A2UI protocol on the frontend (React, Next.js, etc).
