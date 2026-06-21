@@ -1,4 +1,4 @@
-# a2ui_in_mcp_apps
+# guide_a2ui_in_mcp_apps
 Source: https://a2ui.org/guides/a2ui-in-mcp-apps/
 
 # A2UI Dynamic Rendering within MCP Applications[¶](#a2ui-dynamic-rendering-within-mcp-applications "Permanent link")

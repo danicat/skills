@@ -1,4 +1,4 @@
-# renderer_development
+# guide_renderer_development
 Source: https://a2ui.org/guides/renderer-development/
 
 # A2UI Renderer Implementation Guide[¶](#a2ui-renderer-implementation-guide "Permanent link")

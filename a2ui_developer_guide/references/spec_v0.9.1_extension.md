@@ -1,4 +1,4 @@
-# extension_spec_v0.9.1
+# spec_v0.9.1_extension
 Source: https://a2ui.org/specification/v0.9.1-a2ui-extension-specification/
 
 # A2UI Extension for A2A Protocol v0.9.1 — Current[¶](#a2ui-extension-for-a2a-protocol-v091-current "Permanent link")

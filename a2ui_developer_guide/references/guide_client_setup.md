@@ -1,4 +1,4 @@
-# client_setup
+# guide_client_setup
 Source: https://a2ui.org/guides/client-setup/
 
 # Client Setup Guide[¶](#client-setup-guide "Permanent link")

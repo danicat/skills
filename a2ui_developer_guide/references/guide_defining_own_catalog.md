@@ -1,4 +1,4 @@
-# defining_your_own_catalog
+# guide_defining_own_catalog
 Source: https://a2ui.org/guides/defining-your-own-catalog/
 
 # Defining Your Own Catalog[¶](#defining-your-own-catalog "Permanent link")

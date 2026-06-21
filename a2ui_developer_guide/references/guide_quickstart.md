@@ -1,4 +1,4 @@
-# quickstart
+# guide_quickstart
 Source: https://a2ui.org/quickstart/
 
 # Quickstart: Run A2UI in 5 Minutes[¶](#quickstart-run-a2ui-in-5-minutes "Permanent link")

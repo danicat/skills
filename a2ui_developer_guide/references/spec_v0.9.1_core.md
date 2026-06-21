@@ -1,4 +1,4 @@
-# spec_v0.9.1
+# spec_v0.9.1_core
 Source: https://a2ui.org/specification/v0.9.1-a2ui/
 
 # A2UI Protocol v0.9.1 — Current[¶](#a2ui-protocol-v091-current "Permanent link")

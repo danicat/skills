@@ -1,4 +1,4 @@
-# authoring_components
+# guide_authoring_components
 Source: https://a2ui.org/guides/authoring-components/
 
 # Authoring Custom Components[¶](#authoring-custom-components "Permanent link")

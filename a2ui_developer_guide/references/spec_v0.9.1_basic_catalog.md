@@ -1,4 +1,4 @@
-# basic_catalog_v0.9.1
+# spec_v0.9.1_basic_catalog
 Source: https://a2ui.org/specification/v0.9.1-basic-catalog-implementation-guide/
 
 # Basic Catalog Implementation Guide v0.9.1 — Current[¶](#basic-catalog-implementation-guide-v091-current "Permanent link")

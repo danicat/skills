@@ -1,4 +1,4 @@
-# catalogs_concept
+# concept_catalogs
 Source: https://a2ui.org/concepts/catalogs/
 
 # A2UI Catalogs[¶](#a2ui-catalogs "Permanent link")
