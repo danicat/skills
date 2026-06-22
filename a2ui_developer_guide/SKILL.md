@@ -1,6 +1,6 @@
 ---
 name: a2ui_developer_guide
-description: A comprehensive developer guide and knowledge base for the A2UI (Agent-Driven User Interfaces) protocol. Use this skill when asked to write code for A2UI agents (Python, ADK), clients, frontend libraries, renderers, or when asked questions about the A2UI ecosystem, specifications (v0.9.1), and concepts.
+description: A comprehensive developer guide containing the entire a2ui.org documentation suite. Contains full specs for A2UI v0.9.1, JSON schemas, Agent (Python/ADK) & Renderer (React/Angular/Flutter) SDK guides, concept definitions, quickstarts, and open-source examples. Use this for ANY question or coding task related to Agent-Driven User Interfaces.
 ---
 
 # A2UI Developer Guide
@@ -61,6 +61,7 @@ Use the `view_file` tool to read the contents of the relevant reference file bef
     *   [Common Types](references/schema_v0.9_common_types.json)
 
 ### 6. Ecosystem & Other
+*   [Open Source Examples](references/open_source_examples.md): Links to official samples, community renderers, and open-source integrations.
 *   [Community Renderers](references/ecosystem_renderers.md)
 *   [Community Projects](references/ecosystem_community.md)
 *   [A2UI in the World](references/ecosystem_in_the_world.md)
