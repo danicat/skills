@@ -48,3 +48,7 @@ The definitive real-time source of truth for software and model versions. Bypass
 
 ### `pyhd`
 Python development workflow for editing, formatting (ruff), and documentation.
+
+### `swarm_coding`
+Activate this skill to tackle complex tasks using a divide to conquer approach with a swarm of sub-agents.
+
