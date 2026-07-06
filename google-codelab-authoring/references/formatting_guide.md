@@ -1,82 +1,82 @@
-# Google Codelab Markdown Formatting Guide
+# Google Codelab Formatting Guide
 
 ## File Extension
-Source files must have a `.lab.md` extension.
+Use the `.lab.md` file extension.
 
-## Metadata (Frontmatter)
-Must be at the top of the file.
+## Metadata
+Put metadata at the top.
 
 ```yaml
 ---
 id: my-codelab-id
-description: One sentence description.
+description: Short text.
 authors: Author Name
-project: /path/to/_project.yaml
-book: /path/to/_book.yaml
+project: path/to/project.yaml
+book: path/to/book.yaml
 layout: scrolling # or paginated
-minutes: 20 # Overall duration estimation
+minutes: 20 # Codelab minutes
 ---
 ```
 
 ## Structure
-- **Title**: The first line after metadata must be a Heading 1 (`# Title`).
-- **Steps**: Each step must be a Heading 2 (`## Step Title`).
-- **Duration**: Optional duration for a step in `MM:SS` format. Place it immediately after the step title.
+- **Title**: Put the main title on the first line after metadata.
+- **Steps**: Use Heading 2 (`## Step Title`) for steps.
+- **Duration**: Add times in `MM:SS` right after step titles.
   ```md
   ## Step Title
   Duration: 05:00
   ```
 
-## Special Components
+## Components
 
-### Info Boxes (Asides)
-Use blockquotes with specific classes.
+### Info Boxes
+Use blockquotes.
 
-**Positive (Green/Tip):**
+**Tips (Green):**
 ```md
 > aside positive
-> This is a tip or best practice.
+> This is a tip.
 ```
 
-**Negative (Yellow/Warning):**
+**Warnings (Yellow):**
 ```md
 > aside negative
-> This is a warning or important instruction.
+> This is a warning.
 ```
 
 ### Code Blocks
-- **Standard**: Triple backticks.
-- **Terminal/Console**: Use `console` language identifier for non-colorized output.
+- Use standard backticks.
+- Use `console` for terminal.
   ```md
   ```console
   $ echo "hello"
   ```
   ```
 
-### Fragments (Imports)
-Import another markdown file (e.g., shared setup).
+### Imports
+Import files:
 ```md
 <<codelabs/shared/_install_go_macos.lab.md>>
 ```
 
 ### Buttons
-Direct download buttons.
+Add buttons.
 ```md
 <button>[Download Zip](https://example.com/file.zip)</button>
 ```
 
 ### Videos
-Embed YouTube videos by ID.
+Embed YouTube videos.
 ```md
 <video id="VIDEO_ID"></video>
 ```
 
 ### Surveys
-Simple multiple-choice surveys.
+Create surveys:
 ```md
 <form>
-  <name>Question text?</name>
-  <input value="Option 1"/>
-  <input value="Option 2"/>
+  <name>Question?</name>
+  <input value="Yes"/>
+  <input value="No"/>
 </form>
 ```

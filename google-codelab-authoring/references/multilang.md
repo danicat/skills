@@ -1,15 +1,15 @@
-# Multilanguage Codelabs
+# Multi-language Codelabs
 
-**Deprecated**: Use the Polyglot extension instead.
+**Note**: This is deprecated. Use the Polyglot extension instead.
 
 ## Overview
-A multilanguage Codelab has the same content but appears in multiple programming language versions.
+These codelabs use different languages for the same steps.
 
 ## Methods
-1. **Block Include**: Maintain separate language-specific files and transclude common content.
-2. **Conditional Text**: Use a single file with conditional logic to display language-specific content.
+1. **Block Include**: Keep separate files for each language. Import shared text.
+2. **Conditional Text**: Use code logic in one file to show or hide text.
 
-## Recommendation
-- **Polyglot**: The preferred method for new codelabs.
-- **Single Dominant Language**: Write in one language and provide code for others.
-- **Tabs/Collapsible sections**: Use UI elements to switch between languages in a single doc.
+## Best Choices
+- **Polyglot**: Use this for new codelabs.
+- **One Language**: Write in one main language. Give code for others.
+- **Tabs**: Use UI tabs to switch languages in one file.

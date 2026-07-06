@@ -1,24 +1,24 @@
 # Nomenclature Tags for Codelabs
 
-To ensure your codelab appears across Google and on the [codelabs homepage](https://codelabs.developers.google.com/), you must include specific tags in the `keywords` field of your YAML frontmatter.
+Add tags to the `keywords` field of your YAML frontmatter. This helps your codelab appear on Google sites and the [codelabs homepage](https://codelabs.developers.google.com/).
 
 ## Required Tags
 
-1.  **Document Type**: `docType:Codelab` (Mandatory for all codelabs).
-2.  **Product/API**: Add specific tags for the primary focus (e.g., `product:VertexAI`, `product:BigQuery`, `api:GmpGeocodingApi`). Use the most specific tag available.
-3.  **Skill Level**:
+1.  **Document Type**: `docType:Codelab` (Required for all codelabs).
+2.  **Product/API**: Add tags for the main product or API (e.g., `product:VertexAI`, `product:BigQuery`, `api:GmpGeocodingApi`). Use the most specific tag.
+3.  **Skill Level**: Use one of these tags:
     - `skill:Beginner`
     - `skill:Intermediate`
     - `skill:Advanced`
-4.  **Programming Language**: Add a tag for each language used (e.g., `language:Python`, `language:Java`).
+4.  **Programming Language**: Add a tag for each language you use (e.g., `language:Python`, `language:Java`).
 
 ## Optional Tags
 
-- **Category**: Add if the industry/use-case is not inherited (e.g., `category:Financial`).
-- **Event**: Add if created for a specific event (e.g., `event:GoogleIO2024`).
+- **Category**: Add if the industry or use-case is not clear (e.g., `category:Financial`).
+- **Event**: Add if you made the codelab for a specific event (e.g., `event:GoogleIO2024`).
 
 ## Syntax
-Tags must be a comma-separated list **without whitespace** between items.
+Write tags as a comma-separated list. Do not use spaces.
 
 ### Example
 ```yaml

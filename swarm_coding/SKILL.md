@@ -5,7 +5,7 @@ description: Activate this skill to tackle complex tasks using a divide to conqu
 
 # Swarm Coding
 
-Swarm Coding is a new development paradigm that employs multiple sub-agents in parallel to work on complex tasks. It is based on the divide to conquer strategy. The main benefits of this strategy is context isolation and quality improvement: by assigning small self contained tasks to sub-agents, you avoid context dilution and enable very focused refinement of the solution. For example, without swarm coding an agent implementing both frontend and backend will often get distracted as the skills required for frontend and backend are often unrelated (different technology stack, different best practices, etc.)
+Swarm Coding is a new development paradigm that employs multiple sub-agents in parallel to work on complex tasks. It is based on the divide to conquer strategy. The main benefits of this strategy are context isolation and quality improvement. By assigning small, self-contained tasks to sub-agents, you avoid context dilution and enable focused refinement of the solution. For example, without swarm coding, an agent implementing both frontend and backend will often get distracted because the skills required for each are unrelated (different technology stacks, different best practices, etc.).
 
 ## ROLE
 
@@ -23,7 +23,7 @@ Proceed recursively until you have a complete tree of LEAD AGENTS and EXECUTOR a
 
 ## COMMUNICATION
 
-The SWARN COORDINATOR is responsible for communicating directly with its sub-agents. Sub-agents should not message each other,communication between agents at the same level should be made by DESIGN DOCUMENTS. It is the SWARM COORDINATOR responsibility to make sure all changes to design documents are broadcast to the agents in their squad. Upon conflict, the SWARM COORDINATOR is responsible for disambiguating and making a decision.
+The SWARM COORDINATOR is responsible for communicating directly with its sub-agents. Sub-agents should not message each other. Communication between agents at the same level should be made by DESIGN DOCUMENTS. It is the SWARM COORDINATOR responsibility to make sure all changes to design documents are broadcast to the agents in their squad. Upon conflict, the SWARM COORDINATOR is responsible for disambiguating and making a decision.
 
 ## PLANNING
 
@@ -31,12 +31,12 @@ Planning is a FIRST CLASS effort and should also be made using the SWARM. Each A
 
 ## EXECUTION
 
-In execution phase, monitor the progress of the swarm accross the main milestones, and steer agents if necessary to keep them aligned with the end goal. Remember that as coordinator you are ONLY allowed to handle ARTIFACTS. All development tasks should be handled by leaf sub-agents.
+In execution phase, monitor the progress of the swarm across the main milestones, and steer agents if necessary to keep them aligned with the end goal. Remember that as coordinator you are ONLY allowed to handle ARTIFACTS. All development tasks should be handled by leaf sub-agents.
 
 ## COMPETITION
 
-A SWARM COORDINATOR is allowed to give the same task to two different agents when it is beneficial to do so. For example, testing two implementation strategies, or two different kinds of frameworks. When doing so make sure the subagents work in isolation so they don't cross contaminate each others' work.
+A SWARM COORDINATOR is allowed to give the same task to two different agents when it is beneficial to do so. For example, testing two implementation strategies, or two different kinds of frameworks. When doing so make sure the sub-agents work in isolation so they don't cross contaminate each others' work.
 
 ## SPIKE
 
-As in Agile, you are allowed to reserve a part of the team to do SPIKEs in order to expore different paths and reduce ambiguity whenever necessary. SPIKEs should always have a focal question that needs to be answered and always produce a report answering the question. Sometimes the wrong question is asked, and it is ok. The SPIKE is never a failure as long as it produces new evidence that steers the group towards the best implementation.
+As in Agile, you are allowed to reserve a part of the team to do SPIKEs in order to explore different paths and reduce ambiguity whenever necessary. SPIKEs should always have a focal question that needs to be answered and always produce a report answering the question. Sometimes the wrong question is asked, and it is ok. The SPIKE is never a failure as long as it produces new evidence that steers the group towards the best implementation.

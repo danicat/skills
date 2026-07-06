@@ -1,30 +1,20 @@
 # Codelab Writing Guide
 
-## Plan and design
-- **Outline**: Plan your content before writing.
-- **Audience**: Know what they know and what they don't.
-- **Progression**: Build complexity incrementally.
+## Plan
+Plan your main points before writing. Know what your readers know, and build difficulty step-by-step.
 
 ## Writing Style
-- **Tone**: Informal and conversational.
-- **Clarity**: Avoid jargon unless explained.
-- **Visuals**: Use images and diagrams to support text.
+Keep the tone informal and peer-to-peer. Explain all technical terms clearly. Use pictures to support your text.
 
 ## Markdown Style
-- **Code**: Use backticks for inline code and triple backticks for blocks.
-- **Links**: Use explicit header IDs to prevent broken links.
-- **Paths**: Use monospace for file paths.
+Use backticks for inline code, and use triple backticks for blocks. Always use explicit IDs to prevent broken links. Use monospace for file paths.
 
 ## Visual Style
-- **GUI Elements**: Bold menu names and labels.
-- **Images**: Store in `images/` directory and use relative paths.
-- **Collapsible sections**: Use sparingly for hints or solutions.
+Bold all menu names and labels. Put image files in the `images/` folder, and use relative paths. Use collapsible sections only for hints or answers.
 
-## Documenting Code
-- **Inline**: Use backticks.
-- **Blocks**: Use fenced code blocks with language identifiers.
-- **Placeholders**: Italicize variables in examples.
+## Code Docs
+Use backticks for short code. Use fenced code blocks with language names for code blocks. Italicize variables in examples.
 
 ## See Also
-- [Content Recommendations](content_recommendations.md)
+- [Content Guidelines](content_recommendations.md)
 - [Formatting Guide](formatting_guide.md)

@@ -1,27 +1,27 @@
 # Codelab Reviewer Guide
 
 ## Roles
-- **Subject Matter Expert (SME)**: Verifies technical accuracy and code quality.
-- **User Tester**: Represents the target audience, tests all exercises.
-- **Technical Writer**: Reviews structure, clarity, and formatting.
+- **SME**: Checks technical accuracy and code quality.
+- **User Tester**: Represents the audience and tests all steps.
+- **Tech Writer**: Checks structure, clarity, and format.
 
 ## SME Checklist
-- Technical accuracy of text and code.
-- Code is exemplary and follows best practices.
-- Unit tests are correct and sufficient.
+- Verify text and code are technically correct.
+- Ensure code follows best practices.
+- Check that unit tests are correct.
 
 ## User Tester Checklist
-- Test ALL exercises.
-- Identify missing steps or confusing instructions.
-- Ensure all necessary commands are included.
+- Run and test ALL exercises.
+- Find missing steps or unclear instructions.
+- Make sure all needed commands are in the file.
 
 ## Tech Writer Checklist
-- **Introduction**: Clear value proposition, prerequisites, and audience.
-- **Body**: Clear explanations, "why" behind commands, inclusive language.
-- **Formatting**: Adheres to style guide.
-- **Code**: Sufficient comments, clear evolution of code snippets.
+- **Intro**: Check for prerequisites, target audience, and clear value.
+- **Body**: Check for clear steps, reasons for commands, and simple words.
+- **Format**: Ensure it matches the style guide.
+- **Code**: Ensure comments are clear and easy to follow.
 
-## Feedback Process
-1. SME and User Tester reviews first (substantive changes).
-2. Tech Writer review second (structural/clarity).
-3. Final cleanup (formatting/typos).
+## Feedback Steps
+1. SME and User Tester review first to fix technical bugs.
+2. Tech Writer reviews second to check structure.
+3. Perform final cleanup for formatting and typos.

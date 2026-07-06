@@ -1,17 +1,24 @@
 # Reference Documentation for Pyhd
 
-This is a placeholder for detailed reference documentation.
-Replace with actual reference content or delete if not needed.
+This document provides reference information for the Python development workflow.
 
-## Structure Suggestions
+## Ruff Rule Selection
 
-### API Reference Example
-- Overview
-- Authentication
-- Endpoints with examples
-- Error codes
+The recommended linting configuration selects the following rule categories:
 
-### Workflow Guide Example
-- Prerequisites
-- Step-by-step instructions
-- Best practices
+- **E / F**: Pycodestyle errors and Pyflakes.
+- **I**: Isort import sorting.
+- **UP**: Pyupgrade syntax upgrades.
+- **B**: Bugbear common design issues.
+- **SIM**: Flake8-simplify code simplifications.
+- **PLC / PLE / PLW**: Pylint convention, error, and warning checks.
+
+## Command Reference
+
+### Linting and Formatting
+- Format a file: `uv run ruff format <path>`
+- Lint and apply safe fixes: `uv run ruff check --fix <path>`
+
+### Testing
+- Run pytest: `pytest`
+- Run pytest with coverage: `pytest --cov`

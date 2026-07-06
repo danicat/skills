@@ -1,6 +1,6 @@
 # Architectural Decision Records (ADRs)
 
-Documenting significant architectural decisions is critical for long-term project health. Use this template to record choices.
+Documenting architectural decisions helps teams track choices and maintain codebases over time. Use this template to record major design choices.
 
 ## ADR Template
 
@@ -30,8 +30,11 @@ Documenting significant architectural decisions is critical for long-term projec
 *   [Risk 1]
 ```
 
-## When to write an ADR
-*   Choosing a database or storage engine.
-*   Selecting a major framework (e.g., Echo vs. Gin).
+## Criteria for Writing an ADR
+
+Create an ADR when:
+*   Selecting or changing a database or storage engine.
+*   Choosing a major framework (such as Echo versus Gin).
 *   Defining a new API standard.
-*   Introducing a new dependency that significantly impacts the build size or complexity.
+*   Introducing a dependency that significantly affects build size or codebase complexity.
+

@@ -1,30 +1,30 @@
 # Python Development Best Practices
 
-## General
+## Code Style and Structure
 
-1.  **Code Style**:
-    *   **Always** follow PEP 8 for style (handled by `ruff`).
-    *   Use clear and descriptive variable names.
-    *   Avoid complex list comprehensions; prefer simple loops if they are more readable.
-    *   **Always** document functions and classes with docstrings.
+- **Style compliance**: Use PEP 8 guidelines. Ruff enforces these rules automatically.
+- **Naming**: Choose clear, descriptive names for variables, functions, and classes.
+- **Readability**: Write simple loops instead of complex list comprehensions.
+- **Documentation**: Write descriptive docstrings for all modules, classes, and functions.
 
-2.  **Type Hinting**:
-    *   Use type hints (`from typing import ...`) for all function arguments and return types.
-    *   Use `Optional[T]` for nullable values.
-    *   Use `Union[T, U]` for multiple types.
-    *   Use `List[T]`, `Dict[K, V]`, etc. for collections.
+## Type Hinting
 
-3.  **Imports**:
-    *   Keep imports organized (handled by `ruff` with `isort` rules).
-    *   Avoid wildcard imports (`from module import *`).
+Annotate all function signatures with type hints from the `typing` module:
+- Use specific types for parameters and return values.
+- Use `Optional[T]` for values that can be `None`.
+- Use `Union[T, U]` when multiple types are expected.
+- Use collection types like `List[T]` and `Dict[K, V]` to specify inner types.
 
-4.  **Error Handling**:
-    *   Use specific exception types (`except ValueError:`) instead of catching everything (`except Exception:` or bare `except:`).
-    *   Always clean up resources (e.g., file handles) using `with` statements or `finally` blocks.
+## Imports and Error Handling
+
+- **Organization**: Group and sort imports. Ruff organizes imports using `isort` rules.
+- **Wildcards**: Do not use wildcard imports (`from module import *`).
+- **Exception handling**: Catch specific exceptions (such as `ValueError`) rather than generic `Exception` or bare `except:` clauses.
+- **Resource management**: Use `with` statements to ensure file handles and network connections close correctly.
 
 ## Ruff Configuration
 
-When setting up `ruff` in `pyproject.toml`, adhere to the following recommendations:
+Configure Ruff in `pyproject.toml` using these settings:
 
 ```toml
 [tool.ruff]
@@ -42,12 +42,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 ```
 
-## Testing
+## Testing Guidelines
 
-1.  **Unit Tests**:
-    *   Write unit tests for all non-trivial logic.
-    *   Use `pytest` as the test runner.
-    *   Mock external dependencies (API calls, databases) to isolate tests.
-
-2.  **Integration Tests**:
-    *   Write integration tests to verify interaction between components.
+- **Unit tests**: Write tests for logical components using `pytest`. Use mocks to isolate external systems, APIs, and databases.
+- **Integration tests**: Write integration tests to check how different modules work together.

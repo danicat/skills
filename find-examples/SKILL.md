@@ -1,16 +1,16 @@
 ---
 name: find-examples
-description: Find and inspect real-world code examples from GitHub for specific dependencies and languages. Use when you need to understand how a library or framework is used in production or community projects.
+description: Find and inspect GitHub code examples for specific dependencies and languages. Use this to see how a library or framework is used in projects.
 ---
 
 # Find Examples
 
-This skill helps you find credible and recent code examples on GitHub for specific dependencies.
+Find GitHub code examples for dependencies.
 
 ## Workflow
 
 ### 1. Search for Repositories (Multi-Language)
-Run the `github_search.py` script. If examples in your target language are scarce, include related languages supported by the SDK.
+Run the `github_search.py` script. If the target language lacks examples, include related languages supported by the SDK.
 
 ```bash
 python3 scripts/github_search.py <dependency> --lang <lang1,lang2> --limit 5
@@ -22,9 +22,8 @@ python3 find-examples/scripts/github_search.py "genkit" --lang "go,typescript"
 ```
 
 ### 2. Prioritize and Select
-Review the results. The script tags each repo with its language. 
-- **Direct Match**: Prefer the target language if high-quality results exist.
-- **Polyglot Translation**: If your language has few results, select a high-credibility repo from a related language (e.g., use a TypeScript Genkit example to inform a Go implementation).
+Review the results. The script tags each repository with its language.
+Prefer the target language when high-quality results exist. If the target language has few results, select a repository from a related language instead. For example, a TypeScript Genkit example can guide a Go implementation.
 
 ### 3. Create Examples Directory
 ```bash
@@ -38,15 +37,15 @@ Clone the selected repositories into the `_examples` folder.
 cd _examples && git clone <repo_url>
 ```
 
-Once cloned, use `list_files`, `smart_read`, or `grep_search` to find relevant implementation details.
+After cloning, search for implementation details with `list_files`, `smart_read`, or `grep_search`.
 
 ## Polyglot Translation Strategy
-When using an example from a different language:
-1. **Identify the Core API**: Look for the primary classes or functions (e.g., `DefineFlow` in JS usually maps to `DefineFlow` in Go).
-2. **Translate Data Structures**: Map objects/interfaces to Go structs or Python classes.
-3. **Bridge Patterns**: Observe how authentication, configuration, and error handling are handled; these patterns are often consistent across an SDK's supported languages.
+When translating an example from another language:
+1. Identify the primary classes or functions (e.g., `DefineFlow` in JS usually maps to `DefineFlow` in Go).
+2. Map objects/interfaces to Go structs or Python classes.
+3. Observe how the SDK handles authentication, configuration, and error handling. These patterns usually persist across supported languages.
 
 ## Tips
-- **Credibility**: Look for high star counts and official or well-known organizations.
-- **Recency**: Prefer repositories that have been updated in the last 6 months to ensure compatibility with modern versions of the dependency.
-- **Context**: If searching for a large framework, use `grep_search` within the cloned repo to find specific symbol usages.
+- Check for high star counts and official or well-known organizations.
+- Prefer repositories updated in the last 6 months to ensure compatibility with modern versions of the dependency.
+- Search for specific symbol usages with `grep_search` inside cloned repositories of large frameworks.

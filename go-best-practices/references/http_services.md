@@ -1,14 +1,13 @@
 # Idiomatic HTTP Services in Go
 
-Best practices for building robust, maintainable, and testable web services.
+Guidelines for building maintainable and testable HTTP services.
 
-## Core Principles
+## Core Design Rules
 
-1.  **Use a `run` function**: Keep `main.go` minimal and move setup logic to a `run` function that accepts a `context.Context`, `io.Writer` (for logs), and environment variables.
-2.  **Graceful Shutdown**: Always handle `os.Interrupt` and `syscall.SIGTERM` to shut down the server gracefully.
-3.  **Constructors for Handlers**: Use constructors to inject dependencies into your handlers.
-4.  **Avoid Global State**: Pass dependencies (DB, logger) explicitly.
-5.  **Small Interfaces**: Define interfaces on the consumer side.
+*   Keep `main.go` minimal and delegate the setup to a `run` function. This function should accept a `context.Context`, an `io.Writer` for logging, and a function to retrieve environment variables.
+*   Handle `os.Interrupt` and `syscall.SIGTERM` to perform a graceful server shutdown.
+*   Inject handler dependencies explicitly using constructors rather than relying on global state.
+*   Define interfaces on the client or consumer side rather than the implementation side.
 
 ## Structure Example
 
@@ -38,28 +37,20 @@ func run(ctx context.Context, w io.Writer, getEnv func(string) string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	// 1. Setup dependencies
-	// db, err := setupDB(getEnv("DB_URL"))
-
-	// 2. Initialize handlers
-	// srv := server.NewServer(db)
+	// Setup dependencies here (e.g., database connections)
 
 	httpServer := &http.Server{
-		Addr:    net.JoinHostPort("0.0.0.0", "8080"),
-		// Handler: srv,
+		Addr: net.JoinHostPort("0.0.0.0", "8080"),
 	}
 
-	// 3. Start server in a goroutine
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(w, "server error: %s\n", err)
 		}
 	}()
 
-	// 4. Wait for interrupt signal
 	<-ctx.Done()
 
-	// 5. Shutdown with timeout
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	return httpServer.Shutdown(shutdownCtx)
@@ -68,8 +59,8 @@ func run(ctx context.Context, w io.Writer, getEnv func(string) string) error {
 
 ## Routing and Handlers
 
-*   **Standard Library**: Use `http.ServeMux` (Go 1.22+ supports methods and wildcards).
-*   **Decoupled Handlers**: Define your server as a struct that implements `http.Handler`.
+*   Use standard library routing via `http.ServeMux` (Go 1.22+ supports HTTP methods and wildcards).
+*   Structure the server as a custom struct implementing `http.Handler` to keep route definitions and handlers cohesive.
 
 ```go
 type Server struct {
@@ -93,7 +84,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 ## Middleware
 
-Wrap `http.Handler` to add cross-cutting concerns (logging, auth, metrics).
+Extend or wrap handler behavior using middleware functions.
 
 ```go
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -104,3 +95,4 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 ```
+

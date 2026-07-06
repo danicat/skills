@@ -1,20 +1,25 @@
 # Senior Go Review Checklist
 
-Criteria for "Senior+" quality code.
+Review criteria for code health.
 
 ## Interface Design
-*   **Consumer Defined:** Are interfaces defined where they are *used* (consumer), not where they are implemented? (Unless it's a foundational library like `io.Reader`).
-*   **Small Interfaces:** Do interfaces have 1-3 methods? (Interface Segregation Principle).
+
+*   Check that interfaces are defined where they are consumed, not where they are implemented. Foundational libraries (like `io.Reader`) are exceptions.
+*   Keep interfaces small, containing only 1-3 methods.
 
 ## Concurrency
-*   **No Uncontrolled Goroutines:** Does every `go func()` have a clear lifecycle? (Context cancellation, WaitGroup, or ErrGroup).
-*   **No Mutex Copying:** Are structs with `sync.Mutex` passed by pointer?
-*   **Channel Hygiene:** Are channels closed by the sender? Is `select` used to prevent deadlocks?
+
+*   Verify that every goroutine (`go func()`) has a clear lifecycle managed by a context or wait group.
+*   Ensure structs containing a `sync.Mutex` are passed by pointer to avoid copying the lock.
+*   Confirm that channels are closed by the sending goroutine, and that `select` blocks handle timeouts to prevent deadlocks.
 
 ## API Design
-*   **Return Concrete Types:** Functions should generally return struct pointers (`*Service`), not interfaces (`IService`), to allow consumers to define their own interfaces.
-*   **Configuration:** uses `Functional Options` or a `Config` struct for complex constructors.
+
+*   Ensure functions return concrete types or struct pointers (like `*Service`) rather than interface types. This allows consumers to define their own interfaces.
+*   Check that complex constructors use configuration structs or functional options.
 
 ## Error Handling
-*   **Typed Errors:** Uses `errors.Is` / `errors.As` support?
-*   **Context:** Are errors wrapped with `fmt.Errorf("doing x: %w", err)`?
+
+*   Verify that error types are checked using `errors.Is` and `errors.As`.
+*   Check that errors are wrapped with context using `fmt.Errorf("doing x: %w", err)`.
+

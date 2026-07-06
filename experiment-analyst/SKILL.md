@@ -1,81 +1,75 @@
 ---
 name: experiment-analyst
-description: Expertise in analyzing Tenkai agent experiments. Use when asked to "analyze experiment X" to determine success factors, failure modes, and behavioral patterns.
+description: Analyze Tenkai agent experiments to find success factors, failure modes, and run patterns.
 ---
 
 # Experiment Analyst
 
-You are an expert data scientist and systems engineer specializing in AI agent behavior analysis. Your goal is to deconstruct experiment runs to understand *why* agents succeed or fail, moving beyond simple pass/fail metrics to identifying cognitive and operational patterns.
+This skill helps analyze Tenkai agent runs to find why they succeed or fail.
 
-## Core Mandates
+## Core Rules
 
-1.  **Evidence-Based:** Never make claims without data. Cite specific Run IDs, error messages, or statistical differences.
-2.  **Correlation ≠ Causation:** A tool might be correlated with failure (e.g., `read_file`) because it's used for recovery. Always investigate the *context* of usage before labeling a tool as "bad".
-3.  **Comparative:** Always contrast the performance of alternatives. What did Alternative A do that B didn't?
+- Use data to back up all claims. Cite run IDs, exact errors, or metric differences.
+- Do not mix up correlation with causation. For example, if failed runs often call `read_file`, it may be because agents use it to recover from errors, not because the tool itself is bad.
+- Compare how different setups perform.
 
-## Setup & Resources
-**Crucial:** Before running any script, ensure you are pointing to the correct database:
+## Setup & Database
+
+Set the database path before you run any tools or scripts:
 ```bash
 export TENKAI_DB_PATH=agents/tenkai/experiments/tenkai.db
 ```
 
-*   `references/tenkai_db_schema.md`: Database schema.
-*   `scripts/analyze_experiment.py`: master analysis script (Stats + Tool Usage + Success Determinants).
-*   `scripts/analyze_patterns.py`: Workflow reconstruction script.
-*   `scripts/get_experiment_config.py`: Configuration fetcher.
+- `references/tenkai_db_schema.md`: Database structure details.
+- `scripts/analyze_experiment.py`: Main analysis script for stats, tool usage, and success drivers.
+- `scripts/analyze_patterns.py`: Script to rebuild agent workflows.
+- `scripts/get_experiment_config.py`: Script to get the experiment settings.
 
-## Analysis Workflow
+## Analysis Steps
 
-### 1. Context & Hypothesis
-First, understand what was tested.
+### 1. View the Settings
+Check the configuration first:
 ```bash
 python3 agents/tenkai/.gemini/skills/experiment-analyst/scripts/get_experiment_config.py <EXP_ID>
 ```
-*   **Identify Variables:** What changed? (Model, Prompt, Tools?)
-*   **Formulate Hypothesis:** What do you expect to see?
+Look at what changed (like models, prompts, or tools) and what you expect to see.
 
-### 2. Quantitative Analysis
-Run the master script to get the "Big Picture".
+### 2. View the Stats
+Run the main script to get general metrics:
 ```bash
 python3 agents/tenkai/.gemini/skills/experiment-analyst/scripts/analyze_experiment.py <EXP_ID>
 ```
-*   **Success Determinants:** Look at the "Success Determinants Analysis" section. Which tools are "Strong Success Drivers" or "Failure Signals"?
-*   **Failure Modes:** What are the most common error messages?
+Check "Success Determinants Analysis" to see which tools drive success or signal failure. Also find the most common errors.
 
-### 3. Targeted Behavioral Deep Dive
-**Crucial Step:** Use the insights from Step 2 to select specific runs for deep analysis. Don't guess; look for the "Why".
+### 3. Trace Run Patterns
+Pick specific runs to study why they succeeded or failed:
 ```bash
-# Compare a successful run (Success Driver) vs a failed run (Failure Signal)
 python3 agents/tenkai/.gemini/skills/experiment-analyst/scripts/analyze_patterns.py <EXP_ID> "<ALTERNATIVE>"
 ```
-*   **Investigate Drivers:** If `smart_build` is a Success Driver, find a run that used it. Did it catch a bug?
-*   **Investigate Signals:** If `run_shell_command` is a Failure Signal, find a failed run. Did it get stuck in a loop?
-*   **Recovery Patterns:** Look for sequences like `error` -> `read_file` -> `edit_file`. Did the agent recover or spiral?
+- Look at successful runs. Did a specific tool prevent a bug?
+- Look at failed runs. Did a tool run in an endless loop?
+- Find how agents handle errors. Check if they read or edit files after a failure, or if they repeat the same mistake.
 
-## Reporting Standards
+## Report Format
 
 ### Experiment X: [Name]
 
 **Overview**
-Brief description of the experiment and alternatives.
+Brief summary of the experiment goals and the tested setups.
 
-**Results Summary**
-| Alternative | Success Rate | Duration | Tokens | Key Characteristic |
+**Results**
+| Alternative | Success Rate | Duration | Tokens | Key Feature |
 |---|---|---|---|---|
-| Alt A | ... | ... | ... | ... |
+| Variant A | ... | ... | ... | ... |
 
-**Success Determinants**
-*   **Drivers:** Tools/Patterns that lead to success (e.g., "Using `project_init` increased success by 20%").
-*   **Signals:** Tools/Patterns that lead to failure.
+**Drivers & Signals**
+- Drivers: Tools and patterns that increased success rates.
+- Signals: Tools and patterns linked to failure.
 
-**Behavioral Insights (Deep Dive)**
-*   **The Winning Pattern:** Describe the ideal workflow observed in successful runs.
-    *   *Example:* "Agent in Run 101 used `project_init` to scaffold, preventing file path errors later."
-*   **The Failure Loop:** Describe the common trap.
-    *   *Example:* "Agent in Run 105 got stuck trying to `sed` a file that didn't exist."
+**Detailed Workflow**
+- Successful pattern: The steps taken in good runs. Example: `project_init` created folders and prevented path errors.
+- Failure pattern: The steps taken in bad runs. Example: repeating a command on a file that does not exist.
 
-**Conclusion & Recommendations**
-*   **Verdict:** Which alternative is better?
-*   **Actionable Items:**
-    *   [ ] Tool Changes (e.g., "Add `verify_lint` tool")
-    *   [ ] Prompt Changes (e.g., "Instruct agent to use `smart_read` for recovery")
+**Conclusion & Actions**
+- Best Variant: Which setup is better.
+- Recommended Changes: Steps to fix the prompt or tools.

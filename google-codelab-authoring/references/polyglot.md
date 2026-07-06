@@ -1,15 +1,15 @@
 # Polyglot Extension
 
 ## Features
-- Divides content by language/platform.
-- Surfaces matching sections based on selection.
-- Persists user selection.
+- Splits content by language or platform.
+- Shows matching sections based on user choice.
+- Remembers user choice.
 
 ## Installation
-Enable the polyglot extension in your codelab environment configuration.
+Turn on the polyglot extension in your configuration.
 
 ## Usage
-Wrap content in `<section class="polyglot">` and use H6 headings with `.pg-tab` class.
+Wrap content in a `<section class="polyglot">` tag. Use H6 titles with the `.pg-tab` class.
 
 ```markdown
 <section class="polyglot">
@@ -23,8 +23,8 @@ Kotlin content...
 </section>
 ```
 
-## Inline Content
-Use `.pg-inline` with language classes (e.g., `.java`, `.kotlin`) to show/hide specific elements.
+## Inline Text
+Use `.pg-inline` with language classes (like `.java` or `.kotlin`) to show or hide text elements.
 
 ```markdown
 The code is written in `Java`{.pg-inline .java} `Kotlin`{.pg-inline .kotlin}.

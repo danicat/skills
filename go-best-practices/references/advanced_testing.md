@@ -1,20 +1,19 @@
 # Advanced Testing Patterns
 
-Beyond simple unit tests, sophisticated Go projects rely on advanced verification strategies.
+Go testing strategies for complex verification needs.
 
 ## Fuzz Testing
-Use the native `testing.F` to find edge cases in parsers and complex logic.
+
+Use native fuzzing `testing.F` to find edge cases in parsers and complex business logic.
 
 ```go
 func FuzzParser(f *testing.F) {
     f.Add("initial seed")
     f.Fuzz(func(t *testing.T, input string) {
-        // 1. Run target
         parsed, err := Parse(input)
         if err != nil {
             return // Expected error
         }
-        // 2. Validate invariants
         if parsed.String() != input {
             t.Errorf("Roundtrip failed: %q != %q", parsed.String(), input)
         }
@@ -23,27 +22,30 @@ func FuzzParser(f *testing.F) {
 ```
 
 ## Benchmarking
-Measure performance and allocations.
+
+Measure performance metrics and memory allocations.
 
 ```go
 func BenchmarkProcess(b *testing.B) {
     data := generateData()
-    b.ResetTimer() // Don't count setup
+    b.ResetTimer()
     for i := 0; i < b.N; i++ {
         Process(data)
     }
 }
 ```
-*Run with:* `go test -bench=. -benchmem`
+Run benchmarks using: `go test -bench=. -benchmem`
 
 ## Golden Files
-For complex outputs (JSON, large structs), use "Golden Files" to compare against a saved expected version.
 
-1.  Write output to a file `testdata/name.golden` if `update` flag is set.
-2.  Otherwise, read `testdata/name.golden` and compare with actual output.
+Use saved expected files (golden files) to verify complex outputs like large JSON structures.
+
+1.  Write the actual output to `testdata/name.golden` when an update flag is supplied.
+2.  Otherwise, read `testdata/name.golden` and compare it to the function output.
 
 ## Subprocess Mocking
-To mock `exec.Command`, use the "Helper Process" pattern.
+
+To mock `exec.Command`, use a helper test process that is triggered via environment variables.
 
 ```go
 func TestShell(t *testing.T) {
@@ -51,18 +53,16 @@ func TestShell(t *testing.T) {
         fmt.Fprint(os.Stdout, "mock stdout")
         os.Exit(0)
     }
-    // Set cmd.Env to trigger the helper
 }
 ```
 
-## Tooling Ecosystem
+## Verification Tooling
 
-### Mutation Testing: Selene
-Use [Selene](https://github.com/danicat/selene) to verify test quality by introducing artificial bugs (mutants) and checking if tests fail.
-*   **Goal:** Ensure tests actually catch regressions.
-*   **Usage:** Run against critical logic packages.
+### Mutation Testing
 
-### Test Exploration: TestQuery
-Use [TestQuery](https://github.com/danicat/testquery) to analyze and filter test execution.
-*   **Goal:** Efficiently run specific test subsets or understand complex test suites.
-*   **Usage:** Query tests by name, package, or attributes.
+Use [Selene](https://github.com/danicat/selene) to evaluate test coverage by injecting minor code faults (mutants) and verifying that tests fail. This confirms that test assertions are active. Run this tool on packages containing core application logic.
+
+### Test Exploration
+
+Use [TestQuery](https://github.com/danicat/testquery) to inspect and filter test execution. This helps identify and run specific subsets of large test suites by filtering on name, package, or attributes.
+

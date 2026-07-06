@@ -5,15 +5,15 @@ description: A comprehensive developer guide containing the entire a2ui.org docu
 
 # A2UI Developer Guide
 
-This skill serves as the ultimate, comprehensive reference for developing applications, agents, and client libraries using the **A2UI (Agent-Driven User Interfaces) Protocol**. 
+This skill provides the reference for building applications, agents, and client libraries with the **A2UI (Agent-Driven User Interfaces) Protocol**. 
 
-A2UI is a streaming protocol designed to allow Agents to emit rich, interactive UI components directly into the chat stream.
+A2UI is a streaming protocol that lets agents emit interactive UI components directly into a chat stream.
 
 ## Core Mandates
-When working with A2UI, you MUST consult the reference documentation provided in the `references/` directory. Do not guess the structure of the JSON payload, the client data models, or the expected component formats. Always verify against the spec.
+When using A2UI, consult the reference documentation in the `references/` directory. Do not guess the structure of the JSON payload, client data models, or component formats. Always verify against the specification.
 
 ## Reference Material
-All references have been crawled directly from the official [A2UI.org](https://a2ui.org) documentation and converted to markdown. They are located in the `references/` directory of this skill. 
+All references are taken from the official [A2UI.org](https://a2ui.org) documentation. They are located in the `references/` directory. 
 
 Use the `view_file` tool to read the contents of the relevant reference file before responding:
 

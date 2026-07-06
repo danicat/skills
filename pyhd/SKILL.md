@@ -1,47 +1,37 @@
 ---
 name: pyhd
-description: Python development workflow for editing, formatting (ruff), and documentation. Use when writing, refactoring, or updating Python code.
+description: Python development workflow using Ruff for linting and formatting. Use when writing, refactoring, or documenting Python code.
 ---
 
 # Pyhd (Python Development)
 
-## Overview
+This workflow outlines the standard development process for Python projects using Ruff to format and lint code.
 
-This skill enforces a rigorous development workflow for Python projects, centering on the `ruff` linter and formatter. It ensures that all code changes are automatically formatted and linted to meet industry standards. It also provides guidance on accessing documentation.
+## Development Cycle
 
-## Core Workflow
+Run these steps for each file change:
 
-When editing Python files, you **MUST** follow this cycle for **EVERY** file modification:
+1. **Understand context**: Read the file to understand its purpose. If you use external packages, check their API documentation first.
+2. **Apply changes**: Use editing tools or replacement methods to modify the code.
+3. **Format and lint**: Format the code and fix style issues immediately after editing. Run:
+   ```bash
+   uv run ruff check --fix <filename>
+   uv run ruff format <filename>
+   ```
+   Resolve any remaining errors manually before continuing.
+4. **Test**: Run the test suite to verify that your changes did not introduce regressions.
 
-1.  **Read & Understand**:
-    *   Read the file content to understand the context.
-    *   If using external packages, **verify their API** first (see "Documentation" below).
-2.  **Edit**:
-    *   Apply your changes using `smart_edit` or `replace`.
-3.  **Sanitize (Ruff)**:
-    *   Immediately after editing, run the following commands to format and fix linting issues:
-        ```bash
-        uv run ruff check --fix <filename>
-        uv run ruff format <filename>
-        ```
-    *   If `ruff` reports errors that cannot be automatically fixed, you **MUST** fix them manually before proceeding.
-4.  **Verify**:
-    *   Run tests to ensure your changes didn't break functionality.
+## API Documentation
 
-## Documentation
+Verify package APIs before writing or modifying code.
 
-Before using a Python package or library, you **MUST** ensure you are using the correct API.
-
-1.  **Search Online**: Use `google_web_search` to find the official documentation.
-    *   Query format: `python <package_name> documentation` or `python <package_name> <function_name> usage`.
-2.  **Inspect Installed Packages**:
-    *   If the package is installed, you can inspect it in the virtual environment (e.g., `.venv/lib/python3.x/site-packages/<package>`).
-3.  **Use `help()`**:
-    *   You can run a one-off script to print help:
-        ```bash
-        uv run python -c "import <package>; help(<package>.<symbol>)"
-        ```
+- **Online search**: Use search tools to find the official documentation. Helpful search queries include `python <package_name> documentation` or `python <package_name> <function_name>`.
+- **Local inspection**: If the package is already installed, inspect its source files under `.venv/lib/python3.x/site-packages/<package>`.
+- **Interactive help**: Run a short command to read the Python help docstring:
+  ```bash
+  uv run python -c "import <package>; help(<package>.<symbol>)"
+  ```
 
 ## Best Practices
 
-See [best_practices.md](references/best_practices.md) for detailed coding standards and idiomatic Python patterns.
+Detailed coding standards and idiomatic Python patterns are located in [best_practices.md](references/best_practices.md).

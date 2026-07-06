@@ -1,43 +1,37 @@
 ---
 name: latest-version
 description: >
-  The definitive real-time source of truth for software and model versions. Use this skill to bypass internal knowledge cutoffs and verify the absolute latest stable releases of packages (NPM, PyPI, Go, etc.) and Gemini models. It proactively checks for deprecations, yanked releases, and retractions directly from live registries to prevent version hallucinations.
+  Fetches package versions from NPM, PyPI, Go, Cargo, and RubyGems, or gets Gemini models. This tool queries registries to get stable versions and warn about deprecated, yanked, or retracted packages.
 ---
 
 # Latest Software Version (latest-version)
 
+Queries registries to find stable package versions. Do not guess versions or rely on outdated knowledge.
 
-**"Your training data is from the past. The registry is the present."**
+## How to use
 
-This skill prevents "version hallucination" by verifying the actual latest stable releases of software packages.
+### 1. Find the ecosystem
+We support these registries:
+* npm: Node.js/JS
+* pypi: Python
+* go: Go
+* cargo: Rust
+* gem: Ruby
+* gemini: Gemini models (use 'latest', 'flash', or 'pro' as the name)
 
-## Core Mandate
-**NEVER GUESS.** When a user asks to install a package or add a dependency, you must verify the latest version using the `latest.js` script. Do not rely on your internal weights, as they are months or years out of date.
-
-## Workflow
-
-### 1. Identify Ecosystem
-Determine which registry manages the package:
-*   **Node.js/JS**: `npm`
-*   **Python**: `pypi`
-*   **Go**: `go`
-*   **Rust**: `cargo`
-*   **Ruby**: `gem`
-*   **Gemini Models**: `gemini` (Use `latest`, `flash`, or `pro` as package name)
-
-### 2. Fetch Truth
-Run the version checker script:
+### 2. Run the command
+Run this script:
 ```bash
 node scripts/latest.js <ecosystem> <package-name>
 ```
 
-### 3. Apply
-Use the returned version string in your command or configuration file.
-*   *Example:* If the script returns `npm: react @ 19.2.0`, write `"react": "^19.2.0"` in `package.json`.
+### 3. Save the version
+Put the returned version in your config or command.
+* Example: If you get `npm: react @ 19.2.0`, update package.json with `"react": "^19.2.0"`.
 
-## Supported Registries
-*   **NPM**: `registry.npmjs.org`
-*   **PyPI**: `pypi.org`
-*   **Go Proxy**: `proxy.golang.org`
-*   **Crates.io**: `crates.io`
-*   **RubyGems**: `rubygems.org`
+## Registry URLs
+* NPM: registry.npmjs.org
+* PyPI: pypi.org
+* Go Proxy: proxy.golang.org
+* Crates.io: crates.io
+* RubyGems: rubygems.org

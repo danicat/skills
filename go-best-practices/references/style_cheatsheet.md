@@ -1,10 +1,11 @@
 # Go Style Cheatsheet
 
-Critical style rules derived from Go Code Review Comments.
+Style rules derived from Go Code Review Comments.
 
 ## Error Handling
-*   **Error Strings:** `fmt.Errorf("something failed")` (lowercase, no punctuation).
-*   **Indent Error Flow:** Handle errors first and return. Avoid `else`.
+
+*   Format error strings using `fmt.Errorf("something failed")` in lowercase and with no trailing punctuation.
+*   Indent error flow by handling errors first and returning early to avoid `else` blocks.
     ```go
     // Bad
     if err != nil { return err } else { doWork() }
@@ -12,31 +13,37 @@ Critical style rules derived from Go Code Review Comments.
     if err != nil { return err }
     doWork()
     ```
-*   **In-Band Errors:** Return `(value, ok)` or `(value, error)`, never `-1` or `nil` to signal error.
+*   Do not use in-band errors. Return `(value, ok)` or `(value, error)`, never `-1` or `nil` to signal an error.
 
 ## API Design
-*   **Contexts:** First parameter `ctx context.Context`. Never store in structs.
-*   **Crypto:** Use `crypto/rand`, never `math/rand` for keys.
-*   **Copying:** Do not copy structs with `sync.Mutex`.
-*   **Interfaces:** Define interfaces where they are *used* (consumer), not where implemented.
-*   **Receiver Names:** Short (e.g., `c` for `Client`), consistent. No `this`, `self`, or `me`.
-*   **Pass Values:** Pass small structs and `time.Time` by value. Only use pointers if mutating or struct is large.
 
-## Philosophy & Concurrency
-*   **Concurrency:** "Do not communicate by sharing memory; instead, share memory by communicating."
-*   **Sync:** "Channels orchestrate; mutexes serialize."
-*   **Abstraction:** "Accept interfaces, return structs." (Postel's Law applied to Go).
-*   **Zero Values:** Make the zero value useful (e.g., `sync.Mutex` is ready to use).
+*   Pass contexts as the first parameter `ctx context.Context`. Do not store them in structs.
+*   Use `crypto/rand` for cryptographic keys, never `math/rand`.
+*   Avoid copying structs that contain a `sync.Mutex`. Pass them by pointer instead.
+*   Define interfaces in the package where they are used (consumer), not where they are implemented.
+*   Use short, consistent receiver names like `c` for `Client`. Do not use `this`, `self`, or `me`.
+*   Pass small structs and `time.Time` by value. Use pointers only when mutating or when the struct is large.
+
+## Philosophy and Concurrency
+
+*   Share memory by communicating; do not communicate by sharing memory.
+*   Use channels to orchestrate and mutexes to serialize.
+*   Accept interfaces and return concrete structs.
+*   Make zero values useful so structures like `sync.Mutex` are ready to use without explicit initialization.
 
 ## Testing
-*   **Table-Driven:** Use `aa := []struct{...}` for tests.
-*   **Error Messages:** `got != want`. `Errorf("F(%q) = %d; want %d", in, got, want)`.
+
+*   Use table-driven tests with anonymous structs: `tests := []struct{...}`.
+*   Write clear test error messages showing what was received versus what was expected: `Errorf("F(%q) = %d; want %d", in, got, want)`.
 
 ## Imports
-*   **Grouping:** Stdlib first, then 3rd party, then local. Separated by blank lines.
-*   **Dot Imports:** Only in `_test.go` for circular dependencies.
+
+*   Group imports with standard library first, then third-party, and then local packages, separating each group with a blank line.
+*   Avoid dot imports, except in `_test.go` files to resolve circular dependencies.
 
 ## Linting
-*   **Standard:** Use `golangci-lint` with `staticcheck`, `errcheck`, and `unused`.
-*   **Exclusions:** Use `//nolint:lintername` sparingly and always justify with a comment.
-*   **Verification:** Linting must pass before any code is considered "Done".
+
+*   Configure `golangci-lint` to run `staticcheck`, `errcheck`, and `unused` linters.
+*   Use `//nolint:lintername` comments sparingly and always include a comment justifying the exclusion.
+*   Ensure all linting checks pass before marking code as complete.
+

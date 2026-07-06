@@ -1,6 +1,6 @@
 # Ebitengine Best Practices
 
-Best practices for building 2D games with [Ebitengine](https://ebitengine.org/).
+Guidelines for building 2D games using the [Ebitengine](https://ebitengine.org/) game library.
 
 ## Game Interface
 
@@ -21,7 +21,7 @@ type Game interface {
 }
 ```
 
-## Standard Project Structure
+## Recommended File Structure
 
 ```text
 game/
@@ -34,12 +34,12 @@ game/
 └── main.go         (Window setup and ebiten.RunGame)
 ```
 
-## Performance Tips
+## Performance Guidelines
 
-1.  **Batch Drawing**: Draw multiple items using the same image/texture in succession to minimize draw calls.
-2.  **Avoid Real-time Allocation**: Pre-allocate objects in `init()` or `NewGame()` to avoid GC pauses during `Update` or `Draw`.
-3.  **Use `Image.SubImage`**: Efficiently use spritesheets.
-4.  **Offscreen Images**: Use offscreen images for complex compositions that don't change every frame.
+*   Draw multiple items using the same sprite sheet or texture in sequence to reduce GPU draw calls.
+*   Pre-allocate critical objects in `init()` or `NewGame()` to prevent garbage collection pauses during gameplay.
+*   Use `Image.SubImage` to load sprite coordinates from sheets efficiently.
+*   Utilize offscreen textures or images for complex compositions that remain static between frames.
 
 ## Example `main.go`
 
@@ -72,3 +72,4 @@ func main() {
 	}
 }
 ```
+

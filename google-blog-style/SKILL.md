@@ -6,19 +6,19 @@ description: >
 
 # Google Blog Style Guide
 
-This skill assists in creating high-quality technical blog posts for official Google Developer channels.
+Use this skill to draft, edit, and validate technical articles for official Google Developer blogs.
 
 ## Core Mandates
-1. **Readability First**: Always check your work with the `scripts/fog.cjs` script. Target a Gunning Fog Index between **12 and 15** (Professional/Technical).
-2. **Deterministic Tooling**: Use the provided sanitization scripts to ensure code safety and legal compliance.
-3. **Inclusive Language**: Avoid niche jargon (like gaming metaphors) unless they are widely understood in a global engineering context. Refer to `references/style_guide/jargon.md`.
-4. **Legal Safety**: Never make unsubstantiated claims or discuss future roadmaps. Strictly follow `references/legal_guidelines.md`.
+1. **Readability First**: Always check your work with `scripts/fog.cjs`. Target a Gunning Fog Index between **12 and 15** (Professional/Technical).
+2. **Deterministic Tooling**: Run the sanitization scripts to ensure code safety and legal compliance.
+3. **Inclusive Language**: Avoid niche jargon unless it is widely understood globally. See `references/style_guide/jargon.md`.
+4. **Legal Safety**: Do not make unsubstantiated claims or discuss future roadmaps. Follow `references/legal_guidelines.md`.
 
 ## Workflow
 
 ### 1. Plan & Outline
 **Before writing:**
-1. **Define Goals**: Identify the key takeaway and the target technical audience.
+1. **Define Goals**: Identify the key takeaway and target audience.
 2. **Consult Guides**:
    - `references/writing_guide.md` (Tone and Structure).
    - `references/nomenclature_tags.md` (Correct tagging).
@@ -26,20 +26,20 @@ This skill assists in creating high-quality technical blog posts for official Go
 
 ### 2. Draft & Edit
 1. **Write**: Focus on clarity, enthusiasm, and technical accuracy.
-   - Use sentence case for all headings (H2, H3, etc.).
-   - Use `references/style_guide/` for terminology and formatting.
-2. **Modularize**: Keep the `SKILL.md` clean by moving detailed documentation to the `references/` folder.
-3. **Refine**: Ensure the "Call to Action" is clear and all links (using `example.com` for placeholders) are working.
+   - Use sentence case for all headings.
+   - Use `references/style_guide/` for terms and formatting.
+2. **Modularize**: Keep `SKILL.md` brief by putting detailed docs in the `references/` folder.
+3. **Refine**: Ensure the call to action is clear and all placeholder links use `example.com`.
 
 ### 3. Review & Validate (Mandatory)
-1. **Readability Check**: Run `node scripts/fog.cjs <path-to-draft>` on the draft. If the index is > 16, shorten sentences and simplify complex words.
-2. **Sanitization**: Run the script to catch secrets, personal data, and legal risks.
+1. **Readability Check**: Run `node scripts/fog.cjs <path-to-draft>` on the draft. If the index is over 16, shorten sentences and simplify complex words.
+2. **Sanitization**: Run the script to find secrets, personal data, and legal risks:
    ```bash
    node scripts/sanitize_blog.cjs <path-to-file>
    ```
-3. **Legal Review**: Manually verify against `references/legal_guidelines.md`:
-   - No "coming soon" or future roadmaps.
-   - No superlatives ("best", "fastest") or possessives on product names.
+3. **Legal Review**: Manually check against `references/legal_guidelines.md`:
+   - Do not mention unreleased features or future timelines.
+   - Do not use superlatives ("best", "fastest") or possessives on product names.
 
 ## Resources
 - **Template**: `assets/template.md`

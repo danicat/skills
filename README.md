@@ -1,6 +1,7 @@
-# Gemini CLI Skills Repository
+# Agent Skills Repository
 
-This repository contains a collection of specialized skills for the Gemini CLI.
+This repository contains a collection of specialized skills for autonomous agents.
+
 
 ## Installation
 
@@ -8,7 +9,7 @@ This repository contains a collection of specialized skills for the Gemini CLI.
 You can install any skill directly from this repository using its URL and the `--path` flag to specify the skill name:
 
 ```bash
-gemini skills install https://github.com/danicat/skills --path <skill-name>
+agy skills install https://github.com/danicat/skills --path <skill-name>
 ```
 
 ### From Local Source
@@ -16,11 +17,12 @@ If you have cloned this repository locally, you can install or link skills from 
 
 ```bash
 # Full installation
-gemini skills install ./<skill-name>
+agy skills install ./<skill-name>
 
 # Link for development (symlinks the directory)
-gemini skills link ./<skill-name>
+agy skills link ./<skill-name>
 ```
+
 
 
 ## Available Skills

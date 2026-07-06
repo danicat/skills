@@ -1,47 +1,47 @@
 # Tenkai Database Schema (`tenkai.db`)
 
-The Tenkai database stores all experiment configurations, run execution logs, and result metrics. Use this reference to construct accurate SQL queries.
+This document describes the Tenkai database schema to help write SQL queries.
 
-## Core Tables
+## Tables
 
 ### `experiments`
-Stores high-level metadata about an experiment session.
-- **`id`**: Primary Key (used in `run_results.experiment_id`).
+Experiment metadata.
+- **`id`**: Primary Key (FK in `run_results.experiment_id`).
 - **`name`**: Human-readable name.
-- **`config_content`**: The full YAML configuration used.
+- **`config_content`**: YAML configuration.
 
 ### `run_results`
-The primary table for analysis. Each row represents a single execution (repetition) of a specific alternative in a specific scenario.
-- **`id`**: Primary Key (Run ID).
+Run results. Each row represents one run of a specific alternative.
+- **`id`**: Primary Key.
 - **`experiment_id`**: FK to `experiments`.
-- **`alternative`**: The configuration variant name (e.g., "default", "godoctor-mcp").
-- **`is_success`**: Boolean (1/0) indicating if validation passed.
-- **`duration`**: Execution time in nanoseconds (Divide by `1e9` for seconds).
-- **`total_tokens`**: Total LLM tokens consumed.
-- **`tool_calls_count`**: Total number of tool calls made.
+- **`alternative`**: Variant name (for example, "default", "godoctor-mcp").
+- **`is_success`**: 1 if validation passed, 0 if it failed.
+- **`duration`**: Execution time in nanoseconds (divide by 1e9 for seconds).
+- **`total_tokens`**: Total tokens consumed.
+- **`tool_calls_count`**: Total tool calls.
 - **`failed_tool_calls`**: Count of tool calls that returned an error.
-- **`status`**: "COMPLETED", "ABORTED", etc.
-- **`reason`**: "SUCCESS", "FAILED (VALIDATION)", "FAILED (TIMEOUT)", etc.
+- **`status`**: "COMPLETED", "ABORTED", or other status string.
+- **`reason`**: "SUCCESS", "FAILED (VALIDATION)", "FAILED (TIMEOUT)", or other reason.
 
 ### `run_events`
-The raw event log stream for every run.
+Event logs for all runs.
 - **`run_id`**: FK to `run_results`.
 - **`type`**: Event type ("tool", "message", "error").
-- **`payload`**: JSON string containing the details.
+- **`payload`**: JSON string with event details.
     - For `tool`: `{"name": "...", "args": {...}, "output": "...", "status": "..."}`
     - For `message`: `{"role": "...", "content": "..."}`
 
-## Views (Simplified Access)
+## Views
 
 ### `tool_usage`
-A convenience view over `run_events` filtered for `type='tool'`.
-- **`run_id`**: Link to `run_results`.
+Tool calls from `run_events` where type is 'tool'.
+- **`run_id`**: FK to `run_results`.
 - **`name`**: Tool name.
 - **`args`**: JSON arguments.
-- **`output`**: Tool output (stdout/stderr/error).
+- **`output`**: Tool stdout or error message.
 - **`status`**: "success" or "error".
 
-## Common Queries
+## Queries
 
 **1. Performance Summary by Alternative**
 ```sql

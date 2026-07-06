@@ -1,27 +1,32 @@
 # Go Linting Guidelines
 
-Linting is essential for maintaining a consistent, bug-free codebase. 
+Linters help maintain a consistent, bug-free codebase.
 
 ## Recommended Tooling: golangci-lint
-[golangci-lint](https://golangci-lint.run/) is the industry standard. It aggregates multiple linters and runs them in parallel.
+
+[golangci-lint](https://golangci-lint.run/) aggregates multiple linters and runs them in parallel.
 
 ### Essential Linters
-Every project should enable at least:
-*   **`govet`**: Standard Go vet tool (shadowing, printf, mutex copies).
-*   **`staticcheck`**: Deep analysis for bugs and performance.
-*   **`errcheck`**: Ensures all errors are handled.
-*   **`unused`**: Finds unused constants, variables, functions, and types.
-*   **`gofmt` / `goimports`**: Enforce standard formatting and import grouping.
+
+Every Go project should configure these linters:
+*   `govet` checks for standard issues such as variable shadowing, incorrect printf formats, and copied mutexes.
+*   `staticcheck` runs deep static analysis for correctness and performance.
+*   `errcheck` ensures that all returned errors are handled or assigned.
+*   `unused` finds unused constants, variables, functions, and types.
+*   `gofmt` and `goimports` enforce standard code formatting and group import statements.
 
 ## Best Practices
-1.  **CI Integration**: Run lints on every Pull Request. Treat lint warnings as errors (`--halt-on-error`).
-2.  **No Naked `nolint`**: Use `//nolint:lintername` for specific exclusions, and **always** add a comment explaining *why* the exclusion is necessary.
+
+*   Integrate the linter into the CI pipeline to run on every pull request, and configure it to treat warnings as errors.
+*   Avoid naked `nolint` statements. Use `//nolint:lintername` for specific exclusions, and always include a comment explaining the exclusion reason.
     ```go
     //nolint:gosec // Replay attack risk is mitigated by token TTL
     func unsafeProcess() { ... }
     ```
-3.  **Local Pre-commit**: Encourage developers to run `golangci-lint run` locally before pushing.
-4.  **Auto-fix**: Use `--fix` to automatically resolve trivial issues (formatting, minor nits).
+*   Run `golangci-lint run` locally before pushing changes.
+*   Use the `--fix` flag to automatically resolve formatting and other simple issues.
 
 ## Project Configuration
-Maintain a `.golangci.yml` file in the project root to ensure every developer and CI runner uses the same rules.
+
+Maintain a `.golangci.yml` file in the project root so all developers and CI pipelines run the same linter rules.
+

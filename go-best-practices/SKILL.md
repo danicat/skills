@@ -1,58 +1,54 @@
 ---
 name: go-best-practices
 description: >
-  Comprehensive Go (Golang) development best practices and coding style guidelines. Activate for "audit", "review", "fix", or "refactor" tasks to ensure the development workflow follows industry standards, including concurrency safety, architectural compliance (no pkg/), and senior-level review checklists.
+  Go development practices and style guidelines covering concurrency safety, package layout (avoiding pkg/), and PR review checklists.
 ---
 
 # Go Best Practices
 
-This skill guides high-level architectural decisions and deep code reviews.
+Guides layout design, package structures, and code reviews.
 
-## Core Mandates
-1.  **Architecture:**
-    *   **NO `pkg/`**: Do not create or recommend a `pkg/` directory. It is an anti-pattern.
-    *   **Flat by Default**: Encourage flat package structures unless complexity demands otherwise.
-    *   **Standard Layout**: Use `internal/` for private logic and `cmd/` for multiple binaries.
-2.  **Code Quality**:
-    *   **Check First**: Always consult `references/style_cheatsheet.md` before making style edits.
-    *   **Review Checklist**: Use `references/senior_review_checklist.md` for major PRs.
-    *   **Modern Go**: Prefer generic functions (`func F[T any]`) over `interface{}`.
-3.  **Concurrency**:
-    *   **Lifecycle**: Every goroutine must have a clear exit condition (Context, WaitGroup).
-    *   **Hygiene**: Use `errgroup` for parallel tasks.
+## Core Rules
 
-## Workflow
+*   **Architecture**: Do not use a `pkg/` directory. Keep package structures flat unless complexity requires nested packages. Put private logic in `internal/` and entrypoints in `cmd/`.
+*   **Style**: Read `references/style_cheatsheet.md` before editing. Use `references/senior_review_checklist.md` for reviews. Prefer Go generics (`[T any]`) to `interface{}`.
+*   **Concurrency**: Every goroutine needs a defined exit trigger via context or wait group. Use `errgroup` for parallel operations.
 
-### 1. Audit & Analyze
-1.  **Inspect Layout**: Does the project use `pkg/`? Advise moving to `internal/` or root.
-2.  **Review Style**: Check against `style_cheatsheet.md`.
-    *   Are errors handled explicitly?
-    *   Are contexts passed first?
-    *   Are mutexes copied? (Use `go vet`).
+## Work Processes
 
-### 2. Refactor
-1.  **Plan**: Identify the specific architectural change (e.g., "Extract interface for decoupling").
-2.  **Execute**: Apply changes incrementally.
-3.  **Verify**: run `go build ./...`, `go test ./...`, and `golangci-lint run` after every significant edit.
+### 1. Audit and Analysis
+
+1.  Check the file layout. Suggest moving files out of `pkg/` if present.
+2.  Review code structure against `style_cheatsheet.md`.
+3.  Verify that errors are handled, contexts are passed first, and mutexes are not copied.
+
+### 2. Refactoring
+
+1.  Plan the structural changes, such as decoupling with interfaces.
+2.  Apply edits incrementally.
+3.  Run `go build ./...`, `go test ./...`, and `golangci-lint run` to verify changes.
 
 ### 3. Review
-1.  **Checklist**: Run through `senior_review_checklist.md`.
-2.  **Feedback**: Provide actionable, cited feedback.
 
-### 4. Specialized Domains
-*   **Web Services**: Consult `references/http_services.md` for routing, middleware, and observability patterns.
-*   **Complex Testing**: Use `references/advanced_testing.md` for fuzzing, benchmarks, and integration tests.
-*   **Game Development**: Refer to `references/ebitengine_docs.md` for Ebitengine-specific patterns.
-*   **Idioms**: When in doubt, check `references/go_proverbs.md`.
-*   **Linting**: Refer to `references/linting.md` for tool configuration and best practices.
+1.  Apply the checks in `senior_review_checklist.md`.
+2.  Provide specific feedback with file references.
 
-## References
-*   `references/style_cheatsheet.md`: Condensed critical style rules.
-*   `references/senior_review_checklist.md`: High-level quality criteria.
+### 4. Special Domains
+
+*   **HTTP**: Routing and middleware patterns are in `references/http_services.md`.
+*   **Testing**: Benchmark, fuzz, and integration setups are in `references/advanced_testing.md`.
+*   **Games**: Ebitengine patterns are in `references/ebitengine_docs.md`.
+*   **Idioms**: General rules are in `references/go_proverbs.md`.
+*   **Linting**: Configuration guidelines are in `references/linting.md`.
+
+## Reference Files
+
+*   `references/style_cheatsheet.md`: Critical style rules.
+*   `references/senior_review_checklist.md`: Quality criteria for reviews.
 *   `references/project_layout.md`: Standard module layout guide.
 *   `references/architectural_decisions.md`: Template for ADRs.
-*   `references/http_services.md`: Best practices for HTTP servers.
-*   `references/advanced_testing.md`: Fuzzing and benchmarking guide.
-*   `references/ebitengine_docs.md`: Ebitengine reference.
-*   `references/go_proverbs.md`: Core Go philosophy.
-*   `references/linting.md`: Linting tools and guidelines.
+*   `references/http_services.md`: HTTP service structure.
+*   `references/advanced_testing.md`: Fuzzing and benchmarking.
+*   `references/ebitengine_docs.md`: Game engine layout.
+*   `references/go_proverbs.md`: Idiomatic Go proverbs.
+*   `references/linting.md`: Linter rules and tools.

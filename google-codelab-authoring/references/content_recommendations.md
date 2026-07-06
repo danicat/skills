@@ -1,25 +1,23 @@
-# Codelab Content Recommendations
+# Codelab Content Guidelines
 
-## Core Philosophy
-- **Informal & Conversational**: Maintain a helpful, peer-to-peer tone.
-- **Action-Oriented**: Focus on *doing* rather than just *reading*.
-- **Bound & Concise**: Keep the scope narrow. Break complex workflows into multiple smaller codelabs.
-- **Progressive Complexity**: Start simple and build up to advanced use cases.
+## Core Goals
+We want our codelabs to have a conversational tone that feels helpful and peer-to-peer. They should focus on hands-on steps rather than passive reading. 
 
-## Effective Step Structure
-Each codelab should ideally start with an "Introduction" or "Before you begin" step containing:
-- **Prerequisites**: What should they already know?
-- **What you'll learn**: Clear learning objectives.
-- **What you'll need**: Tools, accounts, or software.
+Keep the scope narrow. It is always better to split big tasks into multiple short codelabs. Always start simple and build up complexity over time.
+
+## Step Structure
+Start each codelab with a setup step like "Before you begin". This step lists what the user needs:
+- Prerequisites: what they must know first.
+- Learning goals: what they will build or learn.
+- Tools: any software or accounts needed.
 
 ## Best Practices
-- **Minimize Friction**: Use buttons for code downloads or "Open in Cloud Shell".
-- **Avoid Duplication**: Link to existing documentation or previous steps instead of repeating instructions.
-- **Real-World Results**: Give users a "takeaway" they can use after finishing (e.g., a working app base).
-- **Show, Don't Just Tell**: Use images and videos to verify output at each step.
-- **Limit Digressions**: Keep conceptual explanations brief; link to deep-dive guides for more info.
+To make your codelab great, follow these tips:
+- Add buttons to download code or open Cloud Shell.
+- Do not repeat steps. Link to existing docs instead.
+- Give users a working app or concrete takeaway at the end.
+- Use images or videos to show expected results.
+- Keep explanations short. Link to deep dives for details.
 
 ## When to write a Codelab
-- Use for "from the ground up" technical tutorials.
-- Use when the technology is stable.
-- Avoid if the technology is rapidly changing or if users will use it in vastly different ways.
+Write codelabs for basic, step-by-step tech tutorials. Write them only when the technology is stable. Do not write them for fast-changing tech or varied use cases.
