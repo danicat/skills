@@ -32,15 +32,39 @@ try {
     }
   }
 
-  // 2. Check Title (H1)
-  const h1Match = content.match(/^#\s+(.+)/m);
-  if (!h1Match) {
+  // 2. Check Title (H1) Multiplicity
+  const h1Matches = content.match(/^#\s+.+/gm);
+  if (!h1Matches || h1Matches.length === 0) {
     errors.push('STRUCTURE: Missing Main Title (Heading 1)');
+  } else if (h1Matches.length > 1) {
+    errors.push(`STRUCTURE: Found ${h1Matches.length} H1 headers. Codelabs must have exactly ONE main title (#). Step titles must use H2 (##).`);
   }
 
-  // 3. Check Steps (H2)
-  const h2Matches = content.match(/^##\s+(.+)/gm);
-  if (!h2Matches || h2Matches.length === 0) {
+  // 3. Check Steps (H2) and Step Durations
+  const h2Matches = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('## ')) {
+      h2Matches.push({ title: line.substring(3), lineNum: i + 1 });
+      
+      // Step durations check: look at the next lines (allow up to 2 lines down for blank space)
+      let foundDuration = false;
+      for (let j = 1; j <= 2; j++) {
+        if (i + j < lines.length) {
+          const nextLine = lines[i + j].trim();
+          if (/^Duration:\s*\d+(:\d+)?$/i.test(nextLine)) {
+            foundDuration = true;
+            break;
+          }
+        }
+      }
+      if (!foundDuration) {
+        errors.push(`STRUCTURE: Step "${line.substring(3)}" at line ${i + 1} is missing a valid 'Duration: MM:SS' statement immediately following the step header.`);
+      }
+    }
+  }
+  
+  if (h2Matches.length === 0) {
     errors.push('STRUCTURE: No steps found (Heading 2). A codelab must have at least one step.');
   }
 

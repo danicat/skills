@@ -1,11 +1,14 @@
 ---
 name: find-examples
-description: Find and inspect GitHub code examples for specific dependencies and languages. Use this to see how a library or framework is used in projects.
+description: >
+  Use this skill when you need to find real-world code examples, learn how an unfamiliar third-party library, API, SDK, or framework is used, or translate code patterns from other languages. Trigger when implementing integrations, resolving SDK setup/usage issues, or bootstrapping features where the user asks "how do I use X?", "show me an example of Y", or "integrate Y into my project".
+license: Apache-2.0
+metadata:
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
 ---
 
 # Find Examples
-
-Find GitHub code examples for dependencies.
 
 ## Workflow
 
@@ -25,17 +28,18 @@ python3 find-examples/scripts/github_search.py "genkit" --lang "go,typescript"
 Review the results. The script tags each repository with its language.
 Prefer the target language when high-quality results exist. If the target language has few results, select a repository from a related language instead. For example, a TypeScript Genkit example can guide a Go implementation.
 
-### 3. Create Examples Directory
-```bash
-mkdir -p _examples
-```
+### 3. Clone and Inspect
+Clone the selected repositories.
 
-### 4. Clone and Inspect
-Clone the selected repositories into the `_examples` folder.
+> [!CAUTION]
+> **Workspace Contamination Rule (Severe)**: Do NOT clone external repositories containing package manifests (`go.mod`, `package.json`, `Cargo.toml`) directly into your active project workspace directories. Build tools and compilers (like `go build ./...`) will scan all subdirectories, detect the cloned project, and fail with severe type or import compilation errors.
+>
+> **Safe Cloning Destinations**:
+> * **Primary Choice**: Clone external projects to a temporary directory outside the workspace (e.g., `/tmp/example-clones/`).
+> * **Secondary Choice**: If you must clone inside the workspace for persistence, clone to a nested folder (such as `_examples/`), immediately append that folder name to the project's `.gitignore`, and configure compilers to exclude it.
 
-```bash
-cd _examples && git clone <repo_url>
-```
+> [!WARNING]
+> **Git Nesting Safety**: Cloning nested Git repositories can corrupt your workspace's Git state. If you clone an external repository into the workspace, you must immediately remove its `.git` folder (e.g. `rm -rf _examples/cloned-repo/.git`) to prevent git from treating it as an accidental submodule or an untracked nested tree.
 
 After cloning, search for implementation details with `list_files`, `smart_read`, or `grep_search`.
 

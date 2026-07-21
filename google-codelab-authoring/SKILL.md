@@ -1,7 +1,11 @@
 ---
 name: google-codelab-authoring
 description: >
-  Definitive guide for authoring high-quality Google Codelabs. Activate to enforce the .lab.md format specifications, metadata requirements (duration, authors), and provide validation tools for structural correctness.
+  Use this skill when authoring, modifying, or auditing interactive developer tutorials and self-paced guides in the Google Codelabs (.lab.md) format. Activate whenever the user requests building a "codelab", "tutorial", "hands-on guide", or "step-by-step developer lab", or mentions publishing with the Codelab Asset Tool (Claat). Trigger also when converting existing documentation, blog posts, or readme files into structured tutorials, or when fixing formatting and validation issues in existing .lab.md files.
+license: Apache-2.0
+metadata:
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
 ---
 
 # Google Codelab Authoring
@@ -14,6 +18,8 @@ Use this skill to write high-quality Google Codelabs (`.lab.md`).
 3. **Use Simple Words**: Avoid jargon. See `references/style_guide/jargon.md` and `references/style_guide/inclusive-documentation.md`.
 4. **Action-Oriented Steps**: Give clear, active steps. Do not use words like "just" or "simply".
 
+---
+
 ## Workflow
 
 ### 1. Plan
@@ -25,20 +31,37 @@ Use this skill to write high-quality Google Codelabs (`.lab.md`).
 ### 2. Start
 1. **Template**: Read `assets/template.lab.md`.
 2. **Create File**: Write your `.lab.md` using that template.
-3. **Metadata**: Add `id`, `description`, `authors`, and `duration` to the frontmatter.
+3. **Metadata Alignment**: Ensure your frontmatter strictly includes the required keys: `id`, `description`, `authors`, and `layout`.
 
 ### 3. Write
 Follow Google Developer style guides.
-- **Layout**: Follow `references/formatting_guide.md` for titles and step times (`Duration: MM:SS`).
-- **Style**: Use `references/style_guide/` (e.g., `voice.md`, `procedures.md`).
-- **Markup**: Use `> aside positive/negative` for notes and `console` code blocks for terminal output.
+* **Layout**: Follow `references/formatting_guide.md` for titles and step times (`Duration: MM:SS`).
+* **Style Guide Navigation**: There are 87 specific style files under `references/style_guide/`. To locate specific styles efficiently and save context tokens, use `grep_search` inside `references/style_guide/` targeting specific syntax terms (e.g. search for 'lists' in `lists.md`, 'tables' in `tables.md`, 'formatting' in `formatting.md`).
+* **Markup**: Use `> aside positive` (tips/positive alerts) or `> aside negative` (warnings/negative alerts).
+* **Terminal**: Use fenced code blocks with the `console` language.
 
-### 4. Verify
-**You must validate your work before you finish.**
-1. **Check Fog**: Run `node scripts/fog.cjs <file>`. If the score is over 12, simplify the text.
-2. **Check Structure**: Run `node scripts/validate_codelab.cjs <file>`.
-3. **Fix Errors**: Correct any issues the scripts find.
-4. **Final Check**: Review `references/review.md`.
+### 4. Verify & Iterate Validation Loop
+You must execute this recursive loop before declaring a codelab complete:
+
+```mermaid
+graph TD
+    A[Start: Edit Codelab] --> B[Run: node scripts/validate_codelab.cjs]
+    B --> C{Structure Valid?}
+    C -->|No| D[Fix Metadata, Step Durations, or H1 Headers]
+    D --> B
+    C -->|Yes| E[Run: node scripts/fog.cjs]
+    E --> F{Fog Index <= 12?}
+    F -->|No: Too Complex| G[Simplify Jargon, Split Long Sentences]
+    G --> B
+    F -->|Yes| H[Save Codelab File & Complete]
+```
+
+1. **Check Structure**: Run `node scripts/validate_codelab.cjs <file>`. Address any issues relating to missing step durations, duplicate H1 headers, or invalid aside boxes.
+2. **Check Fog Index**: Run `node scripts/fog.cjs <file>`.
+3. **Refine Readability**: If Gunning Fog is above 12, split compound sentences, remove weak filler words (e.g., "just", "simply", "easy"), and replace complex jargon.
+4. **Repeat**: Re-run both checkers until all errors are cleared and readability standards are met.
+
+---
 
 ## Common Tasks
 
@@ -46,6 +69,8 @@ Follow Google Developer style guides.
 - **Alerts**: Use `> aside positive` (tips) or `> aside negative` (warnings).
 - **Terminal**: Use fenced code blocks with the `console` language.
 - **Code**: Use standard fenced code blocks (e.g., `java`, `python`).
+
+---
 
 ## Files
 - **Template**: `assets/template.lab.md`

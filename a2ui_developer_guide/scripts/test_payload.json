@@ -1,0 +1,14 @@
+[
+  {
+    "updateComponents": {
+      "components": [
+        {
+          "id": "test",
+          "component": {
+            "Text": {"text": "Hello World"}
+          }
+        }
+      ]
+    }
+  }
+]

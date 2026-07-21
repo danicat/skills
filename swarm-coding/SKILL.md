@@ -1,6 +1,11 @@
 ---
 name: swarm-coding
-description: Activate this skill to tackle tasks using a divide to conquer approach with a swarm of sub-agents.
+description: >
+  Use this skill when executing complex, multi-component engineering tasks, large-scale refactorings, or full-stack features that can be decomposed into parallelizable work. Trigger immediately for: full-stack development (frontend + backend), multi-service integrations, complex database migrations, API contract designs, or high-ambiguity technical challenges requiring dedicated research (SPIKEs). Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic script modifications where spawning subagents would introduce unnecessary communication overhead.
+license: Apache-2.0
+metadata:
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
 ---
 # Swarm Coding
 
@@ -12,6 +17,7 @@ Swarm Coding divides complex objectives among multiple specialized subagents. Th
 ### Core Principles
 
 * **Single Responsibility:** Every agent maintains exactly one focus. Coordinators plan, design contracts, and integrate; specialists execute. They never cross roles.
+* **Parallelization Safety:** Subagents working in parallel are strictly forbidden from writing to the same file concurrently. All target file allocations must be isolated to prevent git merge conflicts and code overwrites.
 * **Agent Budget:** The user defines a maximum budget (the limit of concurrent or total agents) when initiating the swarm.
 * **Design Document Contracts:** Subagents working in parallel must use clear, shared design documents (e.g., API specifications) to establish firm contracts.
 * **Continuous Documentation Sync:** Documentation is critical for parallel workflows. Any implementation change requires immediate impact analysis and documentation updates.
@@ -31,8 +37,7 @@ Upon activation, you receive a ROLE and a TASK. If no role is specified, assume 
 
 ## Task Complexity
 
-* **Simple Tasks:** High technical certainty with a straightforward execution path suitable for a single team.
-* **Complex Tasks:** Low technical certainty or multi-team requirements. These demand decomposition and coordination. High-uncertainty components may require a SPIKE (exploratory task) before execution.
+Decompose complex tasks (low technical certainty or multi-team scope requiring SPIKEs) and execute simple tasks (high certainty) directly with focused specialists.
 
 ## Team Composition
 

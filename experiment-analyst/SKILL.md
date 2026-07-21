@@ -1,9 +1,17 @@
 ---
 name: experiment-analyst
-description: Analyze Tenkai agent experiments to find success factors, failure modes, and run patterns.
+description: >
+  ⚠️ DEPRECATED: This skill is kept only for legacy purposes and is no longer actively maintained. Use with caution.
+license: Apache-2.0
+metadata:
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
 ---
 
-# Experiment Analyst
+# Experiment Analyst (DEPRECATED)
+
+> [!WARNING]
+> **This skill is DEPRECATED.** It is maintained solely for legacy documentation and reference purposes (such as supporting existing blog posts on danicat.dev). Do not use this skill for new agent architectures or active evaluations.
 
 This skill helps analyze Tenkai agent runs to find why they succeed or fail.
 

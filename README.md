@@ -27,30 +27,32 @@ agy skills link ./<skill-name>
 
 ## Available Skills
 
-### `experiment-analyst`
-Expertise in analyzing Tenkai agent experiments. Use when asked to "analyze experiment X" to determine success factors, failure modes, and behavioral patterns.
+### `a2ui_developer_guide`
+A comprehensive guide and reference suite for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, SDKs, and component catalog validations.
+
+### `experiment-analyst` (DEPRECATED)
+⚠️ *Legacy Only*: Analyzes Tenkai agent experiment runs. This skill is kept solely for backward compatibility with external resources.
 
 ### `find-examples`
-Find and inspect real-world code examples from GitHub for specific dependencies and languages.
+Finds, clones, and inspects real-world code examples from GitHub for specific dependencies, frameworks, or libraries, using strict workspace isolation and git safety rules.
 
 ### `go-best-practices`
-Comprehensive Go (Golang) development best practices and coding style guidelines.
-
-### `go-project-setup`
-Standardized setup for new Go (Golang) projects and services.
+Comprehensive Go (Golang) development best practices, structural layout guidelines, concurrency gotchas, and automated validation loops (supporting the GoDoctor MCP server).
 
 ### `google-blog-style`
-Official style guide and compliance rules for the Google Developers Blog.
+Official style guide and compliance rules for Google Developers blog posts, including Gunning Fog readability metrics and Vale-powered style linter checks (supporting the Speedgrapher MCP server).
 
 ### `google-codelab-authoring`
-Definitive guide for authoring high-quality Google Codelabs.
+Structured workflow for writing step-by-step developer tutorials in Google Codelabs format (`.lab.md`) using strict Claat metadata, durations, and aside block linting.
 
 ### `latest-version`
-The definitive real-time source of truth for software and model versions. Bypasses knowledge cutoffs by querying live registries.
+Modular batch query tool and instructions to retrieve, verify, and resolve the absolute latest stable versions of software packages, dependencies (NPM, PyPI, Go proxy, Cargo, RubyGems), and Gemini models.
 
 ### `pyhd`
-Python development workflow for editing, formatting (ruff), and documentation.
+Python development workflow incorporating strict virtual environments via `uv`, Ruff static linting, auto-formatting, and unified unit testing reports.
 
-### `swarm_coding`
-Activate this skill to tackle complex tasks using a divide to conquer approach with a swarm of sub-agents.
+### `skill-optimizer`
+Meta-skill and developer workflow guides for writing, auditing, and optimizing Agent Skills (`SKILL.md` layout, trigger-precision, and progressive disclosure).
 
+### `swarm-coding`
+Orchestrator and specialist patterns to decompose complex engineering tasks, full-stack designs, or large-scale refactorings across a swarm of parallelized subagents safely.

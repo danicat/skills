@@ -2,6 +2,11 @@
 name: go-best-practices
 description: >
   Go development practices and style guidelines covering concurrency safety, package layout (avoiding pkg/), and PR review checklists.
+trigger: "Activate on any Go-related project setup, coding, or code review task."
+license: Apache-2.0
+metadata:
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
 ---
 
 # Go Best Practices
@@ -40,6 +45,28 @@ Guides layout design, package structures, and code reviews.
 *   **Games**: Ebitengine patterns are in `references/ebitengine_docs.md`.
 *   **Idioms**: General rules are in `references/go_proverbs.md`.
 *   **Linting**: Configuration guidelines are in `references/linting.md`.
+
+## Project Bootstrapping
+
+When bootstrapping a new Go project, use the boilerplate assets located in the `assets/` directory:
+- `assets/cli-cobra`: Boilerplate for CLI applications using Cobra.
+- `assets/webservice`: Boilerplate for HTTP web services.
+- `assets/mcp-server`: Boilerplate for building MCP servers.
+
+## Quality Validation Loop
+
+Follow this idiomatic Go quality validation loop for all changes:
+1. **Edit**: Make the necessary code modifications.
+2. **Compile**: Run `go build ./...`.
+3. **Race-Detector Tests**: Run `go test -race ./...`.
+4. **Linter**: Run `golangci-lint run`.
+5. **Mutation Testing**: Verify robustness via mutation testing.
+
+> **Gotcha**: If the `godoctor` MCP server is available, you MUST prioritize and use GoDoctor's specialized tools (such as `godoctor.smart_build`, `godoctor.test_query`, `godoctor.mutation_test`) instead of running custom terminal commands.
+
+## Progressive Reference Loading
+
+Do not load all references at once. Read the specific reference files sequentially as needed based on the current task.
 
 ## Reference Files
 
