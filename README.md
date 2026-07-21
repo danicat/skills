@@ -6,10 +6,10 @@ This repository contains a collection of specialized skills for autonomous agent
 ## Installation
 
 ### From GitHub (Recommended)
-You can install any skill directly from this repository using its URL and the `--path` flag to specify the skill name:
+You can install any skill directly from this repository:
 
 ```bash
-agy skills install https://github.com/danicat/skills --path <skill-name>
+npx skills install github.com/danicat/skills
 ```
 
 ### From Local Source
@@ -27,7 +27,7 @@ agy skills link ./<skill-name>
 
 ## Available Skills
 
-### `a2ui_developer_guide`
+### `a2ui-developer-guide`
 A comprehensive guide and reference suite for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, SDKs, and component catalog validations.
 
 ### `experiment-analyst` (DEPRECATED)
@@ -35,9 +35,6 @@ A comprehensive guide and reference suite for the Agent-Driven User Interface (A
 
 ### `find-examples`
 Finds, clones, and inspects real-world code examples from GitHub for specific dependencies, frameworks, or libraries, using strict workspace isolation and git safety rules.
-
-### `go-best-practices`
-Comprehensive Go (Golang) development best practices, structural layout guidelines, concurrency gotchas, and automated validation loops (supporting the GoDoctor MCP server).
 
 ### `google-blog-style`
 Official style guide and compliance rules for Google Developers blog posts, including Gunning Fog readability metrics and Vale-powered style linter checks (supporting the Speedgrapher MCP server).

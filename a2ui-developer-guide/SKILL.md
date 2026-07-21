@@ -1,5 +1,5 @@
 ---
-name: a2ui_developer_guide
+name: a2ui-developer-guide
 description: A comprehensive developer guide for A2UI v0.9.1. Trigger this skill for ANY question, bug, or coding task related to Agent-Driven User Interfaces (A2UI), MCP integrations, or component authoring.
 license: Apache-2.0
 metadata:
