@@ -1,7 +1,7 @@
 ---
 name: swarm-coding
 description: >
-  Use this skill when executing complex, multi-component engineering tasks, large-scale refactorings, or full-stack features that can be decomposed into parallelizable work. Trigger immediately for: full-stack development (frontend + backend), multi-service integrations, complex database migrations, API contract designs, or high-ambiguity technical challenges requiring dedicated research (SPIKEs). Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic script modifications where spawning subagents would introduce unnecessary communication overhead.
+  Use this skill when executing complex, multi-component engineering tasks, large-scale refactorings, or full-stack features that can be decomposed into parallelizable work. MANDATORY: Trigger immediately upon any mention of the word "swarm" (case-insensitive) in relation to planning or executing a task. Trigger immediately for: full-stack development (frontend + backend), multi-service integrations, complex database migrations, API contract designs, or high-ambiguity technical challenges requiring dedicated research (SPIKEs). Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic script modifications where spawning subagents would introduce unnecessary communication overhead.
 license: Apache-2.0
 metadata:
   author: Daniela Petruzalek (daniela@danicat.dev)
@@ -16,6 +16,8 @@ Swarm Coding divides complex objectives among multiple specialized subagents. Th
 
 ### Core Principles
 
+* **Mandatory Activation:** You MUST activate this skill immediately on any mention of the word "swarm" (case-insensitive) in relation to planning or executing a task.
+* **Coordinator Persistence:** Once the swarm is activated, the Swarm Coordinator ALWAYS remains a coordinator and never falls back to an executor. Any subsequent user messages are treated strictly as requests to the swarm, not as permission to fallback to execution.
 * **Single Responsibility:** Every agent maintains exactly one focus. Coordinators plan, design contracts, and integrate; specialists execute. They never cross roles.
 * **Parallelization Safety:** Subagents working in parallel are strictly forbidden from writing to the same file concurrently. All target file allocations must be isolated to prevent git merge conflicts and code overwrites.
 * **Agent Budget:** The maximum number of concurrent or total agents allowed for the swarm.
@@ -29,6 +31,8 @@ Swarm Coding divides complex objectives among multiple specialized subagents. Th
 Subagents in a Swarm Coding session assume one of two roles:
 
 1. **Swarm Coordinator**: Acts as the technical lead for the swarm—breaking down complex tasks, planning high-level objectives, designing technical contracts/schemas, building teams, coordinating subagents, and integrating deliverables.
+   - **Persistence Rule:** Once a swarm is activated, the Swarm Coordinator remains ALWAYS a coordinator and is strictly forbidden from falling back to an executor.
+   - **User Request Interpretation:** Any follow-up messages from the user must be treated as requests *to the swarm* to be planned and delegated. They must NEVER be interpreted as implicit permission for the coordinator to execute tasks directly or bypass the swarm workflow.
 2. **Specialist**: Designs and implements a narrowly scoped task within their specific technical domain, adhering strictly to the coordinator's shared specifications.
 
 Upon activation, you receive a ROLE and a TASK. If no role is specified, assume this is the initial activation and take the role of Swarm Coordinator.
@@ -94,6 +98,7 @@ An exploratory task (SPIKE) is characterized by low technical certainty, requiri
 
 ## Gotchas
 
+* **The Coordinator-to-Executor Fallback Trap (User Request Interpretation):** Once the swarm is activated, do not interpret subsequent user messages as implicit permission to bypass the swarm workflow and execute tasks directly in the coordinator role. **This is strictly forbidden.** Treat all follow-up messages from the user as requests *to the swarm*. Deconstruct them, update specs if needed, and delegate execution to specialists. The coordinator must ALWAYS remain a coordinator.
 * **Under-Utilization Mismatch:** Spawning too few agents or executing granular tasks sequentially when the agent budget and parallelizable workload allow for concurrent execution. This underutilizes the swarm's capabilities and prolongs feedback loops.
 * **Over-Utilization Overhead:** Spawning too many subagents for straightforward or highly coupled sequential tasks. Approaching budget ceilings without architectural justification introduces heavy coordination overhead and wastes resources.
 * **Disposable Asset Pitfall (Context Loss):** Treating subagents as disposable, single-use resources rather than persistent team members. Terminating subagents prematurely and spawning fresh ones for related tasks destroys accumulated context and wastes setup overhead. Active subagents should be aggressively reused across aligned technical domains.
