@@ -6,23 +6,11 @@ This repository contains a collection of specialized skills for autonomous agent
 ## Installation
 
 ### From GitHub (Recommended)
-You can install any skill directly from this repository:
+You can install any skill directly from this repository using the Vercel Skills CLI:
 
 ```bash
 npx skills install github.com/danicat/skills
 ```
-
-### From Local Source
-If you have cloned this repository locally, you can install or link skills from their directory:
-
-```bash
-# Full installation
-agy skills install ./<skill-name>
-
-# Link for development (symlinks the directory)
-agy skills link ./<skill-name>
-```
-
 
 
 ## Available Skills
