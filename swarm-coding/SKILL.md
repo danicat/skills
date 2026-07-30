@@ -5,11 +5,11 @@ description: >
 license: Apache-2.0
 metadata:
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 # Swarm Coding
 
-Swarm Coding divides complex objectives among multiple specialized subagents. This divide-and-conquer strategy isolates context and improves response quality by keeping subagent tasks small and focused.
+Swarm Coding divides complex objectives among multiple specialized subagents structured in a clear hierarchical team. This divide-and-conquer strategy isolates context and improves code quality by keeping subagent tasks small and focused.
 
 > [!NOTE]
 > In this guide, the terms "agent" and "subagent" are used interchangeably.
@@ -17,88 +17,111 @@ Swarm Coding divides complex objectives among multiple specialized subagents. Th
 ### Core Principles
 
 * **Mandatory Activation:** You MUST activate this skill immediately on any mention of the word "swarm" (case-insensitive) in relation to planning or executing a task.
-* **Coordinator Persistence:** Once the swarm is activated, the Swarm Coordinator ALWAYS remains a coordinator and never falls back to an executor. Any subsequent user messages are treated strictly as requests to the swarm, not as permission to fallback to execution.
-* **Single Responsibility:** Every agent maintains exactly one focus. Coordinators plan, design contracts, and integrate; specialists execute. They never cross roles.
-* **Parallelization Safety:** Subagents working in parallel are strictly forbidden from writing to the same file concurrently. All target file allocations must be isolated to prevent git merge conflicts and code overwrites.
-* **Agent Budget:** The maximum number of concurrent or total agents allowed for the swarm.
-  - If specified by the user, the budget is exactly as requested.
-  - If NOT specified, the budget is the smallest of 10 or the number of task granules (the atomic functional/engineering requirements explicitly listed or implied in the user request).
-* **Design Document Contracts:** Subagents working in parallel must use clear, shared design documents (e.g., API specifications) to establish firm contracts.
-* **Continuous Documentation Sync:** Documentation is critical for parallel workflows. Any implementation change requires immediate impact analysis and documentation updates.
+* **Coordinator Persistence & Non-Execution:** The ROOT Swarm Coordinator ALWAYS remains a coordinator and NEVER falls back to an executor. The Swarm Coordinator is strictly forbidden from writing production implementation code, running tests/builds, or performing direct command execution.
+* **Split Coordinator Profiles:**
+  - **Swarm Coordinator (ROOT):** Attributed strictly to the ROOT agent that activated the skill (Multiplicity: 1). Defines the top-level **Org Chart**, names Lead Agents, allocates the agent budget, writes top-level architecture specs, and coordinates overall progress.
+  - **Lead Agent:** Attributed to domain or system leads (Multiplicity: N, one per system/domain). Receives an allocated sub-budget from the Swarm Coordinator, assembles a specialist team, writes domain specifications, delegates tasks, and integrates domain deliverables.
+* **Specialist Role:** Attributed to task executors. Designs and implements narrowly-scoped components within a single domain, adhering to domain specs and running operational validation loops.
+* **Strict Communication Hierarchy (No Lateral Messaging):**
+  - **Allowed:** Messaging between immediate parents and children ONLY (Swarm Coordinator <-> Lead Agent, Lead Agent <-> Specialist).
+  - **Forbidden:** Communication between agents on the SAME layer (e.g., Lead Agent <-> Lead Agent, Specialist <-> Specialist) is strictly forbidden.
+  - **Design Document First:** Inter-domain or cross-layer coordination MUST be handled by writing or updating shared design documents first, then notifying parent/child agents via hierarchical messaging.
+* **Active Budget Management & Defaults:** Omission of an agent budget assumes a **default budget of 10**. If the user explicitly specifies an `agent budget <= 1`, the Swarm Coordinator MUST HALT and trigger an interactive conversation using `ask_question` to consult the user before proceeding. When budget $> 1$, the Swarm Coordinator MUST build a multi-tiered team with Lead Agents and avoid defaulting to flat team structures.
+* **Team Continuity & Semi-Permanent Hierarchy (No Disposable Assets):** *Treat agents as persistent team members, not disposable assets.* Do not prematurely terminate subagents and spawn new ones. Retain and aggressively reuse active Lead Agents and Specialists across task iterations to preserve accumulated context.
+* **Industry-Standard Naming:** Agent roles must follow standard industry terminology (e.g., `Lead Backend Engineer`, `QA Engineer`, `Database Administrator`).
+* **Skill-Set Isolation:** Form teams and assign tasks strictly based on expertise. A frontend team must never write database migrations; an infrastructure team must never write UI components.
+* **Testing & Documentation Accountability:** Every sub-team composition must designate at least one agent responsible for documentation and at least one agent responsible for testing.
+* **Backlog & Drip-Feeding:** Maintain domain task backlogs and drip-feed tasks sequentially to specialists as they finish prior assignments.
+* **Granular Work Architecture & Parallelization Safety:** Prioritize modular packages over monolithic files. All parallel task assignments MUST have disjoint (isolated) target file allocations to prevent file write conflicts.
 
 ## Mechanics and Roles
 
-Subagents in a Swarm Coding session assume one of two roles:
+Subagents in a Swarm Coding session assume one of three roles:
 
-1. **Swarm Coordinator**: Acts as the technical lead for the swarm—breaking down complex tasks, planning high-level objectives, designing technical contracts/schemas, building teams, coordinating subagents, and integrating deliverables.
-   - **Persistence Rule:** Once a swarm is activated, the Swarm Coordinator remains ALWAYS a coordinator and is strictly forbidden from falling back to an executor.
-   - **User Request Interpretation:** Any follow-up messages from the user must be treated as requests *to the swarm* to be planned and delegated. They must NEVER be interpreted as implicit permission for the coordinator to execute tasks directly or bypass the swarm workflow.
-2. **Specialist**: Designs and implements a narrowly scoped task within their specific technical domain, adhering strictly to the coordinator's shared specifications.
-
-Upon activation, you receive a ROLE and a TASK. If no role is specified, assume this is the initial activation and take the role of Swarm Coordinator.
+1. **Swarm Coordinator (ROOT)** [Multiplicity: 1]
+   - Acts as top-level architect and organizational manager.
+   - Defines the **Org Chart**, names Lead Agents for each system/domain, allocates agent budgets, and writes top-level design specs.
+   - **Persistence & Non-Execution:** Strictly forbidden from executing code or running build/test commands.
+   - **Sole User Interface:** Sole agent in the swarm authorized to interact with the user via `ask_question`. All subagent questions are routed up to the Swarm Coordinator to consult the user.
+2. **Lead Agent** [Multiplicity: N]
+   - Technical lead for a specific domain or system (e.g., Frontend, Backend, Database).
+   - Assembles a Specialist team within their allocated sub-budget, writes domain specs ("Design Document First"), deconstructs domain tasks, drip-feeds backlogs, and integrates deliverables.
+   - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`). Direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file tools solely to view files and write specs/contracts; delegates command execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
+3. **Specialist** [Multiplicity: N]
+   - Executes narrowly-scoped technical tasks within their assigned domain.
+   - Follows domain specifications, executes the operational validation loop (build, test, lint, format), and provides proof-of-validation logs to their parent Lead Agent.
+   - **Tool Restrictions:** Subagent delegation tools (`invoke_subagent`, `manage_subagents`) and direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file, search, terminal (`run_command`), and parent communication tools (`send_message`). Must execute tasks directly and report blockers to Lead Agent.
 
 #### Role References
 - [references/coordinator.md](references/coordinator.md)
+- [references/lead.md](references/lead.md)
 - [references/specialist.md](references/specialist.md)
+
+#### Bundled Agent Templates
+Agent definitions in Markdown format are bundled in `assets/agents/`:
+- [assets/agents/lead-agent.md](assets/agents/lead-agent.md)
+- [assets/agents/specialist-agent.md](assets/agents/specialist-agent.md)
 
 ## Team Hierarchy and Budget Allocation
 
-The Swarm Coordinator MUST define the team hierarchy as the very first step before starting any task planning.
+The Swarm Coordinator MUST define the team Org Chart as the very first step upon skill activation.
 
-The team hierarchy is a sensible function of the agent budget and the task complexity, allowing the coordinator flexibility in allocating the budget:
-* **Low Budget / Simple Tasks:** Prefer flat team structures consisting of a team lead (coordinator) and executor agents (specialists).
-* **High Budget / Complex Tasks:** Utilize nested team structures with Lead Agents who act as coordinators for their own sub-swarms, receiving an allocated portion of the overall budget.
-* **Vague Flexibility:** The exact allocation and structure are purposely flexible, allowing the Swarm Coordinator to adapt the organization dynamically to fit the technical demands of the task.
+### 1. Budget Rules & Swarm Coordinator Actions:
+1. **Determine Agent Budget:**
+   - **Omission Default:** If no budget is specified by the user, assume the default budget of **10**.
+   - **Low Budget Guard ($\le 1$):** If budget $\le 1$, HALT immediately and use `ask_question` to consult the user (explain that multi-agent orchestration requires budget $> 1$, and offer to set budget to 10 or switch modes).
+2. **Analyze Task Scope:** Identify distinct systems or technical domains (e.g., Backend, Frontend, QA/Docs).
+3. **Name Lead Agents:** Assign a Lead Agent to each domain.
+4. **Allocate Agent Budget:** Divide the overall session budget among Lead Agents based on domain complexity.
 
-## Team Composition
+### 2. Lead Agent Actions:
+1. **Draft Domain Specification:** Write or update the domain contract/schema file in the repository before spawning specialists.
+2. **Assemble Specialist Team:** Spawn Specialist subagents (`specialist-agent`) using the allocated sub-budget.
+3. **Delegate & Drip-Feed:** Assign granular tasks with disjoint file scopes; drip-feed backlog items as specialists finish previous tasks.
 
 ### Team Size Limits
-* **Maximum Size:** No individual team (including sub-teams or sub-swarms) should have more than 6 agents, including the team lead.
-* **Minimum Size:** The absolute minimal team composition is one team lead (coordinator) and one executor agent (specialist).
+* **Sub-Team Max Size:** No individual sub-team (Lead Agent + Specialists) may exceed 6 agents total.
+* **Sub-Team Min Size:** At least one Lead Agent and one Specialist per domain team.
 
-### Specialist Roles
-Teams consist of a coordinator and various specialist executor roles.
-* **Technical Writers:** There is no hard requirement to include a Tech Writer on every team, but it is strongly recommended that one is always included to maintain documentation and sync contracts in real time.
+## Communication Hierarchy & Rules
 
-#### Example: Web Development Team (e.g., CRUD implementation)
-* Root (Swarm Coordinator) x1
-* Frontend Engineer (Specialist) x1
-* Backend Engineer (Specialist) x1
-* Test Engineer (Specialist) x1
-* Tech Writer (Specialist) x1 (Strongly Recommended)
+```mermaid
+graph TD
+    ROOT[Swarm Coordinator - ROOT] <-->|Parent-Child Message| LEAD1[Lead Agent - Backend]
+    ROOT <-->|Parent-Child Message| LEAD2[Lead Agent - Frontend]
+    LEAD1 <-->|Parent-Child Message| SPEC1[Specialist - API Dev]
+    LEAD1 <-->|Parent-Child Message| SPEC2[Specialist - QA Engineer]
+    LEAD2 <-->|Parent-Child Message| SPEC3[Specialist - UI Dev]
+    
+    LEAD1 -.-x|FORBIDDEN: Sibling Message| LEAD2
+    SPEC1 -.-x|FORBIDDEN: Sibling Message| SPEC2
+    SPEC1 -.-x|FORBIDDEN: Direct Escalation| ROOT
+```
 
-#### Example: Game Development Team (6-agent limit compliant)
-* Root (Swarm Coordinator) x1
-* UI/UX Designer & Art Direction (Specialist) x1
-* Level/Gameplay Engineer (Specialist) x1
-* Sound Engineer (Specialist) x1
-* Tester (Specialist) x1
-* Tech Writer (Specialist) x1 (Strongly Recommended)
-
-> [!TIP]
-> The Swarm Coordinator must customize team composition to fit the task. Do not treat these examples as rigid templates.
-
-> [!TIP]
-> Specialist multiplicity can be greater than one (e.g., Backend Engineer x2) to achieve a greater degree of parallelism, or to assign competing exploratory tasks when evaluating alternative solutions, provided the individual team size does not exceed 6 agents.
-
-### Nested Teams (Complex Tasks)
-For complex tasks and larger budgets, the coordinator decomposes objectives into smaller sub-tasks and delegates them to **Lead Agents**. Lead Agents act as coordinators for their sub-swarms and receive an allocated portion of the total agent budget. Each nested sub-swarm must adhere to the same team size limits and composition rules.
+1. **Vertical Parent-Child Messaging ONLY:**
+   - Swarm Coordinator <-> Lead Agent
+   - Lead Agent <-> Specialist
+2. **Forbidden Lateral Communication:**
+   - Communication between agents on the SAME layer (Lead <-> Lead, Specialist <-> Specialist) is strictly forbidden.
+   - Specialists MUST NOT message the Swarm Coordinator directly.
+3. **Specification-Driven Coordination ("Design Document First"):**
+   - When a change in Domain A impacts Domain B, Lead Agent A updates the shared design document in the workspace, then messages the Swarm Coordinator. The Swarm Coordinator reviews and notifies Lead Agent B.
 
 ## Exploratory Tasks (SPIKEs)
 
 An exploratory task (SPIKE) is characterized by low technical certainty, requiring research, alternative comparison, or prototype evaluation before execution.
 
 ### SPIKE Sandbox and Rules:
-1. **Timeboxed Search:** The Coordinator must set a strict agent budget and scope boundaries to prevent open-ended searching.
-2. **User-Assisted Sandboxing:** For exploratory tasks that require coding, the Specialist **must explicitly request user support to set up an isolated sandbox, ideally on a dedicated `spike/` git branch**.
+1. **Timeboxed Search:** Set a strict agent budget and scope boundaries to prevent open-ended searching.
+2. **User-Assisted Sandboxing:** For exploratory coding, the Specialist **must explicitly request user support to set up an isolated sandbox, ideally on a dedicated `spike/` git branch**.
 3. **Sandbox Isolation:** Specialists are strictly forbidden from committing to or merging with the main production branch. All prototype coding must remain isolated within the designated spike branch.
 4. **Artifact Exit Criteria:** A SPIKE must conclude with:
    - Evaluated benchmarks or research notes saved in the scratch folder.
-   - A synthesized Technical Specification (such as an RFC or ADR) detailing high-certainty, actionable tasks ready for subsequent execution swarms.
+   - A synthesized Technical Specification (such as an RFC or ADR) detailing actionable tasks ready for subsequent execution.
 
 ## Gotchas
 
-* **The Coordinator-to-Executor Fallback Trap (User Request Interpretation):** Once the swarm is activated, do not interpret subsequent user messages as implicit permission to bypass the swarm workflow and execute tasks directly in the coordinator role. **This is strictly forbidden.** Treat all follow-up messages from the user as requests *to the swarm*. Deconstruct them, update specs if needed, and delegate execution to specialists. The coordinator must ALWAYS remain a coordinator.
-* **Under-Utilization Mismatch:** Spawning too few agents or executing granular tasks sequentially when the agent budget and parallelizable workload allow for concurrent execution. This underutilizes the swarm's capabilities and prolongs feedback loops.
-* **Over-Utilization Overhead:** Spawning too many subagents for straightforward or highly coupled sequential tasks. Approaching budget ceilings without architectural justification introduces heavy coordination overhead and wastes resources.
-* **Disposable Asset Pitfall (Context Loss):** Treating subagents as disposable, single-use resources rather than persistent team members. Terminating subagents prematurely and spawning fresh ones for related tasks destroys accumulated context and wastes setup overhead. Active subagents should be aggressively reused across aligned technical domains.
+* **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
+* **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart with Lead Agents when budget > 1.
+* **Sibling Messaging Trap:** Attempting to send direct messages between peer Lead Agents or peer Specialists. Always route cross-component updates through shared design documents and hierarchical parent-child messages.
+* **Disposable Asset Pitfall (Context Loss):** Terminating subagents prematurely and spawning fresh ones for related tasks. Active subagents should be retained and reused across domain task iterations.
