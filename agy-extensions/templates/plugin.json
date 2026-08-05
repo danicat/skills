@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "my-custom-plugin",
+  "description": "A brief human-readable description of what this plugin provides."
+}

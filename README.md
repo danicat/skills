@@ -18,6 +18,9 @@ npx skills install github.com/danicat/skills
 ### `a2ui-developer-guide`
 A comprehensive guide and reference suite for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, SDKs, and component catalog validations.
 
+### `agy-extensions`
+Guide, scaffold, and construct any extension (standalone hook, MCP server, skill, rule, or subagent, or a bundled plugin) for Google Antigravity across AGY CLI and AGY 2.0.
+
 ### `adr_template`
 Guidelines, best practices, and templates for authoring Architecture Decision Records (ADRs).
 

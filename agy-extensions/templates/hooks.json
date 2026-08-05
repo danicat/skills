@@ -1,0 +1,44 @@
+{
+  "quality-and-safety": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/pre-command-check.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/post-edit-formatter.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "./scripts/pre-flight-reminder.sh",
+        "timeout": 10
+      }
+    ],
+    "PostInvocation": [],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "./scripts/completion-audit.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}

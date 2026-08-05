@@ -5,7 +5,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 # Swarm Coding
 
@@ -46,11 +46,11 @@ Subagents in a Swarm Coding session assume one of three roles:
 2. **Lead Agent** [Multiplicity: N]
    - Technical lead for a specific domain or system (e.g., Frontend, Backend, Database).
    - Assembles a Specialist team within their allocated sub-budget, writes domain specs ("Design Document First"), deconstructs domain tasks, drip-feeds backlogs, and integrates deliverables.
-   - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`). Direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file tools solely to view files and write specs/contracts; delegates command execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
+   - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`). Direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file tools to view/write specs, subagent definition/management tools (`define_subagent`, `invoke_subagent`, `manage_subagents`); delegates command execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
 3. **Specialist** [Multiplicity: N]
    - Executes narrowly-scoped technical tasks within their assigned domain.
    - Follows domain specifications, executes the operational validation loop (build, test, lint, format), and provides proof-of-validation logs to their parent Lead Agent.
-   - **Tool Restrictions:** Subagent delegation tools (`invoke_subagent`, `manage_subagents`) and direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file, search, terminal (`run_command`), and parent communication tools (`send_message`). Must execute tasks directly and report blockers to Lead Agent.
+   - **Tool Restrictions:** Subagent delegation tools (`define_subagent`, `invoke_subagent`, `manage_subagents`) and direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file, search, terminal (`run_command`), and parent communication tools (`send_message`). Must execute tasks directly and report blockers to Lead Agent.
 
 #### Role References
 - [references/coordinator.md](references/coordinator.md)
