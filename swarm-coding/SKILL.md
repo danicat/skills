@@ -5,7 +5,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 # Swarm Coding
 
@@ -33,6 +33,7 @@ Swarm Coding divides complex objectives among multiple specialized subagents str
 * **Testing & Documentation Accountability:** Every sub-team composition must designate at least one agent responsible for documentation and at least one agent responsible for testing.
 * **Backlog & Drip-Feeding:** Maintain domain task backlogs and drip-feed tasks sequentially to specialists as they finish prior assignments.
 * **Granular Work Architecture & Parallelization Safety:** Prioritize modular packages over monolithic files. All parallel task assignments MUST have disjoint (isolated) target file allocations to prevent file write conflicts.
+* **Fine-Grained Targeted Testing (No Broad Root Sweeps):** Specialists MUST execute fine-grained, package-scoped unit tests (e.g., `go test ./internal/physics/...`) strictly targeting their assigned task. Running broad project-root test commands (e.g., `go test ./...`) is strictly forbidden for Specialists unless explicitly requested by the Swarm Coordinator, preventing cross-task contamination and false failures while parallel agents work concurrently.
 
 ## Mechanics and Roles
 
@@ -46,11 +47,10 @@ Subagents in a Swarm Coding session assume one of three roles:
 2. **Lead Agent** [Multiplicity: N]
    - Technical lead for a specific domain or system (e.g., Frontend, Backend, Database).
    - Assembles a Specialist team within their allocated sub-budget, writes domain specs ("Design Document First"), deconstructs domain tasks, drip-feeds backlogs, and integrates deliverables.
-   - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`). Direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file tools to view/write specs, subagent definition/management tools (`define_subagent`, `invoke_subagent`, `manage_subagents`); delegates command execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
+   - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`).Delegates command execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
 3. **Specialist** [Multiplicity: N]
    - Executes narrowly-scoped technical tasks within their assigned domain.
    - Follows domain specifications, executes the operational validation loop (build, test, lint, format), and provides proof-of-validation logs to their parent Lead Agent.
-   - **Tool Restrictions:** Subagent delegation tools (`define_subagent`, `invoke_subagent`, `manage_subagents`) and direct user interaction tools (`ask_question`) are disabled/excluded. Possesses file, search, terminal (`run_command`), and parent communication tools (`send_message`). Must execute tasks directly and report blockers to Lead Agent.
 
 #### Role References
 - [references/coordinator.md](references/coordinator.md)
@@ -77,10 +77,8 @@ The Swarm Coordinator MUST define the team Org Chart as the very first step upon
 ### 2. Lead Agent Actions:
 1. **Draft Domain Specification:** Write or update the domain contract/schema file in the repository before spawning specialists.
 2. **Assemble Specialist Team:** Spawn Specialist subagents (`specialist-agent`) using the allocated sub-budget.
-3. **Delegate & Drip-Feed:** Assign granular tasks with disjoint file scopes; drip-feed backlog items as specialists finish previous tasks.
 
 ### Team Size Limits
-* **Sub-Team Max Size:** No individual sub-team (Lead Agent + Specialists) may exceed 6 agents total.
 * **Sub-Team Min Size:** At least one Lead Agent and one Specialist per domain team.
 
 ## Communication Hierarchy & Rules
@@ -107,21 +105,10 @@ graph TD
 3. **Specification-Driven Coordination ("Design Document First"):**
    - When a change in Domain A impacts Domain B, Lead Agent A updates the shared design document in the workspace, then messages the Swarm Coordinator. The Swarm Coordinator reviews and notifies Lead Agent B.
 
-## Exploratory Tasks (SPIKEs)
-
-An exploratory task (SPIKE) is characterized by low technical certainty, requiring research, alternative comparison, or prototype evaluation before execution.
-
-### SPIKE Sandbox and Rules:
-1. **Timeboxed Search:** Set a strict agent budget and scope boundaries to prevent open-ended searching.
-2. **User-Assisted Sandboxing:** For exploratory coding, the Specialist **must explicitly request user support to set up an isolated sandbox, ideally on a dedicated `spike/` git branch**.
-3. **Sandbox Isolation:** Specialists are strictly forbidden from committing to or merging with the main production branch. All prototype coding must remain isolated within the designated spike branch.
-4. **Artifact Exit Criteria:** A SPIKE must conclude with:
-   - Evaluated benchmarks or research notes saved in the scratch folder.
-   - A synthesized Technical Specification (such as an RFC or ADR) detailing actionable tasks ready for subsequent execution.
-
 ## Gotchas
 
 * **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
 * **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart with Lead Agents when budget > 1.
 * **Sibling Messaging Trap:** Attempting to send direct messages between peer Lead Agents or peer Specialists. Always route cross-component updates through shared design documents and hierarchical parent-child messages.
 * **Disposable Asset Pitfall (Context Loss):** Terminating subagents prematurely and spawning fresh ones for related tasks. Active subagents should be retained and reused across domain task iterations.
+* **The Root Test Contamination Trap:** Running broad project-root test commands (e.g., `go test ./...`) while parallel agents are modifying other packages causes false test failures. Specialists must scope test commands strictly to their assigned package.

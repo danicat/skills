@@ -40,9 +40,9 @@ graph TD
 ```
 
 1. **Write & Edit**: Implement your changes incrementally.
-2. **Build & Compile**: Run local compilers/builds (e.g., `go build`, `npm run build`, `cargo check`) to ensure zero build errors.
-3. **Automated Tests**: Run unit and integration tests. Fix any failures.
-4. **Lint & Format**: Run formatters and style checkers (e.g., `ruff`, `eslint`, `golangci-lint`).
+2. **Build & Compile**: Run local compilers/builds targeted to your package (e.g., `go build ./internal/physics`, `cargo check -p physics`) to ensure zero build errors.
+3. **Fine-Grained Targeted Tests**: Run **fine-grained unit tests strictly scoped to your assigned package or module** (e.g., `go test ./internal/physics/...` or `go test -run TestAABB ./internal/physics`). **CRITICAL**: Do NOT issue broad project-root test commands (e.g., `go test ./...`, `pytest`, `npm test`) unless explicitly instructed by the Swarm Coordinator. Broad root-level test commands cause cross-task test contamination and false failures while parallel agents are actively modifying other components.
+4. **Lint & Format**: Run formatters and style checkers on your modified files.
 5. **Clean Up**: Remove scratch files, debug logs, or temporary binaries.
 6. **Report Evidence**: Include actual terminal validation logs in your completion message to your Lead Agent.
 
