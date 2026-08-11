@@ -18,7 +18,7 @@ from google.genai.errors import APIError
 
 MODEL_MAP = {
     "nano-banana": "gemini-2.5-flash-image",
-    "nano-banana-pro": "gemini-3.1-pro-image",
+    "nano-banana-pro": "gemini-3-pro-image",
     "nano-banana-2": "gemini-3.1-flash-image",
     "nano-banana-2-lite": "gemini-3.1-flash-lite-image",
     "nano-banana-lite": "gemini-3.1-flash-lite-image",
@@ -32,7 +32,7 @@ def main():
     parser.add_argument("-m", "--model", choices=["nano-banana", "nano-banana-pro", "nano-banana-2", "nano-banana-2-lite", "nano-banana-lite"], default="nano-banana-2-lite", help="Model selection (default: nano-banana-2-lite)")
     parser.add_argument("-r", "--resolution", choices=["1K", "2K", "4K"], default="1K", help="Output resolution")
     parser.add_argument("--project", help="GCP Project ID for Vertex AI")
-    parser.add_argument("--location", default="us-central1", help="GCP Location for Vertex AI")
+    parser.add_argument("--location", default="global", help="GCP Location for Vertex AI (default: global)")
     
     args = parser.parse_args()
     
@@ -55,7 +55,7 @@ def main():
         or os.environ.get("GCP_PROJECT")
         or default_project
     )
-    location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
+    location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION", "global")
 
     if not project:
         print("Error: Could not determine GCP Project ID from ADC or environment variables (GOOGLE_CLOUD_PROJECT / GCP_PROJECT). Please run 'gcloud auth application-default login' or pass --project.", file=sys.stderr)

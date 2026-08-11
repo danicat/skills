@@ -1,11 +1,11 @@
 ---
 name: nano-banana
-description: Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3.1-pro-image, gemini-2.5-flash-image) with ADC auth. Supports "banana" as a verb (e.g., "please banana this") and Anime Dani / Chibi Dani character consistency.
+description: Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC auth. Supports "banana" as a verb (e.g., "please banana this") and Anime Dani / Chibi Dani character consistency.
 ---
 
 # Nano Banana Skill
 
-Generate, edit, and iterate on visuals conversationally using Google's native **Nano Banana** image generation models (`gemini-3.1-flash-lite-image`, `gemini-3.1-flash-image`, `gemini-3.1-pro-image`, `gemini-2.5-flash-image`) with Application Default Credentials (ADC) authentication.
+Generate, edit, and iterate on visuals conversationally using Google's native **Nano Banana** image generation models (`gemini-3.1-flash-lite-image`, `gemini-3.1-flash-image`, `gemini-3-pro-image`, `gemini-2.5-flash-image`) with Application Default Credentials (ADC) authentication.
 
 ---
 
@@ -22,7 +22,7 @@ Activate this skill whenever the user asks to:
 
 | Feature / Capability | Nano Banana 2 Lite (`nano-banana-2-lite`) | Nano Banana 2 (`nano-banana-2`) | Nano Banana Pro (`nano-banana-pro`) | Nano Banana Legacy (`nano-banana`) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Model ID** | `gemini-3.1-flash-lite-image` | `gemini-3.1-flash-image` | `gemini-3.1-pro-image` | `gemini-2.5-flash-image` |
+| **Model ID** | `gemini-3.1-flash-lite-image` | `gemini-3.1-flash-image` | `gemini-3-pro-image` | `gemini-2.5-flash-image` |
 | **Primary Use Case** | High-velocity, budget-sensitive tasks | Generalist workhorse balance of speed & quality | Premium professional asset production | Legacy workhorse (transition to 2 Lite) |
 | **Supported Resolutions** | 1K only | 512px (0.5K), 1K, 2K, 4K | 1K, 2K, 4K | 1024px (1K) |
 | **Object References** | Up to 14 | Up to 10 | Up to 6 | Up to 3 |
