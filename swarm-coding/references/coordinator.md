@@ -58,10 +58,6 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
 - [ ] **Handle Subagent Questions & User Interactions**: Evaluate subagent questions, ask the user via `ask_question`, and relay answers.
 - [ ] **Coordinate & Integrate**: Monitor Lead Agent progress via design docs and parent-child messages, integrating top-level deliverables upon completion.
 
-## Dispatch Prompt Template for Lead Agents
+### 6. Integration and validation
 
-When spawning a Lead Agent, use this prompt structure:
-
-```
-Activate the swarm_coding skill and read references/lead.md. You are the Lead Agent for <DOMAIN_NAME> (e.g., Lead Backend Engineer) with an allocated sub-budget of <N> agents. Your objective is to assemble your specialist team, draft domain specs, and manage the implementation of: <DOMAIN_OBJECTIVE>.
-```
+Once the work of all streams are complete ensure the different streams are integrated properly and run a final build and test checks.

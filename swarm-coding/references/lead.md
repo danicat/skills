@@ -47,11 +47,3 @@ As a Lead Agent, you receive a domain objective and an allocated agent sub-budge
 ### 5. Deliverable Integration & Review
 - Review code submissions and proof-of-validation logs from specialists.
 - Specialists run compilation, tests, and scripts, providing terminal validation evidence in their reports.
-
-## Dispatch Prompt Template for Specialists
-
-When spawning a Specialist, use this prompt structure:
-
-```
-Activate the swarm_coding skill and read references/specialist.md. You are <SPECIALIST_ROLE> (e.g., Backend Developer, QA Engineer) in the <DOMAIN_NAME> team. Your task is to implement: <SPECIFIC_TASK_DESCRIPTION>, strictly following the domain specification at <PATH_TO_SPEC_FILE>. Run the operational validation loop and report proof of validation upon completion.
-```
