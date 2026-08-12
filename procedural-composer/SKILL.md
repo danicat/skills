@@ -9,11 +9,11 @@ description: >-
 This skill provides complete mathematical, musical, and software architecture patterns for generating high-quality sound effects (SFX) and polyphonic background music (BGM) purely in code—without relying on external `.wav`, `.mp3`, or `.ogg` audio files.
 
 > [!TIP]
-> **Production Sound Driver & CLI Tool Suite**:
-> All driver, test, and player components reside together in [`references/`](./references/):
-> * **Sound Engine Driver & JSON Parser**: [`references/sound.go`](./references/sound.go)
-> * **Masterclass BGM/SFX Examples (`ExampleXxx`)**: [`references/sound_test.go`](./references/sound_test.go)
-> * **Lean CLI Audio Player**: [`references/play.go`](./references/play.go)
+> **Example Sound Driver & CLI Tool Suite**:
+> All driver, test, and player components reside together in [`scripts/`](./scripts/):
+> * **Sound Engine Driver & JSON Parser**: [`scripts/sound.go`](./scripts/sound.go)
+> * **Masterclass BGM/SFX Examples (`ExampleXxx`)**: [`scripts/sound_test.go`](./scripts/sound_test.go)
+> * **Lean CLI Audio Player**: [`scripts/play.go`](./scripts/play.go)
 
 ---
 
@@ -53,7 +53,7 @@ A music track should feature **at least 6 distinct polyphonic channels/instrumen
 
 ### 2.2 Dual Music Playback Architecture: One-Off vs. Looped Playback
 
-The audio playback subsystem (`SoundSystem` in [`references/sound.go`](./references/sound.go)) explicitly supports two distinct playback modes:
+The audio playback subsystem (`SoundSystem` in [`scripts/sound.go`](./scripts/sound.go)) explicitly supports two distinct playback modes:
 * **Looped Playback (`Play(pcm, true)`)**: For stage themes, boss battles, title screens, and menus where music must loop seamlessly without gaps using an infinite reader wrapper (`audio.NewInfiniteLoop`).
 * **One-Off / Single Play (`Play(pcm, false)`)**: Default mode for game over music, stage clear fanfares, calamity alerts, and victory stingers that play once to completion and then stop without looping.
 
@@ -84,7 +84,7 @@ $$t_{\text{beat}} = \frac{60}{\text{BPM}}$$
 
 ## 3. SECTION 2: JSON Sound Format & CLI Player (`play.go`)
 
-To test sound effects and multi-track compositions outside game runtimes, use the declarative **JSON Sound Format** parsed natively by [`references/sound.go`](./references/sound.go).
+To test sound effects and multi-track compositions outside game runtimes, use the declarative **JSON Sound Format** parsed natively by [`scripts/sound.go`](./scripts/sound.go).
 
 ### 3.1 Declarative JSON Sound Specification
 
@@ -164,7 +164,7 @@ To test sound effects and multi-track compositions outside game runtimes, use th
 
 ### 3.2 Using the CLI Player Tool (`play.go`)
 
-The CLI player [`references/play.go`](./references/play.go) allows developers and testing agents to play or export audio definitions:
+The CLI player [`scripts/play.go`](./scripts/play.go) allows developers and testing agents to play or export audio definitions. Note: adjust the path to be relative to the skill directory
 
 ```bash
 # 1. Play JSON sound effect or song (one-off by default)

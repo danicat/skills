@@ -1,4 +1,4 @@
-package references
+package main
 
 import (
 	"bytes"
@@ -91,8 +91,12 @@ func GenerateNotePCM(n NoteJSON) []byte {
 	var filterVal float64
 
 	pan := n.Pan
-	if pan < -1.0 { pan = -1.0 }
-	if pan > 1.0 { pan = 1.0 }
+	if pan < -1.0 {
+		pan = -1.0
+	}
+	if pan > 1.0 {
+		pan = 1.0
+	}
 	leftPan := math.Cos((pan + 1.0) * math.Pi / 4.0)
 	rightPan := math.Sin((pan + 1.0) * math.Pi / 4.0)
 
@@ -114,11 +118,15 @@ func GenerateNotePCM(n NoteJSON) []byte {
 		}
 
 		phase += currentFreq / sampleRate
-		for phase >= 1.0 { phase -= 1.0 }
+		for phase >= 1.0 {
+			phase -= 1.0
+		}
 
 		if n.ModFreq > 0 {
 			modPhase += n.ModFreq / sampleRate
-			for modPhase >= 1.0 { modPhase -= 1.0 }
+			for modPhase >= 1.0 {
+				modPhase -= 1.0
+			}
 		}
 
 		var oscAmp float64
@@ -130,10 +138,20 @@ func GenerateNotePCM(n NoteJSON) []byte {
 			oscAmp = math.Sin(2.0 * math.Pi * phase)
 		case "square":
 			duty := n.DutyCycle
-			if duty <= 0 || duty >= 1.0 { duty = 0.5 }
-			if phase < duty { oscAmp = 1.0 } else { oscAmp = -1.0 }
+			if duty <= 0 || duty >= 1.0 {
+				duty = 0.5
+			}
+			if phase < duty {
+				oscAmp = 1.0
+			} else {
+				oscAmp = -1.0
+			}
 		case "triangle":
-			if phase < 0.5 { oscAmp = 4.0*phase - 1.0 } else { oscAmp = 3.0 - 4.0*phase }
+			if phase < 0.5 {
+				oscAmp = 4.0*phase - 1.0
+			} else {
+				oscAmp = 3.0 - 4.0*phase
+			}
 		case "sawtooth":
 			oscAmp = 2.0*phase - 1.0
 		default:
@@ -142,17 +160,25 @@ func GenerateNotePCM(n NoteJSON) []byte {
 
 		rawNoise := rand.Float64()*2.0 - 1.0
 		filterCoeff := n.NoiseFilter
-		if filterCoeff <= 0 { filterCoeff = 1.0 }
+		if filterCoeff <= 0 {
+			filterCoeff = 1.0
+		}
 		filterVal += filterCoeff * (rawNoise - filterVal)
 
 		blend := n.NoiseBlend
-		if blend < 0 { blend = 0 }
-		if blend > 1 { blend = 1 }
+		if blend < 0 {
+			blend = 0
+		}
+		if blend > 1 {
+			blend = 1
+		}
 		amp := (1.0-blend)*oscAmp + blend*filterVal
 
 		env := getEnvelope(t, n.Duration, n.Attack, n.Decay, n.Sustain, n.Release)
 		vol := n.Volume
-		if vol <= 0 { vol = 0.2 }
+		if vol <= 0 {
+			vol = 0.2
+		}
 		finalAmp := amp * env * vol
 
 		leftVal := int16(math.Max(-1.0, math.Min(1.0, finalAmp*leftPan)) * 32760)
@@ -181,7 +207,9 @@ func GenerateSequencePCM(notes []NoteJSON) []byte {
 func MixTracksPCM(tracks [][]byte) []byte {
 	maxLen := 0
 	for _, t := range tracks {
-		if len(t) > maxLen { maxLen = len(t) }
+		if len(t) > maxLen {
+			maxLen = len(t)
+		}
 	}
 	result := make([]byte, maxLen)
 
@@ -193,7 +221,11 @@ func MixTracksPCM(tracks [][]byte) []byte {
 				sum += int32(sample)
 			}
 		}
-		if sum > 32767 { sum = 32767 } else if sum < -32768 { sum = -32768 }
+		if sum > 32767 {
+			sum = 32767
+		} else if sum < -32768 {
+			sum = -32768
+		}
 		result[i] = byte(sum)
 		result[i+1] = byte(sum >> 8)
 	}
@@ -220,14 +252,20 @@ func SynthesizeAudio(def AudioDefJSON) []byte {
 }
 
 func getEnvelope(t, duration, attack, decay, sustain, release float64) float64 {
-	if t < 0 || t > duration { return 0.0 }
+	if t < 0 || t > duration {
+		return 0.0
+	}
 	if attack+decay+release > duration {
 		rampUp := duration * 0.1
-		if t < rampUp { return t / rampUp }
+		if t < rampUp {
+			return t / rampUp
+		}
 		return 1.0 - (t-rampUp)/(duration-rampUp)
 	}
 	if t < attack {
-		if attack > 0 { return t / attack }
+		if attack > 0 {
+			return t / attack
+		}
 		return 1.0
 	}
 	if t < attack+decay {
@@ -237,11 +275,15 @@ func getEnvelope(t, duration, attack, decay, sustain, release float64) float64 {
 		}
 		return sustain
 	}
-	if t < duration-release { return sustain }
+	if t < duration-release {
+		return sustain
+	}
 	timeInRelease := t - (duration - release)
 	if release > 0 {
 		progress := timeInRelease / release
-		if progress > 1.0 { progress = 1.0 }
+		if progress > 1.0 {
+			progress = 1.0
+		}
 		return sustain * (1.0 - progress)
 	}
 	return 0.0

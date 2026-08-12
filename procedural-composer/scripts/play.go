@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"os"
@@ -118,10 +117,29 @@ func playAudio(pcm []byte, loop bool) {
 
 func getDemoSoundtrack() AudioDefJSON {
 	const (
-		A2 = 110.00; F2 = 87.31; D2 = 73.42; E2 = 82.41
-		A3 = 220.00; F3 = 174.61; B3 = 246.94; C4 = 261.63; D4 = 293.66; E4 = 329.63; F4 = 349.23; G4 = 392.00
-		A4 = 440.00; B4 = 493.88; C5 = 523.25; D5 = 587.33; E5 = 659.25; F5 = 698.46; G5 = 783.99
-		A5 = 880.00; B5 = 987.77; C6 = 1046.50; E6 = 1318.51
+		A2 = 110.00
+		F2 = 87.31
+		D2 = 73.42
+		E2 = 82.41
+		A3 = 220.00
+		F3 = 174.61
+		B3 = 246.94
+		C4 = 261.63
+		D4 = 293.66
+		E4 = 329.63
+		F4 = 349.23
+		G4 = 392.00
+		A4 = 440.00
+		B4 = 493.88
+		C5 = 523.25
+		D5 = 587.33
+		E5 = 659.25
+		F5 = 698.46
+		G5 = 783.99
+		A5 = 880.00
+		B5 = 987.77
+		C6 = 1046.50
+		E6 = 1318.51
 	)
 
 	chords := [][]float64{
@@ -165,7 +183,9 @@ func getDemoSoundtrack() AudioDefJSON {
 
 			for i := 0; i < 16; i++ {
 				bFreq := root / 2
-				if i%2 != 0 { bFreq = root }
+				if i%2 != 0 {
+					bFreq = root
+				}
 				ch4Bass = append(ch4Bass, NoteJSON{
 					WaveType: "square", Duration: 0.1154, StartFreq: bFreq, EndFreq: bFreq,
 					DutyCycle: 0.5, Volume: 0.13, Attack: 0.01, Decay: 0.05, Sustain: 0.5, Release: 0.03, Pan: 0.0,
@@ -174,7 +194,9 @@ func getDemoSoundtrack() AudioDefJSON {
 
 			for i := 0; i < 16; i++ {
 				arpIdx := i % 4
-				if (i/4)%2 != 0 { arpIdx = 3 - (i % 4) }
+				if (i/4)%2 != 0 {
+					arpIdx = 3 - (i % 4)
+				}
 				ch5Arp = append(ch5Arp, NoteJSON{
 					WaveType: "triangle", Duration: 0.1154, StartFreq: chord[arpIdx] * 2, EndFreq: chord[arpIdx] * 2,
 					Volume: 0.07, Attack: 0.008, Decay: 0.04, Sustain: 0.35, Release: 0.02, Pan: -0.4,
@@ -184,11 +206,17 @@ func getDemoSoundtrack() AudioDefJSON {
 			for i := 0; i < 16; i++ {
 				var noiseCoeff, vol, dur float64
 				if i%4 == 0 {
-					noiseCoeff = 0.1; vol = 0.09; dur = 0.1154
+					noiseCoeff = 0.1
+					vol = 0.09
+					dur = 0.1154
 				} else if i%4 == 2 {
-					noiseCoeff = 0.5; vol = 0.07; dur = 0.1154
+					noiseCoeff = 0.5
+					vol = 0.07
+					dur = 0.1154
 				} else {
-					noiseCoeff = 0.95; vol = 0.04; dur = 0.0577
+					noiseCoeff = 0.95
+					vol = 0.04
+					dur = 0.0577
 				}
 				ch6Drums = append(ch6Drums, NoteJSON{
 					WaveType: "noise", Duration: dur, NoiseFilter: noiseCoeff, NoiseBlend: 1.0,
