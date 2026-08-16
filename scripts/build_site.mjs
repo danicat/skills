@@ -10,14 +10,15 @@ const SITE_DIR = path.resolve(ROOT_DIR, '_site');
 const DOMAIN = 'https://skills.danicat.dev';
 const REPO_URL = 'https://github.com/danicat/skills';
 const BLOG_URL = 'https://danicat.dev';
+const GA_MEASUREMENT_ID = 'G-8RHDQGEGZ2';
 
 const CATEGORIES = [
-  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: '2D game architecture, Ebitengine v2, chiptune DSP, and procedural graphics in Go.' },
-  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Lyria 3 music synthesis and Nano Banana conversational image generation.' },
-  { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'SemVer, broken window hygiene, AST-aware Go developer tooling, and Python uv workflows.' },
-  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarm coding, and skill optimizer.' },
-  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide, Vale linters, and Google Codelabs tutorial authoring.' },
-  { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Architecture Decision Records (ADRs) and Request for Comments (RFC) frameworks.' },
+  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: '2D games in Go with Ebitengine, chiptune audio, and procedural graphics.' },
+  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Lyria 3 music synthesis and Nano Banana image editing.' },
+  { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Semantic versioning, repository hygiene, GoDoctor, and Python uv workflows.' },
+  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarms, and skill optimizer.' },
+  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide and Google Codelabs tutorials.' },
+  { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Architecture Decision Records (ADRs) and Request for Comments (RFCs).' },
 ];
 
 function parseFrontmatter(content) {
@@ -73,7 +74,7 @@ function copyRecursive(src, dest) {
 }
 
 async function build() {
-  console.log('Building skills catalog with Blowfish visual identity...');
+  console.log('Building skills catalog with Google Analytics, SEO, and deslopified copy...');
 
   if (fs.existsSync(SITE_DIR)) {
     fs.rmSync(SITE_DIR, { recursive: true, force: true });
@@ -119,7 +120,13 @@ async function build() {
   // 1. CNAME
   fs.writeFileSync(path.join(SITE_DIR, 'CNAME'), 'skills.danicat.dev\n');
 
-  // 2. llms.txt
+  // 2. Root SKILL.md (Catalog Gateway)
+  const rootSkillPath = path.join(ROOT_DIR, 'SKILL.md');
+  if (fs.existsSync(rootSkillPath)) {
+    fs.copyFileSync(rootSkillPath, path.join(SITE_DIR, 'SKILL.md'));
+  }
+
+  // 3. llms.txt
   let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.\n\n`;
   for (const cat of CATEGORIES) {
     const catSkills = skills.filter(s => s.category === cat.id);
@@ -133,7 +140,7 @@ async function build() {
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt);
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt);
 
-  // 3. llms-full.txt
+  // 4. llms-full.txt
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n\n`;
   for (const s of skills) {
     llmsFullTxt += `# Skill: ${s.name} (${s.category})\n\n> ${s.description}\n\n`;
@@ -142,7 +149,7 @@ async function build() {
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt);
 
-  // 4. catalog.json
+  // 5. catalog.json
   const catalog = {
     $schema: 'https://agentskills.io/schema.json',
     name: 'danicat/skills',
@@ -152,20 +159,48 @@ async function build() {
     totalSkills: skills.length,
     updatedAt: new Date().toISOString(),
     categories: CATEGORIES,
+    gateway: {
+      name: 'catalog',
+      description: 'Dynamic search and loader for all skills in this repository.',
+      url: `${DOMAIN}/SKILL.md`,
+      installCommand: 'npx skills install github.com/danicat/skills',
+    },
     skills: skills.map(({ body, ...rest }) => rest),
   };
   const catalogJson = JSON.stringify(catalog, null, 2);
   fs.writeFileSync(path.join(SITE_DIR, 'catalog.json'), catalogJson);
   fs.writeFileSync(path.join(ROOT_DIR, 'catalog.json'), catalogJson);
 
-  // 5. HTML Index with Blowfish theme alignment
+  // 6. HTML Index with Google Analytics, SEO, and Blowfish styling
   const html = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent Skills · danicat.dev</title>
-  <meta name="description" content="A curated collection of specialized Agent Skills by Daniela Petruzalek for coding, game dev, AI media, technical writing, and standards.">
+  <title>Agent Skills · Daniela Petruzalek (danicat.dev)</title>
+  <meta name="description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
+  <link rel="canonical" href="${DOMAIN}/">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${DOMAIN}/">
+  <meta property="og:title" content="Agent Skills · Daniela Petruzalek">
+  <meta property="og:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Agent Skills · Daniela Petruzalek">
+  <meta name="twitter:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
+
   <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
@@ -194,6 +229,8 @@ async function build() {
       --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
       --badge-bg: #f1f5f9;
       --green: #16a34a;
+      --hero-banner-bg: #f8fafc;
+      --hero-banner-border: #e2e8f0;
     }
 
     html[data-theme="dark"] {
@@ -217,6 +254,8 @@ async function build() {
       --shadow-hover: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
       --badge-bg: #273549;
       --green: #4ade80;
+      --hero-banner-bg: rgba(30, 41, 59, 0.7);
+      --hero-banner-border: #334155;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -342,6 +381,92 @@ async function build() {
       font-size: 1.15rem;
       color: var(--text-muted);
       max-width: 800px;
+    }
+
+    /* Gateway Banner */
+    .gateway-banner {
+      background: var(--hero-banner-bg);
+      border: 1px solid var(--hero-banner-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .gateway-banner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .gateway-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      font-size: 0.95rem;
+    }
+
+    .gateway-link {
+      font-size: 0.85rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .gateway-link:hover {
+      text-decoration: underline;
+    }
+
+    .gateway-install-box {
+      display: flex;
+      align-items: center;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      padding: 0.55rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--text-heading);
+    }
+
+    .gateway-cmd {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 0.5rem;
+    }
+
+    .gateway-copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-heading);
+      cursor: pointer;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .gateway-copy-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .gateway-caption {
+      font-size: 0.82rem;
+      color: var(--text-muted);
     }
 
     /* Search & Filters */
@@ -591,6 +716,7 @@ async function build() {
           <a href="${BLOG_URL}/codelabs/" class="nav-link">Codelabs</a>
           <a href="${BLOG_URL}/about/" class="nav-link">About</a>
           <a href="${REPO_URL}" target="_blank" rel="noopener" class="nav-link">GitHub ↗</a>
+          <a href="/SKILL.md" class="nav-link">SKILL.md</a>
           <a href="/llms.txt" class="nav-link accent">llms.txt</a>
           <a href="/catalog.json" class="nav-link">JSON</a>
           <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle light/dark theme" title="Toggle theme">
@@ -601,8 +727,25 @@ async function build() {
     </header>
 
     <div class="hero">
-      <h1>Agent Skills Collection</h1>
-      <p>Modular, spec-compliant capability modules for AI coding assistants and autonomous agents across 2D game development, media generation, architecture standards, and engineering workflows.</p>
+      <h1>Agent Skills</h1>
+      <p>A collection of focused skills for AI coding agents. Covers 2D Go games, Python tooling, engineering standards, technical writing, and generative media.</p>
+
+      <div class="gateway-banner">
+        <div class="gateway-banner-header">
+          <div class="gateway-title-wrap">
+            <span>⚡</span>
+            <span>Get the complete catalog</span>
+          </div>
+          <a href="/SKILL.md" class="gateway-link">View gateway SKILL.md →</a>
+        </div>
+        <div class="gateway-install-box">
+          <span class="gateway-cmd">npx skills install github.com/danicat/skills</span>
+          <button class="gateway-copy-btn" onclick="copyInstall('npx skills install github.com/danicat/skills', this)" title="Copy install command">
+            <span>📋</span> Copy
+          </button>
+        </div>
+        <p class="gateway-caption">Adds an on-demand router to your coding agent so it can fetch any skill in this collection as you work.</p>
+      </div>
     </div>
 
     <section class="search-filter-section">
@@ -730,11 +873,13 @@ async function build() {
 
     function copyInstall(cmd, btn) {
       navigator.clipboard.writeText(cmd).then(() => {
-        const orig = btn.textContent;
-        btn.textContent = '✓';
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span>✓</span> Copied';
+        btn.style.borderColor = 'var(--green)';
         btn.style.color = 'var(--green)';
         setTimeout(() => {
-          btn.textContent = orig;
+          btn.innerHTML = orig;
+          btn.style.borderColor = '';
           btn.style.color = '';
         }, 1500);
       });
@@ -744,7 +889,7 @@ async function build() {
 </html>`;
 
   fs.writeFileSync(path.join(SITE_DIR, 'index.html'), html);
-  console.log(`Site build complete! Generated ${skills.length} skills in _site/ with Blowfish styling.`);
+  console.log(`Site build complete! Generated ${skills.length} skills in _site/ with Google Analytics (${GA_MEASUREMENT_ID}).`);
 }
 
 build().catch(err => {

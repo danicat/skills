@@ -5,45 +5,51 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 20,
-  "updatedAt": "2026-08-16T16:04:51.323Z",
+  "updatedAt": "2026-08-16T16:40:49.208Z",
   "categories": [
     {
       "id": "game-dev",
       "name": "Game Development",
       "emoji": "🕹️",
-      "description": "2D game architecture, Ebitengine v2, chiptune DSP, and procedural graphics in Go."
+      "description": "2D games in Go with Ebitengine, chiptune audio, and procedural graphics."
     },
     {
       "id": "media",
       "name": "Generative Media",
       "emoji": "🎨",
-      "description": "Lyria 3 music synthesis and Nano Banana conversational image generation."
+      "description": "Lyria 3 music synthesis and Nano Banana image editing."
     },
     {
       "id": "coding",
       "name": "Coding & Tooling",
       "emoji": "💻",
-      "description": "SemVer, broken window hygiene, AST-aware Go developer tooling, and Python uv workflows."
+      "description": "Semantic versioning, repository hygiene, GoDoctor, and Python uv workflows."
     },
     {
       "id": "agents",
       "name": "Agents & Meta-Tooling",
       "emoji": "🤖",
-      "description": "A2UI streaming protocol, multi-agent swarm coding, and skill optimizer."
+      "description": "A2UI streaming protocol, multi-agent swarms, and skill optimizer."
     },
     {
       "id": "writing",
       "name": "Technical Writing",
       "emoji": "✍️",
-      "description": "Google Developers Blog style guide, Vale linters, and Google Codelabs tutorial authoring."
+      "description": "Google Developers Blog style guide and Google Codelabs tutorials."
     },
     {
       "id": "standards",
       "name": "Engineering Standards",
       "emoji": "📐",
-      "description": "Architecture Decision Records (ADRs) and Request for Comments (RFC) frameworks."
+      "description": "Architecture Decision Records (ADRs) and Request for Comments (RFCs)."
     }
   ],
+  "gateway": {
+    "name": "catalog",
+    "description": "Dynamic search and loader for all skills in this repository.",
+    "url": "https://skills.danicat.dev/SKILL.md",
+    "installCommand": "npx skills install github.com/danicat/skills"
+  },
   "skills": [
     {
       "name": "ebitengineer",
