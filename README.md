@@ -1,62 +1,78 @@
-# Agent Skills Repository
+# Agent Skills Collection
 
-This repository contains a collection of specialized skills for autonomous agents.
+A curated collection of specialized skills for AI agents and pair programmers, organized by domain.
 
+---
 
 ## Installation
 
-### From GitHub (Recommended)
-You can install any skill directly from this repository using the Vercel Skills CLI:
+### Install from GitHub
+Install skills directly from this repository using the Skills CLI:
 
 ```bash
+# Install a specific skill by category path:
+npx skills install github.com/danicat/skills/coding/engineering-flow
+npx skills install github.com/danicat/skills/game-dev/ebitengineer
+npx skills install github.com/danicat/skills/agents/skill-optimizer
+
+# Install an entire repository or category:
 npx skills install github.com/danicat/skills
 ```
 
+---
 
-## Available Skills
+## Skills Catalog
 
-### `a2ui-developer-guide`
-A comprehensive guide and reference suite for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, SDKs, and component catalog validations.
+### 🕹️ Game Development (`game-dev/`)
+Specialized skills for designing and building 2D games in Go with Ebitengine, chiptune DSP, and procedural generation.
 
-### `agy-extensions`
-Guide, scaffold, and construct any extension (standalone hook, MCP server, skill, rule, or subagent, or a bundled plugin) for Google Antigravity across AGY CLI and AGY 2.0.
+* **[`ebitengineer`](game-dev/ebitengineer/SKILL.md)**: Production-grade 2D game architecture, cycle timing, state machines, shaders, and audio sync for Go & Ebitengine (v2).
+* **[`game-design`](game-dev/game-design/SKILL.md)**: Game concept ideation, interactive `/grill-me` design interviews, and Game Design Document (`GDD.md`) generation.
+* **[`procedural-art`](game-dev/procedural-art/SKILL.md)**: Pure-code procedural 2D sprites, tilemaps, vector graphics, particle systems, and rasterization algorithms without external assets.
+* **[`procedural-composer`](game-dev/procedural-composer/SKILL.md)**: Pure-code procedural audio synthesis, sound effects (SFX), and chiptune/FM sound engine architecture.
+* **[`sprite-animation`](game-dev/sprite-animation/SKILL.md)**: 2D sprite sheets, frame durations, tag loops, and Aseprite (`.ase`/`.aseprite`) file validation and slicing.
+* **[`vibe-game-developer`](game-dev/vibe-game-developer/SKILL.md)**: Master orchestrator and request router for 2D Go game development, asset pipelines, and WebAssembly deployment.
 
-### `adr_template`
-Guidelines, best practices, and templates for authoring Architecture Decision Records (ADRs).
+---
 
-### `engineering_flow`
-Core engineering workflow standards detailing the 2x2 prioritization matrix, RFC/ADR planning, and the 7-tier Evidence Hierarchy for research.
+### 🎨 Generative Media (`media/`)
+Audio and visual generation using Google AI models with ADC authentication.
 
-### `experiment-analyst` (DEPRECATED)
-⚠️ *Legacy Only*: Analyzes Tenkai agent experiment runs. This skill is kept solely for backward compatibility with external resources.
+* **[`lyria`](media/lyria/SKILL.md)**: High-fidelity 44.1 kHz stereo music and soundtrack generation from text prompts and images using Google's Lyria 3 models.
+* **[`nano-banana`](media/nano-banana/SKILL.md)**: Conversational image generation and editing using Google's native Nano Banana models with character consistency support.
 
-### `find-examples`
-Finds, clones, and inspects real-world code examples from GitHub for specific dependencies, frameworks, or libraries, using strict workspace isolation and git safety rules.
+---
 
-### `google-blog-style`
-Official style guide and compliance rules for Google Developers blog posts, including Gunning Fog readability metrics and Vale-powered style linter checks (supporting the Speedgrapher MCP server).
+### 💻 Coding & Development (`coding/`)
+Engineering workflow standards, compiler gates, package resolvers, and language-specific tools.
 
-### `google-codelab-authoring`
-Structured workflow for writing step-by-step developer tutorials in Google Codelabs format (`.lab.md`) using strict Claat metadata, durations, and aside block linting.
+* **[`engineering-flow`](coding/engineering-flow/SKILL.md)**: Engineering workflow standards detailing semantic versioning (with 0.x zero-debt rules), broken window hygiene, RFC/ADR planning, and the 7-tier Evidence Hierarchy.
+* **[`find-examples`](coding/find-examples/SKILL.md)**: Real-world code search and GitHub example extraction with strict workspace isolation and sandbox rules.
+* **[`godoctor`](coding/godoctor/SKILL.md)**: AST-aware Go developer tooling with automatic compiler rollback gates, Selene mutation testing, and multi-tier test runners.
+* **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
+* **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
 
-### `latest-version`
-Modular batch query tool and instructions to retrieve, verify, and resolve the absolute latest stable versions of software packages, dependencies (NPM, PyPI, Go proxy, Cargo, RubyGems), and Gemini models.
+---
 
-### `pyhd`
-Python development workflow incorporating strict virtual environments via `uv`, Ruff static linting, auto-formatting, and unified unit testing reports.
+### 🤖 Agents & Meta-Tooling (`agents/`)
+Frameworks, UI streaming protocols, swarm orchestration, and skill authoring tools.
 
-### `ready-for-release-check`
-Pre-release checklist and quality gate to verify codebase health, docs, and security before interacting with Git or publishing a release.
+* **[`a2ui-developer-guide`](agents/a2ui-developer-guide/SKILL.md)**: Comprehensive guide for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, and component catalog validations.
+* **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
+* **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
 
-### `rfc_template`
-Guidelines and templates for authoring Request for Comments (RFCs) for major features and refactorings.
+---
 
-### `skill-optimizer`
-Meta-skill and developer workflow guides for writing, auditing, and optimizing Agent Skills (`SKILL.md` layout, trigger-precision, and progressive disclosure).
+### ✍️ Technical Writing (`writing/`)
+Editorial guidelines, readability checkers, and developer tutorial authoring.
 
-### `swarm-coding`
-Orchestrator and specialist patterns to decompose complex engineering tasks, full-stack designs, or large-scale refactorings across a swarm of parallelized subagents safely.
+* **[`google-blog-style`](writing/google-blog-style/SKILL.md)**: Official style guide and compliance rules for the Google Developers Blog, including Gunning Fog readability and Vale style checks.
+* **[`google-codelab-authoring`](writing/google-codelab-authoring/SKILL.md)**: Step-by-step developer tutorial authoring in Google Codelabs format (`.lab.md`) with Claat metadata and aside block validation.
 
-### `task_template`
-Guidelines and templates for structuring software development goals and ideas into actionable, bounded tasks.
+---
 
+### 📐 Engineering Standards (`standards/`)
+Decision records and design consensus frameworks.
+
+* **[`adr-template`](standards/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
+* **[`rfc-template`](standards/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
