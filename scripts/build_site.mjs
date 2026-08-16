@@ -74,7 +74,7 @@ function copyRecursive(src, dest) {
 }
 
 async function build() {
-  console.log('Building skills catalog with Google Analytics, SEO, and deslopified copy...');
+  console.log('Building skills catalog with sitemap.xml, robots.txt, and SEO...');
 
   if (fs.existsSync(SITE_DIR)) {
     fs.rmSync(SITE_DIR, { recursive: true, force: true });
@@ -116,6 +116,8 @@ async function build() {
       copyRecursive(path.join(catDir, skillFolder), path.join(SITE_DIR, cat.id, skillFolder));
     }
   }
+
+  const todayIso = new Date().toISOString().split('T')[0];
 
   // 1. CNAME
   fs.writeFileSync(path.join(SITE_DIR, 'CNAME'), 'skills.danicat.dev\n');
@@ -171,7 +173,23 @@ async function build() {
   fs.writeFileSync(path.join(SITE_DIR, 'catalog.json'), catalogJson);
   fs.writeFileSync(path.join(ROOT_DIR, 'catalog.json'), catalogJson);
 
-  // 6. HTML Index with Google Analytics, SEO, and Blowfish styling
+  // 6. sitemap.xml
+  let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  for (const s of skills) {
+    sitemapXml += `  <url>\n    <loc>${s.url}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+  }
+  sitemapXml += `</urlset>\n`;
+  fs.writeFileSync(path.join(SITE_DIR, 'sitemap.xml'), sitemapXml);
+
+  // 7. robots.txt
+  const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${DOMAIN}/sitemap.xml\n`;
+  fs.writeFileSync(path.join(SITE_DIR, 'robots.txt'), robotsTxt);
+
+  // 8. HTML Index with Google Analytics, SEO, and Blowfish styling
   const html = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -786,7 +804,7 @@ async function build() {
 
     <footer>
       <p>© Daniela Petruzalek · Open source under Apache-2.0</p>
-      <p><a href="${BLOG_URL}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a></p>
+      <p><a href="${BLOG_URL}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a> · <a href="/sitemap.xml">sitemap.xml</a></p>
     </footer>
   </div>
 
@@ -889,7 +907,7 @@ async function build() {
 </html>`;
 
   fs.writeFileSync(path.join(SITE_DIR, 'index.html'), html);
-  console.log(`Site build complete! Generated ${skills.length} skills in _site/ with Google Analytics (${GA_MEASUREMENT_ID}).`);
+  console.log(`Site build complete! Generated ${skills.length} skills, sitemap.xml, and robots.txt in _site/.`);
 }
 
 build().catch(err => {
