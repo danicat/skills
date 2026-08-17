@@ -19,12 +19,18 @@
 | `all_coverage` | Statement execution counts by block. | `package`, `file`, `function_name`, `start_line`, `end_line`, `stmt_num`, `count` |
 | `test_coverage` | Mapping of individual tests to statement blocks. | `test_name`, `package`, `file`, `start_line`, `end_line`, `stmt_num`, `count` |
 | `all_code` | Source code lines for join-based inspection. | `package`, `file`, `line_number`, `content` |
+| `selene` | AST mutation records and statuses. | `id`, `mutator`, `file`, `line`, `col`, `status` (`'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`), `killed_by` |
+| `selene_tests` | Test effectiveness and mutation kill counts. | `test_name`, `package`, `status`, `mutations_killed`, `killed_mutant_ids` |
 
 ### Predefined Views
 - `failed_tests`: Lists all failed test cases with execution time.
 - `passed_tests`: Lists passing test cases.
 - `missing_coverage`: Uncovered statements (`count = 0`).
 - `code_coverage`: Percentage coverage aggregated by package and file.
+- `selene_survived`: Surviving mutants that escaped existing test assertions.
+- `selene_zero_kill_tests`: Tests that executed without catching any AST mutants.
+- `selene_summary`: High-level mutation statistics and test suite score.
+- `selene_excluded`: Mutants excluded for filesystem or process safety.
 
 ---
 
@@ -151,5 +157,6 @@ ORDER BY start_line;
 ## Notes & Best Practices
 
 - **Auto-Generation**: `testquery.db` is updated automatically whenever `godoctor call test` runs. If `testquery.db` does not exist when `godoctor call tq` is invoked, GoDoctor builds it first.
-- **Absolute Directory Required**: The `dir` parameter must be an absolute path.
-- **Concurrency Safety**: WAL mode allows concurrent queries while tests are writing.
+- **Absolute Directory Required**: The `dir` parameter is strictly required and must be an absolute path.
+- **SQL String Literal Syntax**: In SQLite, string literals must use single quotes `'...'` (e.g. `WHERE status = 'killed'`). In JSON payloads, escape single quotes appropriately (`'\''` in bash single-quoted strings or standard JSON strings).
+- **Concurrency Safety**: WAL mode allows concurrent queries while tests are writing. Avoid launching concurrent full test runs while mutation testing is in flight to prevent database lock contention.

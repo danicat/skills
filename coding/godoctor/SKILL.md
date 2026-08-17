@@ -3,7 +3,7 @@ name: godoctor
 description: Activate this skill whenever developing, building, editing, testing, documenting, or verifying Go (golang) code, or managing GoDoctor CLI and MCP surfaces. Enforces strict Google Go Style, flat package architecture, zero-fallback execution, multi-tier testing, AST-aware edits with compiler rollback gates, Selene mutation testing, and TestQuery SQL analytics.
 metadata:
   author: daniela@danicat.dev
-  version: 0.2.0
+  version: 0.34.0
 ---
 
 # Go Quality & Tooling Guide (GoDoctor)
@@ -45,11 +45,17 @@ GoDoctor provides AST-aware Go developer tooling, code quality enforcement, and 
 | Task / Goal | CLI Command (`godoctor call`) | MCP Tool Name | Behavior / Safeguards |
 | :--- | :--- | :--- | :--- |
 | **AST-Aware Code Edits** | `godoctor call edit` | `smart_edit` | Coordinate matching + AST formatting + atomic write + compiler rollback gate (`go vet`). |
-| **Build & Lint Pipeline** | `godoctor call build` | `smart_build` | 4-phase pipeline: `go mod tidy` -> `modernize` -> `gofmt` -> `deadcode` -> `go build` -> `go test` -> `golangci-lint` -> `testquery` sync. |
-| **Test & Benchmark Runner** | `godoctor call test` | `smart_test` | Multi-tier runner (`fast`, `basic`, `benchmark`, `complete`) + auto-indexes into `testquery.db`. |
+| **Build & Quality Pipeline** | `godoctor call build` | `smart_build` | Builds Go binaries and packages with integrated compilation, testing, coverage analysis, linting, and quality verification. |
+| **Test & Benchmark Runner** | `godoctor call test` | `smart_test` | Multi-tier runner (`fast`, `basic`/`standard`, `benchmark`, `complete`) + auto-indexes into `testquery.db`. |
 | **AST Documentation** | `godoctor call docs` | `read_docs` | Fetches package docs, exported symbols, types, and function signatures with 3-tier fallback caching. |
 | **Mutation Testing** | `godoctor call selene` | `selene` | Evaluates test suite quality by mutating AST operators and checking for test assertion kills. See [references/selene.md](references/selene.md). |
 | **SQL Test Analytics** | `godoctor call tq` | `test_query` | Executes SQLite queries against test history and statement coverage in `testquery.db`. See [references/testquery.md](references/testquery.md). |
+
+### Test Runner Tiers (`smart_test` / `godoctor call test`)
+- **`level: "fast"`**: Sub-second inner loop test execution. Runs package unit tests directly; skips coverage profiling, benchmarks, and mutation analysis. Ideal for rapid iterative development.
+- **`level: "basic"` / `"standard"`**: Standard testing tier. Runs unit tests with statement coverage profiling and auto-indexes execution metrics into `.godoctor/testquery.db`.
+- **`level: "benchmark"`**: Runs unit tests, coverage profiling, and Go benchmark suites (`go test -bench=.`).
+- **`level: "complete"`**: Comprehensive quality gate. Runs unit tests, coverage profiling, benchmarks, and full multi-worker Selene AST mutation testing across all packages. Ideal for pre-commit, CI verification, and release audits.
 
 ---
 
@@ -59,7 +65,7 @@ GoDoctor provides AST-aware Go developer tooling, code quality enforcement, and 
 - **Tool Version Tracking**: GoDoctor actively verifies installed tool versions against recommended baselines, reporting non-blocking upgrade recommendations and providing `godoctor check`.
 - **Absolute Paths Required**: All directory (`dir`) and file (`filename`) parameters must be absolute paths (e.g. `/Users/.../project`).
 - **Atomic Edit Transactions & Compiler Gate**: `edit` / `smart_edit` writes changes to temporary files before atomic replacement, preserving file permissions. Edits are verified via `go vet ./...` and automatically rolled back if errors are introduced.
-- **Concurrency & SQLite WAL Mode**: Test coverage synchronization and `test_query` analytics operate with SQLite Write-Ahead Logging (WAL) mode and busy timeouts to prevent database locks.
+- **Concurrency & Resource Management**: Heavy operations like `level: "complete"` (Selene AST mutation testing) utilize all CPU cores; avoid spawning concurrent test/build tasks while complete runs are in flight to prevent CPU exhaustion and SQLite WAL contention.
 - **Configuration-Driven**: Subsystems read settings from `.godoctor.yaml` following a strict 3-tier precedence hierarchy:
   $$\text{Per-Call Payload (JSON)} \succ \text{Config File } (\texttt{.godoctor.yaml}) \succ \text{Built-in Defaults}$$
 

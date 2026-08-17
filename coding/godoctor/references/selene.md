@@ -99,7 +99,7 @@ selene --db testquery.db -json ./...
 
 ## Querying Results in `testquery.db`
 
-Selene records mutation evaluations and test effectiveness metrics in `testquery.db`. Query them using `godoctor call tq` or the `testquery` CLI:
+Selene records mutation evaluations and test effectiveness metrics in `testquery.db`. The primary table is `selene` (with status values stored in lowercase: `'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`), along with several predefined views:
 
 ### 1. Surviving Mutants (Assertion Gaps)
 ```sql
@@ -108,24 +108,37 @@ FROM selene_survived
 ORDER BY file, line;
 ```
 
-### 2. Zero-Kill Tests (Tests That Caught Zero Mutants)
+### 2. Breakdown by Mutator
+```sql
+SELECT mutator, 
+       COUNT(*) AS total, 
+       SUM(CASE WHEN status = 'killed' THEN 1 ELSE 0 END) AS killed,
+       SUM(CASE WHEN status = 'survived' THEN 1 ELSE 0 END) AS survived,
+       SUM(CASE WHEN status = 'uncovered' THEN 1 ELSE 0 END) AS uncovered,
+       SUM(CASE WHEN status = 'timeout' THEN 1 ELSE 0 END) AS timeouts
+FROM selene 
+GROUP BY mutator 
+ORDER BY total DESC;
+```
+
+### 3. Zero-Kill Tests (Tests That Caught Zero Mutants)
 ```sql
 SELECT test_name, package 
 FROM selene_zero_kill_tests;
 ```
 
-### 3. Safety-Excluded Mutations
+### 4. Safety-Excluded Mutations
 ```sql
 SELECT id, mutator, file, line, col, reason 
 FROM selene_excluded;
 ```
 
-### 4. Mutation Testing Summary Metrics
+### 5. Mutation Testing Summary Metrics
 ```sql
 SELECT * FROM selene_summary;
 ```
 
-### 5. Top 10 Most Effective Tests
+### 6. Top 10 Most Effective Tests
 ```sql
 SELECT test_name, package, mutations_killed, killed_mutant_ids 
 FROM selene_tests 
@@ -133,6 +146,19 @@ WHERE mutations_killed > 0
 ORDER BY mutations_killed DESC 
 LIMIT 10;
 ```
+
+---
+
+## Zero-Kill Test Remediation
+
+A **Zero-Kill Test** is a test that executed during mutation testing but never failed when any AST mutation was applied. Common causes and remediation tactics:
+
+| Root Cause | Pattern | Remediation |
+| :--- | :--- | :--- |
+| **Shallow Assertions** | Test only checks `err == nil` or exit code 0. | Add semantic assertions checking stdout, stderr, or parsed JSON payload fields. |
+| **Redundant Subtest** | Trivial subtest superseded by a broader parent test case. | Consolidate duplicate table-driven test entries or assert on unique boundary conditions. |
+| **Tautological Check** | Constructor / getter tests with no logic branches. | Combine with behavior tests or eliminate redundant unit tests. |
+| **Empty Input Handlers** | Tests passing empty string / slice that early-returns. | Keep if guarding public API invariants; otherwise combine with table tests. |
 
 ---
 
@@ -173,6 +199,8 @@ Ensure test suites cover both `true` and `false` execution branches.
 
 ## Notes & Best Practices
 
+- **Select the Right Level**: Use `level: "fast"` during iterative coding. Reserve `level: "complete"` or standalone `selene` runs for quality audits and release validation.
+- **Resource Management**: Selene spawns parallel worker processes (`-workers N`). Do not launch background test/build tasks concurrently with complete mutation runs to prevent CPU starvation and SQLite database lock contention.
 - **Baseline Tests Must Pass**: If existing tests are failing, fix them before running mutation tests.
 - **Refresh Coverage for Targeted Mode**: Always run `tq build` or `godoctor call test` before running targeted Selene tests so the coverage index matches the latest code.
 - **Absolute Paths**: When using `godoctor call selene`, always supply an absolute path for `dir`.
