@@ -5,7 +5,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 20,
-  "updatedAt": "2026-08-16T22:51:44.479Z",
+  "updatedAt": "2026-08-17T15:19:06.174Z",
   "categories": [
     {
       "id": "game-dev",
@@ -176,7 +176,7 @@
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
-      "description": "Activate when working with Go (golang) code. Includes tooling and best practices to generate code efficiently and increase code quality.",
+      "description": "Activate this skill whenever developing, building, editing, testing, documenting, or verifying Go (golang) code, or managing GoDoctor CLI and MCP surfaces. Enforces strict Google Go Style, flat package architecture, zero-fallback execution, multi-tier testing, AST-aware edits with compiler rollback gates, Selene mutation testing, and TestQuery SQL analytics.",
       "license": "Apache-2.0",
       "installCommand": "npx skills install github.com/danicat/skills/coding/godoctor",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
