@@ -5,6 +5,8 @@
 #     "google-analytics-data>=0.18.0",
 #     "google-analytics-admin>=0.22.0",
 #     "google-auth>=2.28.0",
+#     "google-auth-oauthlib>=1.2.0",
+#     "requests>=2.31.0",
 #     "tabulate>=0.9.0",
 # ]
 # ///
@@ -13,37 +15,42 @@ Google Analytics 4 SQLite Ingestion Engine & SQL Analytics CLI.
 
 Ingests raw GA4 performance data, traffic sources, page metrics, events, and outbound clicks
 into a local SQLite database (e.g. google_analytics.db) without data loss, supporting:
-- ADC (Application Default Credentials) authentication via Google Cloud
+- Multi-tier Authentication: OAuth 2.0 Client Credentials, Service Accounts, and ADC
 - Property auto-discovery via GA4 Admin API
+- Cloud Reporting Data Annotations (marking site deployments/milestones in GA4 charts)
 - Full historical backfill (up to GA4 property creation / 14 months)
 - Robust incremental sync with lookback refresh
 - Raw JSON payload retention on all records
-- Direct SQL querying and pre-packaged analytical views
+- Direct SQL querying, milestone impact comparison views, and pre-packaged analytical reports
 
 Usage:
-  # 1. List accessible GA4 accounts and properties
+  # 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
+  python3 scripts/google_analytics.py auth
+
+  # 2. Discover accessible GA4 accounts and properties
   python3 scripts/google_analytics.py properties
 
-  # 2. Incremental Sync (Newest days + 3-day lookback refresh)
+  # 3. Incremental Sync (Newest days + 3-day lookback refresh)
   python3 scripts/google_analytics.py sync
 
-  # 3. Full Historical Backfill
+  # 4. Full Historical Backfill
   python3 scripts/google_analytics.py sync --full
 
-  # 4. Specific Date Range Sync
-  python3 scripts/google_analytics.py sync --start-date 2026-06-01 --end-date 2026-08-15
+  # 5. Add Deployment / Release Milestone (Cloud Annotation + Local SQLite)
+  python3 scripts/google_analytics.py annotate \
+    --title "v2.0 Redesign Launch" \
+    --date 2026-08-18 \
+    --commit abc1234 \
+    --description "Site redesign and technical SEO improvements."
 
-  # 5. Execute Arbitrary SQL Query
-  python3 scripts/google_analytics.py query "SELECT page_path, SUM(views), ROUND(AVG(avg_dwell_sec),1) FROM v_page_performance GROUP BY page_path ORDER BY SUM(views) DESC LIMIT 10"
+  # 6. Execute Arbitrary SQL Query
+  python3 scripts/google_analytics.py query "SELECT * FROM v_milestone_impact;"
 
-  # 6. Run Pre-Built Reports
+  # 7. Run Pre-Built Reports
   python3 scripts/google_analytics.py report overview
   python3 scripts/google_analytics.py report top-pages
   python3 scripts/google_analytics.py report channels
-  python3 scripts/google_analytics.py report geo
-  python3 scripts/google_analytics.py report recurring
-  python3 scripts/google_analytics.py report events
-  python3 scripts/google_analytics.py report outbound
+  python3 scripts/google_analytics.py report milestone-impact
 """
 
 import argparse
@@ -64,8 +71,11 @@ except ImportError:
     HAS_TABULATE = False
 
 # Google Analytics & Auth Libraries
+import google.auth
 from google.auth import default
 from google.auth.exceptions import DefaultCredentialsError
+import google.oauth2.credentials
+import google.oauth2.service_account
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import (
     RunReportRequest,
@@ -81,11 +91,37 @@ from google.analytics.admin_v1beta import AnalyticsAdminServiceClient
 DEFAULT_DB_FILE = "google_analytics.db"
 DEFAULT_PROPERTY_ID = os.environ.get("GA4_PROPERTY_ID", "")
 
+DEFAULT_CLIENT_SECRETS_FILE = (
+    os.path.expanduser("~/.config/ga4/client_secret.json")
+    if os.path.exists(os.path.expanduser("~/.config/ga4/client_secret.json"))
+    else (
+        os.path.expanduser("~/.config/gcloud/analytics_oauth_client.json")
+        if os.path.exists(os.path.expanduser("~/.config/gcloud/analytics_oauth_client.json"))
+        else "client_secret.json"
+    )
+)
+DEFAULT_CREDENTIALS_FILE = (
+    os.path.expanduser("~/.config/ga4/credentials.json")
+    if os.path.exists(os.path.expanduser("~/.config/ga4/credentials.json"))
+    else "credentials.json"
+)
 
-def ensure_dirs(db_path: str = DEFAULT_DB_FILE):
+SCOPES = [
+    "https://www.googleapis.com/auth/analytics.readonly",
+    "https://www.googleapis.com/auth/analytics.edit",
+    "https://www.googleapis.com/auth/analytics",
+    "https://www.googleapis.com/auth/cloud-platform"
+]
+
+
+def ensure_dirs(db_path: str = DEFAULT_DB_FILE, config_file: Optional[str] = None):
     db_dir = os.path.dirname(os.path.abspath(db_path))
     if db_dir:
         os.makedirs(db_dir, exist_ok=True)
+    if config_file:
+        cfg_dir = os.path.dirname(os.path.abspath(config_file))
+        if cfg_dir:
+            os.makedirs(cfg_dir, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
@@ -180,6 +216,18 @@ CREATE TABLE IF NOT EXISTS outbound_clicks (
     UNIQUE (property_id, date, link_url, page_path, country)
 );
 
+-- Release / Deployment Milestones
+CREATE TABLE IF NOT EXISTS site_milestones (
+    commit_hash TEXT PRIMARY KEY,
+    event_date DATE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    scope TEXT,
+    author TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Sync History Audit Log
 CREATE TABLE IF NOT EXISTS sync_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -226,11 +274,6 @@ CREATE VIEW v_page_performance AS
 SELECT 
     page_path,
     MAX(page_title) AS page_title,
-    CASE 
-        WHEN page_path LIKE '/pt-br/%' THEN 'Portuguese (/pt-br/)'
-        WHEN page_path LIKE '/ja/%' THEN 'Japanese (/ja/)'
-        ELSE 'English (Default /)'
-    END AS localization,
     SUM(screen_page_views) AS total_views,
     SUM(active_users) AS total_users,
     SUM(sessions) AS total_sessions,
@@ -292,6 +335,23 @@ FROM outbound_clicks
 WHERE link_url IS NOT NULL AND link_url != ''
 GROUP BY link_url
 ORDER BY total_clicks DESC;
+
+DROP VIEW IF EXISTS v_milestone_impact;
+CREATE VIEW v_milestone_impact AS
+SELECT 
+    m.commit_hash,
+    m.title AS milestone_title,
+    m.event_date AS milestone_date,
+    CASE WHEN dp.date < m.event_date THEN 'Pre-Milestone' ELSE 'Post-Milestone' END AS cohort,
+    COUNT(DISTINCT dp.date) AS days_tracked,
+    SUM(dp.screen_page_views) AS total_views,
+    SUM(dp.active_users) AS total_users,
+    SUM(dp.sessions) AS total_sessions,
+    ROUND(AVG(dp.user_engagement_duration), 1) AS avg_engagement_sec,
+    ROUND(AVG(dp.bounce_rate) * 100, 1) AS avg_bounce_pct
+FROM daily_pages dp
+CROSS JOIN site_milestones m
+GROUP BY m.commit_hash, cohort;
 """
 
 
@@ -306,23 +366,194 @@ def init_db(db_path: str = DEFAULT_DB_FILE) -> sqlite3.Connection:
 
 
 # ---------------------------------------------------------------------------
-# Authentication & Clients
+# Authentication & Credentials Management
 # ---------------------------------------------------------------------------
 
-def get_clients() -> Tuple[BetaAnalyticsDataClient, AnalyticsAdminServiceClient]:
-    """Resolves credentials via ADC and returns Data & Admin clients."""
+def credentials_to_dict(credentials) -> Dict[str, Any]:
+    return {
+        "token": credentials.token,
+        "refresh_token": credentials.refresh_token,
+        "token_uri": credentials.token_uri,
+        "client_id": credentials.client_id,
+        "client_secret": credentials.client_secret,
+        "scopes": credentials.scopes,
+    }
+
+
+def save_credentials_to_disk(credentials, filepath: str = DEFAULT_CREDENTIALS_FILE):
+    ensure_dirs(config_file=filepath)
+    data = credentials_to_dict(credentials)
+    with open(filepath, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+def load_credentials(
+    filepath: str = DEFAULT_CREDENTIALS_FILE,
+    service_account_path: Optional[str] = None
+):
+    """Resolves credentials from explicit OAuth JSON, service account, or ADC."""
+    # 1. Check explicit OAuth credentials JSON with refresh token
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, "r") as f:
+                data = json.load(f)
+            return google.oauth2.credentials.Credentials(**data)
+        except Exception:
+            pass
+
+    # 2. Check service account JSON
+    sa_path = service_account_path or ("service_account.json" if os.path.exists("service_account.json") else os.path.expanduser("~/.config/ga4/service_account.json"))
+    if os.path.exists(sa_path):
+        try:
+            return google.oauth2.service_account.Credentials.from_service_account_file(
+                sa_path, scopes=SCOPES
+            )
+        except Exception:
+            pass
+
+    # 3. Fall back to Google Application Default Credentials (ADC)
     try:
-        credentials, project = default(scopes=[
-            "https://www.googleapis.com/auth/analytics.readonly",
-            "https://www.googleapis.com/auth/cloud-platform"
-        ])
-        data_client = BetaAnalyticsDataClient(credentials=credentials)
-        admin_client = AnalyticsAdminServiceClient(credentials=credentials)
-        return data_client, admin_client
-    except DefaultCredentialsError as e:
-        print(f"❌ Error initializing Google Credentials: {e}", file=sys.stderr)
-        print("💡 Run 'gcloud auth application-default login --scopes https://www.googleapis.com/auth/analytics.readonly,https://www.googleapis.com/auth/cloud-platform'", file=sys.stderr)
+        credentials, _ = google.auth.default(scopes=SCOPES)
+        return credentials
+    except Exception:
+        pass
+
+    return None
+
+
+def get_clients(credentials_file: str = DEFAULT_CREDENTIALS_FILE) -> Tuple[BetaAnalyticsDataClient, AnalyticsAdminServiceClient]:
+    """Returns initialized Data and Admin clients."""
+    creds = load_credentials(credentials_file)
+    if not creds:
+        print("❌ Error: No valid Google Credentials found.", file=sys.stderr)
+        print("💡 Run 'python3 scripts/google_analytics.py auth' to log in via OAuth 2.0, or use ADC.", file=sys.stderr)
         sys.exit(1)
+        
+    data_client = BetaAnalyticsDataClient(credentials=creds)
+    admin_client = AnalyticsAdminServiceClient(credentials=creds)
+    return data_client, admin_client
+
+
+def cmd_auth(
+    client_secrets_file: str = DEFAULT_CLIENT_SECRETS_FILE,
+    credentials_file: str = DEFAULT_CREDENTIALS_FILE,
+    port: int = 8080,
+    host: str = "127.0.0.1"
+):
+    """Launches OAuth 2.0 companion flow to authenticate with analytics.edit and readonly scopes."""
+    import google_auth_oauthlib.flow
+
+    ensure_dirs(config_file=credentials_file)
+
+    if not os.path.exists(client_secrets_file):
+        print(f"❌ Client secret file not found: {client_secrets_file}", file=sys.stderr)
+        print("💡 Place your OAuth 2.0 Client Secret JSON in ~/.config/ga4/client_secret.json or ~/.config/gcloud/analytics_oauth_client.json", file=sys.stderr)
+        sys.exit(1)
+
+    with open(client_secrets_file, "r") as f:
+        secret_data = json.load(f)
+
+    if "installed" in secret_data:
+        flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+            client_secrets_file, scopes=SCOPES
+        )
+        try:
+            creds = flow.run_local_server(port=port, prompt="consent", access_type="offline", open_browser=True)
+        except OSError:
+            print(f"Port {port} is in use, selecting an available ephemeral port...")
+            creds = flow.run_local_server(port=0, prompt="consent", access_type="offline", open_browser=True)
+        save_credentials_to_disk(creds, credentials_file)
+        print(f"✅ Credentials successfully authorized and saved to {credentials_file}!\n")
+        return
+
+    # Web flow fallback
+    print(f"❌ Web application client secrets detected. Please use an Installed Application OAuth client ID.", file=sys.stderr)
+
+
+# ---------------------------------------------------------------------------
+# Reporting Annotations & Milestones Engine
+# ---------------------------------------------------------------------------
+
+def create_annotation(
+    property_id: str,
+    title: str,
+    description: str,
+    date_str: str,
+    color: str = "BLUE",
+    commit_hash: Optional[str] = None,
+    category: Optional[str] = None,
+    scope: Optional[str] = None,
+    author: Optional[str] = None,
+    db_path: str = DEFAULT_DB_FILE,
+    credentials_file: str = DEFAULT_CREDENTIALS_FILE
+):
+    """Creates an annotation both in the GA4 Cloud Property and in the local SQLite database."""
+    conn = init_db(db_path)
+    
+    parts = date_str.split("-")
+    if len(parts) != 3:
+        print(f"❌ Invalid date format '{date_str}'. Expected YYYY-MM-DD.", file=sys.stderr)
+        sys.exit(1)
+        
+    year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
+    c_hash = commit_hash or f"milestone-{date_str}"
+    
+    # 1. Local SQLite Milestone Record
+    conn.execute("""
+        INSERT OR REPLACE INTO site_milestones (
+            commit_hash, event_date, title, description, category, scope, author
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        c_hash,
+        date_str,
+        title,
+        description,
+        category or "SEO/Architecture",
+        scope or "sitewide",
+        author or os.environ.get("USER", "")
+    ))
+    conn.commit()
+    conn.close()
+    print(f"✅ Milestone recorded locally in SQLite: '{title}' [{c_hash}] on {date_str}")
+
+    # 2. GA4 Cloud Annotation via Admin API
+    creds = load_credentials(credentials_file)
+    if not creds:
+        print("⚠️ Note: No OAuth write credentials found for GA4 Cloud API. Local milestone recorded.")
+        return
+
+    import google.auth.transport.requests
+    import requests
+
+    try:
+        req = google.auth.transport.requests.Request()
+        creds.refresh(req)
+        
+        url = f"https://analyticsadmin.googleapis.com/v1alpha/properties/{property_id}/reportingDataAnnotations"
+        headers = {
+            "Authorization": f"Bearer {creds.token}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "title": title[:60],
+            "description": description[:150] if description else "",
+            "color": color.upper(),
+            "annotationDate": {
+                "year": year,
+                "month": month,
+                "day": day
+            }
+        }
+        
+        res = requests.post(url, headers=headers, json=payload)
+        if res.status_code in (200, 201):
+            ann_data = res.json()
+            ann_name = ann_data.get("name", "")
+            print(f"🎉 GA4 Cloud Reporting Annotation created successfully! Resource: {ann_name}")
+        else:
+            print(f"⚠️ GA4 API returned status {res.status_code}: {res.text}")
+    except Exception as e:
+        print(f"⚠️ Could not post annotation to GA4 Cloud API: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -660,7 +891,7 @@ def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conn
 
 
 def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.Connection, property_id: str, start_date: str, end_date: str) -> int:
-    """Ingests outbound link click destinations."""
+    """Ingests outbound link clicks specifically."""
     p_name = f"properties/{property_id}"
     req = RunReportRequest(
         property=p_name,
@@ -675,25 +906,32 @@ def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.C
             Metric(name="eventCount"),
             Metric(name="totalUsers")
         ],
-        limit=50000
+        dimension_filter=FilterExpression(
+            filter=Filter(
+                field_name="eventName",
+                string_filter=Filter.StringFilter(value="click")
+            )
+        ),
+        limit=100000
     )
     
     resp = data_client.run_report(req)
     count = 0
     
     for r in resp.rows:
-        link_url = r.dimension_values[1].value
-        if not link_url:
-            continue
-            
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         else:
             date_fmt = date_str
             
+        link_url = r.dimension_values[1].value
+        if not link_url:
+            continue
+            
         page_path = r.dimension_values[2].value
         country = r.dimension_values[3].value
+        
         event_count = int(float(r.metric_values[0].value))
         users = int(float(r.metric_values[1].value))
         
@@ -727,296 +965,216 @@ def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.C
 
 
 def run_sync(
-    property_id: str = DEFAULT_PROPERTY_ID,
+    property_id: str,
     days: Optional[int] = None,
     full: bool = False,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-    db_path: str = DEFAULT_DB_FILE
+    db_path: str = DEFAULT_DB_FILE,
+    credentials_file: str = DEFAULT_CREDENTIALS_FILE
 ):
-    if not property_id:
-        print("Error: No GA4 Property ID provided.", file=sys.stderr)
-        print("Set the GA4_PROPERTY_ID environment variable or pass --property-id <ID>.", file=sys.stderr)
-        print("Tip: Run 'python3 scripts/google_analytics.py properties' to list all accessible GA4 properties.", file=sys.stderr)
-        sys.exit(1)
-
-    data_client, admin_client = get_clients()
+    """Orchestrates sync operations across all GA4 domains."""
+    data_client, admin_client = get_clients(credentials_file)
     conn = init_db(db_path)
-    started_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    started_at = datetime.datetime.now().isoformat()
     
+    if not property_id:
+        cur = conn.cursor()
+        cur.execute("SELECT property_id FROM properties ORDER BY last_synced_at DESC LIMIT 1;")
+        row = cur.fetchone()
+        if row:
+            property_id = row[0]
+        else:
+            print("🔍 Auto-discovering GA4 properties...")
+            accounts = admin_client.list_account_summaries()
+            for acc in accounts:
+                if acc.property_summaries:
+                    property_id = acc.property_summaries[0].property.split('/')[-1]
+                    break
+                    
+    if not property_id:
+        print("❌ Error: No GA4 property found or specified. Run 'properties' command first.", file=sys.stderr)
+        sys.exit(1)
+        
     sync_property_metadata(admin_client, conn, property_id)
     
-    # Calculate Date Range
+    # Determine date ranges
     today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1)
-    
-    if start_date and end_date:
+    if full:
+        s_date = (today - datetime.timedelta(days=420)).isoformat()
+        e_date = today.isoformat()
+        sync_type = "FULL_BACKFILL"
+    elif days:
+        s_date = (today - datetime.timedelta(days=days)).isoformat()
+        e_date = today.isoformat()
+        sync_type = f"TRAILING_{days}_DAYS"
+    elif start_date and end_date:
         s_date = start_date
         e_date = end_date
-        sync_type = "custom_range"
-    elif full:
-        s_date = (today - datetime.timedelta(days=420)).strftime("%Y-%m-%d")
-        e_date = yesterday.strftime("%Y-%m-%d")
-        sync_type = "full_backfill"
-    elif days:
-        s_date = (today - datetime.timedelta(days=days)).strftime("%Y-%m-%d")
-        e_date = yesterday.strftime("%Y-%m-%d")
-        sync_type = f"last_{days}_days"
+        sync_type = "CUSTOM_RANGE"
     else:
+        # Incremental: check latest date in db and overlap 3 days for latency
         cur = conn.cursor()
-        cur.execute("SELECT MAX(date) FROM daily_pages WHERE property_id = ?", (property_id,))
-        max_date = cur.fetchone()[0]
-        if max_date:
-            last_d = datetime.date.fromisoformat(max_date) - datetime.timedelta(days=3)
-            s_date = last_d.strftime("%Y-%m-%d")
-            sync_type = "incremental"
+        cur.execute("SELECT MAX(date) FROM daily_pages WHERE property_id = ?;", (property_id,))
+        max_d = cur.fetchone()[0]
+        if max_d:
+            max_dt = datetime.datetime.strptime(max_d, "%Y-%m-%d").date()
+            s_date = (max_dt - datetime.timedelta(days=3)).isoformat()
         else:
-            s_date = (today - datetime.timedelta(days=90)).strftime("%Y-%m-%d")
-            sync_type = "initial_90_days"
-        e_date = yesterday.strftime("%Y-%m-%d")
-        
-    print(f"🚀 Starting GA4 Ingestion Sync for Property: {property_id}")
-    print(f"   Mode:       {sync_type}")
-    print(f"   Date Range: {s_date} -> {e_date}")
-    print(f"   Database:   {os.path.abspath(db_path)}\n")
+            s_date = (today - datetime.timedelta(days=90)).isoformat()
+        e_date = today.isoformat()
+        sync_type = "INCREMENTAL"
+
+    print(f"🚀 Starting GA4 Sync ({sync_type}) for Property {property_id} [{s_date} -> {e_date}]...")
     
     try:
-        t0 = time.time()
-        print("⏳ [1/4] Syncing daily page metrics...")
         p_count = ingest_daily_pages(data_client, conn, property_id, s_date, e_date)
-        print(f"   ✅ Ingested {p_count:,} page metric records")
-        
-        print("⏳ [2/4] Syncing traffic & channel acquisition...")
         t_count = ingest_daily_traffic(data_client, conn, property_id, s_date, e_date)
-        print(f"   ✅ Ingested {t_count:,} traffic source records")
-        
-        print("⏳ [3/4] Syncing user interaction events...")
         e_count = ingest_daily_events(data_client, conn, property_id, s_date, e_date)
-        print(f"   ✅ Ingested {e_count:,} event records")
-        
-        print("⏳ [4/4] Syncing outbound link clicks...")
         o_count = ingest_outbound_clicks(data_client, conn, property_id, s_date, e_date)
-        print(f"   ✅ Ingested {o_count:,} outbound click records")
-        
-        elapsed = time.time() - t0
         
         conn.execute("""
             INSERT INTO sync_history (
                 property_id, sync_type, start_date, end_date,
                 pages_synced, traffic_synced, events_synced, outbound_synced,
-                status, started_at, finished_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SUCCESS', ?, datetime('now'))
+                status, started_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SUCCESS', ?)
         """, (property_id, sync_type, s_date, e_date, p_count, t_count, e_count, o_count, started_at))
         conn.commit()
         
-        print(f"\n🎉 Sync completed in {elapsed:.2f}s! Total records synced: {p_count + t_count + e_count + o_count:,}")
+        print("\n✅ Sync Complete Summary:")
+        print(f"  • Daily Page Breakdowns: {p_count} records")
+        print(f"  • Traffic Sources:        {t_count} records")
+        print(f"  • Interaction Events:     {e_count} records")
+        print(f"  • Outbound Link Clicks:   {o_count} records")
+        print(f"  • SQLite Database:        {db_path}")
+        
     except Exception as e:
-        print(f"\n❌ Sync failed: {e}", file=sys.stderr)
         conn.execute("""
             INSERT INTO sync_history (
                 property_id, sync_type, start_date, end_date,
-                status, error_message, started_at, finished_at
-            ) VALUES (?, ?, ?, ?, 'FAILED', ?, ?, datetime('now'))
+                status, error_message, started_at
+            ) VALUES (?, ?, ?, ?, 'FAILED', ?, ?)
         """, (property_id, sync_type, s_date, e_date, str(e), started_at))
         conn.commit()
+        print(f"❌ Sync failed with error: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
         conn.close()
 
 
 # ---------------------------------------------------------------------------
-# Pre-Built SQL Reports
+# Pre-Packaged Analytical Reports
 # ---------------------------------------------------------------------------
 
-def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
-    """Executes pre-built analytical reports."""
+def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
+    """Executes pre-packaged analytical queries."""
     conn = init_db(db_path)
     cur = conn.cursor()
     
-    if report_name == "overview":
-        print("\n================================================================================")
-        print("  📊 GOOGLE ANALYTICS 4: SITE OVERVIEW & RECENT TRENDS")
-        print("================================================================================\n")
-        
-        cur.execute("""
+    reports = {
+        "overview": ("Site Overview (30-Day Aggregates)", """
             SELECT 
                 COUNT(DISTINCT date) AS active_days,
-                MIN(date) AS first_date,
-                MAX(date) AS last_date,
-                SUM(sessions) AS total_sessions,
-                SUM(active_users) AS total_active_users,
-                SUM(screen_page_views) AS total_page_views,
-                ROUND(SUM(user_engagement_duration)/60.0, 1) AS total_engagement_min,
-                ROUND(AVG(bounce_rate)*100, 1) AS avg_bounce_pct
-            FROM daily_pages;
-        """)
-        r = cur.fetchone()
-        if not r or not r[0]:
-            print("❌ No data found in database. Run 'sync' first.")
-            return
-            
-        print(f"  Coverage:               {r[1]} to {r[2]} ({r[0]} days)")
-        print(f"  Total Sessions:         {r[3]:,}")
-        print(f"  Active Users:           {r[4]:,}")
-        print(f"  Page Views:             {r[5]:,}")
-        print(f"  Pages / Session:        {r[5]/max(r[3],1):.2f}")
-        print(f"  Total Engagement:       {r[6]:,} minutes ({r[6]/60:.1f} hours)")
-        print(f"  Avg Active Dwell/User:  {(r[6]*60)/max(r[4],1):.1f}s")
-        print(f"  Avg Bounce Rate:        {r[7]}%\n")
-        
-        print("--- Last 7 Days Daily Performance ---")
-        cur.execute("""
-            SELECT date, total_sessions, total_active_users, total_page_views, total_engagement_min, avg_bounce_pct
+                SUM(total_sessions) AS total_sessions,
+                SUM(total_active_users) AS total_active_users,
+                SUM(total_page_views) AS total_views,
+                ROUND(AVG(total_engagement_min), 1) AS avg_daily_engagement_min,
+                ROUND(AVG(avg_bounce_pct), 1) AS overall_bounce_pct
             FROM v_daily_summary
-            LIMIT 7;
-        """)
-        rows = cur.fetchall()
-        headers = ["Date", "Sessions", "Users", "PageViews", "Dwell (Min)", "Bounce %"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "top-pages":
-        print("\n================================================================================")
-        print("  📄 TOP LANDING PAGES & ARTICLE ENGAGEMENT")
-        print("================================================================================\n")
-        cur.execute("""
+            LIMIT 30;
+        """),
+        "top-pages": ("Top 15 Pages by Total Views & Engagement", """
             SELECT 
                 page_path,
-                localization,
+                page_title,
                 total_views,
                 total_users,
-                total_sessions,
-                avg_dwell_sec || 's' AS avg_dwell,
-                avg_bounce_pct || '%' AS bounce_pct
+                avg_dwell_sec || 's' AS dwell,
+                avg_bounce_pct || '%' AS bounce
             FROM v_page_performance
-            LIMIT 20;
-        """)
-        rows = cur.fetchall()
-        headers = ["Page Path", "Localization", "Views", "Users", "Sessions", "Avg Dwell", "Bounce %"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "channels":
-        print("\n================================================================================")
-        print("  🌐 TRAFFIC SOURCES & ACQUISITION CHANNELS")
-        print("================================================================================\n")
-        cur.execute("""
+            ORDER BY total_views DESC
+            LIMIT 15;
+        """),
+        "channels": ("Acquisition Channels Performance", """
             SELECT 
                 channel_group,
                 source_medium,
                 total_sessions,
                 total_users,
-                total_new_users,
                 engagement_rate_pct || '%' AS eng_rate,
-                total_dwell_min || 'm' AS dwell_min
+                total_dwell_min || 'm' AS dwell,
+                avg_bounce_pct || '%' AS bounce
             FROM v_channel_performance
+            WHERE total_sessions > 5
+            ORDER BY total_sessions DESC
             LIMIT 15;
-        """)
-        rows = cur.fetchall()
-        headers = ["Channel Group", "Source / Medium", "Sessions", "Users", "New Users", "Eng Rate", "Total Dwell"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "geo":
-        print("\n================================================================================")
-        print("  🌍 GEOGRAPHICAL DISTRIBUTION & DWELL TIME")
-        print("================================================================================\n")
-        cur.execute("""
+        """),
+        "geo": ("Top 10 Countries by Visitor Volume & Dwell Time", """
             SELECT 
                 country,
                 total_sessions,
                 total_users,
                 total_page_views,
                 avg_dwell_sec || 's' AS avg_dwell,
-                avg_bounce_pct || '%' AS bounce_pct
+                avg_bounce_pct || '%' AS bounce
             FROM v_geo_breakdown
-            LIMIT 20;
-        """)
-        rows = cur.fetchall()
-        headers = ["Country", "Sessions", "Users", "PageViews", "Avg Dwell", "Bounce %"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "events":
-        print("\n================================================================================")
-        print("  🎯 USER ENGAGEMENT EVENTS BREAKDOWN")
-        print("================================================================================\n")
-        cur.execute("""
-            SELECT event_name, total_events, total_users
-            FROM v_events_summary
-            LIMIT 20;
-        """)
-        rows = cur.fetchall()
-        headers = ["Event Name", "Total Events", "Users Triggering"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "outbound":
-        print("\n================================================================================")
-        print("  ↗️ OUTBOUND LINK DESTINATIONS")
-        print("================================================================================\n")
-        cur.execute("""
-            SELECT link_url, total_clicks, total_users, referring_pages_count
-            FROM v_outbound_links
-            LIMIT 20;
-        """)
-        rows = cur.fetchall()
-        headers = ["Outbound Destination URL", "Clicks", "Users", "Source Pages"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
-
-    elif report_name == "recurring":
-        print("\n================================================================================")
-        print("  🔄 RECURRING AUDIENCE & RETENTION PROFILE")
-        print("================================================================================\n")
-        cur.execute("""
+            ORDER BY total_sessions DESC
+            LIMIT 10;
+        """),
+        "events": ("User Interaction Events Summary", """
             SELECT 
-                CASE 
-                    WHEN total_sessions > total_new_users THEN 'Returning Traffic'
-                    ELSE 'New Traffic'
-                END AS traffic_type,
-                SUM(total_sessions) AS sessions,
-                SUM(total_users) AS users,
-                SUM(total_new_users) AS new_users,
-                ROUND(AVG(engagement_rate_pct), 1) || '%' AS avg_eng_rate,
-                ROUND(SUM(total_dwell_min), 1) || 'm' AS dwell_time
-            FROM v_channel_performance
-            GROUP BY traffic_type;
+                event_name,
+                total_events,
+                total_users
+            FROM v_events_summary;
+        """),
+        "outbound": ("Top 15 Outbound Link Click Destinations", """
+            SELECT 
+                link_url,
+                total_clicks,
+                total_users,
+                referring_pages_count
+            FROM v_outbound_links
+            ORDER BY total_clicks DESC
+            LIMIT 15;
+        """),
+        "milestone-impact": ("Milestone / Release Cohort Comparison", """
+            SELECT 
+                commit_hash,
+                milestone_title,
+                milestone_date,
+                cohort,
+                days_tracked,
+                total_views,
+                total_users,
+                avg_engagement_sec || 's' AS avg_dwell,
+                avg_bounce_pct || '%' AS bounce
+            FROM v_milestone_impact;
         """)
-        rows = cur.fetchall()
-        headers = ["Audience Type", "Sessions", "Users", "New Users", "Avg Eng Rate", "Dwell Time"]
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=headers, tablefmt="simple"))
-        else:
-            for row in rows:
-                print(row)
+    }
+    
+    if name not in reports:
+        print(f"❌ Unknown report '{name}'. Choices: {list(reports.keys())}", file=sys.stderr)
+        return
+        
+    title, sql = reports[name]
+    print(f"\n📊 {title}\n" + "=" * len(title))
+    
+    cur.execute(sql)
+    cols = [desc[0] for desc in cur.description]
+    rows = cur.fetchall()
+    
+    if HAS_TABULATE:
+        print(tabulate(rows, headers=cols, tablefmt="grid"))
     else:
-        print(f"❌ Unknown report name: {report_name}. Valid choices: overview, top-pages, channels, geo, events, outbound, recurring")
-
+        print(" | ".join(cols))
+        print("-" * (len(" | ".join(cols))))
+        for r in rows:
+            print(" | ".join(str(x) for x in r))
+    print(f"\n({len(rows)} rows)\n")
     conn.close()
 
-
-# ---------------------------------------------------------------------------
-# Ad-Hoc SQL Query Runner
-# ---------------------------------------------------------------------------
 
 def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_json: bool = False, output_csv: bool = False):
     """Executes arbitrary SQL query against the analytics database."""
@@ -1056,43 +1214,77 @@ def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_json: bool = Fals
 # ---------------------------------------------------------------------------
 
 def main():
-    parent_parser = argparse.ArgumentParser(add_help=False)
-    parent_parser.add_argument("--db-path", default=DEFAULT_DB_FILE, help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})")
-    parent_parser.add_argument("--property-id", default=DEFAULT_PROPERTY_ID, help=f"GA4 Property ID (default: {DEFAULT_PROPERTY_ID})")
-    
     parser = argparse.ArgumentParser(
         description="Google Analytics 4 Ingestion Engine & SQL Analytics CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        parents=[parent_parser],
         epilog=__doc__
     )
+    parser.add_argument("--db-path", default=DEFAULT_DB_FILE, help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})")
+    parser.add_argument("--property-id", default=DEFAULT_PROPERTY_ID, help=f"GA4 Property ID (default: {DEFAULT_PROPERTY_ID})")
+    parser.add_argument("--credentials", default=DEFAULT_CREDENTIALS_FILE, help=f"OAuth credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})")
     
     subparsers = parser.add_subparsers(dest="command", required=True)
     
+    # Subcommand: auth
+    auth_p = subparsers.add_parser("auth", help="Authenticate via OAuth 2.0 Web Flow")
+    auth_p.add_argument("--client-secret", default=DEFAULT_CLIENT_SECRETS_FILE, help="Path to client secret JSON")
+    auth_p.add_argument("--port", type=int, default=8080, help="Port for OAuth callback server")
+    
+    # Subcommand: annotate
+    ann_p = subparsers.add_parser("annotate", help="Create a deployment/milestone annotation in GA4 and SQLite")
+    ann_p.add_argument("--title", required=True, help="Annotation / Milestone Title")
+    ann_p.add_argument("--date", required=True, help="Event Date (YYYY-MM-DD)")
+    ann_p.add_argument("--commit", help="Git commit hash")
+    ann_p.add_argument("--description", default="", help="Detailed description of changes")
+    ann_p.add_argument("--color", default="BLUE", choices=["BLUE", "GREEN", "PURPLE", "RED", "BROWN", "CYAN"], help="Chart Pin Color")
+    ann_p.add_argument("--category", default="Release", help="Milestone category")
+    ann_p.add_argument("--scope", default="sitewide", help="Scope of changes")
+    ann_p.add_argument("--author", default=os.environ.get("USER", ""), help="Author of release")
+    
     # Subcommand: properties
-    subparsers.add_parser("properties", parents=[parent_parser], help="List all accessible GA4 accounts and properties")
+    subparsers.add_parser("properties", help="List all accessible GA4 accounts and properties")
     
     # Subcommand: sync
-    sync_p = subparsers.add_parser("sync", parents=[parent_parser], help="Ingest raw GA4 data into SQLite database")
+    sync_p = subparsers.add_parser("sync", help="Ingest raw GA4 data into SQLite database")
     sync_p.add_argument("--days", type=int, help="Number of trailing days to sync")
     sync_p.add_argument("--full", action="store_true", help="Perform full historical backfill (up to 14 months)")
     sync_p.add_argument("--start-date", help="Custom start date (YYYY-MM-DD)")
     sync_p.add_argument("--end-date", help="Custom end date (YYYY-MM-DD)")
     
     # Subcommand: report
-    report_p = subparsers.add_parser("report", parents=[parent_parser], help="Run pre-built analytical reports")
-    report_p.add_argument("name", choices=["overview", "top-pages", "channels", "geo", "events", "outbound", "recurring"], help="Report name")
+    report_p = subparsers.add_parser("report", help="Run pre-built analytical reports")
+    report_p.add_argument("name", choices=["overview", "top-pages", "channels", "geo", "events", "outbound", "milestone-impact"], help="Report name")
     
     # Subcommand: query
-    query_p = subparsers.add_parser("query", parents=[parent_parser], help="Execute arbitrary SQL against the database")
+    query_p = subparsers.add_parser("query", help="Execute arbitrary SQL against the database")
     query_p.add_argument("sql", help="SQL query to execute")
     query_p.add_argument("--json", action="store_true", help="Output results in JSON format")
     query_p.add_argument("--csv", action="store_true", help="Output results in CSV format")
     
     args = parser.parse_args()
     
-    if args.command == "properties":
-        _, admin_client = get_clients()
+    if args.command == "auth":
+        cmd_auth(
+            client_secrets_file=args.client_secret,
+            credentials_file=args.credentials,
+            port=args.port
+        )
+    elif args.command == "annotate":
+        create_annotation(
+            property_id=args.property_id,
+            title=args.title,
+            description=args.description,
+            date_str=args.date,
+            color=args.color,
+            commit_hash=args.commit,
+            category=args.category,
+            scope=args.scope,
+            author=args.author,
+            db_path=args.db_path,
+            credentials_file=args.credentials
+        )
+    elif args.command == "properties":
+        _, admin_client = get_clients(args.credentials)
         list_properties(admin_client, args.db_path)
     elif args.command == "sync":
         run_sync(
@@ -1101,7 +1293,8 @@ def main():
             full=args.full,
             start_date=args.start_date,
             end_date=args.end_date,
-            db_path=args.db_path
+            db_path=args.db_path,
+            credentials_file=args.credentials
         )
     elif args.command == "report":
         run_report(args.name, args.db_path)

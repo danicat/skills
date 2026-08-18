@@ -36,7 +36,7 @@ Titles and descriptions determine SERP snippet display and supply critical groun
 - [ ] **Title Tag Optimization (`<title>`)**:
   - **Length**: **40–60 characters** (under 40 lacks signal; over 60 gets truncated on desktop and mobile SERPs).
   - **Front-Loading**: Place the primary keyword / core technology stack within the first 3 words (e.g., *"Building an MCP Server in Go"*).
-  - **Brand Suffix**: Append brand/site suffix via layout templates (e.g., `<title>{{ .Title }} | danicat.dev</title>`), not manually in markdown frontmatter.
+  - **Brand Suffix**: Append brand/site suffix via layout templates (e.g., `<title>{{ .Title }} | example.com</title>`), not manually in markdown frontmatter.
 - [ ] **Meta Description Formatting (`<meta name="description">`)**:
   - **Length**: **120–160 characters**.
   - **Content Formula**: Context / Problem + Core Technical Solution.
@@ -117,7 +117,7 @@ Clean HTTP response codes ensure efficient crawl budget usage and rapid search i
 - [ ] **Canonical Link Hygiene (`<link rel="canonical">`)**:
   - Every page must render a single, self-referencing canonical URL in `<head>`:
     ```html
-    <link rel="canonical" href="https://danicat.dev/posts/20260729-mcp-server-go/">
+    <link rel="canonical" href="https://example.com/posts/mcp-server-go/">
     ```
   - Ensure the canonical URL matches the canonical trailing slash convention and protocol (`https://`).
 

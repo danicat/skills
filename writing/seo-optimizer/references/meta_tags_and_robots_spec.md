@@ -22,7 +22,7 @@ A comprehensive technical reference for HTML `<meta>` tags, robots indexing and 
   <meta name="google-site-verification" content="+nxGUDJ4QpAZ5l9Bsjdi102tLVC21AIh5d1Nl23908vVuFHs34=">
   
   <!-- Document Title & Meta Description -->
-  <title>Building Scalable Agent Skills | Danicat Engineering</title>
+  <title>Building Scalable Agent Skills | Example Engineering</title>
   <meta name="description" content="Technical guide on authoring, evaluating, and deploying high-performance agent skills with strict progressive disclosure.">
   
   <!-- Robots Directives: Open indexing with rich visual & textual snippet controls -->

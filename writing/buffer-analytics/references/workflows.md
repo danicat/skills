@@ -45,7 +45,7 @@ python3 scripts/buffer_analytics.py sync
 ### 3. Channel-Specific Backfill
 Filter sync to a specific channel (e.g. LinkedIn only):
 ```bash
-python3 scripts/buffer_analytics.py sync --channel-id 6949d272457dae6a34a43851
+python3 scripts/buffer_analytics.py sync --channel-id 1234567890abcdef12345678
 ```
 
 ### 4. Date-Bounded Ingestion

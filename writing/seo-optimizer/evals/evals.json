@@ -74,7 +74,7 @@
     },
     {
       "id": 6,
-      "prompt": "Generate a standard /llms.txt specification index for a technical blog covering Agentic Coding and Go.",
+      "prompt": "Generate a standard /llms.txt specification index for a technical engineering blog covering AI engineering and Go.",
       "expected_output": "A spec-compliant llms.txt markdown document following llmstxt.org rules.",
       "files": [],
       "assertions": [

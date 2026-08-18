@@ -139,11 +139,11 @@ When publishing via automated tooling or the Buffer CLI:
      cat << 'EOF' | pbcopy
      Links to everything mentioned in the post:
      
-     📖 Gemini for Go Developers (Part 2):
-     https://danicat.dev/posts/...
+     📖 Technical Deep Dive:
+     https://example.com/posts/deep-dive
      
-     🛠️ godoctor:
-     https://github.com/danicat/godoctor
+     🛠️ Project Repository:
+     https://github.com/example/project
      EOF
      ```
    - **Linux (X11)**: `cat << 'EOF' | xclip -selection clipboard`

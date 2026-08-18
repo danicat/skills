@@ -63,7 +63,7 @@ GoDoctor provides AST-aware Go developer tooling, code quality enforcement, and 
 
 - **Zero-Fallback Policy**: External binaries (`golangci-lint`, `modernize`, `deadcode`, `selene`, `testquery`) must be pre-installed in `$PATH` or defined in `.godoctor.yaml`. Dynamic `go run` compilation fallbacks are banned to eliminate 1.5s–4.5s latency delays and ensure reproducible execution.
 - **Tool Version Tracking**: GoDoctor actively verifies installed tool versions against recommended baselines, reporting non-blocking upgrade recommendations and providing `godoctor check`.
-- **Absolute Paths Required**: All directory (`dir`) and file (`filename`) parameters must be absolute paths (e.g. `/Users/.../project`).
+- **Absolute Paths Required**: All directory (`dir`) and file (`filename`) parameters must be absolute paths (e.g. `/path/to/project`).
 - **Atomic Edit Transactions & Compiler Gate**: `edit` / `smart_edit` writes changes to temporary files before atomic replacement, preserving file permissions. Edits are verified via `go vet ./...` and automatically rolled back if errors are introduced.
 - **Concurrency & Resource Management**: Heavy operations like `level: "complete"` (Selene AST mutation testing) utilize all CPU cores; avoid spawning concurrent test/build tasks while complete runs are in flight to prevent CPU exhaustion and SQLite WAL contention.
 - **Configuration-Driven**: Subsystems read settings from `.godoctor.yaml` following a strict 3-tier precedence hierarchy:

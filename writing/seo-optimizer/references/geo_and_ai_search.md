@@ -70,14 +70,14 @@ Maintained at [llmstxt.org](https://llmstxt.org/), `llms.txt` provides a curated
 Contextual guidance on how an agent should interpret the documentation and resources.
 
 ## Core Documentation
-- [Quickstart Guide](https://danicat.dev/posts/quickstart/): Step-by-step setup for new developers.
-- [Architecture Overview](https://danicat.dev/posts/architecture/): Deep dive into system components.
+- [Quickstart Guide](https://example.com/docs/quickstart/): Step-by-step setup for new developers.
+- [Architecture Overview](https://example.com/docs/architecture/): Deep dive into system components.
 
 ## Tutorials & Guides
-- [Building an MCP Server in Go](https://danicat.dev/posts/mcp-server-go/): Complete implementation guide.
+- [Building an MCP Server in Go](https://example.com/tutorials/mcp-server-go/): Complete implementation guide.
 
 ## Optional
-- [About the Author](https://danicat.dev/about/): Background, credentials, and engineering principles.
+- [About the Project](https://example.com/about/): Background and engineering principles.
 ```
 
 ---

@@ -269,6 +269,35 @@ SELECT
 FROM search_performance
 WHERE device != ''
 GROUP BY site_url, device;
+
+-- 7. Release / Deployment Milestones
+CREATE TABLE IF NOT EXISTS site_milestones (
+    commit_hash TEXT PRIMARY KEY,
+    event_date DATE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    scope TEXT,
+    author TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Milestone Impact Cohort Comparison View
+DROP VIEW IF EXISTS v_milestone_impact;
+CREATE VIEW v_milestone_impact AS
+SELECT 
+    m.commit_hash,
+    m.title AS milestone_title,
+    m.event_date AS milestone_date,
+    CASE WHEN sp.date < m.event_date THEN 'Pre-Milestone' ELSE 'Post-Milestone' END AS cohort,
+    COUNT(DISTINCT sp.date) AS days_tracked,
+    ROUND(SUM(sp.impressions), 0) AS total_impressions,
+    ROUND(SUM(sp.clicks), 0) AS total_clicks,
+    ROUND((SUM(sp.clicks) / MAX(SUM(sp.impressions), 1)) * 100, 2) AS ctr_pct,
+    ROUND(AVG(sp.position), 1) AS avg_position
+FROM search_performance sp
+CROSS JOIN site_milestones m
+GROUP BY m.commit_hash, cohort;
 """
 
 
@@ -722,6 +751,19 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             GROUP BY day_of_week
             ORDER BY avg_daily_clicks DESC;
         """,
+        "milestone-impact": """
+            SELECT 
+                commit_hash,
+                milestone_title,
+                milestone_date,
+                cohort,
+                days_tracked,
+                total_impressions,
+                total_clicks,
+                ctr_pct || '%' AS ctr,
+                avg_position
+            FROM v_milestone_impact;
+        """,
     }
 
     if report_name not in reports:
@@ -920,11 +962,11 @@ def main():
 
     # 4. Report command (Pre-packaged SQL views)
     report_parser = subparsers.add_parser("report", help="Run pre-packaged analytical SQL report")
-    report_parser.add_argument("name", choices=["overview", "top-queries", "top-pages", "countries", "devices", "timing"], help="Report name")
+    report_parser.add_argument("name", choices=["overview", "top-queries", "top-pages", "countries", "devices", "timing", "milestone-impact"], help="Report name")
 
     # 5. Sitemaps submission command
     submit_parser = subparsers.add_parser("submit-sitemap", help="Submit an XML sitemap to Search Console")
-    submit_parser.add_argument("--site-url", required=True, help="Site property URL (e.g. https://danicat.dev/)")
+    submit_parser.add_argument("--site-url", required=True, help="Site property URL (e.g. https://example.com/ or sc-domain:example.com)")
     submit_parser.add_argument("--sitemap-url", required=True, help="Full URL of the sitemap XML")
 
     args = parser.parse_args()

@@ -69,8 +69,8 @@ tags: {{ OPTIMIZED_TAGS }}
 - **Primary Type:** `TechArticle`
 - **Dependencies:** `{{ DEPENDENCIES }}`
 - **Proficiency Level:** `{{ PROFICIENCY_LEVEL }}`
-- **Author Entity:** Daniela Petruzalek
-- **Publisher Entity:** danicat.dev
+- **Author Entity:** {{ AUTHOR_NAME }}
+- **Publisher Entity:** {{ PUBLISHER_NAME }}
 
 ---
 

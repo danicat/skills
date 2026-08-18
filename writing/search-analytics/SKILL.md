@@ -36,7 +36,7 @@ python3 scripts/search_analytics.py sync \
 
 # Sync a single property:
 python3 scripts/search_analytics.py sync \
-  --site-url "https://danicat.dev/" \
+  --site-url "https://example.com/" \
   --days 30
 ```
 
@@ -62,6 +62,9 @@ python3 scripts/search_analytics.py report devices
 
 # Day-of-the-week traffic trends
 python3 scripts/search_analytics.py report timing
+
+# Release / Milestone cohort impact comparison
+python3 scripts/search_analytics.py report milestone-impact
 ```
 
 ---

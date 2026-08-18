@@ -1,6 +1,6 @@
 ---
 name: google-analytics
-description: Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users, pageviews, dwell time, engagement events, acquisition channels, and outbound clicks) into a local SQLite database without data loss, run full historical backfills and incremental syncs, and execute deep SQL analytics over website traffic and localization behavior. Activate whenever analyzing Google Analytics 4 performance, auditing reader dwell time, querying GA4 data via SQL, comparing localization performance (/ vs /ja/ vs /pt-br/), or tracking user journeys and outbound link exits.
+description: Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users, pageviews, dwell time, engagement events, acquisition channels, and outbound clicks) into a local SQLite database without data loss, run full historical backfills and incremental syncs, and execute deep SQL analytics over website traffic and release milestones. Activate whenever analyzing Google Analytics 4 performance, auditing reader dwell time, evaluating release cohort impact, querying GA4 data via SQL, or tracking user journeys and outbound link exits.
 ---
 
 # Google Analytics 4 SQLite Ingestion & SQL Analytics
@@ -14,24 +14,29 @@ The `google-analytics` skill ingests Google Analytics 4 (GA4) traffic, reading d
 All operations are driven via the bundled Python CLI script (runnable with `python3` or `uv run`):
 
 ```bash
-# 1. Discover accessible GA4 properties
+# 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
+python3 scripts/google_analytics.py auth --port 8080
+
+# 2. Discover accessible GA4 properties
 python3 scripts/google_analytics.py properties
 
-# 2. Incremental Sync (Updates newest days + 3-day latency lookback overlap)
+# 3. Create Deployment / Milestone Annotation (Cloud API + Local SQLite)
+python3 scripts/google_analytics.py annotate \
+  --title "Site Redesign & Architecture Overhaul" \
+  --date 2026-08-18 \
+  --commit abc1234 \
+  --description "Comprehensive site architecture and performance release."
+
+# 4. Incremental Sync (Updates newest days + 3-day latency lookback overlap)
 python3 scripts/google_analytics.py sync
 
-# 3. Full Historical Backfill (Ingests up to 14 months of daily granular data)
+# 5. Full Historical Backfill (Ingests up to 14 months of daily granular data)
 python3 scripts/google_analytics.py sync --full
 
-# 4. Custom Date Range Sync
+# 6. Custom Date Range Sync
 python3 scripts/google_analytics.py sync \
   --start-date 2026-06-01 \
   --end-date 2026-08-15
-
-# 5. Specify database path and property ID explicitly
-python3 scripts/google_analytics.py sync \
-  --property-id 123456789 \
-  --db-path ./analytics/google_analytics.db
 ```
 
 ---
@@ -42,7 +47,7 @@ python3 scripts/google_analytics.py sync \
 # 1. Overall site health, sessions, users, dwell time, and 7-day trend
 python3 scripts/google_analytics.py report overview
 
-# 2. Top articles ranked by views, active dwell time, and bounce rate
+# 2. Top pages ranked by views, active dwell time, and bounce rate
 python3 scripts/google_analytics.py report top-pages
 
 # 3. Traffic sources, channels, and conversion engagement rates
@@ -57,8 +62,8 @@ python3 scripts/google_analytics.py report events
 # 6. Outbound link click destinations
 python3 scripts/google_analytics.py report outbound
 
-# 7. Recurring audience & new vs. returning traffic
-python3 scripts/google_analytics.py report recurring
+# 7. Release / Milestone cohort impact comparison
+python3 scripts/google_analytics.py report milestone-impact
 ```
 
 ---
@@ -68,24 +73,16 @@ python3 scripts/google_analytics.py report recurring
 Execute arbitrary SQL queries against the local database with formatted ASCII tables, `--json`, or `--csv`:
 
 ```bash
-# Compare localization performance (/ vs /ja/ vs /pt-br/)
+# Top 10 landing pages by total dwell time and engagement
 python3 scripts/google_analytics.py query "
 SELECT 
-    localization,
-    COUNT(DISTINCT page_path) AS pages,
-    SUM(total_views) AS views,
-    ROUND(SUM(total_dwell_min), 1) AS dwell_minutes,
-    ROUND(AVG(avg_bounce_pct), 1) AS avg_bounce_pct
+    page_path,
+    total_views,
+    total_users,
+    total_sessions,
+    avg_dwell_sec || 's' AS dwell,
+    avg_bounce_pct || '%' AS bounce
 FROM v_page_performance
-GROUP BY localization
-ORDER BY views DESC;
-"
-
-# Find top articles with highest dwell time
-python3 scripts/google_analytics.py query "
-SELECT page_path, total_views, total_users, avg_dwell_sec || 's' AS dwell, avg_bounce_pct || '%' AS bounce
-FROM v_page_performance
-WHERE page_path LIKE '/posts/%'
 ORDER BY total_views DESC
 LIMIT 10;
 "

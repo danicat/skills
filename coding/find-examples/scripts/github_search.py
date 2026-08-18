@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 import requests
 from datetime import datetime, timedelta
@@ -24,6 +25,11 @@ def search_github(dependency, languages, limit=5):
     all_results = []
     repos = {}
 
+    headers = {'Accept': 'application/vnd.github+json'}
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        headers['Authorization'] = f"Bearer {token}"
+
     for lang in languages:
         filename = manifest_files.get(lang.lower())
         if not filename:
@@ -34,7 +40,7 @@ def search_github(dependency, languages, limit=5):
         url = f"https://api.github.com/search/code?q={query}"
         
         try:
-            response = requests.get(url, headers={'Accept': 'application/vnd.github+json'})
+            response = requests.get(url, headers=headers)
             response.raise_for_status()
             items = response.json().get('items', [])
             
@@ -51,7 +57,7 @@ def search_github(dependency, languages, limit=5):
     for full_name, meta in list(repos.items())[:limit * 2]:
         try:
             repo_url = f"https://api.github.com/repos/{full_name}"
-            repo_resp = requests.get(repo_url, headers={'Accept': 'application/vnd.github+json'})
+            repo_resp = requests.get(repo_url, headers=headers)
             repo_resp.raise_for_status()
             repo_info = repo_resp.json()
             

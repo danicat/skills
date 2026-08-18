@@ -1,6 +1,6 @@
 ---
 name: nano-banana
-description: Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC auth. Supports "banana" as a verb (e.g., "please banana this") and Anime Dani / Chibi Dani character consistency.
+description: Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC auth. Supports "banana" as a verb (e.g., "please banana this") and multi-image character/style consistency.
 ---
 
 # Nano Banana Skill
@@ -13,8 +13,8 @@ Generate, edit, and iterate on visuals conversationally using Google's native **
 Activate this skill whenever the user asks to:
 - Generate new images or illustrations from text descriptions.
 - Edit, transform, style, or combine existing images.
-- Use **"banana" as a verb** (e.g., "please banana this image", "banana me as an anime character", "banana this into chibi style").
-- Generate character-consistent imagery featuring **Anime Dani**, **Daniela**, or **Chibi Dani**.
+- Use **"banana" as a verb** (e.g., "please banana this image", "banana this character into anime style", "banana this photo into chibi style").
+- Maintain character, subject, or style consistency across generated imagery using reference images.
 
 ---
 
@@ -56,17 +56,12 @@ Activate this skill whenever the user asks to:
 
 ---
 
-## Character Consistency (Anime Dani, Daniela & Chibi Dani)
+## Multi-Image Character & Style Consistency
 
-When generating or editing imagery featuring **Anime Dani**, **Daniela**, or **Chibi Dani**, attach the corresponding reference images from `{baseDir}/references/` to enforce visual consistency.
-
-### Anime Dani / Daniela
-- **Style**: Vibrant anime aesthetics, expressive eyes, crisp cel-shading, detailed linework.
-- **Reference Images**: Pass `{baseDir}/references/speaker-dani.png` and `{baseDir}/references/celebrating-dani.png` via `-i`.
-
-### Chibi Dani
-- **Style**: Super-deformed (SD) kawaii chibi style, oversized head, cute proportions, simplified outlines.
-- **Reference Image**: Pass `{baseDir}/references/chibi-dani.png` via `-i`.
+To enforce visual consistency across multiple generations:
+- **Character Consistency**: Pass 1–5 reference images of the subject via `-i` / `--input-image`. Describe consistent features in your prompt (hair, clothing, facial features, color scheme).
+- **Style Consistency**: Attach reference images depicting the desired artistic style (e.g. cel-shaded anime, watercolor, 3D claymation, pixel art).
+- **Custom Project References**: Store local reference images in `{baseDir}/references/` or any local asset directory for reusable visual anchors.
 
 ---
 
@@ -209,8 +204,8 @@ uv run {baseDir}/scripts/banana.py -p "A minimalist tech workspace with a laptop
 uv run {baseDir}/scripts/banana.py -p "A photorealistic macro shot of a Monarch butterfly on a flower" -f "butterfly_4k.png" -m "nano-banana-2" -r "4K"
 
 # Character Consistency Generation with Nano Banana Pro
-uv run {baseDir}/scripts/banana.py -p "Anime Dani presenting a tech keynote speech" -f "dani_keynote.png" -i "{baseDir}/references/speaker-dani.png" -i "{baseDir}/references/celebrating-dani.png" -m "nano-banana-pro"
+uv run {baseDir}/scripts/banana.py -p "Character mascot presenting a technical keynote speech" -f "keynote_mascot.png" -i "references/character_front.png" -i "references/character_side.png" -m "nano-banana-pro"
 
 # Image Editing ("banana this")
-uv run {baseDir}/scripts/banana.py -p "banana this photo into chibi style" -i "photo.png" -i "{baseDir}/references/chibi-dani.png" -f "chibi_output.png" -m "nano-banana-2"
+uv run {baseDir}/scripts/banana.py -p "banana this character into chibi 3D figurine style" -i "character.png" -f "chibi_output.png" -m "nano-banana-2"
 ```

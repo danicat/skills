@@ -104,9 +104,9 @@ def parse_frontmatter(content: str) -> Tuple[Dict[str, Any], str]:
 
 def generate_llms_txt(
     content_dir: str,
-    base_url: str = "https://danicat.dev",
-    site_title: str = "danicat.dev",
-    site_summary: str = "Technical blog and engineering field notes by Daniela Petruzalek focusing on Agentic Coding, Go, Gemini API, and Modern AI Systems."
+    base_url: str = "https://example.com",
+    site_title: str = "Developer Documentation & Engineering Blog",
+    site_summary: str = "Curated technical articles, developer guides, and engineering field notes."
 ) -> str:
     """Scans posts and outputs a spec-compliant llms.txt string."""
     path = Path(content_dir)
@@ -170,8 +170,7 @@ def generate_llms_txt(
 
     lines.extend([
         "## Optional",
-        f"- [About Daniela Petruzalek]({base_url.rstrip('/')}/about/): Background, bio, and engineering principles.",
-        f"- [Skills Catalog]({base_url.rstrip('/')}/skills/): Agent Skills repository and specifications.",
+        f"- [About]({base_url.rstrip('/')}/about/): Author bio and background.",
         "",
     ])
 
@@ -182,8 +181,8 @@ def main():
     parser = argparse.ArgumentParser(description="Generate llms.txt standard index from markdown posts.")
     parser.add_argument("--content-dir", default="content/posts", help="Directory containing posts")
     parser.add_argument("--output", default="static/llms.txt", help="Output file path")
-    parser.add_argument("--base-url", default="https://danicat.dev", help="Site base URL")
-    parser.add_argument("--site-title", default="danicat.dev", help="Site title")
+    parser.add_argument("--base-url", default="https://example.com", help="Site base URL")
+    parser.add_argument("--site-title", default="Engineering Blog", help="Site title")
 
     args = parser.parse_args()
 

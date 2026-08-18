@@ -58,17 +58,17 @@ To declare the preferred site name, place a `WebSite` JSON-LD schema on the **ho
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Daniela Petruzalek",
-  "alternateName": ["Danicat", "danicat.dev"],
-  "url": "https://danicat.dev/"
+  "name": "Acme Engineering",
+  "alternateName": ["Acme Tech", "acme.example.com"],
+  "url": "https://example.com/"
 }
 </script>
 ```
 
 ### Key Properties
 
-- **`name`** *(Required)*: The official name of the site (e.g., `"Daniela Petruzalek"`). Must be concise, recognizable, and consistent across the site.
-- **`alternateName`** *(Optional)*: Array of acceptable aliases, acronyms, or shorter variations (e.g., `["Danicat", "danicat.dev"]`).
+- **`name`** *(Required)*: The official name of the site (e.g., `"Acme Engineering"`). Must be concise, recognizable, and consistent across the site.
+- **`alternateName`** *(Optional)*: Array of acceptable aliases, acronyms, or shorter variations (e.g., `["Acme Tech", "acme.example.com"]`).
 - **`url`** *(Required)*: The canonical root URL of the website.
 
 ### Signal Hierarchy for Site Names
@@ -268,7 +268,7 @@ graph TD
 <head>
   <title>Building a Local MCP Server in Go: Complete Architecture & Implementation</title>
   <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta property="og:image" content="https://danicat.dev/images/2026-mcp-go-hero.png">
+  <meta property="og:image" content="https://example.com/images/mcp-go-hero.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 </head>
@@ -337,13 +337,13 @@ Mark paywalled sections using `isAccessibleForFree` and `hasPart` targeting spec
   },
   "author": {
     "@type": "Person",
-    "name": "Daniela Petruzalek",
-    "url": "https://danicat.dev/about/"
+    "name": "Jane Doe",
+    "url": "https://example.com/about/"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "danicat.dev",
-    "url": "https://danicat.dev/"
+    "name": "Acme Engineering",
+    "url": "https://example.com/"
   }
 }
 </script>

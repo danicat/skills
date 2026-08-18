@@ -58,27 +58,22 @@ description: "Analysis of multi-agent code review workflows in Go and TypeScript
 To maximize search relevance and avoid internal tag cannibalization:
 
 ### 1. Single Pillar Category
-Every article belongs to exactly **one** primary category:
-- `Agentic Coding`
-- `Agent Development`
-- `Applied GenAI`
-- `Perspectives`
-- `Software Engineering`
+Every article should belong to exactly **one** primary category to avoid duplicate taxonomy indexing and maintain clean topic clusters (e.g., `Software Engineering`, `Cloud Architecture`, `Artificial Intelligence`, `DevOps`, `Tutorials`).
 
 ### 2. Tag Invariants
 - **Format**: Strictly lowercase, alphanumeric, single hyphens (`kebab-case`).
 - **Alphabetical Sorting**: Tags must be sorted alphabetically in the frontmatter array.
-- **No Category Duplication**: If the category is `Agentic Coding`, do NOT add `agentic-coding` as a tag.
-- **Language Invariance**: Tags remain in standard English across all localized editions (`index.md`, `index.ja.md`, `index.pt-br.md`).
+- **No Category Duplication**: If the category is `Software Engineering`, do NOT add `software-engineering` as a tag.
+- **Unified Tag Archives**: Maintain consistent, standardized tag naming across all translated editions if publishing a multilingual site.
 
 ```yaml
 # BAD: Unsorted, mixed casing, category duplication
-categories: ["Agentic Coding"]
-tags: ["Go", "MCP", "agentic-coding", "Gemini"]
+categories: ["Software Engineering"]
+tags: ["Go", "Architecture", "software-engineering", "APIs"]
 
 # GOOD: Canonical, sorted, clean
-categories: ["Agentic Coding"]
-tags: ["gemini-cli", "golang", "mcp", "tutorial"]
+categories: ["Software Engineering"]
+tags: ["apis", "architecture", "golang", "microservices"]
 ```
 
 ---

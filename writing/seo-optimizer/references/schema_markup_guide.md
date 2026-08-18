@@ -42,51 +42,51 @@ Use `TechArticle` for coding tutorials, architectural analyses, and technical gu
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "@id": "https://danicat.dev/posts/20260729-mcp-server-go/#article",
-  "headline": "Building an MCP Server with Gemini CLI and Go",
-  "name": "Building an MCP Server with Gemini CLI and Go",
-  "description": "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go for Gemini CLI. Covers JSON-RPC handlers, tool discovery, and local debugging.",
+  "@id": "https://example.com/posts/mcp-server-go/#article",
+  "headline": "Building an MCP Server in Go",
+  "name": "Building an MCP Server in Go",
+  "description": "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go. Covers JSON-RPC handlers, tool discovery, and local debugging.",
   "inLanguage": "en",
-  "url": "https://danicat.dev/posts/20260729-mcp-server-go/",
+  "url": "https://example.com/posts/mcp-server-go/",
   "datePublished": "2026-07-29T10:00:00Z",
   "dateModified": "2026-08-18T12:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://danicat.dev/posts/20260729-mcp-server-go/"
+    "@id": "https://example.com/posts/mcp-server-go/"
   },
   "image": {
     "@type": "ImageObject",
-    "url": "https://danicat.dev/images/20260729-mcp-server-go-hero.png",
+    "url": "https://example.com/images/mcp-server-go-hero.png",
     "width": 1200,
     "height": 675,
-    "caption": "Architecture diagram illustrating JSON-RPC communication between Gemini CLI and Go MCP server"
+    "caption": "Architecture diagram illustrating JSON-RPC communication between client and Go MCP server"
   },
   "proficiencyLevel": "Beginner",
-  "dependencies": "Go 1.24+, Gemini CLI, git",
+  "dependencies": "Go 1.24+, git",
   "author": {
     "@type": "Person",
-    "@id": "https://danicat.dev/about/#person",
-    "name": "Daniela Petruzalek",
-    "url": "https://danicat.dev/about/",
+    "@id": "https://example.com/about/#person",
+    "name": "Jane Doe",
+    "url": "https://example.com/about/",
     "sameAs": [
-      "https://github.com/danicat",
-      "https://www.linkedin.com/in/danicat/",
-      "https://bsky.app/profile/danicat.dev"
+      "https://github.com/example",
+      "https://www.linkedin.com/in/example/",
+      "https://bsky.app/profile/example.bsky.social"
     ]
   },
   "publisher": {
     "@type": "Organization",
-    "@id": "https://danicat.dev/#organization",
-    "name": "danicat.dev",
-    "url": "https://danicat.dev/",
+    "@id": "https://example.com/#organization",
+    "name": "Example Engineering",
+    "url": "https://example.com/",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://danicat.dev/images/avatar.png",
+      "url": "https://example.com/images/logo.png",
       "width": 192,
       "height": 192
     }
   },
-  "keywords": ["gemini-cli", "golang", "mcp", "tutorial"]
+  "keywords": ["golang", "mcp", "tutorial"]
 }
 ```
 
@@ -100,21 +100,21 @@ Place this schema on the homepage or in the site-wide base template to control h
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://danicat.dev/#website",
-  "url": "https://danicat.dev/",
-  "name": "Daniela Petruzalek",
-  "alternateName": ["danicat.dev", "DaniCat Tech"],
-  "description": "Technical publications, Go engineering, and AI agent architecture.",
+  "@id": "https://example.com/#website",
+  "url": "https://example.com/",
+  "name": "Example Engineering",
+  "alternateName": ["Example Tech", "example.com"],
+  "description": "Technical publications, software engineering guides, and system architecture deep dives.",
   "inLanguage": "en",
   "publisher": {
     "@type": "Organization",
-    "@id": "https://danicat.dev/#organization"
+    "@id": "https://example.com/#organization"
   },
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://danicat.dev/search/?q={search_term_string}"
+      "urlTemplate": "https://example.com/search/?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }
@@ -131,27 +131,27 @@ Google uses `ProfilePage` structured data to power author knowledge cards, verif
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "@id": "https://danicat.dev/about/#profilepage",
-  "url": "https://danicat.dev/about/",
-  "name": "About Daniela Petruzalek",
+  "@id": "https://example.com/about/#profilepage",
+  "url": "https://example.com/about/",
+  "name": "About Jane Doe",
   "mainEntity": {
     "@type": "Person",
-    "@id": "https://danicat.dev/about/#person",
-    "name": "Daniela Petruzalek",
-    "alternateName": "danicat",
-    "jobTitle": "Principal Software Engineer & AI Systems Architect",
-    "description": "Software engineer specializing in Go systems programming, agentic coding workflows, and developer tooling.",
-    "image": "https://danicat.dev/images/avatar.png",
-    "url": "https://danicat.dev/about/",
+    "@id": "https://example.com/about/#person",
+    "name": "Jane Doe",
+    "alternateName": "janedoe",
+    "jobTitle": "Principal Software Engineer & Systems Architect",
+    "description": "Software engineer specializing in Go systems programming, developer tooling, and distributed systems.",
+    "image": "https://example.com/images/avatar.png",
+    "url": "https://example.com/about/",
     "worksFor": {
       "@type": "Organization",
-      "name": "Independent"
+      "name": "Example Corp"
     },
     "sameAs": [
-      "https://github.com/danicat",
-      "https://www.linkedin.com/in/danicat/",
-      "https://bsky.app/profile/danicat.dev",
-      "https://x.com/danicatdev"
+      "https://github.com/example",
+      "https://www.linkedin.com/in/example/",
+      "https://bsky.app/profile/example.bsky.social",
+      "https://x.com/example"
     ]
   }
 }
@@ -167,25 +167,25 @@ Declares the publishing entity, official brand logo, and authoritative web footp
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://danicat.dev/#organization",
-  "name": "danicat.dev",
-  "url": "https://danicat.dev/",
+  "@id": "https://example.com/#organization",
+  "name": "Example Engineering",
+  "url": "https://example.com/",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://danicat.dev/images/avatar.png",
+    "url": "https://example.com/images/logo.png",
     "width": 512,
     "height": 512,
-    "caption": "danicat.dev logo"
+    "caption": "Example Engineering logo"
   },
   "sameAs": [
-    "https://github.com/danicat",
-    "https://bsky.app/profile/danicat.dev",
-    "https://www.linkedin.com/in/danicat/"
+    "https://github.com/example",
+    "https://bsky.app/profile/example.bsky.social",
+    "https://www.linkedin.com/company/example"
   ],
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "editorial",
-    "url": "https://danicat.dev/about/"
+    "url": "https://example.com/about/"
   }
 }
 ```
@@ -200,19 +200,19 @@ Use this schema when releasing or documenting software packages, CLI utilities, 
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "@id": "https://danicat.dev/projects/godoctor/#software",
-  "name": "GoDoctor",
-  "description": "Automated code diagnostics, mutation testing, and style enforcement CLI for Go codebases.",
+  "@id": "https://example.com/projects/tool/#software",
+  "name": "DevTool",
+  "description": "Automated code diagnostics, mutation testing, and style enforcement CLI.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Linux, macOS, Windows",
   "programmingLanguage": "Go",
   "softwareVersion": "1.4.0",
-  "codeRepository": "https://github.com/danicat/godoctor",
-  "downloadUrl": "https://github.com/danicat/godoctor/releases",
+  "codeRepository": "https://github.com/example/tool",
+  "downloadUrl": "https://github.com/example/tool/releases",
   "author": {
     "@type": "Person",
-    "name": "Daniela Petruzalek",
-    "url": "https://danicat.dev/about/"
+    "name": "Jane Doe",
+    "url": "https://example.com/about/"
   },
   "offers": {
     "@type": "Offer",
@@ -233,21 +233,21 @@ Use when embedding YouTube, Vimeo, or self-hosted video recordings of tutorials,
   "@context": "https://schema.org",
   "@type": "VideoObject",
   "name": "Building an MCP Server in Go from Scratch",
-  "description": "Full walkthrough of constructing a JSON-RPC Model Context Protocol server in Go and connecting it to Gemini CLI.",
+  "description": "Full walkthrough of constructing a JSON-RPC Model Context Protocol server in Go.",
   "thumbnailUrl": [
-    "https://danicat.dev/images/video-mcp-thumb-16x9.jpg",
-    "https://danicat.dev/images/video-mcp-thumb-4x3.jpg"
+    "https://example.com/images/video-thumb-16x9.jpg",
+    "https://example.com/images/video-thumb-4x3.jpg"
   ],
   "uploadDate": "2026-07-29T12:00:00Z",
   "duration": "PT14M32S",
-  "contentUrl": "https://danicat.dev/videos/mcp-server-go.mp4",
+  "contentUrl": "https://example.com/videos/mcp-server-go.mp4",
   "embedUrl": "https://www.youtube-nocookie.com/embed/example123",
   "publisher": {
     "@type": "Organization",
-    "name": "danicat.dev",
+    "name": "Example Engineering",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://danicat.dev/images/avatar.png"
+      "url": "https://example.com/images/logo.png"
     }
   }
 }
@@ -263,15 +263,15 @@ Enables enhanced image previews and Google Images "Licensable" badges for propri
 {
   "@context": "https://schema.org",
   "@type": "ImageObject",
-  "contentUrl": "https://danicat.dev/images/20260729-mcp-architecture.png",
+  "contentUrl": "https://example.com/images/architecture-diagram.png",
   "license": "https://creativecommons.org/licenses/by-sa/4.0/",
-  "acquireLicensePage": "https://danicat.dev/about/#licensing",
-  "creditText": "Daniela Petruzalek",
+  "acquireLicensePage": "https://example.com/about/#licensing",
+  "creditText": "Jane Doe",
   "creator": {
     "@type": "Person",
-    "name": "Daniela Petruzalek"
+    "name": "Jane Doe"
   },
-  "copyrightNotice": "© 2026 Daniela Petruzalek. CC BY-SA 4.0."
+  "copyrightNotice": "© 2026 Jane Doe. CC BY-SA 4.0."
 }
 ```
 
@@ -295,13 +295,13 @@ When offering gated technical whitepapers or paywalled deep dives, mark the payw
   },
   "author": {
     "@type": "Person",
-    "name": "Daniela Petruzalek",
-    "url": "https://danicat.dev/about/"
+    "name": "Jane Doe",
+    "url": "https://example.com/about/"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "danicat.dev",
-    "url": "https://danicat.dev/"
+    "name": "Example Engineering",
+    "url": "https://example.com/"
   }
 }
 ```
@@ -321,19 +321,19 @@ Generates clean breadcrumb paths in Google Search results instead of raw URL str
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://danicat.dev/"
+      "item": "https://example.com/"
     },
     {
       "@type": "ListItem",
       "position": 2,
       "name": "Posts",
-      "item": "https://danicat.dev/posts/"
+      "item": "https://example.com/posts/"
     },
     {
       "@type": "ListItem",
       "position": 3,
-      "name": "Building an MCP Server with Gemini CLI and Go",
-      "item": "https://danicat.dev/posts/20260729-mcp-server-go/"
+      "name": "Building an MCP Server in Go",
+      "item": "https://example.com/posts/mcp-server-go/"
     }
   ]
 }
@@ -411,7 +411,7 @@ In `layouts/partials/schema.html`:
   "author": {
     "@type": "Person",
     "@id": {{ "about/#person" | absURL | jsonify }},
-    "name": {{ .Site.Params.author.name | default "Daniela Petruzalek" | jsonify }},
+    "name": {{ .Site.Params.author.name | default "Author Name" | jsonify }},
     "url": {{ "about/" | absURL | jsonify }}
   },
   "publisher": {

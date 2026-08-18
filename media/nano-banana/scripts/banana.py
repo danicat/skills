@@ -97,14 +97,5 @@ def main():
         print(f"Error generating image with {model_id}: {e}", file=sys.stderr)
         sys.exit(1)
 
-    try:
-        with open(args.filename, "wb") as f:
-            f.write(img_bytes)
-            
-        print(f"Success! Image saved to {args.filename}")
-    except Exception as e:
-        print(f"Error saving image: {e}", file=sys.stderr)
-        sys.exit(1)
-
 if __name__ == "__main__":
     main()

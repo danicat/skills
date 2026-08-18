@@ -19,15 +19,6 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 
-# Canonical categories per EDITORIAL.md
-VALID_CATEGORIES = {
-    "Agentic Coding",
-    "Agent Development",
-    "Applied GenAI",
-    "Perspectives",
-    "Software Engineering",
-}
-
 # Forbidden AI slop terms and phrases
 SLOP_TERMS = [
     "delve", "game-changer", "game changer", "revolutionary",
@@ -185,7 +176,7 @@ def count_words_or_characters(text: str, is_japanese: bool) -> int:
     return len(text.split())
 
 
-def audit_article(file_path: str) -> AuditReport:
+def audit_article(file_path: str, valid_categories: Optional[set] = None) -> AuditReport:
     """Performs a comprehensive SEO and GEO audit on a markdown article."""
     path = Path(file_path)
     if not path.exists():
@@ -275,11 +266,14 @@ def audit_article(file_path: str) -> AuditReport:
         penalties += 5
     else:
         cat_name = categories[0]
-        if cat_name in VALID_CATEGORIES:
-            findings.append(AuditFinding("Taxonomy", "PASS", f"Valid primary category: '{cat_name}'"))
+        if valid_categories:
+            if cat_name in valid_categories:
+                findings.append(AuditFinding("Taxonomy", "PASS", f"Valid primary category: '{cat_name}'"))
+            else:
+                findings.append(AuditFinding("Taxonomy", "WARNING", f"Non-standard category '{cat_name}'. Allowed categories: {sorted(list(valid_categories))}"))
+                penalties += 5
         else:
-            findings.append(AuditFinding("Taxonomy", "WARNING", f"Non-standard category '{cat_name}'. Standard categories: {sorted(list(VALID_CATEGORIES))}"))
-            penalties += 5
+            findings.append(AuditFinding("Taxonomy", "PASS", f"Primary category defined: '{cat_name}'"))
 
     tags = fm.get("tags", [])
     if isinstance(tags, str):
@@ -508,6 +502,7 @@ def format_markdown_report(report: AuditReport) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Audit technical Markdown for SEO and Generative Engine Optimization (GEO).")
     parser.add_argument("target", help="Path to a markdown file or directory of markdown files")
+    parser.add_argument("--categories", help="Comma-separated list of allowed primary categories (optional)")
     parser.add_argument("--json", action="store_true", help="Output machine-readable JSON")
     parser.add_argument("--quiet", action="store_true", help="Only output if errors or warnings exist")
 
@@ -518,6 +513,10 @@ def main():
         print(f"Error: Target '{args.target}' does not exist.", file=sys.stderr)
         sys.exit(1)
 
+    valid_cats = None
+    if args.categories:
+        valid_cats = {c.strip() for c in args.categories.split(",") if c.strip()}
+
     files_to_audit = []
     if target_path.is_file():
         files_to_audit.append(target_path)
@@ -526,7 +525,7 @@ def main():
 
     reports = []
     for f in files_to_audit:
-        reports.append(audit_article(str(f)))
+        reports.append(audit_article(str(f), valid_categories=valid_cats))
 
     if args.json:
         out = [asdict(r) for r in reports]

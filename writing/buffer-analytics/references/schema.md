@@ -11,7 +11,7 @@ Stores connected social channel metadata.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
-| `id` | `TEXT PRIMARY KEY` | Channel ID (e.g., `6949d272457dae6a34a43851`) |
+| `id` | `TEXT PRIMARY KEY` | Channel ID (e.g., `1234567890abcdef12345678`) |
 | `organization_id` | `TEXT` | Buffer Organization ID |
 | `name` | `TEXT` | Channel username/handle |
 | `service` | `TEXT` | Social network (`linkedin`, `twitter`, `bluesky`, `instagram`, `facebook`) |
@@ -34,7 +34,7 @@ Stores individual post records, scheduling state, and content.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
-| `id` | `TEXT PRIMARY KEY` | Buffer Post ID (e.g., `6a83963a54c341291db5c8e2`) |
+| `id` | `TEXT PRIMARY KEY` | Buffer Post ID (e.g., `abcdef1234567890abcdef12`) |
 | `organization_id` | `TEXT` | Buffer Organization ID |
 | `channel_id` | `TEXT NOT NULL` | Foreign key referencing `channels.id` |
 | `channel_service` | `TEXT` | Service identifier (`linkedin`, `twitter`, `bluesky`) |

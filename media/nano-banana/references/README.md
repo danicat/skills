@@ -1,10 +1,16 @@
-# Nano Banana Reference Images
+# Reference Images & Consistency Anchors
 
-This directory stores reference images for character consistency when generating or editing images of Anime Dani and Chibi Dani.
+This directory stores reference images for character, subject, and style consistency when generating or editing images with Nano Banana models.
 
-## Character Reference Files
-Place reference images in this directory following these standard filenames:
-- **Anime Dani / Daniela**: `celebrating-dani.png` and `speaker-dani.png`
-- **Chibi Dani**: `chibi-dani.png`
+## Usage
+Place reference images (characters, mascots, brand assets, style examples) in this directory or reference them from your local project paths.
 
-When the user requests image generation or editing of Anime Dani, Daniela, or Chibi Dani, these reference images are passed to `scripts/banana.py` via `-i` / `--input-image`.
+Pass reference images to `scripts/banana.py` using `-i` or `--input-image`:
+
+```bash
+uv run scripts/banana.py \
+  -p "Our mascot in a pilot jacket flying a vintage biplane" \
+  -f "pilot_mascot.png" \
+  -i "references/mascot.png" \
+  -m "nano-banana-pro"
+```

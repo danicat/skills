@@ -230,7 +230,7 @@ Googlebot discovers the web by extracting and traversing HTML hyperlinks. It doe
 graph LR
     subgraph Crawlable
         L1["<a href='/posts/guide/'>Valid Anchor</a>"]
-        L2["<a href='https://danicat.dev/posts/'>Absolute URL</a>"]
+        L2["<a href='https://example.com/posts/'>Absolute URL</a>"]
     end
     
     subgraph Non-Crawlable
@@ -304,11 +304,11 @@ Sitemaps inform search engines about discoverable URLs, media metadata, and cont
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://danicat.dev/sitemaps/posts-sitemap.xml</loc>
+    <loc>https://example.com/sitemaps/posts-sitemap.xml</loc>
     <lastmod>2026-08-15T12:00:00+00:00</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://danicat.dev/sitemaps/docs-sitemap.xml</loc>
+    <loc>https://example.com/sitemaps/docs-sitemap.xml</loc>
     <lastmod>2026-08-18T08:30:00+00:00</lastmod>
   </sitemap>
 </sitemapindex>

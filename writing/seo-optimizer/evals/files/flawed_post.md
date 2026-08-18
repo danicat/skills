@@ -1,8 +1,8 @@
 ---
 title: "Go MCP"
 summary: "A quick post about MCP."
-categories: ["Agentic Coding"]
-tags: ["golang", "agentic-coding", "ai", "mcp"]
+categories: ["Software Engineering"]
+tags: ["golang", "software-engineering", "ai", "mcp"]
 ---
 
 # Go MCP Server Guide
@@ -19,4 +19,4 @@ Here is how you do it:
 
 ![image.png](diagram.png)
 
-To learn more [click here](https://danicat.dev).
+To learn more [click here](https://example.com).

@@ -3,7 +3,7 @@ title: "Building an MCP Server in Go for Gemini CLI"
 summary: "Transform any Go CLI into a native tool for AI agents with just 50 lines of code."
 description: "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go for Gemini CLI. Covers JSON-RPC handlers, tool discovery, and local debugging."
 date: 2026-08-18T10:00:00Z
-categories: ["Agentic Coding"]
+categories: ["Software Engineering"]
 tags: ["gemini-cli", "golang", "mcp", "tutorial"]
 ---
 

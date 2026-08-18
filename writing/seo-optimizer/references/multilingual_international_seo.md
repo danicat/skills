@@ -27,7 +27,7 @@ A comprehensive technical reference for designing, implementing, and auditing in
 
 ### Definitions
 
-- **Multilingual Website**: A site offering content in more than one language (e.g., an engineering blog offering English at `danicat.dev/`, Japanese at `danicat.dev/ja/`, and Brazilian Portuguese at `danicat.dev/pt-br/`). Google Search matches search results to the language of the query and the searcher's language preferences.
+- **Multilingual Website**: A site offering content in more than one language (e.g., an engineering blog offering English at `example.com/`, Japanese at `example.com/ja/`, and Brazilian Portuguese at `example.com/pt-br/`). Google Search matches search results to the language of the query and the searcher's language preferences.
 - **Multi-Regional Website**: A site explicitly targeting users in different countries or territories (e.g., a product platform shipping to Canada, the United Kingdom, and the United States). Google Search matches search results to the searcher's geographic region.
 - **Hybrid Website**: A site that is both multi-regional and multilingual (e.g., a Canadian store offering both English `en-ca` and French `fr-ca` editions, alongside a US English `en-us` edition).
 
@@ -172,14 +172,14 @@ In `layouts/partials/head.html`:
 #### Rendered HTML Output:
 ```html
 <head>
-  <title>Building Go MCP Servers | Dani's Blog</title>
-  <link rel="canonical" href="https://danicat.dev/posts/go-mcp/" />
+  <title>Building Go MCP Servers | Engineering Blog</title>
+  <link rel="canonical" href="https://example.com/posts/go-mcp/" />
   
   <!-- Bidirectional hreflang cluster -->
-  <link rel="alternate" hreflang="en" href="https://danicat.dev/posts/go-mcp/" />
-  <link rel="alternate" hreflang="ja" href="https://danicat.dev/ja/posts/go-mcp/" />
-  <link rel="alternate" hreflang="pt-br" href="https://danicat.dev/pt-br/posts/go-mcp/" />
-  <link rel="alternate" hreflang="x-default" href="https://danicat.dev/posts/go-mcp/" />
+  <link rel="alternate" hreflang="en" href="https://example.com/posts/go-mcp/" />
+  <link rel="alternate" hreflang="ja" href="https://example.com/ja/posts/go-mcp/" />
+  <link rel="alternate" hreflang="pt-br" href="https://example.com/pt-br/posts/go-mcp/" />
+  <link rel="alternate" hreflang="x-default" href="https://example.com/posts/go-mcp/" />
 </head>
 ```
 
@@ -205,7 +205,7 @@ Link: <https://example.com/whitepaper.pdf>; rel="alternate"; hreflang="en",
 #### NGINX Server Configuration:
 ```nginx
 location = /downloads/architecture-guide.pdf {
-    add_header Link '<https://danicat.dev/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="en", <https://danicat.dev/ja/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="ja", <https://danicat.dev/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="x-default"';
+    add_header Link '<https://example.com/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="en", <https://example.com/ja/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="ja", <https://example.com/downloads/architecture-guide.pdf>; rel="alternate"; hreflang="x-default"';
 }
 ```
 
@@ -232,29 +232,29 @@ Declare localized variations in an XML sitemap. This is ideal for large enterpri
   
   <!-- English Global URL -->
   <url>
-    <loc>https://danicat.dev/posts/go-mcp/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://danicat.dev/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://danicat.dev/ja/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="pt-br" href="https://danicat.dev/pt-br/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://danicat.dev/posts/go-mcp/"/>
+    <loc>https://example.com/posts/go-mcp/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://example.com/ja/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://example.com/pt-br/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://example.com/posts/go-mcp/"/>
   </url>
 
   <!-- Japanese URL -->
   <url>
-    <loc>https://danicat.dev/ja/posts/go-mcp/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://danicat.dev/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://danicat.dev/ja/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="pt-br" href="https://danicat.dev/pt-br/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://danicat.dev/posts/go-mcp/"/>
+    <loc>https://example.com/ja/posts/go-mcp/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://example.com/ja/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://example.com/pt-br/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://example.com/posts/go-mcp/"/>
   </url>
 
   <!-- Brazilian Portuguese URL -->
   <url>
-    <loc>https://danicat.dev/pt-br/posts/go-mcp/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://danicat.dev/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://danicat.dev/ja/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="pt-br" href="https://danicat.dev/pt-br/posts/go-mcp/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://danicat.dev/posts/go-mcp/"/>
+    <loc>https://example.com/pt-br/posts/go-mcp/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://example.com/ja/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="pt-br" href="https://example.com/pt-br/posts/go-mcp/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://example.com/posts/go-mcp/"/>
   </url>
 
 </urlset>
@@ -329,8 +329,8 @@ Every page in the cluster must include a link pointing to itself alongside all o
 
 ### 3. Fully-Qualified URLs
 All URLs must be absolute and fully qualified, including protocol and domain:
-- ✅ `https://danicat.dev/ja/posts/`
-- ❌ `//danicat.dev/ja/posts/` (protocol-relative)
+- ✅ `https://example.com/ja/posts/`
+- ❌ `//example.com/ja/posts/` (protocol-relative)
 - ❌ `/ja/posts/` (relative path)
 
 ### 4. Generic Language Catchall URLs
@@ -404,11 +404,11 @@ Use these verified tools and inspection workflows to validate international SEO 
 Verify response headers and angle-bracket formatting:
 ```bash
 # Inspect Link HTTP headers on non-HTML assets
-curl -sI https://danicat.dev/downloads/whitepaper.pdf | grep -i "^link:"
+curl -sI https://example.com/downloads/whitepaper.pdf | grep -i "^link:"
 
 # Verify clean 200 OK responses on all localized subdirectories
 for path in "" "ja/" "pt-br/"; do
-  curl -s -o /dev/null -w "%{http_code} https://danicat.dev/$path\n" "https://danicat.dev/$path"
+  curl -s -o /dev/null -w "%{http_code} https://example.com/$path\n" "https://example.com/$path"
 done
 ```
 

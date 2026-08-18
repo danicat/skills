@@ -85,8 +85,8 @@ Verify and craft distinct metadata fields:
 title: "Building an MCP Server with Gemini CLI and Go"
 summary: "Turn any Go CLI into a native tool for AI agents with just 50 lines of code."
 description: "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go for Gemini CLI. Covers JSON-RPC handlers, tool discovery, and local debugging."
-categories: ["Agentic Coding"]
-tags: ["gemini-cli", "golang", "mcp", "tutorial"]
+categories: ["Software Engineering"]
+tags: ["apis", "golang", "mcp", "tutorial"]
 ---
 ```
 - Title: 40–60 characters. Clear, high-signal, active phrasing.
