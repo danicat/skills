@@ -4,8 +4,8 @@
   "title": "Daniela Petruzalek Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 22,
-  "updatedAt": "2026-08-18T01:38:30.065Z",
+  "totalSkills": 23,
+  "updatedAt": "2026-08-18T02:24:15.304Z",
   "categories": [
     {
       "id": "game-dev",
@@ -254,6 +254,18 @@
       "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/buffer",
       "relativePath": "writing/buffer/SKILL.md"
+    },
+    {
+      "name": "buffer-analytics",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Ingest raw Buffer social post and channel data into a local SQLite analytics database (without loss), run backfills and incremental syncs, execute ad-hoc SQL queries, and perform deep performance crunching across LinkedIn, Twitter/X, and Bluesky. Activate whenever analyzing social post performance, auditing historical metrics, finding best days/hours to post, running SQL queries over social archives, or evaluating campaign engagement.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/buffer-analytics",
+      "url": "https://skills.danicat.dev/writing/buffer-analytics/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/buffer-analytics",
+      "relativePath": "writing/buffer-analytics/SKILL.md"
     },
     {
       "name": "google-blog-style",
