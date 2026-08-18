@@ -25,6 +25,8 @@ To minimize context overhead, `SKILL.md` defines core workflows, operational che
 - **Technical SEO Checklist**: Read [references/technical_seo_checklist.md](references/technical_seo_checklist.md) when auditing titles, descriptions, headings, outbound link qualifications (`rel="sponsored"`, `rel="ugc"`, `rel="nofollow"`), and image accessibility.
 - **Frontmatter & Taxonomy**: Read [references/frontmatter_standards.md](references/frontmatter_standards.md) when splitting human-facing `summary` from search-facing `description`, or formatting tag taxonomy.
 - **Schema.org Structured Data**: Read [references/schema_markup_guide.md](references/schema_markup_guide.md) when generating or validating JSON-LD (`TechArticle`, `BreadcrumbList`, `HowTo`).
+- **Site Migrations & Status Codes**: Read [references/site_migrations_and_status_codes.md](references/site_migrations_and_status_codes.md) for HTTP status codes, domain migrations, Change of Address workflows, crawl budget, and crawlable link architecture.
+- **Search Appearance & SERP Features**: Read [references/search_appearance_and_serp_features.md](references/search_appearance_and_serp_features.md) for SERP visual elements, site names, favicon technical requirements, featured snippets (Position 0 direct answers), byline date parity, Google Discover standards, organic sitelinks, and paywalled content (Flexible Sampling).
 - **Evergreen Content Refreshes**: Read [references/content_refresh_guide.md](references/content_refresh_guide.md) when updating decaying legacy articles, retitling posts, or resolving search query cannibalization.
 
 ---
@@ -156,6 +158,8 @@ Execute the bundled audit tools and iterate until all issues are resolved:
   - `references/technical_seo_checklist.md`: Core meta tags, headings, link qualification, and accessibility.
   - `references/frontmatter_standards.md`: Taxonomy, tagging, and summary/description specification.
   - `references/schema_markup_guide.md`: Schema.org JSON-LD templates and property rules.
+  - `references/site_migrations_and_status_codes.md`: HTTP status codes, full site migrations, crawl budget, and crawlable links.
+  - `references/search_appearance_and_serp_features.md`: SERP anatomy, site names, favicons, featured snippets, Discover standards, and paywalls.
   - `references/content_refresh_guide.md`: Evergreen updates and search query decay mitigation.
 - **Assets**:
   - `assets/seo_audit_template.md`: Standard audit report format.

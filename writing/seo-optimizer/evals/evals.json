@@ -41,19 +41,20 @@
         "Explains query fan-out where models execute concurrent related sub-queries",
         "Emphasizes non-commodity, first-hand expert content over generic summaries",
         "Clarifies that Google Search does not require or use llms.txt or special chunking hacks",
-        "References Search Console Generative AI performance report for monitoring"
+        "References Search Quality Evaluator Guidelines (QRG 4.6.5 / 4.6.6) and Search Console Generative AI performance reports"
       ]
     },
     {
       "id": 4,
       "prompt": "Explain the rules and best practices for multilingual static websites with hreflang annotations according to Google Search Central guidelines.",
-      "expected_output": "Complete explanation of hreflang bidirectional parity, self-referencing links, ISO 639-1 language codes, x-default fallback, and avoiding IP auto-redirects.",
+      "expected_output": "Complete explanation of all 3 hreflang delivery methods, bidirectional parity, self-referencing links, 20 vanity ccTLDs treated as gTLDs, unsupported macro codes like es-419, and avoiding IP auto-redirects.",
       "files": [],
       "assertions": [
+        "Details all 3 implementation vectors: HTML link tags, HTTP response headers for non-HTML assets, and XML sitemaps",
         "Explains the bidirectional linking requirement between all language versions",
         "Specifies that each page must include a self-referencing hreflang link",
-        "Identifies ISO 639-1 language code rules and warns against country-only codes",
-        "Explains the role of hreflang='x-default' as a fallback",
+        "Lists vanity ccTLDs (.ai, .io, .co, .me) treated generically as gTLDs",
+        "Warns that UN M.49 macro-region codes like es-419, EU, and UN are unsupported and ignored",
         "Warns against using IP sniffing or auto-redirects which break Googlebot crawling"
       ]
     },
@@ -81,6 +82,45 @@
         "Contains H2 sections with markdown hyperlinked list items and optional 1-sentence descriptions",
         "Includes an '## Optional' section for secondary links",
         "Contains no raw HTML tags"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Explain the technical SEO decision tree for HTTP status codes (301, 302, 404, 410) and full site domain migrations according to Google Search Central.",
+      "expected_output": "Comprehensive guide to status code semantics, signal transfer, soft 404 prevention, permanent removal via 410 Gone, and the GSC Change of Address migration playbook.",
+      "files": [],
+      "assertions": [
+        "Explains 301 permanent redirect signal/PageRank passing vs 302 temporary crawling behavior",
+        "Warns against Soft 404 penalties (returning 200 OK for missing or thin content)",
+        "Explains 410 Gone for fast index de-listing of permanently deleted resources",
+        "Outlines full site domain migration steps including dual sitemaps and GSC Change of Address tool",
+        "Warns against blocking CSS, JS, or images in robots.txt for browser rendering"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Detail the technical requirements for Google Search appearance features including Site Names, Favicons, Featured Snippets, and Google Discover.",
+      "expected_output": "Specification for WebSite JSON-LD, Favicon 48px multiples, Position 0 Featured Snippets direct-answer formulas, and Discover 1200px hero images.",
+      "files": [],
+      "assertions": [
+        "Specifies WebSite structured data with name and alternateName for SERP site name recognition",
+        "Specifies Favicon requirements (square, multiple of 48px like 48x48, 96x96, or SVG, accessible to Googlebot-Image)",
+        "Provides Position 0 direct-answer formulas for Paragraph (40-60 words), List, and Table featured snippets",
+        "Specifies Discover image requirements (>= 1200px width with max-image-preview:large)",
+        "Enforces byline and publication date parity between visible page and JSON-LD"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Explain the rules governing robots meta tags, conflict resolution, and the data-nosnippet attribute.",
+      "expected_output": "Rules on most restrictive directive resolution, robots.txt crawlability dependency trap, and data-nosnippet tag whitelist and boolean parsing.",
+      "files": [],
+      "assertions": [
+        "Explains that the most restrictive directive always wins when conflicts occur",
+        "Explains the critical trap: blocking a URL in robots.txt prevents Googlebot from reading noindex or nosnippet",
+        "Identifies that data-nosnippet is valid ONLY on <span>, <div>, and <section>",
+        "Warns that data-nosnippet is boolean (data-nosnippet='false' still excludes snippets)",
+        "Details server-side X-Robots-Tag HTTP headers for non-HTML assets"
       ]
     }
   ]

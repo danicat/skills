@@ -415,6 +415,30 @@ def audit_article(file_path: str) -> AuditReport:
             findings.append(AuditFinding("Links", "WARNING", f"Generic anchor text: '[{anchor}]({url})'", fix_suggestion="Use descriptive anchor text with target topic/title."))
             penalties += 3
 
+    # ----------------------------------------------------
+    # 9. HTML Directives, Meta Tags & data-nosnippet Checks
+    # ----------------------------------------------------
+    # Check for meta-refresh anti-pattern in raw HTML snippets
+    if re.search(r'<meta\s+[^>]*http-equiv=["\']refresh["\']', body, re.IGNORECASE):
+        findings.append(AuditFinding("HTML", "ERROR", "Found '<meta http-equiv=\"refresh\">'. Violates WCAG accessibility and SEO standards. Use server-side 301/308 redirects.", fix_suggestion="Replace meta-refresh with HTTP 301 redirect."))
+        penalties += 15
+
+    # Check for invalid data-nosnippet tags (only valid on span, div, section)
+    nosnippet_tags = re.findall(r'<([a-zA-Z0-9]+)\s+[^>]*data-nosnippet', body, re.IGNORECASE)
+    valid_nosnippet_tags = {"span", "div", "section"}
+    for tag in nosnippet_tags:
+        if tag.lower() not in valid_nosnippet_tags:
+            findings.append(AuditFinding("HTML", "WARNING", f"'data-nosnippet' attribute used on invalid tag '<{tag}>'. Google only supports data-nosnippet on <span>, <div>, and <section>.", fix_suggestion=f"Wrap content in a <div>, <span>, or <section> and attach data-nosnippet to that wrapper."))
+            penalties += 5
+
+    # Check for date / lastmod ISO 8601 formatting in frontmatter
+    for date_key in ("date", "lastmod", "publishDate"):
+        if date_key in fm:
+            date_val = str(fm[date_key])
+            if not re.match(r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)?)?$", date_val):
+                findings.append(AuditFinding("Metadata", "WARNING", f"'{date_key}' value '{date_val}' is not valid ISO 8601 format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ).", fix_suggestion="Use standard ISO 8601 formatting for publication timestamps."))
+                penalties += 3
+
     # Calculate overall score
     final_score = max(0, min(100, 100 - penalties))
     passed = final_score >= 80
