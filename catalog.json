@@ -4,8 +4,8 @@
   "title": "Daniela Petruzalek Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 23,
-  "updatedAt": "2026-08-18T02:24:15.304Z",
+  "totalSkills": 26,
+  "updatedAt": "2026-08-18T18:18:00.000Z",
   "categories": [
     {
       "id": "game-dev",
@@ -292,6 +292,30 @@
       "relativePath": "writing/google-codelab-authoring/SKILL.md"
     },
     {
+      "name": "google-analytics",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users, pageviews, dwell time, engagement events, acquisition channels, and outbound clicks) into a local SQLite database without data loss, run full historical backfills and incremental syncs, and execute deep SQL analytics over website traffic and localization behavior. Activate whenever analyzing Google Analytics 4 performance, auditing reader dwell time, querying GA4 data via SQL, comparing localization performance (/ vs /ja/ vs /pt-br/), or tracking user journeys and outbound link exits.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/google-analytics",
+      "url": "https://skills.danicat.dev/writing/google-analytics/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/google-analytics",
+      "relativePath": "writing/google-analytics/SKILL.md"
+    },
+    {
+      "name": "search-analytics",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Ingest raw Google Search Console performance data (clicks, impressions, CTR, average position), properties, and XML sitemaps into a local SQLite database without data loss, run mature 16-month backfills and incremental syncs, and execute deep SQL analytics over organic search traffic. Activate whenever analyzing Google Search performance, auditing historical keyword rankings, diagnosing search CTR decay, running SQL queries over search traffic archives, or detecting keyword cannibalization.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/search-analytics",
+      "url": "https://skills.danicat.dev/writing/search-analytics/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/search-analytics",
+      "relativePath": "writing/search-analytics/SKILL.md"
+    },
+    {
       "name": "social-copy",
       "category": "writing",
       "categoryName": "Technical Writing",
@@ -302,6 +326,18 @@
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/social-copy",
       "relativePath": "writing/social-copy/SKILL.md"
+    },
+    {
+      "name": "seo-optimizer",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Audit, optimize, and enhance technical articles, developer documentation, and engineering blogs for traditional search engines and AI-driven answer engines (Google AI Overviews, Gemini Grounding, ChatGPT Search, Perplexity, Claude). Use when auditing technical SEO, structuring metadata (distinguishing human-facing 'summary' vs search-facing 'description'), implementing Generative Engine Optimization (GEO), enforcing Inverted Pyramid direct-answer density, verifying JSON-LD structured data (TechArticle, BreadcrumbList), generating or maintaining llms.txt, performing keyword gap analysis, or fixing heading and content hierarchies.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/seo-optimizer",
+      "url": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/seo-optimizer",
+      "relativePath": "writing/seo-optimizer/SKILL.md"
     },
     {
       "name": "adr-template",

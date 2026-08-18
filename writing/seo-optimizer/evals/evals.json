@@ -1,0 +1,87 @@
+{
+  "skill_name": "seo-optimizer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit the markdown post at evals/files/flawed_post.md using the seo-optimizer skill and provide a comprehensive audit report with actionable fixes.",
+      "expected_output": "A structured SEO and GEO audit report identifying title length, missing description, unsorted tags, heading level skips, generic image alt text, and AI slop.",
+      "files": [
+        "evals/files/flawed_post.md"
+      ],
+      "assertions": [
+        "Report flags short title length (< 35 chars)",
+        "Report flags missing frontmatter description",
+        "Report detects unsorted tags and redundant category duplication tag",
+        "Report identifies heading hierarchy violation (jump from H2 to H4)",
+        "Report detects generic image alt text 'image.png'",
+        "Report identifies AI slop keywords ('delve', 'game-changer')",
+        "Report provides concrete proposed frontmatter with distinct summary and description"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Optimize the frontmatter of a new technical blog post about Antigravity subagents. Generate distinct 'summary' and 'description' fields, proper categories, and sorted kebab-case tags.",
+      "expected_output": "Frontmatter with distinct human-facing summary and search-facing description, canonical category, and sorted tags.",
+      "files": [],
+      "assertions": [
+        "Frontmatter contains both 'summary' and 'description' keys with distinct text",
+        "The 'description' is 120-160 characters and keyword-dense",
+        "The 'summary' is 80-180 characters with an engaging editorial hook",
+        "Tags are strictly lowercase kebab-case and sorted alphabetically",
+        "Category is exactly one of the five canonical pillars"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Explain how Google Search optimizes for generative AI features (AI Overviews, AI Mode) and how to structure technical content for Google RAG grounding and query fan-out.",
+      "expected_output": "Explanation of Google Search AI retrieval architecture: RAG grounding from core index, query fan-out, non-commodity information gain, and dispelling of AEO/GEO hacks (like llms.txt requirement or chunking).",
+      "files": [],
+      "assertions": [
+        "Explains that AI Overviews are rooted in core Search ranking and RAG grounding from the main index",
+        "Explains query fan-out where models execute concurrent related sub-queries",
+        "Emphasizes non-commodity, first-hand expert content over generic summaries",
+        "Clarifies that Google Search does not require or use llms.txt or special chunking hacks",
+        "References Search Console Generative AI performance report for monitoring"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Explain the rules and best practices for multilingual static websites with hreflang annotations according to Google Search Central guidelines.",
+      "expected_output": "Complete explanation of hreflang bidirectional parity, self-referencing links, ISO 639-1 language codes, x-default fallback, and avoiding IP auto-redirects.",
+      "files": [],
+      "assertions": [
+        "Explains the bidirectional linking requirement between all language versions",
+        "Specifies that each page must include a self-referencing hreflang link",
+        "Identifies ISO 639-1 language code rules and warns against country-only codes",
+        "Explains the role of hreflang='x-default' as a fallback",
+        "Warns against using IP sniffing or auto-redirects which break Googlebot crawling"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Audit evals/files/good_post.md with python3 scripts/audit_seo.py and verify its SEO and GEO readiness score.",
+      "expected_output": "Audit report showing high health score (>= 85/100) and passing status.",
+      "files": [
+        "evals/files/good_post.md"
+      ],
+      "assertions": [
+        "The audit script reports status PASS",
+        "The overall score is at least 85 out of 100",
+        "GEO readiness score is at least 50 out of 100",
+        "No heading hierarchy or image alt text errors are found"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Generate a standard /llms.txt specification index for a technical blog covering Agentic Coding and Go.",
+      "expected_output": "A spec-compliant llms.txt markdown document following llmstxt.org rules.",
+      "files": [],
+      "assertions": [
+        "File starts with an H1 title and blockquote summary",
+        "Contains H2 sections with markdown hyperlinked list items and optional 1-sentence descriptions",
+        "Includes an '## Optional' section for secondary links",
+        "Contains no raw HTML tags"
+      ]
+    }
+  ]
+}

@@ -21,8 +21,14 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-# Default local database path (per-user storage)
-DEFAULT_DB_PATH = os.path.expanduser("~/.buffer/analytics.db")
+# Default local database path (local to working directory, override with --db)
+DEFAULT_DB_PATH = "analytics.db"
+
+
+def ensure_dirs(db_path: str = DEFAULT_DB_PATH):
+    db_dir = os.path.dirname(os.path.abspath(db_path))
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
 
 SCHEMA_DDL = """
 -- Core Channels Table
@@ -693,7 +699,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Buffer Analytics CLI: High-Performance SQLite Ingestion & SQL Query Engine"
     )
-    parser.add_argument("--db-path", default=DEFAULT_DB_PATH, help=f"Path to SQLite DB (default: {DEFAULT_DB_PATH})")
+    parser.add_argument("--db", "--db-path", dest="db_path", default=DEFAULT_DB_PATH, help=f"Path to SQLite DB (default: {DEFAULT_DB_PATH})")
+    parser.add_argument("-q", "--query", help="Execute SQL query directly against the analytics database")
+    parser.add_argument("--format", choices=["table", "markdown", "json", "csv"], default="markdown", help="Output format (default: markdown)")
 
     subparsers = parser.add_subparsers(dest="command", help="Subcommand to execute")
 
@@ -727,11 +735,16 @@ def main():
 
     args = parser.parse_args()
 
+    conn = get_db_connection(args.db_path)
+
+    if args.query:
+        result = execute_sql(conn, args.query, output_format=args.format)
+        print(result)
+        sys.exit(0)
+
     if not args.command:
         parser.print_help()
         sys.exit(1)
-
-    conn = get_db_connection(args.db_path)
 
     if args.command == "schema":
         print(SCHEMA_DDL.strip())

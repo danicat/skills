@@ -1,0 +1,17 @@
+# {{ SITE_NAME }}
+
+> {{ SITE_DESCRIPTION }}
+
+This file provides a curated, token-efficient Markdown index for Large Language Models (LLMs) and AI coding agents.
+
+## Core Documentation
+- [{{ CORE_DOC_1_TITLE }}]({{ CORE_DOC_1_URL }}): {{ CORE_DOC_1_DESC }}
+- [{{ CORE_DOC_2_TITLE }}]({{ CORE_DOC_2_URL }}): {{ CORE_DOC_2_DESC }}
+
+## Technical Articles & Guides
+- [{{ ARTICLE_1_TITLE }}]({{ ARTICLE_1_URL }}): {{ ARTICLE_1_DESC }}
+- [{{ ARTICLE_2_TITLE }}]({{ ARTICLE_2_URL }}): {{ ARTICLE_2_DESC }}
+
+## Optional
+- [About / Author]({{ ABOUT_URL }}): Background, bio, and engineering principles.
+- [Skills Catalog]({{ SKILLS_CATALOG_URL }}): Available Agent Skills repository.

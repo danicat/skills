@@ -5,7 +5,7 @@ description: Ingest raw Buffer social post and channel data into a local SQLite 
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine
 
-The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database (`~/.buffer/analytics.db`) and provides a SQL interface for deep content crunching.
+The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database (`buffer_analytics.db` or `$XDG_DATA_HOME/buffer-analytics/analytics.db`) and provides a SQL interface for deep content crunching.
 
 ---
 

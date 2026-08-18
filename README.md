@@ -63,11 +63,17 @@ Frameworks, UI streaming protocols, swarm orchestration, and skill authoring too
 
 ---
 
-### ✍️ Technical Writing (`writing/`)
-Editorial guidelines, readability checkers, and developer tutorial authoring.
+### ✍️ Technical Writing & Publishing (`writing/`)
+Editorial guidelines, analytics data warehousing, social copy engineering, and developer tutorial authoring.
 
+* **[`buffer`](writing/buffer/SKILL.md)**: Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI.
+* **[`buffer-analytics`](writing/buffer-analytics/SKILL.md)**: Ingest raw Buffer social post and channel data into a local SQLite analytics database and run SQL queries across LinkedIn, Twitter/X, and Bluesky.
+* **[`google-analytics`](writing/google-analytics/SKILL.md)**: Ingest raw Google Analytics 4 (GA4) traffic, dwell time, localization performance, and outbound clicks into a local SQLite analytics database and run pre-built or ad-hoc SQL reports.
 * **[`google-blog-style`](writing/google-blog-style/SKILL.md)**: Official style guide and compliance rules for the Google Developers Blog, including Gunning Fog readability and Vale style checks.
 * **[`google-codelab-authoring`](writing/google-codelab-authoring/SKILL.md)**: Step-by-step developer tutorial authoring in Google Codelabs format (`.lab.md`) with Claat metadata and aside block validation.
+* **[`search-analytics`](writing/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
+* **[`seo-optimizer`](writing/seo-optimizer/SKILL.md)**: Technical SEO and Generative Engine Optimization (GEO) for developer blogs and documentation, including metadata split (summary vs. description), heading hierarchies, and `llms.txt` generation.
+* **[`social-copy`](writing/social-copy/SKILL.md)**: Draft, audit, and optimize high-performing technical and developer social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads.
 
 ---
 
