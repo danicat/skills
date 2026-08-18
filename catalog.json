@@ -4,8 +4,8 @@
   "title": "Daniela Petruzalek Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 20,
-  "updatedAt": "2026-08-17T16:24:15.552Z",
+  "totalSkills": 22,
+  "updatedAt": "2026-08-18T01:38:30.065Z",
   "categories": [
     {
       "id": "game-dev",
@@ -224,7 +224,7 @@
       "category": "agents",
       "categoryName": "Agents & Meta-Tooling",
       "categoryEmoji": "🤖",
-      "description": "Analyze, author, and optimize Agent Skills according to the official Agent Skills specification. Activate when creating new skills, auditing existing skills, optimizing trigger descriptions, designing eval suites (evals.json), bundling self-contained scripts, configuring the agentskills MCP server (https://agentskills.io/mcp), or organizing progressive disclosure structures (scripts/, references/, assets/, evals/). Use whenever reviewing, refactoring, or grading skills.",
+      "description": "Analyze, author, evaluate, and optimize Agent Skills according to the official Agent Skills specification. Activate when creating new skills, auditing existing skills, installing reference tools like skill-creator via npx skills add, optimizing trigger descriptions with train/validation splits, designing eval suites (evals.json), setting up blind comparisons, bundling self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP server (https://agentskills.io/mcp), or organizing progressive disclosure structures (scripts/, references/, assets/, evals/). Use whenever reviewing, refactoring, or grading skills.",
       "license": "Apache-2.0",
       "installCommand": "npx skills install github.com/danicat/skills/agents/skill-optimizer",
       "url": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
@@ -242,6 +242,18 @@
       "url": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/swarm-coding",
       "relativePath": "agents/swarm-coding/SKILL.md"
+    },
+    {
+      "name": "buffer",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing connected Buffer social channels, inspecting accounts, creating ideas, scheduling posts to queues, validating payloads via --dry-run, querying post statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer authentication and environment issues. Activate whenever interacting with Buffer or automating cross-platform social publishing from the terminal.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/buffer",
+      "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/buffer",
+      "relativePath": "writing/buffer/SKILL.md"
     },
     {
       "name": "google-blog-style",
@@ -266,6 +278,18 @@
       "url": "https://skills.danicat.dev/writing/google-codelab-authoring/SKILL.md",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/google-codelab-authoring",
       "relativePath": "writing/google-codelab-authoring/SKILL.md"
+    },
+    {
+      "name": "social-copy",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Draft, audit, and optimize high-performing technical, developer, and open-source social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads. When working on campaigns without an existing blog post source, first inspects deep git logs and commit bodies, uses /grill-me style interactive interview to uncover real technical nuance, and authors a comprehensive canonical narrative foundation before cutting platform-specific derivatives. Automatically synchronizes the campaign master source whenever new evidence is discovered. Activate whenever drafting social posts, cross-platform release announcements, or engineering field notes, even if not explicitly requested.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/writing/social-copy",
+      "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/social-copy",
+      "relativePath": "writing/social-copy/SKILL.md"
     },
     {
       "name": "adr-template",

@@ -1,0 +1,93 @@
+{
+  "skill_name": "social-copy",
+  "evals": [
+    {
+      "id": 1,
+      "platform": "canonical",
+      "prompt": "Synthesize unreleased feature commits across multiple repos into a comprehensive Canonical Foundation Narrative (CANONICAL.md) before cutting platform posts.",
+      "expected_output": "A comprehensive, unconstrained single source of truth document detailing project context, verified commit details, performance observations, architectural rationale, and verified links.",
+      "assertions": [
+        "The canonical document details exact changes per repository without relying on one-line commit summaries",
+        "Documents real architectural failure modes, trade-offs, and philosophies",
+        "Acts as the unconstrained master source from which all platform-specific cuts derive",
+        "Includes exact repository URLs and verified links"
+      ]
+    },
+    {
+      "id": 2,
+      "platform": "linkedin",
+      "prompt": "Write a LinkedIn post announcing an open-source Go tool that reduces PostgreSQL query latency by 40% using lock-free buffer pooling. Include benchmarks and discuss trade-offs.",
+      "expected_output": "High-performing LinkedIn technical case study formatted with strong mobile hook (<140 chars), concrete metrics, trade-offs, link in first comment guidance, and 1-3 targeted hashtags.",
+      "assertions": [
+        "The first line delivers a concrete technical metric or hook within 140 characters before the fold",
+        "The copy explicitly explains the architectural mechanism (lock-free buffer pooling)",
+        "The copy explicitly addresses technical trade-offs or constraints",
+        "External links are directed to the first comment rather than placed in the post body",
+        "The post contains between 1 and 3 domain-specific hashtags at the end",
+        "The text contains no banned AI slop words (e.g., 'delve', 'game-changer', 'revolutionary')"
+      ]
+    },
+    {
+      "id": 3,
+      "platform": "twitter",
+      "prompt": "Draft an X / Twitter native long-form post covering a weekend architectural overhaul across multiple tools, explaining why the team moved from rigid hooks to educative skills.",
+      "expected_output": "A native long-form post with an above-the-fold hook (<240 chars), bulleted changelog, architectural lesson, direct project links, and 0 hashtags.",
+      "assertions": [
+        "The opening hook is under 280 characters before the 'Show more' fold",
+        "The post delivers substantive native context and high dwell-time value",
+        "Contains 0 hashtags",
+        "Includes direct links to the relevant repositories/articles directly at the bottom"
+      ]
+    },
+    {
+      "id": 4,
+      "platform": "bluesky",
+      "prompt": "Write a multi-post Bluesky thread breaking down a major open-source release across 5 repositories and explaining the core architectural lesson.",
+      "expected_output": "A multi-post thread where every single post is strictly under 300 graphemes, featuring authentic developer tone, direct links with rich cards, and 0-1 hashtags.",
+      "assertions": [
+        "Every single post in the thread is strictly 300 graphemes or less",
+        "External links are placed directly in the relevant post bodies",
+        "Uses authentic, anti-corporate developer tone with zero AI buzzwords",
+        "Contains at most 1 specific hashtag across the thread"
+      ]
+    },
+    {
+      "id": 5,
+      "platform": "instagram",
+      "prompt": "Create an Instagram 7-slide carousel outline and micro-blog caption teaching junior engineers how to avoid N+1 database queries.",
+      "expected_output": "A 7-slide 4:5 carousel outline with visual/copy breakdown and a micro-blog caption with a <125-char hook and comment-to-DM CTA.",
+      "assertions": [
+        "Specifies 4:5 vertical aspect ratio for slides",
+        "Contains a slide-by-slide outline (Cover, Anti-pattern, Refactor, Benchmark, Architecture, Cheat sheet, CTA)",
+        "The caption hook is under 125 characters before the fold",
+        "Includes a single-word comment automation CTA (e.g., comment keyword for guide)",
+        "Includes 3 to 5 targeted hashtags at the footer"
+      ]
+    },
+    {
+      "id": 6,
+      "platform": "reddit",
+      "prompt": "Draft a Reddit self-post for r/golang sharing an open-source zero-allocation JSON parser with benchmarks against the standard library.",
+      "expected_output": "A value-first text post with a non-clickbait title, benchmark markdown table, architecture explanation, limitations, and transparent affiliation.",
+      "assertions": [
+        "The title is descriptive, technical, and non-clickbait",
+        "The post body provides 100% of the architectural insights and benchmarks directly on Reddit",
+        "Includes a Markdown benchmark table comparing throughput and memory allocations",
+        "Explicitly documents current limitations and trade-offs",
+        "Includes transparent author affiliation disclosure and places external repo link at the bottom"
+      ]
+    },
+    {
+      "id": 7,
+      "platform": "threads",
+      "prompt": "Write a Threads post discussing why a team replaced microservices with a modular monolith, sharing the latency results and asking for peer experiences.",
+      "expected_output": "A 500-character builder post with concrete latency delta, open-ended discussion question, and exactly 1 natural language topic tag.",
+      "assertions": [
+        "The post is under 500 characters",
+        "Contains concrete latency or architectural metrics",
+        "Ends with an open-ended technical question encouraging peer discussion",
+        "Uses exactly one natural-language topic tag (e.g., #system design)"
+      ]
+    }
+  ]
+}
