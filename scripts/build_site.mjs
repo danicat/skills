@@ -16,7 +16,7 @@ const CATEGORIES = [
   { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: '2D games in Go with Ebitengine, chiptune audio, and procedural graphics.' },
   { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Lyria 3 music synthesis and Nano Banana image editing.' },
   { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Semantic versioning, repository hygiene, GoDoctor, and Python uv workflows.' },
-  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarms, and skill optimizer.' },
+  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarms, double-diamond orchestration, and skill optimizer.' },
   { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide and Google Codelabs tutorials.' },
   { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Architecture Decision Records (ADRs) and Request for Comments (RFCs).' },
 ];

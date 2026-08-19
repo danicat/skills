@@ -5,30 +5,33 @@ description: Ingest raw Buffer social post and channel data into a local SQLite 
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine
 
-The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database (`buffer_analytics.db` or `$XDG_DATA_HOME/buffer-analytics/analytics.db`) and provides a SQL interface for deep content crunching.
+The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database and provides a SQL interface for deep content crunching.
 
 ---
 
 ## ⚡ Quick Start & Primary Actions
 
-All operations are driven via the bundled Python script:
+All operations are driven via the bundled Python script in `scripts/buffer_analytics.py`:
 
 ```bash
 # 1. Incremental Sync (New posts + 2-day lookback metrics refresh)
-python3 scripts/buffer_analytics.py sync
+uv run <skill_dir>/scripts/buffer_analytics.py sync --db path/to/database.db
 
 # 2. Full Historical Backfill (Paginates through entire history)
-python3 scripts/buffer_analytics.py sync --full
+uv run <skill_dir>/scripts/buffer_analytics.py sync --full --db path/to/database.db
 
 # 3. Run Pre-Packaged Reports
-python3 scripts/buffer_analytics.py report overview
-python3 scripts/buffer_analytics.py report top-posts
-python3 scripts/buffer_analytics.py report timing
-python3 scripts/buffer_analytics.py report hooks
+uv run <skill_dir>/scripts/buffer_analytics.py report overview --db path/to/database.db
+uv run <skill_dir>/scripts/buffer_analytics.py report top-posts --db path/to/database.db
+uv run <skill_dir>/scripts/buffer_analytics.py report channels --db path/to/database.db
+uv run <skill_dir>/scripts/buffer_analytics.py report timing --db path/to/database.db
+uv run <skill_dir>/scripts/buffer_analytics.py report hooks --db path/to/database.db
 
 # 4. Run Ad-Hoc SQL Query
-python3 scripts/buffer_analytics.py query "SELECT service, AVG(impressions), AVG(reactions) FROM v_posts_summary WHERE status = 'sent' GROUP BY service"
+uv run <skill_dir>/scripts/buffer_analytics.py query "SELECT service, AVG(impressions), AVG(reactions) FROM v_posts_summary WHERE status = 'sent' GROUP BY service" --db path/to/database.db
 ```
+
+If `--db` is omitted, the script defaults to `buffer_analytics.db` in the current working directory.
 
 ---
 
@@ -99,15 +102,20 @@ SELECT
     ROUND(AVG(impressions), 0) AS avg_impressions,
     ROUND(AVG(reactions), 1) AS avg_reactions
 FROM v_posts_summary
-WHERE status = 'sent' AND impressions > 0
-GROUP BY service, has_link;
+WHERE status = 'sent' AND service = 'linkedin'
+GROUP BY placement;
 ```
 
 ---
 
-## 🛠️ Progressive Disclosure & References
+## 🛠️ CLI Reference
 
-- **Database Schema Reference**: [`references/schema.md`](references/schema.md) — Full DDL tables (`channels`, `posts`, `post_metrics`, `post_assets`, `post_tags`, `sync_history`).
-- **SQL Query Cookbook**: [`references/queries.md`](references/queries.md) — Advanced SQL recipes (topic clustering, word count cohorts, engagement distributions).
-- **Operational Runbook**: [`references/workflows.md`](references/workflows.md) — Cursor pagination, error recovery, and backfill options.
-- **Evaluation Suite**: [`evals/evals.json`](evals/evals.json) — Test cases for validating skill triggers and query execution.
+```text
+usage: buffer_analytics.py [-h] [--db DB_PATH] [-q QUERY] [--format {table,markdown,json,csv}] {sync,query,report,schema} ...
+
+Subcommands:
+  sync      Sync channels and posts into SQLite (--full for historical backfill)
+  query     Execute SQL query against the database
+  report    Run pre-canned analytical reports (overview, top-posts, channels, timing, hooks)
+  schema    Print the database DDL schema and analytical views
+```

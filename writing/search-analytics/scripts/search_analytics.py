@@ -660,10 +660,11 @@ def run_sql_query(query: str, db_path: str = DEFAULT_DB_FILE, output_format: str
             writer.writerow(list(r))
         return
 
-    # Markdown Table format
+    # Markdown Table / Grid format
     try:
         from tabulate import tabulate
-        print(tabulate([list(r) for r in rows], headers=cols, tablefmt="github"))
+        table_style = "grid" if output_format == "table" else "github"
+        print(tabulate([list(r) for r in rows], headers=cols, tablefmt=table_style))
     except ImportError:
         # Fallback text formatter
         col_widths = [len(c) for c in cols]
@@ -909,23 +910,30 @@ def cli_submit_sitemap(site_url: str, sitemap_url: str, credentials_file: str):
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Search Analytics: Google Search Console Ingestion Engine & SQL CLI"
-    )
-    parser.add_argument(
+    base_parser = argparse.ArgumentParser(add_help=False)
+    base_parser.add_argument(
         "--client-secrets",
+        "--client-secret",
+        dest="client_secrets",
         default=DEFAULT_CLIENT_SECRETS_FILE,
         help=f"Path to OAuth client secret JSON (default: {DEFAULT_CLIENT_SECRETS_FILE})",
     )
-    parser.add_argument(
+    base_parser.add_argument(
         "--credentials",
         default=DEFAULT_CREDENTIALS_FILE,
         help=f"Path to saved credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})",
     )
-    parser.add_argument(
+    base_parser.add_argument(
         "--db",
+        "--db-path",
+        dest="db",
         default=DEFAULT_DB_FILE,
         help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})",
+    )
+
+    parser = argparse.ArgumentParser(
+        description="Search Analytics: Google Search Console Ingestion Engine & SQL CLI",
+        parents=[base_parser],
     )
     parser.add_argument(
         "-q",
@@ -935,19 +943,19 @@ def main():
     parser.add_argument(
         "--format",
         default="markdown",
-        choices=["markdown", "json", "csv"],
+        choices=["markdown", "table", "json", "csv"],
         help="Output format for query results (default: markdown)",
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
     # 1. Auth command
-    auth_parser = subparsers.add_parser("auth", help="Launch OAuth 2.0 Web Server to authorize")
+    auth_parser = subparsers.add_parser("auth", parents=[base_parser], help="Launch OAuth 2.0 Web Server to authorize")
     auth_parser.add_argument("--port", type=int, default=8080, help="Port to run OAuth app (default: 8080)")
     auth_parser.add_argument("--host", default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
 
     # 2. Sync command (Backfill & Incremental)
-    sync_parser = subparsers.add_parser("sync", help="Sync search analytics and sitemaps into SQLite")
+    sync_parser = subparsers.add_parser("sync", parents=[base_parser], help="Sync search analytics and sitemaps into SQLite")
     sync_parser.add_argument("--site-url", help="Specific property URL to sync (defaults to all verified sites)")
     sync_parser.add_argument("--full", action="store_true", help="Run full historical backfill (16 months)")
     sync_parser.add_argument("--start-date", help="Custom start date (YYYY-MM-DD)")
@@ -956,16 +964,16 @@ def main():
     sync_parser.add_argument("--dimensions", default="page,query,country,device", help="Comma-separated dimensions")
 
     # 3. Query command (Direct SQL)
-    query_parser = subparsers.add_parser("query", help="Execute arbitrary SQL against the database")
+    query_parser = subparsers.add_parser("query", parents=[base_parser], help="Execute arbitrary SQL against the database")
     query_parser.add_argument("sql", help="SQL query string")
-    query_parser.add_argument("--format", default="markdown", choices=["markdown", "json", "csv"], help="Output format")
+    query_parser.add_argument("--format", default="markdown", choices=["markdown", "table", "json", "csv"], help="Output format")
 
     # 4. Report command (Pre-packaged SQL views)
-    report_parser = subparsers.add_parser("report", help="Run pre-packaged analytical SQL report")
+    report_parser = subparsers.add_parser("report", parents=[base_parser], help="Run pre-packaged analytical SQL report")
     report_parser.add_argument("name", choices=["overview", "top-queries", "top-pages", "countries", "devices", "timing", "milestone-impact"], help="Report name")
 
     # 5. Sitemaps submission command
-    submit_parser = subparsers.add_parser("submit-sitemap", help="Submit an XML sitemap to Search Console")
+    submit_parser = subparsers.add_parser("submit-sitemap", parents=[base_parser], help="Submit an XML sitemap to Search Console")
     submit_parser.add_argument("--site-url", required=True, help="Site property URL (e.g. https://example.com/ or sc-domain:example.com)")
     submit_parser.add_argument("--sitemap-url", required=True, help="Full URL of the sitemap XML")
 

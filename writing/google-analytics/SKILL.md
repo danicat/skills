@@ -15,26 +15,26 @@ All operations are driven via the bundled Python CLI script (runnable with `pyth
 
 ```bash
 # 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
-python3 scripts/google_analytics.py auth --port 8080
+uv run <skill_dir>/scripts/google_analytics.py auth --port 8080
 
 # 2. Discover accessible GA4 properties
-python3 scripts/google_analytics.py properties
+uv run <skill_dir>/scripts/google_analytics.py properties
 
 # 3. Create Deployment / Milestone Annotation (Cloud API + Local SQLite)
-python3 scripts/google_analytics.py annotate \
+uv run <skill_dir>/scripts/google_analytics.py annotate \
   --title "Site Redesign & Architecture Overhaul" \
   --date 2026-08-18 \
   --commit abc1234 \
   --description "Comprehensive site architecture and performance release."
 
 # 4. Incremental Sync (Updates newest days + 3-day latency lookback overlap)
-python3 scripts/google_analytics.py sync
+uv run <skill_dir>/scripts/google_analytics.py sync
 
 # 5. Full Historical Backfill (Ingests up to 14 months of daily granular data)
-python3 scripts/google_analytics.py sync --full
+uv run <skill_dir>/scripts/google_analytics.py sync --full
 
 # 6. Custom Date Range Sync
-python3 scripts/google_analytics.py sync \
+uv run <skill_dir>/scripts/google_analytics.py sync \
   --start-date 2026-06-01 \
   --end-date 2026-08-15
 ```
@@ -45,25 +45,25 @@ python3 scripts/google_analytics.py sync \
 
 ```bash
 # 1. Overall site health, sessions, users, dwell time, and 7-day trend
-python3 scripts/google_analytics.py report overview
+uv run <skill_dir>/scripts/google_analytics.py report overview
 
 # 2. Top pages ranked by views, active dwell time, and bounce rate
-python3 scripts/google_analytics.py report top-pages
+uv run <skill_dir>/scripts/google_analytics.py report top-pages
 
 # 3. Traffic sources, channels, and conversion engagement rates
-python3 scripts/google_analytics.py report channels
+uv run <skill_dir>/scripts/google_analytics.py report channels
 
 # 4. Geographical breakdown & country dwell times
-python3 scripts/google_analytics.py report geo
+uv run <skill_dir>/scripts/google_analytics.py report geo
 
 # 5. User interaction events (scroll, click, first_visit, form_submit)
-python3 scripts/google_analytics.py report events
+uv run <skill_dir>/scripts/google_analytics.py report events
 
 # 6. Outbound link click destinations
-python3 scripts/google_analytics.py report outbound
+uv run <skill_dir>/scripts/google_analytics.py report outbound
 
 # 7. Release / Milestone cohort impact comparison
-python3 scripts/google_analytics.py report milestone-impact
+uv run <skill_dir>/scripts/google_analytics.py report milestone-impact
 ```
 
 ---

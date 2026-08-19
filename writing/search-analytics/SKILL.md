@@ -15,7 +15,7 @@ The `search-analytics` skill ingests Google Search Console performance metrics i
 Launches a local OAuth 2.0 companion server on `http://localhost:8080` to authenticate and save credentials to `~/.config/gsc/credentials.json`:
 
 ```bash
-python3 scripts/search_analytics.py auth --port 8080
+uv run <skill_dir>/scripts/search_analytics.py auth --port 8080
 ```
 
 ---
@@ -24,18 +24,18 @@ python3 scripts/search_analytics.py auth --port 8080
 
 ```bash
 # Incremental Sync: Updates newest days since last sync (+ 3-day latency overlap)
-python3 scripts/search_analytics.py sync
+uv run <skill_dir>/scripts/search_analytics.py sync
 
 # Full Historical Backfill: Ingests up to 16 months of granular daily data
-python3 scripts/search_analytics.py sync --full
+uv run <skill_dir>/scripts/search_analytics.py sync --full
 
 # Specific Date Range:
-python3 scripts/search_analytics.py sync \
+uv run <skill_dir>/scripts/search_analytics.py sync \
   --start-date 2026-06-01 \
   --end-date 2026-08-15
 
 # Sync a single property:
-python3 scripts/search_analytics.py sync \
+uv run <skill_dir>/scripts/search_analytics.py sync \
   --site-url "https://example.com/" \
   --days 30
 ```
@@ -46,25 +46,25 @@ python3 scripts/search_analytics.py sync \
 
 ```bash
 # Overall site health and date coverage
-python3 scripts/search_analytics.py report overview
+uv run <skill_dir>/scripts/search_analytics.py report overview
 
 # Top search queries ranked by clicks and impressions
-python3 scripts/search_analytics.py report top-queries
+uv run <skill_dir>/scripts/search_analytics.py report top-queries
 
 # Top landing pages and ranking query count
-python3 scripts/search_analytics.py report top-pages
+uv run <skill_dir>/scripts/search_analytics.py report top-pages
 
 # Geographic country breakdown
-python3 scripts/search_analytics.py report countries
+uv run <skill_dir>/scripts/search_analytics.py report countries
 
 # Device performance (Mobile vs Desktop vs Tablet)
-python3 scripts/search_analytics.py report devices
+uv run <skill_dir>/scripts/search_analytics.py report devices
 
 # Day-of-the-week traffic trends
-python3 scripts/search_analytics.py report timing
+uv run <skill_dir>/scripts/search_analytics.py report timing
 
 # Release / Milestone cohort impact comparison
-python3 scripts/search_analytics.py report milestone-impact
+uv run <skill_dir>/scripts/search_analytics.py report milestone-impact
 ```
 
 ---
@@ -75,7 +75,7 @@ Execute arbitrary SQL directly against `~/.gsc/analytics.db`:
 
 ```bash
 # Find high-impression queries ranking on page 1 with low CTR (Optimization opportunities)
-python3 scripts/search_analytics.py query "
+uv run <skill_dir>/scripts/search_analytics.py query "
 SELECT query, page, ROUND(SUM(impressions),0) AS imps, ROUND(SUM(clicks),0) AS clks, ROUND((SUM(clicks)/SUM(impressions))*100,2) AS ctr_pct, ROUND(AVG(position),1) AS avg_rank
 FROM v_search_performance
 WHERE avg_position <= 10

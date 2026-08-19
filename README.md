@@ -58,6 +58,7 @@ Engineering workflow standards, compiler gates, package resolvers, and language-
 Frameworks, UI streaming protocols, swarm orchestration, and skill authoring tools.
 
 * **[`a2ui-developer-guide`](agents/a2ui-developer-guide/SKILL.md)**: Comprehensive guide for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, and component catalog validations.
+* **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
 

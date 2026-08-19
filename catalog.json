@@ -4,8 +4,8 @@
   "title": "Daniela Petruzalek Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 26,
-  "updatedAt": "2026-08-19T14:49:51.131Z",
+  "totalSkills": 27,
+  "updatedAt": "2026-08-19T22:30:25.746Z",
   "categories": [
     {
       "id": "game-dev",
@@ -29,7 +29,7 @@
       "id": "agents",
       "name": "Agents & Meta-Tooling",
       "emoji": "🤖",
-      "description": "A2UI streaming protocol, multi-agent swarms, and skill optimizer."
+      "description": "A2UI streaming protocol, multi-agent swarms, double-diamond orchestration, and skill optimizer."
     },
     {
       "id": "writing",
@@ -218,6 +218,18 @@
       "url": "https://skills.danicat.dev/agents/a2ui-developer-guide/SKILL.md",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/a2ui-developer-guide",
       "relativePath": "agents/a2ui-developer-guide/SKILL.md"
+    },
+    {
+      "name": "double-diamond",
+      "category": "agents",
+      "categoryName": "Agents & Meta-Tooling",
+      "categoryEmoji": "🤖",
+      "description": "Use this skill when executing complex engineering initiatives, architectural overhauls, high-ambiguity technical spikes, or full-stack features using the Agile Double-Diamond methodology (Discover -> Define -> Develop -> Deliver). Orchestrates two distinct phases: Diamond 1 (Problem Space: parallel research subagents discover constraints, coordinator converges on a formal Technical Specification, followed by an interactive User Steering Gate) and Diamond 2 (Solution Space: parallel developer subagents implement disjoint work packages, coordinator converges via end-to-end compiler verification and delivery quality gates). Configurable Degree of Parallelism (DOP) and agent budget. Trigger on any mention of \"double-diamond\", \"double diamond\", \"two-phase swarm\", or when the user requests an explicit research-then-implement workflow. Do NOT use for simple single-file edits or isolated bug fixes.",
+      "license": "Apache-2.0",
+      "installCommand": "npx skills install github.com/danicat/skills/agents/double-diamond",
+      "url": "https://skills.danicat.dev/agents/double-diamond/SKILL.md",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/agents/double-diamond",
+      "relativePath": "agents/double-diamond/SKILL.md"
     },
     {
       "name": "skill-optimizer",

@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "tabulate>=0.9.0",
+# ]
+# ///
 """
 buffer_analytics.py - Robust SQLite Data Ingestion, Backfill & SQL Analytics for Buffer
 
@@ -6,10 +12,10 @@ Preserves raw Buffer payloads without loss while exposing structured tables and
 high-performance analytical SQL views for deep query crunching.
 
 Usage:
-  python3 buffer_analytics.py sync [--full] [--channel-id <id>] [--start-date <iso>] [--end-date <iso>]
-  python3 buffer_analytics.py query "SELECT * FROM v_posts_summary LIMIT 10" [--format table|markdown|json|csv]
-  python3 buffer_analytics.py report [overview|top-posts|channels|timing|hooks]
-  python3 buffer_analytics.py schema
+  uv run buffer_analytics.py sync [--full] [--channel-id <id>] [--start-date <iso>] [--end-date <iso>]
+  uv run buffer_analytics.py query "SELECT * FROM v_posts_summary LIMIT 10" [--format table|markdown|json|csv]
+  uv run buffer_analytics.py report [overview|top-posts|channels|timing|hooks]
+  uv run buffer_analytics.py schema
 """
 
 import argparse
@@ -21,8 +27,8 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-# Default local database path (local to working directory, override with --db)
-DEFAULT_DB_PATH = "analytics.db"
+# Default local database path (relative to current working directory)
+DEFAULT_DB_PATH = "buffer_analytics.db"
 
 
 def ensure_dirs(db_path: str = DEFAULT_DB_PATH):
@@ -344,10 +350,6 @@ def backfill_posts(
             filt: Dict[str, Any] = {}
             if channel_id:
                 filt["channelIds"] = [channel_id]
-            if start_date:
-                filt["startDate"] = start_date
-            if end_date:
-                filt["endDate"] = end_date
             if status_filter:
                 filt["status"] = status_filter
             if filt:
@@ -375,9 +377,14 @@ def backfill_posts(
 
             total_fetched += len(items)
             cursor = conn.cursor()
+            reached_cutoff = False
 
             for item in items:
                 post_id = item.get("id")
+                item_date = item.get("sentAt") or item.get("createdAt")
+                if not full_sync and start_date and item_date and item_date < start_date:
+                    reached_cutoff = True
+                    break
                 ch_id = item.get("channelId") or (item.get("channel") or {}).get("id")
                 service = item.get("channelService") or (item.get("channel") or {}).get("service")
                 text = item.get("text") or ""
@@ -521,6 +528,9 @@ def backfill_posts(
                     )
 
             conn.commit()
+
+            if reached_cutoff:
+                break
 
             # Pagination check
             has_next_page = page_info.get("hasNextPage", False)
@@ -703,17 +713,31 @@ REPORTS = {
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Buffer Analytics CLI: High-Performance SQLite Ingestion & SQL Query Engine"
+    base_parser = argparse.ArgumentParser(add_help=False)
+    base_parser.add_argument(
+        "--db",
+        "--db-path",
+        dest="db_path",
+        default=DEFAULT_DB_PATH,
+        help=f"Path to SQLite DB (default: {DEFAULT_DB_PATH})",
     )
-    parser.add_argument("--db", "--db-path", dest="db_path", default=DEFAULT_DB_PATH, help=f"Path to SQLite DB (default: {DEFAULT_DB_PATH})")
+
+    parser = argparse.ArgumentParser(
+        description="Buffer Analytics CLI: High-Performance SQLite Ingestion & SQL Query Engine",
+        parents=[base_parser],
+    )
     parser.add_argument("-q", "--query", help="Execute SQL query directly against the analytics database")
-    parser.add_argument("--format", choices=["table", "markdown", "json", "csv"], default="markdown", help="Output format (default: markdown)")
+    parser.add_argument(
+        "--format",
+        choices=["table", "markdown", "json", "csv"],
+        default="markdown",
+        help="Output format (default: markdown)",
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="Subcommand to execute")
 
     # Sync subcommand
-    sync_parser = subparsers.add_parser("sync", help="Sync channels and posts into SQLite")
+    sync_parser = subparsers.add_parser("sync", parents=[base_parser], help="Sync channels and posts into SQLite")
     sync_parser.add_argument("--full", action="store_true", help="Perform complete historical backfill")
     sync_parser.add_argument("--channel-id", help="Filter backfill to specific channel ID")
     sync_parser.add_argument("--start-date", help="Backfill posts created after this ISO date")
@@ -721,7 +745,7 @@ def main():
     sync_parser.add_argument("--status", nargs="+", help="Filter by status (e.g. sent scheduled draft)")
 
     # Query subcommand
-    query_parser = subparsers.add_parser("query", help="Execute SQL query against Buffer analytics database")
+    query_parser = subparsers.add_parser("query", parents=[base_parser], help="Execute SQL query against Buffer analytics database")
     query_parser.add_argument("sql", help="SQL query string")
     query_parser.add_argument(
         "--format",
@@ -731,18 +755,18 @@ def main():
     )
 
     # Report subcommand
-    report_parser = subparsers.add_parser("report", help="Run pre-canned analytical reports")
+    report_parser = subparsers.add_parser("report", parents=[base_parser], help="Run pre-canned analytical reports")
     report_parser.add_argument("name", choices=list(REPORTS.keys()), help="Report name")
     report_parser.add_argument(
         "--format", choices=["table", "markdown", "json", "csv"], default="markdown", help="Output format"
     )
 
     # Schema subcommand
-    subparsers.add_parser("schema", help="Print the database DDL schema and analytical views")
+    subparsers.add_parser("schema", parents=[base_parser], help="Print the database DDL schema and analytical views")
 
     args = parser.parse_args()
-
-    conn = get_db_connection(args.db_path)
+    db_path = args.db_path
+    conn = get_db_connection(db_path)
 
     if args.query:
         result = execute_sql(conn, args.query, output_format=args.format)
@@ -758,7 +782,7 @@ def main():
         sys.exit(0)
 
     if args.command == "sync":
-        print(f"Connecting to Buffer CLI and initializing DB at: {args.db_path}")
+        print(f"Connecting to Buffer CLI and initializing DB at: {db_path}")
         org_id = get_organization_id()
         print(f"Discovered Organization ID: {org_id}")
         

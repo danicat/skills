@@ -1,9 +1,6 @@
 # Buffer Analytics SQL Recipes & Query Cookbooks
 
-All queries can be executed directly using the helper script:
-```bash
-python3 scripts/buffer_analytics.py query "<SQL>" --format markdown
-```
+Execute any of these queries using `uv run scripts/buffer_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
 
 ---
 
@@ -26,7 +23,7 @@ LIMIT 15;
 
 ---
 
-## 2. Best Days of the Week to Post (by Network)
+## 2. Best Days of the Week to Post (by Social Network)
 
 ```sql
 SELECT 
@@ -84,7 +81,7 @@ GROUP BY service, has_link;
 
 ---
 
-## 5. Post Length vs. Performance (Short vs Medium vs Long-Form)
+## 5. Post Length vs Performance (Short vs Medium vs Long-Form)
 
 ```sql
 SELECT 
@@ -107,17 +104,17 @@ ORDER BY service, avg_impressions DESC;
 
 ---
 
-## 6. Keyword & Topic Cohort Analysis
+## 6. Topic Cohort Performance
 
-Analyze performance across specific topics (e.g. Go, Gemini, Agents, Gaming):
+Analyze performance across specific technical topics:
 
 ```sql
 SELECT 
     CASE 
         WHEN LOWER(text) LIKE '%golang%' OR LOWER(text) LIKE '%#golang%' OR LOWER(text) LIKE '%go develop%' THEN 'Go / Golang'
         WHEN LOWER(text) LIKE '%subagent%' OR LOWER(text) LIKE '%swarm%' OR LOWER(text) LIKE '%agent%' THEN 'AI Agents / Antigravity'
-        WHEN LOWER(text) LIKE '%game%' OR LOWER(text) LIKE '%atari%' OR LOWER(text) LIKE '%playstation%' THEN 'Gaming / GameDev'
-        WHEN LOWER(text) LIKE '%batch api%' OR LOWER(text) LIKE '%pricing%' OR LOWER(text) LIKE '%cheaper%' THEN 'Cost & Benchmarks'
+        WHEN LOWER(text) LIKE '%game%' OR LOWER(text) LIKE '%atari%' OR LOWER(text) LIKE '%ebitengine%' THEN 'Gaming / GameDev'
+        WHEN LOWER(text) LIKE '%pricing%' OR LOWER(text) LIKE '%cheaper%' OR LOWER(text) LIKE '%cost%' THEN 'Cost & Benchmarks'
         ELSE 'General / Other'
     END AS topic,
     COUNT(*) AS total_posts,
@@ -129,4 +126,23 @@ FROM v_posts_summary
 WHERE status = 'sent' AND service = 'linkedin'
 GROUP BY topic
 ORDER BY avg_impressions DESC;
+```
+
+---
+
+## 7. Monthly Performance & Growth Trajectory
+
+```sql
+SELECT 
+    year_month,
+    service,
+    COUNT(*) AS total_posts,
+    ROUND(SUM(impressions), 0) AS total_impressions,
+    ROUND(SUM(reactions), 0) AS total_reactions,
+    ROUND(SUM(comments), 0) AS total_comments,
+    ROUND(AVG(engagement_rate), 2) AS avg_engagement_rate
+FROM v_posts_summary
+WHERE status = 'sent'
+GROUP BY year_month, service
+ORDER BY year_month DESC, total_impressions DESC;
 ```

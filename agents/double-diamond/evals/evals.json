@@ -1,0 +1,60 @@
+{
+  "skill_name": "double-diamond",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Let's use the double-diamond skill with an agent budget of 8 to investigate and implement our new OAuth2 provider integration.",
+      "expected_output": "Decomposes the OAuth2 integration into Diamond 1 (Research & Specification) and Diamond 2 (Parallel Development & Quality Gating), allocating 4 research subagents, synthesizing a formal specification, and pausing at the User Steering Gate.",
+      "files": [],
+      "assertions": [
+        "Identifies and activates the double-diamond multi-agent orchestration workflow",
+        "Configures Degree of Parallelism (DOP) based on the specified agent budget (e.g., 4 research, 4 dev)",
+        "Spawns parallel research subagents across orthogonal vectors (SDK/protocol, codebase integration, token storage/security, error handling)",
+        "Enforces the mandatory User Steering Gate before launching any implementation code"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to design and build a new caching tier for our database. First run a parallel research phase to explore Redis vs SQLite WAL vs Memcached, write a specification, and then develop it.",
+      "expected_output": "Executes Diamond 1 research exploration, produces a Technical Specification Document using the template, presents findings and trade-offs to the user at the User Steering Gate, and outlines disjoint work packages for development.",
+      "files": [],
+      "assertions": [
+        "Splits research into orthogonal vectors (Codebase reconnaissance, Ecosystem/SDK comparison, Performance/Latency, Failure modes)",
+        "Synthesizes research into a structured specification with component architecture and system contracts",
+        "Partitions implementation into disjoint, non-overlapping work packages",
+        "Presents specification and trade-offs to the user for explicit approval before proceeding to Diamond 2"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Given an approved Technical Specification for an event bus with 3 disjoint packages (models, publisher, consumer), execute Diamond 2 implementation and quality verification.",
+      "expected_output": "Spawns 3 parallel developer subagents with disjoint file allocations, instructs them to run package-scoped tests, and executes delivery quality gates (build, test, lint, spec compliance).",
+      "files": [],
+      "assertions": [
+        "Assigns mutually exclusive file paths to each developer subagent to prevent merge conflicts",
+        "Instructs developer subagents to run targeted package-scoped unit tests rather than broad root sweeps",
+        "Executes all four sequential delivery gates: compilation, full test suite, linting, and specification compliance",
+        "Produces a verified delivery summary upon completion"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Please fix the typo on line 42 of internal/server/router.go.",
+      "expected_output": "Directly fixes the typo without invoking double-diamond orchestration or spawning subagents.",
+      "files": [],
+      "assertions": [
+        "Does not invoke the double-diamond skill or subagent swarms for simple isolated edits",
+        "Applies the single-file edit directly"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run go test ./internal/auth/... and show me the output.",
+      "expected_output": "Executes the test command directly without triggering double-diamond multi-agent orchestration.",
+      "files": [],
+      "assertions": [
+        "Does not trigger double-diamond multi-agent orchestration for basic command execution"
+      ]
+    }
+  ]
+}

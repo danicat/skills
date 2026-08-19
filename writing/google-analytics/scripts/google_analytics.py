@@ -274,6 +274,11 @@ CREATE VIEW v_page_performance AS
 SELECT 
     page_path,
     MAX(page_title) AS page_title,
+    CASE 
+        WHEN page_path LIKE '/ja/%' THEN 'Japanese'
+        WHEN page_path LIKE '/pt-br/%' THEN 'Portuguese'
+        ELSE 'English'
+    END AS localization,
     SUM(screen_page_views) AS total_views,
     SUM(active_users) AS total_users,
     SUM(sessions) AS total_sessions,
@@ -1176,7 +1181,7 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
     conn.close()
 
 
-def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_json: bool = False, output_csv: bool = False):
+def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_format: str = "markdown", output_json: bool = False, output_csv: bool = False):
     """Executes arbitrary SQL query against the analytics database."""
     conn = init_db(db_path)
     cur = conn.cursor()
@@ -1186,16 +1191,19 @@ def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_json: bool = Fals
         cols = [desc[0] for desc in cur.description] if cur.description else []
         rows = cur.fetchall()
         
-        if output_json:
+        if output_json or output_format == "json":
             result = [dict(zip(cols, row)) for row in rows]
             print(json.dumps(result, indent=2))
-        elif output_csv:
+        elif output_csv or output_format == "csv":
             writer = csv.writer(sys.stdout)
             writer.writerow(cols)
             writer.writerows(rows)
+        elif output_format == "table" and HAS_TABULATE:
+            print(tabulate(rows, headers=cols, tablefmt="grid"))
+            print(f"\n({len(rows)} rows)")
         else:
             if HAS_TABULATE:
-                print(tabulate(rows, headers=cols, tablefmt="grid"))
+                print(tabulate(rows, headers=cols, tablefmt="github"))
             else:
                 print(" | ".join(cols))
                 print("-" * (len(" | ".join(cols))))
@@ -1214,24 +1222,27 @@ def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_json: bool = Fals
 # ---------------------------------------------------------------------------
 
 def main():
+    base_parser = argparse.ArgumentParser(add_help=False)
+    base_parser.add_argument("--db", "--db-path", dest="db_path", default=DEFAULT_DB_FILE, help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})")
+    base_parser.add_argument("--property-id", default=DEFAULT_PROPERTY_ID, help=f"GA4 Property ID (default: {DEFAULT_PROPERTY_ID})")
+    base_parser.add_argument("--credentials", default=DEFAULT_CREDENTIALS_FILE, help=f"OAuth credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})")
+
     parser = argparse.ArgumentParser(
         description="Google Analytics 4 Ingestion Engine & SQL Analytics CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
+        parents=[base_parser],
     )
-    parser.add_argument("--db-path", default=DEFAULT_DB_FILE, help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})")
-    parser.add_argument("--property-id", default=DEFAULT_PROPERTY_ID, help=f"GA4 Property ID (default: {DEFAULT_PROPERTY_ID})")
-    parser.add_argument("--credentials", default=DEFAULT_CREDENTIALS_FILE, help=f"OAuth credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})")
     
     subparsers = parser.add_subparsers(dest="command", required=True)
     
     # Subcommand: auth
-    auth_p = subparsers.add_parser("auth", help="Authenticate via OAuth 2.0 Web Flow")
-    auth_p.add_argument("--client-secret", default=DEFAULT_CLIENT_SECRETS_FILE, help="Path to client secret JSON")
+    auth_p = subparsers.add_parser("auth", parents=[base_parser], help="Authenticate via OAuth 2.0 Web Flow")
+    auth_p.add_argument("--client-secrets", "--client-secret", dest="client_secret", default=DEFAULT_CLIENT_SECRETS_FILE, help="Path to client secret JSON")
     auth_p.add_argument("--port", type=int, default=8080, help="Port for OAuth callback server")
     
     # Subcommand: annotate
-    ann_p = subparsers.add_parser("annotate", help="Create a deployment/milestone annotation in GA4 and SQLite")
+    ann_p = subparsers.add_parser("annotate", parents=[base_parser], help="Create a deployment/milestone annotation in GA4 and SQLite")
     ann_p.add_argument("--title", required=True, help="Annotation / Milestone Title")
     ann_p.add_argument("--date", required=True, help="Event Date (YYYY-MM-DD)")
     ann_p.add_argument("--commit", help="Git commit hash")
@@ -1242,22 +1253,23 @@ def main():
     ann_p.add_argument("--author", default=os.environ.get("USER", ""), help="Author of release")
     
     # Subcommand: properties
-    subparsers.add_parser("properties", help="List all accessible GA4 accounts and properties")
+    subparsers.add_parser("properties", parents=[base_parser], help="List all accessible GA4 accounts and properties")
     
     # Subcommand: sync
-    sync_p = subparsers.add_parser("sync", help="Ingest raw GA4 data into SQLite database")
+    sync_p = subparsers.add_parser("sync", parents=[base_parser], help="Ingest raw GA4 data into SQLite database")
     sync_p.add_argument("--days", type=int, help="Number of trailing days to sync")
     sync_p.add_argument("--full", action="store_true", help="Perform full historical backfill (up to 14 months)")
     sync_p.add_argument("--start-date", help="Custom start date (YYYY-MM-DD)")
     sync_p.add_argument("--end-date", help="Custom end date (YYYY-MM-DD)")
     
     # Subcommand: report
-    report_p = subparsers.add_parser("report", help="Run pre-built analytical reports")
+    report_p = subparsers.add_parser("report", parents=[base_parser], help="Run pre-built analytical reports")
     report_p.add_argument("name", choices=["overview", "top-pages", "channels", "geo", "events", "outbound", "milestone-impact"], help="Report name")
     
     # Subcommand: query
-    query_p = subparsers.add_parser("query", help="Execute arbitrary SQL against the database")
+    query_p = subparsers.add_parser("query", parents=[base_parser], help="Execute arbitrary SQL against the database")
     query_p.add_argument("sql", help="SQL query to execute")
+    query_p.add_argument("--format", default="markdown", choices=["markdown", "table", "json", "csv"], help="Output format (default: markdown)")
     query_p.add_argument("--json", action="store_true", help="Output results in JSON format")
     query_p.add_argument("--csv", action="store_true", help="Output results in CSV format")
     
@@ -1299,7 +1311,7 @@ def main():
     elif args.command == "report":
         run_report(args.name, args.db_path)
     elif args.command == "query":
-        run_query(args.sql, args.db_path, args.json, args.csv)
+        run_query(args.sql, args.db_path, args.format, args.json, args.csv)
 
 
 if __name__ == "__main__":
