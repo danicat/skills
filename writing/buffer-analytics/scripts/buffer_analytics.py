@@ -338,24 +338,31 @@ def backfill_posts(
 
     try:
         while has_next_page:
+            json_input: Dict[str, Any] = {
+                "organizationId": org_id,
+            }
+            filt: Dict[str, Any] = {}
+            if channel_id:
+                filt["channelIds"] = [channel_id]
+            if start_date:
+                filt["startDate"] = start_date
+            if end_date:
+                filt["endDate"] = end_date
+            if status_filter:
+                filt["status"] = status_filter
+            if filt:
+                json_input["filter"] = filt
+
             args = [
                 "posts",
                 "list",
-                "--organization-id",
-                org_id,
+                "--json",
+                json.dumps(json_input),
                 "--limit",
                 str(page_size),
                 "--fields",
                 fields,
             ]
-            if channel_id:
-                args.extend(["--filter.channel-ids", json.dumps([channel_id])])
-            if start_date:
-                args.extend(["--filter.start-date", start_date])
-            if end_date:
-                args.extend(["--filter.end-date", end_date])
-            if status_filter:
-                args.extend(["--filter.status", json.dumps(status_filter)])
             if after_cursor:
                 args.extend(["--after", after_cursor])
 
