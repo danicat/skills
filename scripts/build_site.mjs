@@ -17,15 +17,32 @@ const CATEGORIES = [
   { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Lyria 3 music synthesis and Nano Banana image editing.' },
   { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Semantic versioning, repository hygiene, GoDoctor, and Python uv workflows.' },
   { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarms, double-diamond orchestration, and skill optimizer.' },
-  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide and Google Codelabs tutorials.' },
+  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide, deslopification, inverted pyramid, and SEO optimization.' },
   { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Architecture Decision Records (ADRs) and Request for Comments (RFCs).' },
 ];
 
 const GITHUB_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="18" height="18" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>`;
-
 const MOON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>`;
-
 const SUN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>`;
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]+>/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
 
 function parseFrontmatter(content) {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
@@ -38,8 +55,26 @@ function parseFrontmatter(content) {
   let currentKey = null;
   let inFolded = false;
   let foldedLines = [];
+  let inMetadata = false;
 
   for (const line of lines) {
+    if (line.startsWith('metadata:')) {
+      data.metadata = {};
+      inMetadata = true;
+      inFolded = false;
+      continue;
+    }
+
+    if (inMetadata && line.startsWith('  ')) {
+      const subMatch = line.trim().match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
+      if (subMatch) {
+        data.metadata[subMatch[1]] = subMatch[2].replace(/^["']|["']$/g, '').trim();
+      }
+      continue;
+    } else if (inMetadata && !line.startsWith('  ')) {
+      inMetadata = false;
+    }
+
     const keyValMatch = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
     if (keyValMatch && !line.startsWith('  ')) {
       if (currentKey && inFolded) {
@@ -64,6 +99,285 @@ function parseFrontmatter(content) {
   return { data, body };
 }
 
+function markdownToHtml(markdown) {
+  const codeBlocks = [];
+  let processed = markdown.replace(/```([a-zA-Z0-9_-]*)\r?\n([\s\S]*?)```/g, (match, lang, code) => {
+    const id = `___CODE_BLOCK_${codeBlocks.length}___`;
+    codeBlocks.push({ lang: lang.trim().toLowerCase(), code });
+    return id;
+  });
+
+  const callouts = [];
+  processed = processed.replace(/^>[ \t]*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*\r?\n((?:>[ \t]*.*(?:\r?\n|$))*)/gim, (match, type, content) => {
+    const id = `___CALLOUT_${callouts.length}___`;
+    const cleanLines = content
+      .split(/\r?\n/)
+      .map(line => line.replace(/^>[ \t]?/, ''))
+      .join('\n')
+      .trim();
+    callouts.push({ type: type.toUpperCase(), content: cleanLines });
+    return id + '\n\n';
+  });
+
+  function parseInline(text) {
+    let res = escapeHtml(text);
+
+    // Math
+    res = res.replace(/\$\$([\s\S]*?)\$\$/g, '<span class="math-display">$1</span>');
+    res = res.replace(/\$([^\$\n]+)\$/g, '<span class="math-inline">$1</span>');
+
+    // Inline code
+    res = res.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+    // Images
+    res = res.replace(/!\[(.*?)\]\((.*?)\)/g, (m, alt, src) => {
+      return `<figure class="content-img"><img src="${src}" alt="${alt}" loading="lazy"><figcaption>${alt}</figcaption></figure>`;
+    });
+
+    // Links
+    res = res.replace(/\[(.*?)\]\((.*?)\)/g, (m, label, href) => {
+      let finalHref = href;
+      let isExternal = href.startsWith('http://') || href.startsWith('https://');
+      if (!isExternal && finalHref.endsWith('.md')) {
+        finalHref = finalHref.replace(/\.md$/, '.html');
+      }
+      if (isExternal) {
+        return `<a href="${finalHref}" target="_blank" rel="noopener noreferrer">${label} <span class="ext-icon">↗</span></a>`;
+      }
+      return `<a href="${finalHref}">${label}</a>`;
+    });
+
+    // Bold + Italic
+    res = res.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    res = res.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+
+    // Bold
+    res = res.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    res = res.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+
+    // Italic
+    res = res.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    res = res.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+    // Strikethrough
+    res = res.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+
+    return res;
+  }
+
+  const lines = processed.split(/\r?\n/);
+  const out = [];
+  const toc = [];
+  let inList = false;
+  let listType = null;
+  let inTable = false;
+  let tableRows = [];
+  let inBlockquote = false;
+  let blockquoteLines = [];
+
+  function closeList() {
+    if (inList) {
+      out.push(`</${listType}>`);
+      inList = false;
+      listType = null;
+    }
+  }
+
+  function closeTable() {
+    if (inTable) {
+      if (tableRows.length > 0) {
+        out.push('<div class="table-wrap"><table class="prose-table">');
+        const headerCells = tableRows[0];
+        out.push('<thead><tr>');
+        for (const cell of headerCells) {
+          out.push(`<th>${parseInline(cell.trim())}</th>`);
+        }
+        out.push('</tr></thead>');
+
+        if (tableRows.length > 1) {
+          out.push('<tbody>');
+          for (let i = 1; i < tableRows.length; i++) {
+            out.push('<tr>');
+            for (const cell of tableRows[i]) {
+              out.push(`<td>${parseInline(cell.trim())}</td>`);
+            }
+            out.push('</tr>');
+          }
+          out.push('</tbody>');
+        }
+        out.push('</table></div>');
+      }
+      inTable = false;
+      tableRows = [];
+    }
+  }
+
+  function closeBlockquote() {
+    if (inBlockquote) {
+      const bqText = blockquoteLines.map(l => parseInline(l)).join('<br>');
+      out.push(`<blockquote class="prose-quote">${bqText}</blockquote>`);
+      inBlockquote = false;
+      blockquoteLines = [];
+    }
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    const codeMatch = trimmed.match(/^___CODE_BLOCK_(\d+)___$/);
+    if (codeMatch) {
+      closeList();
+      closeTable();
+      closeBlockquote();
+      const idx = parseInt(codeMatch[1], 10);
+      const { lang, code } = codeBlocks[idx];
+      if (lang === 'mermaid') {
+        out.push(`<div class="mermaid-diagram"><pre class="mermaid">${escapeHtml(code)}</pre></div>`);
+      } else {
+        out.push(`
+<div class="code-block-card">
+  <div class="code-block-header">
+    <span class="code-lang-label">${lang || 'text'}</span>
+    <button class="copy-code-btn" onclick="copySnippet(this)" title="Copy code">
+      <span class="copy-btn-icon">📋</span> <span class="copy-btn-text">Copy</span>
+    </button>
+  </div>
+  <pre class="code-pre"><code class="language-${lang || 'plaintext'}">${escapeHtml(code)}</code></pre>
+</div>`);
+      }
+      continue;
+    }
+
+    const calloutMatch = trimmed.match(/^___CALLOUT_(\d+)___$/);
+    if (calloutMatch) {
+      closeList();
+      closeTable();
+      closeBlockquote();
+      const idx = parseInt(calloutMatch[1], 10);
+      const { type, content } = callouts[idx];
+      const parsedInner = content.split(/\r?\n/).map(l => parseInline(l)).join('<br>');
+      const icons = {
+        NOTE: 'ℹ️',
+        TIP: '💡',
+        IMPORTANT: '❗',
+        WARNING: '⚠️',
+        CAUTION: '🛑'
+      };
+      out.push(`
+<div class="alert-callout callout-${type.toLowerCase()}">
+  <div class="callout-header">
+    <span class="callout-icon">${icons[type] || 'ℹ️'}</span>
+    <span class="callout-title">${type}</span>
+  </div>
+  <div class="callout-content">
+    ${parsedInner}
+  </div>
+</div>`);
+      continue;
+    }
+
+    if (/^(\*{3,}|-{3,}|_{3,})$/.test(trimmed)) {
+      closeList();
+      closeTable();
+      closeBlockquote();
+      out.push('<hr class="prose-hr">');
+      continue;
+    }
+
+    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+      closeList();
+      closeBlockquote();
+      const cells = trimmed.slice(1, -1).split('|');
+      const isDelimiter = cells.every(c => /^[\s:-]+$/.test(c.trim()));
+      if (isDelimiter) {
+        continue;
+      }
+      if (!inTable) {
+        inTable = true;
+        tableRows = [cells];
+      } else {
+        tableRows.push(cells);
+      }
+      continue;
+    } else {
+      closeTable();
+    }
+
+    if (trimmed.startsWith('>')) {
+      closeList();
+      closeTable();
+      if (!inBlockquote) {
+        inBlockquote = true;
+      }
+      blockquoteLines.push(trimmed.replace(/^>[ \t]?/, ''));
+      continue;
+    } else {
+      closeBlockquote();
+    }
+
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
+      closeList();
+      closeTable();
+      closeBlockquote();
+      const level = headingMatch[1].length;
+      const headingText = headingMatch[2].trim();
+      const slug = slugify(headingText.replace(/<[^>]+>/g, '').replace(/[^\w\s-]/g, '')) || `section-${i}`;
+
+      if (level >= 2 && level <= 4) {
+        toc.push({ level, id: slug, text: headingText });
+      }
+
+      const parsedHeading = parseInline(headingText);
+      out.push(`<h${level} id="${slug}" class="prose-h${level}">${parsedHeading} <a href="#${slug}" class="anchor-link" aria-label="Link to ${headingText}">#</a></h${level}>`);
+      continue;
+    }
+
+    const ulMatch = line.match(/^([ \t]*)[*\-+]\s+(.*)$/);
+    const olMatch = line.match(/^([ \t]*)\d+\.\s+(.*)$/);
+    if (ulMatch || olMatch) {
+      closeTable();
+      closeBlockquote();
+      const isOl = !!olMatch;
+      const itemText = isOl ? olMatch[2] : ulMatch[2];
+      const targetType = isOl ? 'ol' : 'ul';
+
+      if (!inList || listType !== targetType) {
+        closeList();
+        inList = true;
+        listType = targetType;
+        out.push(`<${listType} class="prose-${listType}">`);
+      }
+
+      let parsedItem = itemText;
+      const taskMatch = parsedItem.match(/^\[([ xX])\]\s+(.*)$/);
+      if (taskMatch) {
+        const checked = taskMatch[1].toLowerCase() === 'x';
+        parsedItem = `<input type="checkbox" disabled ${checked ? 'checked' : ''} class="task-check"> ${parseInline(taskMatch[2])}`;
+        out.push(`<li class="task-list-item">${parsedItem}</li>`);
+      } else {
+        out.push(`<li>${parseInline(parsedItem)}</li>`);
+      }
+      continue;
+    } else {
+      closeList();
+    }
+
+    if (!trimmed) {
+      continue;
+    }
+
+    out.push(`<p class="prose-p">${parseInline(trimmed)}</p>`);
+  }
+
+  closeList();
+  closeTable();
+  closeBlockquote();
+
+  return { html: out.join('\n'), toc };
+}
+
 function copyRecursive(src, dest) {
   const exists = fs.existsSync(src);
   const stats = exists && fs.statSync(src);
@@ -79,8 +393,1117 @@ function copyRecursive(src, dest) {
   }
 }
 
+function discoverBundledResources(skillDir) {
+  const resources = [];
+  const folders = ['references', 'scripts', 'assets', 'evals'];
+  for (const f of folders) {
+    const full = path.join(skillDir, f);
+    if (!fs.existsSync(full)) continue;
+    function walk(d, rel) {
+      for (const item of fs.readdirSync(d)) {
+        const itemFull = path.join(d, item);
+        const itemRel = path.join(rel, item);
+        const st = fs.statSync(itemFull);
+        if (st.isDirectory()) {
+          walk(itemFull, itemRel);
+        } else {
+          resources.push({
+            type: f,
+            relPath: itemRel,
+            name: item,
+            isMarkdown: item.endsWith('.md'),
+            sizeBytes: st.size
+          });
+        }
+      }
+    }
+    walk(full, f);
+  }
+  return resources;
+}
+
+function renderHeader(activePage = 'Skills') {
+  return `
+    <header>
+      <nav class="nav-bar">
+        <a href="${BLOG_URL}" class="brand-link">
+          danicat.dev
+        </a>
+        <div class="nav-links">
+          <a href="${BLOG_URL}/posts/" class="nav-link">Posts</a>
+          <a href="${BLOG_URL}/events/" class="nav-link">Events</a>
+          <a href="${BLOG_URL}/codelabs/" class="nav-link">Codelabs</a>
+          <a href="/" class="nav-link ${activePage === 'Skills' ? 'active' : ''}">Skills</a>
+          <a href="${BLOG_URL}/about/" class="nav-link">About</a>
+          <a href="${REPO_URL}" target="_blank" rel="noopener" class="nav-icon-link" aria-label="GitHub" title="GitHub">
+            ${GITHUB_SVG}
+          </a>
+          <button id="themeToggle" class="nav-icon-btn" aria-label="Toggle light/dark theme" title="Toggle theme">
+            <span class="dark-hidden">${MOON_SVG}</span>
+            <span class="dark-visible">${SUN_SVG}</span>
+          </button>
+        </div>
+      </nav>
+    </header>`;
+}
+
+function renderFooter() {
+  return `
+    <footer>
+      <p>© Daniela Petruzalek · Open source under Apache-2.0</p>
+      <p><a href="${BLOG_URL}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a> · <a href="/sitemap.xml">sitemap.xml</a></p>
+    </footer>`;
+}
+
+const COMMON_CSS = `
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Blowfish Light Palette */
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text: #334155;
+      --text-heading: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-subtle: #eff6ff;
+      --primary-border: #bfdbfe;
+      --code-bg: #f8fafc;
+      --code-border: #e2e8f0;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --badge-bg: #f1f5f9;
+      --green: #16a34a;
+      --hero-banner-bg: #f8fafc;
+      --hero-banner-border: #e2e8f0;
+
+      /* Callout Light */
+      --callout-note-bg: #f0f9ff;
+      --callout-note-border: #0284c7;
+      --callout-tip-bg: #f0fdf4;
+      --callout-tip-border: #16a34a;
+      --callout-important-bg: #faf5ff;
+      --callout-important-border: #9333ea;
+      --callout-warning-bg: #fffbeb;
+      --callout-warning-border: #d97706;
+      --callout-caution-bg: #fef2f2;
+      --callout-caution-border: #dc2626;
+    }
+
+    html.dark, html[data-theme="dark"] {
+      /* Blowfish Dark Palette */
+      --bg: #0f172a;
+      --bg-alt: #1e293b;
+      --surface: #1e293b;
+      --surface-hover: #273549;
+      --border: #334155;
+      --border-hover: #475569;
+      --text: #cbd5e1;
+      --text-heading: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-subtle: rgba(59, 130, 246, 0.12);
+      --primary-border: rgba(96, 165, 250, 0.3);
+      --code-bg: #090d16;
+      --code-border: #1e293b;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+      --badge-bg: #273549;
+      --green: #4ade80;
+      --hero-banner-bg: rgba(30, 41, 59, 0.7);
+      --hero-banner-border: #334155;
+
+      /* Callout Dark */
+      --callout-note-bg: rgba(2, 132, 199, 0.1);
+      --callout-note-border: #38bdf8;
+      --callout-tip-bg: rgba(22, 163, 74, 0.1);
+      --callout-tip-border: #4ade80;
+      --callout-important-bg: rgba(147, 51, 234, 0.1);
+      --callout-important-border: #c084fc;
+      --callout-warning-bg: rgba(217, 119, 6, 0.1);
+      --callout-warning-border: #fbbf24;
+      --callout-caution-bg: rgba(220, 38, 38, 0.1);
+      --callout-caution-border: #f87171;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 0 1.5rem 5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      padding: 1.5rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -0.01em;
+      transition: color 0.15s ease;
+    }
+
+    .brand-link:hover { color: var(--primary); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-link:hover { color: var(--primary); }
+    .nav-link.active { color: var(--text-heading); font-weight: 600; }
+
+    .nav-icon-link, .nav-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.15s ease;
+      font-family: inherit;
+    }
+
+    .nav-icon-link:hover, .nav-icon-btn:hover { color: var(--primary); }
+    .nav-icon-link svg, .nav-icon-btn svg { width: 1.15rem; height: 1.15rem; fill: currentColor; display: block; }
+
+    .dark-hidden { display: inline-flex; align-items: center; justify-content: center; }
+    .dark-visible { display: none; align-items: center; justify-content: center; }
+    html.dark .dark-hidden, html[data-theme="dark"] .dark-hidden { display: none !important; }
+    html.dark .dark-visible, html[data-theme="dark"] .dark-visible { display: inline-flex !important; }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumbs a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .breadcrumbs a:hover { color: var(--primary); }
+    .breadcrumbs .sep { opacity: 0.5; }
+    .breadcrumbs .current { color: var(--text-heading); font-weight: 600; }
+
+    /* Detail Hero */
+    .detail-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .detail-hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .detail-title-wrap h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .detail-desc {
+      font-size: 1.1rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 900px;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .meta-pill strong { color: var(--text-heading); }
+
+    .install-box {
+      display: flex;
+      align-items: center;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      color: var(--text-heading);
+      margin-bottom: 1.25rem;
+    }
+
+    .install-cmd {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 0.75rem;
+    }
+
+    .copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-heading);
+      cursor: pointer;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .action-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .action-links a {
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color 0.15s ease;
+    }
+
+    .action-links a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* Content Layout (Main + Sidebar) */
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .sidebar {
+        order: 2;
+      }
+    }
+
+    /* Prose Styling */
+    .prose {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .prose-h1, .prose-h2, .prose-h3, .prose-h4 {
+      color: var(--text-heading);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-top: 2.25rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .prose-h1 { font-size: 1.85rem; }
+    .prose-h2 {
+      font-size: 1.45rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .prose-h3 { font-size: 1.2rem; }
+    .prose-h4 { font-size: 1.05rem; }
+
+    .anchor-link {
+      opacity: 0;
+      text-decoration: none;
+      color: var(--text-muted);
+      margin-left: 0.35rem;
+      font-weight: 400;
+      transition: opacity 0.15s ease;
+    }
+
+    .prose-h1:hover .anchor-link,
+    .prose-h2:hover .anchor-link,
+    .prose-h3:hover .anchor-link,
+    .prose-h4:hover .anchor-link {
+      opacity: 0.75;
+    }
+
+    .anchor-link:hover { opacity: 1 !important; color: var(--primary); }
+
+    .prose-p {
+      margin-bottom: 1.25rem;
+    }
+
+    .prose-ul, .prose-ol {
+      margin-bottom: 1.25rem;
+      padding-left: 1.5rem;
+    }
+
+    .prose-ul li, .prose-ol li {
+      margin-bottom: 0.45rem;
+    }
+
+    .task-list-item {
+      list-style-type: none;
+      margin-left: -1.25rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .task-check {
+      accent-color: var(--primary);
+    }
+
+    .inline-code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      padding: 0.15em 0.35em;
+      border-radius: 4px;
+      color: var(--text-heading);
+    }
+
+    .math-inline, .math-display {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      color: var(--primary);
+      background: var(--primary-subtle);
+      padding: 0.15em 0.35em;
+      border-radius: 4px;
+    }
+
+    .prose-quote {
+      border-left: 4px solid var(--primary);
+      padding: 0.6rem 1.25rem;
+      margin: 1.5rem 0;
+      background: var(--primary-subtle);
+      border-radius: 0 8px 8px 0;
+      color: var(--text);
+    }
+
+    .prose-hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    .prose a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .prose a:hover {
+      text-decoration: underline;
+      color: var(--primary-hover);
+    }
+
+    .ext-icon { font-size: 0.8em; }
+
+    /* Code Blocks */
+    .code-block-card {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .code-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0.85rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    .code-lang-label {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .copy-code-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s ease;
+    }
+
+    .copy-code-btn:hover {
+      color: var(--text-heading);
+      border-color: var(--primary);
+    }
+
+    .code-pre {
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-heading);
+    }
+
+    /* Mermaid Diagrams */
+    .mermaid-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1.75rem 0;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .prose-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    .prose-table th, .prose-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prose-table th {
+      background: var(--badge-bg);
+      color: var(--text-heading);
+      font-weight: 600;
+    }
+
+    .prose-table tr:last-child td { border-bottom: none; }
+    .prose-table tr:hover td { background: var(--surface-hover); }
+
+    /* Callouts */
+    .alert-callout {
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid;
+    }
+
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.65rem;
+      color: var(--text-heading);
+    }
+
+    .callout-note { background: var(--callout-note-bg); border-color: var(--callout-note-border); }
+    .callout-tip { background: var(--callout-tip-bg); border-color: var(--callout-tip-border); }
+    .callout-important { background: var(--callout-important-bg); border-color: var(--callout-important-border); }
+    .callout-warning { background: var(--callout-warning-bg); border-color: var(--callout-warning-border); }
+    .callout-caution { background: var(--callout-caution-bg); border-color: var(--callout-caution-border); }
+
+    /* Sidebar Widgets */
+    .sidebar {
+      position: sticky;
+      top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .sidebar-widget {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .widget-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .toc-item a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+      display: block;
+      line-height: 1.4;
+    }
+
+    .toc-item a:hover { color: var(--primary); }
+    .toc-item.level-3 { padding-left: 0.85rem; font-size: 0.84rem; }
+    .toc-item.level-4 { padding-left: 1.5rem; font-size: 0.8rem; }
+
+    .resource-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.86rem;
+    }
+
+    .resource-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.15s ease;
+      word-break: break-all;
+    }
+
+    .resource-item a:hover { color: var(--primary); }
+
+    .related-skills-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+    }
+
+    .related-skills-list a {
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+      transition: color 0.15s ease;
+    }
+
+    .related-skills-list a:hover { color: var(--primary); }
+`;
+
+function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
+  const { html: bodyHtml, toc } = markdownToHtml(skill.body);
+  const title = `${skill.name} · Agent Skill · Daniela Petruzalek (danicat.dev)`;
+  const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/`;
+
+  const metaAuthor = skill.metadata?.author || 'Daniela Petruzalek (daniela@danicat.dev)';
+  const metaVersion = skill.metadata?.version || '';
+
+  const schemaJson = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: skill.name,
+    description: skill.description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD'
+    },
+    author: {
+      '@type': 'Person',
+      name: 'Daniela Petruzalek',
+      url: BLOG_URL
+    },
+    url: canonicalUrl,
+    codeRepository: skill.githubUrl,
+    license: 'https://www.apache.org/licenses/LICENSE-2.0'
+  });
+
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(skill.description)}">
+  <link rel="canonical" href="${canonicalUrl}">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:title" content="${escapeHtml(skill.name)} · Agent Skill">
+  <meta property="og:description" content="${escapeHtml(skill.description)}">
+  <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapeHtml(skill.name)} · Agent Skill">
+  <meta name="twitter:description" content="${escapeHtml(skill.description)}">
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+    ${schemaJson}
+  </script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+
+  <script>
+    (function() {
+      var appearance = localStorage.getItem('appearance');
+      if (appearance === 'dark' || (!appearance && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+${COMMON_CSS}
+  </style>
+
+  <!-- Mermaid.js for architecture diagrams -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: isDark ? 'dark' : 'default',
+      securityLevel: 'loose'
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    ${renderHeader('Skills')}
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+      <a href="/">Catalog</a>
+      <span class="sep">/</span>
+      <a href="/#${skill.category}">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
+      <span class="sep">/</span>
+      <span class="current">${escapeHtml(skill.name)}</span>
+    </nav>
+
+    <div class="detail-hero">
+      <div class="detail-hero-header">
+        <div class="detail-title-wrap">
+          <h1>${escapeHtml(skill.name)}</h1>
+        </div>
+        <span class="meta-pill">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</span>
+      </div>
+
+      <p class="detail-desc">${escapeHtml(skill.description)}</p>
+
+      <div class="meta-pills">
+        <span class="meta-pill"><strong>License:</strong> ${escapeHtml(skill.license)}</span>
+        ${metaVersion ? `<span class="meta-pill"><strong>Version:</strong> ${escapeHtml(metaVersion)}</span>` : ''}
+        ${metaAuthor ? `<span class="meta-pill"><strong>Author:</strong> ${escapeHtml(metaAuthor)}</span>` : ''}
+      </div>
+
+      <div class="install-box">
+        <span class="install-cmd">${escapeHtml(skill.installCommand)}</span>
+        <button class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand)}', this)" title="Copy install command">
+          <span>📋</span> Copy
+        </button>
+      </div>
+
+      <div class="action-links">
+        <a href="./SKILL.md">📄 Raw SKILL.md</a>
+        <a href="${skill.githubUrl}" target="_blank" rel="noopener">🐙 GitHub Source</a>
+        <a href="/">← Back to Catalog</a>
+      </div>
+    </div>
+
+    <div class="content-layout">
+      <main class="prose">
+        ${bodyHtml}
+      </main>
+
+      <aside class="sidebar">
+        ${toc.length > 0 ? `
+        <div class="sidebar-widget">
+          <div class="widget-title">On This Page</div>
+          <ul class="toc-list">
+            ${toc.map(t => `<li class="toc-item level-${t.level}"><a href="#${t.id}">${escapeHtml(t.text)}</a></li>`).join('\n            ')}
+          </ul>
+        </div>` : ''}
+
+        ${bundledResources.length > 0 ? `
+        <div class="sidebar-widget">
+          <div class="widget-title">Bundled Files</div>
+          <ul class="resource-list">
+            ${bundledResources.map(r => {
+              const icon = r.isMarkdown ? '📄' : (r.name.endsWith('.py') ? '🐍' : (r.name.endsWith('.sh') ? '📜' : (r.name.endsWith('.json') ? '📋' : '📁')));
+              const targetUrl = r.isMarkdown ? r.relPath.replace(/\.md$/, '.html') : r.relPath;
+              return `<li class="resource-item"><a href="./${targetUrl}"><span>${icon}</span> ${escapeHtml(r.relPath)}</a></li>`;
+            }).join('\n            ')}
+          </ul>
+        </div>` : ''}
+
+        <div class="sidebar-widget">
+          <div class="widget-title">More in ${escapeHtml(skill.categoryName)}</div>
+          <ul class="related-skills-list">
+            ${allSkillsInCategory.filter(s => s.name !== skill.name).map(s => `
+              <li><a href="/${s.category}/${s.folder}/">${s.name} →</a></li>
+            `).join('\n            ')}
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    ${renderFooter()}
+  </div>
+
+  <script>
+    // Theme Management
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        htmlEl.classList.add('dark');
+        htmlEl.setAttribute('data-theme', 'dark');
+      } else {
+        htmlEl.classList.remove('dark');
+        htmlEl.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('appearance', theme);
+    }
+
+    const savedTheme = localStorage.getItem('appearance') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = htmlEl.classList.contains('dark') || htmlEl.getAttribute('data-theme') === 'dark';
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+    }
+
+    function copyInstallCommand(cmd, btn) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span>✓</span> Copied';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-block-card').querySelector('code');
+      if (!pre) return;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        const textEl = btn.querySelector('.copy-btn-text');
+        const iconEl = btn.querySelector('.copy-btn-icon');
+        const origText = textEl.innerText;
+        textEl.innerText = 'Copied!';
+        iconEl.innerText = '✓';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+          textEl.innerText = origText;
+          iconEl.innerText = '📋';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>`;
+}
+
+function generateReferenceHtml(refFile, skill, content) {
+  const { data, body } = parseFrontmatter(content);
+  const { html: bodyHtml, toc } = markdownToHtml(body);
+  const refTitle = data.title || refFile.name.replace(/\.md$/, '').replace(/[_-]/g, ' ');
+  const title = `${refTitle} · ${skill.name} Reference · Daniela Petruzalek (danicat.dev)`;
+  const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/${refFile.relPath.replace(/\.md$/, '.html')}`;
+
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(title)}</title>
+  <link rel="canonical" href="${canonicalUrl}">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+
+  <script>
+    (function() {
+      var appearance = localStorage.getItem('appearance');
+      if (appearance === 'dark' || (!appearance && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+${COMMON_CSS}
+  </style>
+
+  <!-- Mermaid.js for diagrams -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: isDark ? 'dark' : 'default',
+      securityLevel: 'loose'
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    ${renderHeader('Skills')}
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+      <a href="/">Catalog</a>
+      <span class="sep">/</span>
+      <a href="/#${skill.category}">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
+      <span class="sep">/</span>
+      <a href="/${skill.category}/${skill.folder}/">${escapeHtml(skill.name)}</a>
+      <span class="sep">/</span>
+      <span class="current">${escapeHtml(refFile.relPath)}</span>
+    </nav>
+
+    <div class="detail-hero">
+      <div class="detail-hero-header">
+        <div class="detail-title-wrap">
+          <h1>${escapeHtml(refTitle)}</h1>
+        </div>
+        <span class="meta-pill">${skill.categoryEmoji} ${escapeHtml(skill.name)}</span>
+      </div>
+
+      <div class="action-links">
+        <a href="/${skill.category}/${skill.folder}/">← Back to ${escapeHtml(skill.name)}</a>
+        <a href="./${refFile.name}">📄 Raw Markdown</a>
+      </div>
+    </div>
+
+    <div class="content-layout">
+      <main class="prose">
+        ${bodyHtml}
+      </main>
+
+      <aside class="sidebar">
+        ${toc.length > 0 ? `
+        <div class="sidebar-widget">
+          <div class="widget-title">On This Page</div>
+          <ul class="toc-list">
+            ${toc.map(t => `<li class="toc-item level-${t.level}"><a href="#${t.id}">${escapeHtml(t.text)}</a></li>`).join('\n            ')}
+          </ul>
+        </div>` : ''}
+
+        <div class="sidebar-widget">
+          <div class="widget-title">Parent Skill</div>
+          <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">${escapeHtml(skill.description)}</p>
+          <a href="/${skill.category}/${skill.folder}/" style="color: var(--primary); font-size: 0.88rem; font-weight: 500;">View ${escapeHtml(skill.name)} →</a>
+        </div>
+      </aside>
+    </div>
+
+    ${renderFooter()}
+  </div>
+
+  <script>
+    // Theme Management
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        htmlEl.classList.add('dark');
+        htmlEl.setAttribute('data-theme', 'dark');
+      } else {
+        htmlEl.classList.remove('dark');
+        htmlEl.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('appearance', theme);
+    }
+
+    const savedTheme = localStorage.getItem('appearance') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = htmlEl.classList.contains('dark') || htmlEl.getAttribute('data-theme') === 'dark';
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-block-card').querySelector('code');
+      if (!pre) return;
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        const textEl = btn.querySelector('.copy-btn-text');
+        const iconEl = btn.querySelector('.copy-btn-icon');
+        const origText = textEl.innerText;
+        textEl.innerText = 'Copied!';
+        iconEl.innerText = '✓';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+          textEl.innerText = origText;
+          iconEl.innerText = '📋';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>`;
+}
+
 async function build() {
-  console.log('Building skills catalog with sitemap.xml, robots.txt, and SEO...');
+  console.log('Building skills catalog with detail pages, sitemap.xml, robots.txt, and SEO...');
 
   if (fs.existsSync(SITE_DIR)) {
     fs.rmSync(SITE_DIR, { recursive: true, force: true });
@@ -106,13 +1529,16 @@ async function build() {
 
       const skillRecord = {
         name: data.name || skillFolder,
+        folder: skillFolder,
         category: cat.id,
         categoryName: cat.name,
         categoryEmoji: cat.emoji,
         description: data.description || '',
         license: data.license || 'Apache-2.0',
+        metadata: data.metadata || {},
         installCommand: `npx skills install github.com/danicat/skills/${cat.id}/${skillFolder}`,
         url: `${DOMAIN}/${cat.id}/${skillFolder}/SKILL.md`,
+        detailUrl: `${DOMAIN}/${cat.id}/${skillFolder}/`,
         githubUrl: `${REPO_URL}/tree/main/${cat.id}/${skillFolder}`,
         relativePath: `${cat.id}/${skillFolder}/SKILL.md`,
         body: body.trim(),
@@ -120,6 +1546,30 @@ async function build() {
 
       skills.push(skillRecord);
       copyRecursive(path.join(catDir, skillFolder), path.join(SITE_DIR, cat.id, skillFolder));
+    }
+  }
+
+  // Generate Detail HTML pages for all skills
+  for (const skill of skills) {
+    const catSkills = skills.filter(s => s.category === skill.category);
+    const skillDir = path.join(ROOT_DIR, skill.category, skill.folder);
+    const resources = discoverBundledResources(skillDir);
+
+    const detailHtml = generateSkillHtml(skill, catSkills, resources);
+    fs.writeFileSync(path.join(SITE_DIR, skill.category, skill.folder, 'index.html'), detailHtml);
+
+    // Generate HTML for bundled markdown reference files
+    for (const res of resources) {
+      if (res.isMarkdown) {
+        const fullRefPath = path.join(skillDir, res.relPath);
+        if (fs.existsSync(fullRefPath)) {
+          const refContent = fs.readFileSync(fullRefPath, 'utf8');
+          const refHtml = generateReferenceHtml(res, skill, refContent);
+          const outRefHtmlPath = path.join(SITE_DIR, skill.category, skill.folder, res.relPath.replace(/\.md$/, '.html'));
+          fs.mkdirSync(path.dirname(outRefHtmlPath), { recursive: true });
+          fs.writeFileSync(outRefHtmlPath, refHtml);
+        }
+      }
     }
   }
 
@@ -152,7 +1602,7 @@ async function build() {
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n\n`;
   for (const s of skills) {
     llmsFullTxt += `# Skill: ${s.name} (${s.category})\n\n> ${s.description}\n\n`;
-    llmsFullTxt += `**Source**: ${s.url}\n**Install**: \`${s.installCommand}\`\n\n`;
+    llmsFullTxt += `**Web Page**: ${s.detailUrl}\n**Source**: ${s.url}\n**Install**: \`${s.installCommand}\`\n\n`;
     llmsFullTxt += `## Instructions\n\n${s.body}\n\n---\n\n`;
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
@@ -186,7 +1636,10 @@ async function build() {
   sitemapXml += `  <url>\n    <loc>${DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   for (const s of skills) {
-    sitemapXml += `  <url>\n    <loc>${s.url}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    // Detail page
+    sitemapXml += `  <url>\n    <loc>${s.detailUrl}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    // Raw SKILL.md
+    sitemapXml += `  <url>\n    <loc>${s.url}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
   }
   sitemapXml += `</urlset>\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'sitemap.xml'), sitemapXml);
@@ -195,8 +1648,8 @@ async function build() {
   const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${DOMAIN}/sitemap.xml\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'robots.txt'), robotsTxt);
 
-  // 8. HTML Index with Google Analytics, SEO, and Blowfish styling
-  const html = `<!DOCTYPE html>
+  // 8. Catalog Home Page HTML
+  const homeHtml = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -228,6 +1681,7 @@ async function build() {
   <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+
   <script>
     (function() {
       var appearance = localStorage.getItem('appearance');
@@ -241,191 +1695,7 @@ async function build() {
     })();
   </script>
   <style>
-    :root {
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-      /* Blowfish Light Palette */
-      --bg: #ffffff;
-      --bg-alt: #f8fafc;
-      --surface: #ffffff;
-      --surface-hover: #f1f5f9;
-      --border: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --text: #334155;
-      --text-heading: #0f172a;
-      --text-muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-subtle: #eff6ff;
-      --primary-border: #bfdbfe;
-      --code-bg: #f8fafc;
-      --code-border: #e2e8f0;
-      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-      --badge-bg: #f1f5f9;
-      --green: #16a34a;
-      --hero-banner-bg: #f8fafc;
-      --hero-banner-border: #e2e8f0;
-    }
-
-    html.dark, html[data-theme="dark"] {
-      /* Blowfish Dark Palette */
-      --bg: #0f172a;
-      --bg-alt: #1e293b;
-      --surface: #1e293b;
-      --surface-hover: #273549;
-      --border: #334155;
-      --border-hover: #475569;
-      --text: #cbd5e1;
-      --text-heading: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #60a5fa;
-      --primary-hover: #93c5fd;
-      --primary-subtle: rgba(59, 130, 246, 0.12);
-      --primary-border: rgba(96, 165, 250, 0.3);
-      --code-bg: #090d16;
-      --code-border: #1e293b;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-      --shadow-hover: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
-      --badge-bg: #273549;
-      --green: #4ade80;
-      --hero-banner-bg: rgba(30, 41, 59, 0.7);
-      --hero-banner-border: #334155;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      padding: 0 1.5rem 5rem;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .container {
-      max-width: 1160px;
-      margin: 0 auto;
-    }
-
-    /* Blowfish-aligned Header */
-    header {
-      padding: 1.5rem 0 2rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2.5rem;
-    }
-
-    .nav-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-    }
-
-    .brand-link {
-      display: inline-flex;
-      align-items: center;
-      text-decoration: none;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-heading);
-      letter-spacing: -0.01em;
-      transition: color 0.15s ease;
-    }
-
-    .brand-link:hover {
-      color: var(--primary);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      flex-wrap: wrap;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .nav-link:hover {
-      color: var(--primary);
-    }
-
-    .nav-link.active {
-      color: var(--text-heading);
-      font-weight: 600;
-    }
-
-    .nav-icon-link,
-    .nav-icon-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      padding: 0;
-      line-height: 1;
-      transition: color 0.15s ease;
-      font-family: inherit;
-    }
-
-    .nav-icon-link:hover,
-    .nav-icon-btn:hover {
-      color: var(--primary);
-    }
-
-    .nav-icon-link svg,
-    .nav-icon-btn svg {
-      width: 1.15rem;
-      height: 1.15rem;
-      fill: currentColor;
-      display: block;
-    }
-
-    .dark-hidden {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dark-visible {
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    html.dark .dark-hidden,
-    html[data-theme="dark"] .dark-hidden {
-      display: none !important;
-    }
-
-    html.dark .dark-visible,
-    html[data-theme="dark"] .dark-visible {
-      display: inline-flex !important;
-    }
-
-    @media (max-width: 640px) {
-      .nav-links {
-        gap: 0.85rem;
-      }
-      .nav-link {
-        font-size: 0.9rem;
-      }
-    }
+${COMMON_CSS}
 
     /* Hero */
     .hero {
@@ -740,54 +2010,11 @@ async function build() {
       color: var(--text-muted);
       font-size: 1.15rem;
     }
-
-    /* Footer */
-    footer {
-      margin-top: 5rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <nav class="nav-bar">
-        <a href="${BLOG_URL}" class="brand-link">
-          danicat.dev
-        </a>
-        <div class="nav-links">
-          <a href="${BLOG_URL}/posts/" class="nav-link">Posts</a>
-          <a href="${BLOG_URL}/events/" class="nav-link">Events</a>
-          <a href="${BLOG_URL}/codelabs/" class="nav-link">Codelabs</a>
-          <a href="/" class="nav-link active">Skills</a>
-          <a href="${BLOG_URL}/about/" class="nav-link">About</a>
-          <a href="${REPO_URL}" target="_blank" rel="noopener" class="nav-icon-link" aria-label="GitHub" title="GitHub">
-            ${GITHUB_SVG}
-          </a>
-          <button id="themeToggle" class="nav-icon-btn" aria-label="Toggle light/dark theme" title="Toggle theme">
-            <span class="dark-hidden">${MOON_SVG}</span>
-            <span class="dark-visible">${SUN_SVG}</span>
-          </button>
-        </div>
-      </nav>
-    </header>
+    ${renderHeader('Skills')}
 
     <div class="hero">
       <h1>Agent Skills</h1>
@@ -828,7 +2055,7 @@ async function build() {
         <div class="skill-card" data-category="${s.category}" data-name="${s.name.toLowerCase()}" data-desc="${s.description.toLowerCase().replace(/"/g, '&quot;')}">
           <div class="card-top">
             <div class="card-title-row">
-              <a href="/${s.relativePath}" class="skill-name-link">${s.name}</a>
+              <a href="/${s.category}/${s.folder}/" class="skill-name-link">${s.name}</a>
               <span class="cat-badge">${s.categoryEmoji} ${s.categoryName}</span>
             </div>
             <p class="skill-description">${s.description}</p>
@@ -839,22 +2066,19 @@ async function build() {
               <button class="copy-button" onclick="copyInstall('${s.installCommand}', this)" title="Copy install command">📋</button>
             </div>
             <div class="card-links">
-              <a href="/${s.relativePath}">View SKILL.md</a>
-              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source code ↗</a>
+              <a href="/${s.category}/${s.folder}/">View Skill →</a>
+              <a href="/${s.relativePath}">Raw SKILL.md</a>
+              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source ↗</a>
             </div>
           </div>
         </div>`).join('')}
       </div>
     </main>
 
-    <footer>
-      <p>© Daniela Petruzalek · Open source under Apache-2.0</p>
-      <p><a href="${BLOG_URL}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a> · <a href="/sitemap.xml">sitemap.xml</a></p>
-    </footer>
+    ${renderFooter()}
   </div>
 
   <script>
-    // Theme Management aligned with blowfish & localStorage
     const themeToggle = document.getElementById('themeToggle');
     const htmlEl = document.documentElement;
 
@@ -869,7 +2093,6 @@ async function build() {
       localStorage.setItem('appearance', theme);
     }
 
-    // Initialize Theme
     const savedTheme = localStorage.getItem('appearance') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     applyTheme(savedTheme);
 
@@ -880,7 +2103,6 @@ async function build() {
       });
     }
 
-    // Search and Filter Logic
     const searchInput = document.getElementById('searchInput');
     const pillButtons = document.querySelectorAll('.pill-btn');
     const cards = document.querySelectorAll('.skill-card');
@@ -957,8 +2179,8 @@ async function build() {
 </body>
 </html>`;
 
-  fs.writeFileSync(path.join(SITE_DIR, 'index.html'), html);
-  console.log(`Site build complete! Generated ${skills.length} skills, sitemap.xml, and robots.txt in _site/.`);
+  fs.writeFileSync(path.join(SITE_DIR, 'index.html'), homeHtml);
+  console.log(`Site build complete! Generated ${skills.length} skills detail pages, sitemap.xml, robots.txt, and assets in _site/.`);
 }
 
 build().catch(err => {

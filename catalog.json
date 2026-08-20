@@ -4,8 +4,8 @@
   "title": "Daniela Petruzalek Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 27,
-  "updatedAt": "2026-08-20T05:36:32.973Z",
+  "totalSkills": 29,
+  "updatedAt": "2026-08-20T20:05:33.337Z",
   "categories": [
     {
       "id": "game-dev",
@@ -35,7 +35,7 @@
       "id": "writing",
       "name": "Technical Writing",
       "emoji": "✍️",
-      "description": "Google Developers Blog style guide and Google Codelabs tutorials."
+      "description": "Google Developers Blog style guide, deslopification, inverted pyramid, and SEO optimization."
     },
     {
       "id": "standards",
@@ -53,325 +53,483 @@
   "skills": [
     {
       "name": "ebitengineer",
+      "folder": "ebitengineer",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Best practices and guidelines for building production-grade 2D games in Go using Ebitengine (v2). Activate when designing game architecture, state machines, cycle timing, WASM audio sync, camera viewports, shaders, or custom typography.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/ebitengineer",
       "url": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/ebitengineer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/ebitengineer",
       "relativePath": "game-dev/ebitengineer/SKILL.md"
     },
     {
       "name": "game-design",
+      "folder": "game-design",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Use this skill when guiding the user through game concept design, defining core mechanics, conducting interactive game design interviews (/grill-me), or generating a Game Design Document (GDD.md) for 2D games.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/game-design",
       "url": "https://skills.danicat.dev/game-dev/game-design/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/game-design/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/game-design",
       "relativePath": "game-dev/game-design/SKILL.md"
     },
     {
       "name": "procedural-art",
+      "folder": "procedural-art",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Use this skill when designing, generating, or optimizing pure-code procedural 2D sprites, tilemaps, vector graphics, particle systems, or visual effects without external image files. Activate for any tasks involving procedural rasterization, color palette theory, 2D matrix transformations, order of operations (scale, rotate, translate), particle pools, sub-frame interpolation/easing curves, or bitmap pixel crafting in game development.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/procedural-art",
       "url": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/procedural-art/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/procedural-art",
       "relativePath": "game-dev/procedural-art/SKILL.md"
     },
     {
       "name": "procedural-composer",
+      "folder": "procedural-composer",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Use this skill when designing, implementing, or optimizing pure-code procedural audio synthesis engines, sound effects (SFX), or polyphonic background music (BGM) without external assets. Activate for any questions or tasks involving audio DSP math, FM synthesis, ADSR envelopes, sound chip emulation (YM2612, SPC700, PS1 SPU), chiptunes, multi-track audio mixing, or game sound system code.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/procedural-composer",
       "url": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/procedural-composer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/procedural-composer",
       "relativePath": "game-dev/procedural-composer/SKILL.md"
     },
     {
       "name": "sprite-animation",
+      "folder": "sprite-animation",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Use this skill when developing, validating, slicing, or managing 2D sprite sheets, animation sequences, frame durations, tag loops, and Aseprite files (.ase/.aseprite) for Ebitengine games. Serves as the specialized Animator Agent role for game development teams.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/sprite-animation",
       "url": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/sprite-animation/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/sprite-animation",
       "relativePath": "game-dev/sprite-animation/SKILL.md"
     },
     {
       "name": "vibe-game-developer",
+      "folder": "vibe-game-developer",
       "category": "game-dev",
       "categoryName": "Game Development",
       "categoryEmoji": "🕹️",
       "description": "Master orchestrator and request router for 2D game development in Go using Ebitengine and Gemini AI models. Activate when handling user requests for game creation, game architecture, asset generation (procedural code vs. generative AI audio/images), Go code quality, or WebAssembly deployment.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/game-dev/vibe-game-developer",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/game-dev/vibe-game-developer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/game-dev/vibe-game-developer",
       "relativePath": "game-dev/vibe-game-developer/SKILL.md"
     },
     {
       "name": "lyria",
+      "folder": "lyria",
       "category": "media",
       "categoryName": "Generative Media",
       "categoryEmoji": "🎨",
       "description": "Generate high-fidelity 44.1 kHz stereo music and audio from text prompts or images using Google's Lyria 3 models (lyria-3-clip-preview, lyria-3-pro-preview) with ADC authentication.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/media/lyria",
       "url": "https://skills.danicat.dev/media/lyria/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/media/lyria/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/media/lyria",
       "relativePath": "media/lyria/SKILL.md"
     },
     {
       "name": "nano-banana",
+      "folder": "nano-banana",
       "category": "media",
       "categoryName": "Generative Media",
       "categoryEmoji": "🎨",
       "description": "Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC auth. Supports \"banana\" as a verb (e.g., \"please banana this\") and multi-image character/style consistency.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/media/nano-banana",
       "url": "https://skills.danicat.dev/media/nano-banana/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/media/nano-banana/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/media/nano-banana",
       "relativePath": "media/nano-banana/SKILL.md"
     },
     {
       "name": "engineering-flow",
+      "folder": "engineering-flow",
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
       "description": "MANDATORY for professional software development, production codebases, and open source maintenance. Activate this skill whenever designing features, refactoring code, maintaining repository hygiene, planning releases, reviewing breaking changes, or resolving technical ambiguity. Enforces semantic versioning (with zero-debt 0.x evolution), broken window code hygiene (dead code/comment cleanup, no lint ignores, strict error handling), RFC/ADR decision pipelines, 2x2 task prioritization, grounded 7-tier evidence research, and pre-release quality gates. Activate even when the user asks simple engineering questions or requests codebase maintenance.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/coding/engineering-flow",
       "url": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/coding/engineering-flow/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/coding/engineering-flow",
       "relativePath": "coding/engineering-flow/SKILL.md"
     },
     {
       "name": "find-examples",
+      "folder": "find-examples",
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
       "description": "Use this skill when you need to find real-world code examples, learn how an unfamiliar third-party library, API, SDK, or framework is used, or translate code patterns from other languages. Trigger when implementing integrations, resolving SDK setup/usage issues, or bootstrapping features where the user asks \"how do I use X?\", \"show me an example of Y\", or \"integrate Y into my project\".",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/coding/find-examples",
       "url": "https://skills.danicat.dev/coding/find-examples/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/coding/find-examples/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/coding/find-examples",
       "relativePath": "coding/find-examples/SKILL.md"
     },
     {
       "name": "godoctor",
+      "folder": "godoctor",
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
       "description": "Activate this skill whenever developing, building, editing, testing, documenting, or verifying Go (golang) code, or managing GoDoctor CLI and MCP surfaces. Enforces strict Google Go Style, flat package architecture, zero-fallback execution, multi-tier testing, AST-aware edits with compiler rollback gates, Selene mutation testing, and TestQuery SQL analytics.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "daniela@danicat.dev",
+        "version": "0.34.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/coding/godoctor",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/coding/godoctor/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/coding/godoctor",
       "relativePath": "coding/godoctor/SKILL.md"
     },
     {
       "name": "latest-version",
+      "folder": "latest-version",
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
       "description": "Use this skill to fetch, verify, and resolve the latest stable versions of software packages, dependencies, and Gemini models. Activate this skill whenever the user asks to add or upgrade dependencies, initialize a new project, edit dependency files (such as package.json, requirements.txt, go.mod, Cargo.toml, Gemfile), or configure Gemini models in application code. Do not guess version numbers or rely on outdated training weights; use this skill to check official registries for the current stable release. Emphatically activate this skill when encountering dependency resolution errors, package installation failures, or security audits requiring package upgrades.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/coding/latest-version",
       "url": "https://skills.danicat.dev/coding/latest-version/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/coding/latest-version/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/coding/latest-version",
       "relativePath": "coding/latest-version/SKILL.md"
     },
     {
       "name": "pyhd",
+      "folder": "pyhd",
       "category": "coding",
       "categoryName": "Coding & Tooling",
       "categoryEmoji": "💻",
       "description": "Use this skill when writing, editing, refactoring, debugging, or testing Python code, or when configuring Python project environments. Activate on any request to add Python features, fix bugs, resolve import errors, run pytest suites, configure linter rules in pyproject.toml, or manage packages and dependencies using uv. Trigger this skill even if the user does not explicitly mention Ruff, uv, or formatting, but asks for Python-related modifications, script creation, or dependency updates.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/coding/pyhd",
       "url": "https://skills.danicat.dev/coding/pyhd/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/coding/pyhd/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/coding/pyhd",
       "relativePath": "coding/pyhd/SKILL.md"
     },
     {
       "name": "a2ui-developer-guide",
+      "folder": "a2ui-developer-guide",
       "category": "agents",
       "categoryName": "Agents & Meta-Tooling",
       "categoryEmoji": "🤖",
       "description": "A comprehensive developer guide for A2UI v0.9.1. Trigger this skill for ANY question, bug, or coding task related to Agent-Driven User Interfaces (A2UI), MCP integrations, or component authoring.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/agents/a2ui-developer-guide",
       "url": "https://skills.danicat.dev/agents/a2ui-developer-guide/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/agents/a2ui-developer-guide/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/a2ui-developer-guide",
       "relativePath": "agents/a2ui-developer-guide/SKILL.md"
     },
     {
       "name": "double-diamond",
+      "folder": "double-diamond",
       "category": "agents",
       "categoryName": "Agents & Meta-Tooling",
       "categoryEmoji": "🤖",
       "description": "Use this skill when executing complex engineering initiatives, architectural overhauls, high-ambiguity technical spikes, or full-stack features using the Agile Double-Diamond methodology (Inception -> Discover -> Define -> Develop -> Deliver). Orchestrates three distinct stages: Pre-Diamond Inception (rigorous user grilling via /grill-me to align on scope and tech constraints), Diamond 1 (Problem Space: parallel research subagents discover constraints, coordinator converges on a formal Technical Specification, followed by an interactive User Steering Gate), and Diamond 2 (Solution Space: parallel developer subagents implement disjoint work packages, coordinator converges via end-to-end compiler verification and delivery quality gates). Configurable Degree of Parallelism (DOP) and agent budget. Trigger on any mention of \"double-diamond\", \"double diamond\", \"two-phase swarm\", or when the user requests an explicit research-then-implement workflow. Do NOT use for simple single-file edits or isolated bug fixes.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.2.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/agents/double-diamond",
       "url": "https://skills.danicat.dev/agents/double-diamond/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/agents/double-diamond/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/double-diamond",
       "relativePath": "agents/double-diamond/SKILL.md"
     },
     {
       "name": "skill-optimizer",
+      "folder": "skill-optimizer",
       "category": "agents",
       "categoryName": "Agents & Meta-Tooling",
       "categoryEmoji": "🤖",
       "description": "Analyze, author, evaluate, and optimize Agent Skills according to the official Agent Skills specification. Activate when creating new skills, auditing existing skills, installing reference tools like skill-creator via npx skills add, optimizing trigger descriptions with train/validation splits, designing eval suites (evals.json), setting up blind comparisons, bundling self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP server (https://agentskills.io/mcp), or organizing progressive disclosure structures (scripts/, references/, assets/, evals/). Use whenever reviewing, refactoring, or grading skills.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.3.2"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/agents/skill-optimizer",
       "url": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/agents/skill-optimizer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/skill-optimizer",
       "relativePath": "agents/skill-optimizer/SKILL.md"
     },
     {
       "name": "swarm-coding",
+      "folder": "swarm-coding",
       "category": "agents",
       "categoryName": "Agents & Meta-Tooling",
       "categoryEmoji": "🤖",
       "description": "Use this skill when executing complex, multi-component engineering tasks, large-scale refactorings, or full-stack features that can be decomposed into parallelizable work. MANDATORY: Trigger immediately upon any mention of the word \"swarm\" (case-insensitive) in relation to planning or executing a task. Trigger immediately for: full-stack development (frontend + backend), multi-service integrations, complex database migrations, API contract designs, or high-ambiguity technical challenges requiring dedicated research (SPIKEs). Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic script modifications where spawning subagents would introduce unnecessary communication overhead.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.5.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/agents/swarm-coding",
       "url": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/agents/swarm-coding/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/agents/swarm-coding",
       "relativePath": "agents/swarm-coding/SKILL.md"
     },
     {
       "name": "buffer",
+      "folder": "buffer",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing connected Buffer social channels, inspecting accounts, creating ideas, scheduling posts to queues, validating payloads via --dry-run, querying post statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer authentication and environment issues. Activate whenever interacting with Buffer or automating cross-platform social publishing from the terminal.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/writing/buffer",
       "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/buffer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/buffer",
       "relativePath": "writing/buffer/SKILL.md"
     },
     {
       "name": "buffer-analytics",
+      "folder": "buffer-analytics",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Ingest raw Buffer social post and channel data into a local SQLite analytics database (without loss), run backfills and incremental syncs, execute ad-hoc SQL queries, and perform deep performance crunching across LinkedIn, Twitter/X, and Bluesky. Activate whenever analyzing social post performance, auditing historical metrics, finding best days/hours to post, running SQL queries over social archives, or evaluating campaign engagement.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/writing/buffer-analytics",
       "url": "https://skills.danicat.dev/writing/buffer-analytics/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/buffer-analytics/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/buffer-analytics",
       "relativePath": "writing/buffer-analytics/SKILL.md"
     },
     {
+      "name": "deslopify",
+      "folder": "deslopify",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Re-write, edit, and purge text of common AI tropes, clichés, formulaic filler, and recognizable large language model structural patterns (AI slop) using strict editorial guidelines. Activate this skill whenever the user asks to \"deslopify\" text, remove AI tells, polish text to sound authentically human, eliminate formulaic transitions (e.g. \"delve\", \"testament\", \"tapestry\", \"seamlessly\"), fix negative parallelism, or audit prose for AI idioms.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
+      "installCommand": "npx skills install github.com/danicat/skills/writing/deslopify",
+      "url": "https://skills.danicat.dev/writing/deslopify/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/deslopify/",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/deslopify",
+      "relativePath": "writing/deslopify/SKILL.md"
+    },
+    {
       "name": "google-analytics",
+      "folder": "google-analytics",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users, pageviews, dwell time, engagement events, acquisition channels, and outbound clicks) into a local SQLite database without data loss, run full historical backfills and incremental syncs, and execute deep SQL analytics over website traffic and release milestones. Activate whenever analyzing Google Analytics 4 performance, auditing reader dwell time, evaluating release cohort impact, querying GA4 data via SQL, or tracking user journeys and outbound link exits.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/writing/google-analytics",
       "url": "https://skills.danicat.dev/writing/google-analytics/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/google-analytics/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/google-analytics",
       "relativePath": "writing/google-analytics/SKILL.md"
     },
     {
       "name": "google-blog-style",
+      "folder": "google-blog-style",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Official style guide and compliance rules for the Google Developers Blog. Activate to draft, edit, review, and validate technical blog posts, articles, and reviews to ensure they meet legal standards, the correct professional tone, and readability targets.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.2.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/writing/google-blog-style",
       "url": "https://skills.danicat.dev/writing/google-blog-style/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/google-blog-style/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/google-blog-style",
       "relativePath": "writing/google-blog-style/SKILL.md"
     },
     {
       "name": "google-codelab-authoring",
+      "folder": "google-codelab-authoring",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Use this skill when authoring, modifying, or auditing interactive developer tutorials and self-paced guides in the Google Codelabs (.lab.md) format. Activate whenever the user requests building a \"codelab\", \"tutorial\", \"hands-on guide\", or \"step-by-step developer lab\", or mentions publishing with the Codelab Asset Tool (Claat). Trigger also when converting existing documentation, blog posts, or readme files into structured tutorials, or when fixing formatting and validation issues in existing .lab.md files.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/writing/google-codelab-authoring",
       "url": "https://skills.danicat.dev/writing/google-codelab-authoring/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/google-codelab-authoring/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/google-codelab-authoring",
       "relativePath": "writing/google-codelab-authoring/SKILL.md"
     },
     {
+      "name": "inverted-pyramid",
+      "folder": "inverted-pyramid",
+      "category": "writing",
+      "categoryName": "Technical Writing",
+      "categoryEmoji": "✍️",
+      "description": "Structure and prioritize technical articles, developer documentation, engineering READMEs, and guides using the Inverted Pyramid model (highest-value summaries and prescribed actions first, cascading down to usage, architecture, and legal details). Activate this skill whenever auditing, authoring, or refactoring documentation, README files, or technical guides to ensure action-first, scannable information hierarchy.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
+      "installCommand": "npx skills install github.com/danicat/skills/writing/inverted-pyramid",
+      "url": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/inverted-pyramid/",
+      "githubUrl": "https://github.com/danicat/skills/tree/main/writing/inverted-pyramid",
+      "relativePath": "writing/inverted-pyramid/SKILL.md"
+    },
+    {
       "name": "search-analytics",
+      "folder": "search-analytics",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Ingest raw Google Search Console property totals and granular keyword performance data (clicks, impressions, CTR, position), properties, and XML sitemaps into a local SQLite database without data loss, run mature 16-month backfills and incremental syncs, and execute deep SQL analytics over organic search traffic. Activate whenever analyzing Google Search performance, auditing historical keyword rankings, diagnosing search CTR decay, running SQL queries over search traffic archives, or detecting keyword cannibalization.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/writing/search-analytics",
       "url": "https://skills.danicat.dev/writing/search-analytics/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/search-analytics/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/search-analytics",
       "relativePath": "writing/search-analytics/SKILL.md"
     },
     {
       "name": "seo-optimizer",
+      "folder": "seo-optimizer",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Audit, optimize, and enhance technical articles, developer documentation, and engineering blogs for traditional search engines and AI-driven answer engines (Google AI Overviews, Gemini Grounding, ChatGPT Search, Perplexity, Claude). Use when auditing technical SEO, structuring metadata (distinguishing human-facing 'summary' vs search-facing 'description'), implementing Generative Engine Optimization (GEO), enforcing Inverted Pyramid direct-answer density, verifying JSON-LD structured data (TechArticle, BreadcrumbList), generating or maintaining llms.txt, performing keyword gap analysis, or fixing heading and content hierarchies.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/writing/seo-optimizer",
       "url": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/seo-optimizer/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/seo-optimizer",
       "relativePath": "writing/seo-optimizer/SKILL.md"
     },
     {
       "name": "social-copy",
+      "folder": "social-copy",
       "category": "writing",
       "categoryName": "Technical Writing",
       "categoryEmoji": "✍️",
       "description": "Draft, audit, and optimize high-performing technical, developer, and open-source social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads. When working on campaigns without an existing blog post source, first inspects deep git logs and commit bodies, uses /grill-me style interactive interview to uncover real technical nuance, and authors a comprehensive canonical narrative foundation before cutting platform-specific derivatives. Automatically synchronizes the campaign master source whenever new evidence is discovered. Activate whenever drafting social posts, cross-platform release announcements, or engineering field notes, even if not explicitly requested.",
       "license": "Apache-2.0",
+      "metadata": {
+        "author": "Daniela Petruzalek (daniela@danicat.dev)",
+        "version": "0.1.0"
+      },
       "installCommand": "npx skills install github.com/danicat/skills/writing/social-copy",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/writing/social-copy/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/writing/social-copy",
       "relativePath": "writing/social-copy/SKILL.md"
     },
     {
       "name": "adr-template",
+      "folder": "adr-template",
       "category": "standards",
       "categoryName": "Engineering Standards",
       "categoryEmoji": "📐",
       "description": "Activate this skill when proposing significant architectural changes, documenting codebase refactorings, or resolving design/technical debates. Use this skill to author, update, and maintain lightweight Architecture Decision Records (ADRs) to preserve engineering context. This skill must be triggered when the system needs to capture the why behind high-impact, hard-to-change structural choices.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/standards/adr-template",
       "url": "https://skills.danicat.dev/standards/adr-template/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/standards/adr-template/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/standards/adr-template",
       "relativePath": "standards/adr-template/SKILL.md"
     },
     {
       "name": "rfc-template",
+      "folder": "rfc-template",
       "category": "standards",
       "categoryName": "Engineering Standards",
       "categoryEmoji": "📐",
       "description": "Activate this skill when proposing major features, exploring complex design alternatives under high ambiguity, or gathering technical consensus. Use this skill to draft, review, and progress collaborative Request for Comments (RFC) documents. Trigger this skill whenever a systematic design proposal is needed before drafting immutable Architecture Decision Records.",
       "license": "Apache-2.0",
+      "metadata": {},
       "installCommand": "npx skills install github.com/danicat/skills/standards/rfc-template",
       "url": "https://skills.danicat.dev/standards/rfc-template/SKILL.md",
+      "detailUrl": "https://skills.danicat.dev/standards/rfc-template/",
       "githubUrl": "https://github.com/danicat/skills/tree/main/standards/rfc-template",
       "relativePath": "standards/rfc-template/SKILL.md"
     }

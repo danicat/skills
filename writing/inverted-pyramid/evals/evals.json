@@ -1,0 +1,28 @@
+{
+  "skill_name": "inverted-pyramid",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Restructure a disorganized CLI tool README according to the Inverted Pyramid model.",
+      "expected_output": "A refactored README with Title & Summary, Prescribed Quickstart Action above the fold, Usage Guide, Developer Instructions, Architecture, and License.",
+      "files": [],
+      "assertions": [
+        "Places installation command and quickstart action above the fold",
+        "Presents Usage Guide and CLI flags table before internal architecture",
+        "Pushes build instructions and testing to Developer section",
+        "Positions License and legal compliance at the bottom"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Audit an engineering blog post draft that starts with 3 paragraphs of historical background before introducing the problem.",
+      "expected_output": "An audit report recommending moving the core thesis and working example to the top 150 words.",
+      "files": [],
+      "assertions": [
+        "Flags buried lead / delayed core thesis",
+        "Recommends Inverted Pyramid lead block in first 150 words",
+        "Recommends providing a working code snippet or diagram early"
+      ]
+    }
+  ]
+}
