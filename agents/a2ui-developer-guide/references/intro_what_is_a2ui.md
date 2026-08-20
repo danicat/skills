@@ -1,11 +1,11 @@
 # intro_what_is_a2ui
 Source: https://a2ui.org/introduction/what-is-a2ui/
 
-# What is A2UI?[¶](#what-is-a2ui "Permanent link")
+# What is A2UI?
 
 **A2UI (Agent to UI) is a declarative UI protocol for agent-driven interfaces.** AI agents generate rich, interactive UIs that render natively across platforms (web, mobile, desktop) without executing arbitrary code.
 
-## The Problem[¶](#the-problem "Permanent link")
+## The Problem
 
 **Text-only agent interactions are inefficient:**
 
@@ -19,7 +19,7 @@ Agent: "What time?"
 
 **Better:** Agent generates a form with date picker, time selector, and submit button. Users interact with UI, not text.
 
-## The Challenge[¶](#the-challenge "Permanent link")
+## The Challenge
 
 In multi-agent systems, agents often run remotely (different servers, organizations). They can't directly manipulate your UI—they must send messages.
 
@@ -31,7 +31,7 @@ In multi-agent systems, agents often run remotely (different servers, organizati
 
 **Need:** Transmit UI that's safe like data, expressive like code.
 
-## The Solution[¶](#the-solution "Permanent link")
+## The Solution
 
 A2UI: JSON messages describing UI that:
 
@@ -41,7 +41,7 @@ A2UI: JSON messages describing UI that:
 
 **Result:** Client controls security and styling, agent-generated UI feels native.
 
-### Example[¶](#example "Permanent link")
+### Example
 
 v0.8 (Legacy)v0.9 (Stable)
 
@@ -167,7 +167,7 @@ Key differences in v0.9: `createSurface` replaces `beginRendering`, components u
 
 Client renders these messages as native components (Angular, Flutter, React, etc.).
 
-## Core Value[¶](#core-value "Permanent link")
+## Core Value
 
 **1. Security:** Declarative data, not code. Agent requests components from client's trusted catalog. No code execution risk.
 
@@ -175,7 +175,7 @@ Client renders these messages as native components (Angular, Flutter, React, etc
 
 **3. Portability:** One agent response works everywhere. Same JSON renders on web (Lit/Angular/React), mobile (Flutter/SwiftUI/Jetpack Compose), desktop.
 
-## Design Principles[¶](#design-principles "Permanent link")
+## Design Principles
 
 **1. LLM-Friendly:** Flat component list with ID references. Easy to generate incrementally, correct mistakes, stream.
 
@@ -183,14 +183,14 @@ Client renders these messages as native components (Angular, Flutter, React, etc
 
 **3. Separation of Concerns:** Three layers—UI structure, application state, client rendering. Enables data binding, reactive updates, clean architecture.
 
-## What A2UI Is NOT[¶](#what-a2ui-is-not "Permanent link")
+## What A2UI Is NOT
 
 * Not a framework (it is a protocol).
 * Not a replacement for HTML (for agent-generated UIs, not static sites).
 * Not a robust styling system (client controls styling with limited server-side styling support).
 * Not limited to web (works on mobile and desktop).
 
-## Key Concepts[¶](#key-concepts "Permanent link")
+## Key Concepts
 
 A2UI relies on the following key concepts:
 
@@ -200,4 +200,4 @@ A2UI relies on the following key concepts:
 * **Catalog**: Available component types.
 * **Message**: JSON object (`surfaceUpdate`, `dataModelUpdate`, `beginRendering`, etc.).
 
-For a comparison of similar projects, see [Agent UI Ecosystem](../agent-ui-ecosystem/).
+For a comparison of similar projects, see [Agent UI Ecosystem](./intro_ecosystem.md).

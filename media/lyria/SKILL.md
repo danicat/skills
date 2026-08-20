@@ -1,6 +1,18 @@
 ---
 name: lyria
-description: Generate high-fidelity 44.1 kHz stereo music and audio from text prompts or images using Google's Lyria 3 models (lyria-3-clip-preview, lyria-3-pro-preview) with ADC authentication.
+description: >
+  Generate high-fidelity 44.1 kHz stereo music and audio from text prompts or
+  images using Google's Lyria 3 models (lyria-3-clip-preview,
+  lyria-3-pro-preview) with ADC authentication.
+license: Apache-2.0
+metadata:
+  category: media
+  tags: "media, lyria, music-generation, stereo, synth, midi, generative-audio"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/media/lyria/
+  canonical: https://skills.danicat.dev/media/lyria/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/media/lyria
 ---
 
 # Lyria Music Generation Skill

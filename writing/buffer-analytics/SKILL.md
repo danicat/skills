@@ -1,6 +1,21 @@
 ---
 name: buffer-analytics
-description: Ingest raw Buffer social post and channel data into a local SQLite analytics database (without loss), run backfills and incremental syncs, execute ad-hoc SQL queries, and perform deep performance crunching across LinkedIn, Twitter/X, and Bluesky. Activate whenever analyzing social post performance, auditing historical metrics, finding best days/hours to post, running SQL queries over social archives, or evaluating campaign engagement.
+description: >
+  Ingest raw Buffer social post and channel data into a local SQLite analytics
+  database (without loss), run backfills and incremental syncs, execute ad-hoc
+  SQL queries, and perform deep performance crunching across LinkedIn,
+  Twitter/X, and Bluesky. Activate whenever analyzing social post performance,
+  auditing historical metrics, finding best days/hours to post, running SQL
+  queries over social archives, or evaluating campaign engagement.
+license: Apache-2.0
+metadata:
+  category: writing
+  tags: "writing, analytics, buffer, social-metrics, sqlite, engagement, sql"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/buffer-analytics/
+  canonical: https://skills.danicat.dev/writing/buffer-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/buffer-analytics
 ---
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine

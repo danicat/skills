@@ -1,21 +1,21 @@
 # ref_renderers
 Source: https://a2ui.org/reference/renderers/
 
-# Renderers (Client Libraries)[¶](#renderers-client-libraries "Permanent link")
+# Renderers (Client Libraries)
 
 Renderers convert A2UI JSON messages into native UI components for different platforms.
 
-The [agents](../agents/) are responsible for generating the A2UI messages,
-and the [transports](../../concepts/transports/) are responsible for delivering the messages to the client.
+The [agents](./ref_sdks.md) are responsible for generating the A2UI messages,
+and the [transports](./concept_transports.md) are responsible for delivering the messages to the client.
 The client renderer library must buffer and handle A2UI messages, implement the A2UI lifecycle, render widgets, and route user actions back to the agent.
 
 Let's use the web as an analogy. The A2UI protocol is like HTML. It provides a language and the semantics of the UI model. The agent is like the server that serves HTML to the client. The renderer is like a browser. It talks to the agent, interprets the A2UI protocol, and renders the UI. Just like there are multiple browser engines for HTML, there are multiple different renderers for A2UI.
 
 You have a lot of flexibility, to bring custom components to a renderer, or build your own renderer to support your UI component framework.
 
-## Maintained Renderers[¶](#maintained-renderers "Permanent link")
+## Maintained Renderers
 
-### Web[¶](#web "Permanent link")
+### Web
 
 | Renderer | Platform | v0.8 | v0.9.1 | v1.0 | Links |
 | --- | --- | --- | --- | --- | --- |
@@ -24,7 +24,7 @@ You have a lot of flexibility, to bring custom components to a renderer, or buil
 | **Angular** | Web | ✅ Stable | ✅ Stable | 🚧 Planned | [Code](https://github.com/a2ui-project/a2ui/tree/main/renderers/angular) |
 | **Flutter (GenUI SDK)** | Mobile/Desktop/Web | ✅ Stable | ✅ Stable | 🚧 Planned | [Docs](https://docs.flutter.dev/ai/genui) · [Code](https://github.com/flutter/genui) |
 
-### Mobile[¶](#mobile "Permanent link")
+### Mobile
 
 | Renderer | Platform | v0.8 | v0.9.1 | v1.0 | Links |
 | --- | --- | --- | --- | --- | --- |
@@ -32,9 +32,9 @@ You have a lot of flexibility, to bring custom components to a renderer, or buil
 | **SwiftUI** | iOS/macOS | — | — | 🚧 Planned | — |
 | **Jetpack Compose** | Android | — | — | 🚧 Planned | — |
 
-Check the [Roadmap](../../roadmap/) for more.
+Check the [Roadmap](https://a2ui.org/roadmap/) for more.
 
-## Ecosystem Renderers[¶](#ecosystem-renderers "Permanent link")
+## Ecosystem Renderers
 
 The community is building A2UI renderers for additional platforms:
 
@@ -43,9 +43,9 @@ The community is building A2UI renderers for additional platforms:
 * **[a2ui-react-native](https://github.com/sivamrudram-eng/a2ui-react-native)** — React Native renderer for iOS/Android (~9 ⭐, v0.8)
 * **[Lynx A2UI](https://lynxjs.org/next/react/genui/a2ui.html)** — ReactLynx renderer for A2UI (v0.9)
 
-See the **[full ecosystem renderers list](../../ecosystem/renderers/)** for more community projects and how to submit your own.
+See the **[full ecosystem renderers list](./ecosystem_renderers.md)** for more community projects and how to submit your own.
 
-## How Renderers Work[¶](#how-renderers-work "Permanent link")
+## How Renderers Work
 
 The rendering process typically involves the following steps:
 
@@ -54,22 +54,22 @@ The rendering process typically involves the following steps:
 3. **Render** using platform-native components.
 4. **Style** according to your app's theme.
 
-## Using a Renderer[¶](#using-a-renderer "Permanent link")
+## Using a Renderer
 
 Get started integrating A2UI into your application by following the setup guide for your chosen renderer:
 
-* **[React](../../guides/client-setup/#react)**
-* **[Lit (Web Components)](../../guides/client-setup/#web-components-lit)**
-* **[Angular](../../guides/client-setup/#angular)**
-* **[Flutter (GenUI SDK)](../../guides/client-setup/#flutter-genui-sdk)**
+* **[React](./guide_client_setup.md#react)**
+* **[Lit (Web Components)](./guide_client_setup.md#web-components-lit)**
+* **[Angular](./guide_client_setup.md#angular)**
+* **[Flutter (GenUI SDK)](./guide_client_setup.md#flutter-genui-sdk)**
 
-## Building a Renderer[¶](#building-a-renderer "Permanent link")
+## Building a Renderer
 
 Want to build a renderer for your platform?
 
-* See the [Roadmap](../../roadmap/) for planned frameworks.
+* See the [Roadmap](https://a2ui.org/roadmap/) for planned frameworks.
 * Review existing renderers for patterns.
-* Check out our [Renderer Development Guide](../../guides/renderer-development/) for details on implementing a renderer.
+* Check out our [Renderer Development Guide](./guide_renderer_development.md) for details on implementing a renderer.
 
 A compliant renderer must meet the following key requirements:
 
@@ -82,20 +82,20 @@ A compliant renderer must meet the following key requirements:
 
 For more information, see the following resources:
 
-* **[Client Setup Guide](../../guides/client-setup/)**: Integration instructions.
-* **[Quickstart](../../quickstart/)**: Try the Lit renderer.
-* **[Component Reference](../components/)**: What components to support.# ref_agents
+* **[Client Setup Guide](./guide_client_setup.md)**: Integration instructions.
+* **[Quickstart](./guide_quickstart.md)**: Try the Lit renderer.
+* **[Component Reference](./concept_components.md)**: What components to support.# ref_agents
 Source: https://a2ui.org/reference/agents/
 
-# Agents (Server-Side)[¶](#agents-server-side "Permanent link")
+# Agents (Server-Side)
 
 Agents are server-side programs that generate A2UI messages in response to user requests.
 
-The actual component rendering is done by the [renderer](../renderers/),
-after messages are [transported](../../concepts/transports/) to the client.
+The actual component rendering is done by the [renderer](./ecosystem_renderers.md),
+after messages are [transported](./concept_transports.md) to the client.
 The agent is only responsible for generating the A2UI messages.
 
-## How Agents Work[¶](#how-agents-work "Permanent link")
+## How Agents Work
 
 The agent workflow typically involves the following steps:
 
@@ -106,7 +106,7 @@ The agent workflow typically involves the following steps:
 
 User interactions from the client can be treated as new user input.
 
-## Sample Agents[¶](#sample-agents "Permanent link")
+## Sample Agents
 
 The A2UI repository includes sample agents you can learn from:
 
@@ -120,13 +120,13 @@ The A2UI repository includes sample agents you can learn from:
   + Passes A2UI messages from remote subagents.
   + Written with the ADK.
 
-## Agent Types in A2A[¶](#agent-types-in-a2a "Permanent link")
+## Agent Types in A2A
 
-### 1. User Facing Agent (standalone)[¶](#1-user-facing-agent-standalone "Permanent link")
+### 1. User Facing Agent (standalone)
 
 A user facing agent is one that is directly interacted with by the user.
 
-### 2. User Facing Agent as a host for a Remote Agent[¶](#2-user-facing-agent-as-a-host-for-a-remote-agent "Permanent link")
+### 2. User Facing Agent as a host for a Remote Agent
 
 This is a pattern where the user facing agent is a host for one or more remote agents. The user facing agent will call the remote agent and the remote agent will generate the A2UI messages. This is a common pattern in [A2A](https://a2a-protocol.org) with the client agent calling the server agent.
 
@@ -135,6 +135,6 @@ In this pattern, the user-facing agent can handle messages in two ways:
 * The user facing agent may "passthrough" the A2UI message without altering them.
 * The user facing agent may alter the A2UI message before sending it to the client.
 
-### 3. Remote Agent[¶](#3-remote-agent "Permanent link")
+### 3. Remote Agent
 
 A remote agent is not directly a part of the user facing UI. Instead it is registered in as a remote agent and can be called by the user facing agent. This is a common pattern in [A2A](https://a2a-protocol.org) with the client agent calling the server agent.

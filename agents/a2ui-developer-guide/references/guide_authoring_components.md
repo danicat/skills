@@ -1,11 +1,11 @@
 # guide_authoring_components
 Source: https://a2ui.org/guides/authoring-components/
 
-# Authoring Custom Components[¶](#authoring-custom-components "Permanent link")
+# Authoring Custom Components
 
 Learn how to define, implement, and register custom components in A2UI using the `rizzcharts` sample as an example. This guide focuses on authoring a component around your Angular code.
 
-## Overview[¶](#overview "Permanent link")
+## Overview
 
 Authoring a new component involves four main steps:
 
@@ -16,11 +16,11 @@ Authoring a new component involves four main steps:
 
 ---
 
-## 1. Defining the Catalog Schema[¶](#1-defining-the-catalog-schema "Permanent link")
+## 1. Defining the Catalog Schema
 
 The catalog schema defines the API of your catalog. It lists available components and their properties, which the agent uses to construct UI payloads.
 
-**This schema acts as a contract between the client and the server (agent).** Both must agree on this schema for rendering to work. The client advertises what catalogs it supports, and the server selects a compatible one. For details on how this handshake works, see [A2UI Catalog Negotiation](../../concepts/catalogs/#a2ui-catalog-negotiation).
+**This schema acts as a contract between the client and the server (agent).** Both must agree on this schema for rendering to work. The client advertises what catalogs it supports, and the server selects a compatible one. For details on how this handshake works, see [A2UI Catalog Negotiation](./concept_catalogs.md#a2ui-catalog-negotiation).
 
 In the [`rizzcharts`](https://github.com/a2ui-project/a2ui/blob/main/samples/community/agent/adk/rizzcharts/python/README.md) example, the catalog schema is defined in [`rizzcharts_catalog_definition.json`](https://github.com/a2ui-project/a2ui/blob/main/samples/community/agent/adk/rizzcharts/catalog_schemas/0.9/rizzcharts_catalog_definition.json).
 
@@ -107,7 +107,7 @@ Here is the schema for the `Chart` component:
 
 ---
 
-## 2. Implementing the Component (Client)[¶](#2-implementing-the-component-client "Permanent link")
+## 2. Implementing the Component (Client)
 
 Implement your component using your client-side framework. For Angular, your component should extend `DynamicComponent` provided by `@a2ui/angular`.
 
@@ -147,7 +147,7 @@ Keep these key points in mind when implementing components:
 
 ---
 
-## 3. Registering with the Renderer (Client)[¶](#3-registering-with-the-renderer-client "Permanent link")
+## 3. Registering with the Renderer (Client)
 
 Once the component is implemented, register it in your client catalog. This maps the component name (used by agents) to the implementation class.
 
@@ -180,13 +180,13 @@ Key points for registration:
 
 ---
 
-## 4. Invoking from the Agent[¶](#4-invoking-from-the-agent "Permanent link")
+## 4. Invoking from the Agent
 
 To use the custom component, you initialize the agent with tools from the A2UI SDK that understand your catalog. The SDK handles resolving the catalog and providing examples to the model.
 
 Here is how the flow wires up:
 
-### 4.1 Session Preparation (Executor)[¶](#41-session-preparation-executor "Permanent link")
+### 4.1 Session Preparation (Executor)
 
 The execution layer (e.g., `RizzchartsAgentExecutor`) intercepts the incoming message to detect if A2UI is enabled and what catalogs the client supports. It resolves the catalog and saves it to the session state.
 
@@ -216,7 +216,7 @@ if use_ui:
     )
 ```
 
-### 4.2 Agent Tool Setup[¶](#42-agent-tool-setup "Permanent link")
+### 4.2 Agent Tool Setup
 
 The Agent uses [SendA2uiToClientToolset](https://github.com/a2ui-project/a2ui/blob/main/agent_sdks/python/a2ui_agent/src/a2ui/adk/send_a2ui_to_client_toolset.py) to give the agent a tool that it can use to send A2UI to the client.
 
@@ -234,7 +234,7 @@ agent.tools = [
 ]
 ```
 
-### 4.3 Tool Execution[¶](#43-tool-execution "Permanent link")
+### 4.3 Tool Execution
 
 Invocations of the tool in [SendA2uiToClientToolset](https://github.com/a2ui-project/a2ui/blob/main/agent_sdks/python/a2ui_agent/src/a2ui/adk/send_a2ui_to_client_toolset.py) by the LLM are intercepted in the A2A Agent Executor using the [A2uiEventConverter](https://github.com/a2ui-project/a2ui/blob/main/agent_sdks/python/a2ui_agent/src/a2ui/adk/a2a/event_converter.py). This automatically translates tool calls into A2A Dataparts with the A2UI payload.
 

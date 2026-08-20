@@ -1,7 +1,7 @@
 # spec_v0.9.1_extension
 Source: https://a2ui.org/specification/v0.9.1-a2ui-extension-specification/
 
-# A2UI Extension for A2A Protocol v0.9.1 — Current[¶](#a2ui-extension-for-a2a-protocol-v091-current "Permanent link")
+# A2UI Extension for A2A Protocol v0.9.1 — Current
 
 > NOTE: Living Document
 >
@@ -9,28 +9,28 @@ Source: https://a2ui.org/specification/v0.9.1-a2ui-extension-specification/
 >
 > NOTE: Version Compatibility
 >
-> This extension specification applies to A2UI v0.9.1 and the A2A Protocol. For the base A2UI protocol, see [v0.9.1 Protocol Specification](../v0.9.1-a2ui/).
+> This extension specification applies to A2UI v0.9.1 and the A2A Protocol. For the base A2UI protocol, see [v0.9.1 Protocol Specification](./spec_v0.9.1_core.md).
 
 For more information, see the following related documentation:
 
-* [A2UI Protocol v0.9.1](../v0.9.1-a2ui/) (Current).
+* [A2UI Protocol v0.9.1](./spec_v0.9.1_core.md) (Current).
 * [A2A Protocol Documentation](https://a2a-protocol.org).
 
 ---
 
-# A2UI (Agent-to-Agent UI) Extension spec v0.9.1[¶](#a2ui-agent-to-agent-ui-extension-spec-v091 "Permanent link")
+# A2UI (Agent-to-Agent UI) Extension spec v0.9.1
 
-## Overview[¶](#overview "Permanent link")
+## Overview
 
 This extension implements the A2UI (Agent-to-Agent UI) spec v0.9.1, a format for agents to send streaming, interactive user interfaces to clients.
 
-## Extension URI[¶](#extension-uri "Permanent link")
+## Extension URI
 
 The URI of this extension is https://a2ui.org/a2a-extension/a2ui/v0.9.1
 
 This is the only URI accepted for this extension.
 
-## Core concepts[¶](#core-concepts "Permanent link")
+## Core concepts
 
 The A2UI extension is built on the following main concepts:
 
@@ -48,7 +48,7 @@ Schemas: The a2ui extension is defined by several primary JSON schemas:
 
 Client Capabilities: The client sends its capabilities to the server in an `a2uiClientCapabilities` object. This object is included in the `metadata` field of every A2A `Message` sent from the client to the server. This object allows the client to declare which catalogs it supports.
 
-## Agent Card details[¶](#agent-card-details "Permanent link")
+## Agent Card details
 
 Agents advertise their A2UI capabilities in their AgentCard within the `AgentCapabilities.extensions` list. The `params` object defines the agent's specific UI support and corresponds directly to the **Server Capabilities Schema** (`server_capabilities.json`).
 
@@ -69,14 +69,14 @@ Example AgentExtension block:
 }
 ```
 
-### Parameter definitions[¶](#parameter-definitions "Permanent link")
+### Parameter definitions
 
 The `params` object corresponds to the `v0.9.1` object in the `server_capabilities.json` schema:
 
 * `params.supportedCatalogIds`: (OPTIONAL) An array of strings, where each string is an ID identifying a Catalog Definition Schema that the agent can generate. This is not necessarily a resolvable URI.
 * `params.acceptsInlineCatalogs`: (OPTIONAL) A boolean indicating if the agent can accept an `inlineCatalogs` array in the client's `a2uiClientCapabilities`. If omitted, this defaults to `false`.
 
-## Extension activation[¶](#extension-activation "Permanent link")
+## Extension activation
 
 Clients indicate their desire to use the A2UI extension by specifying it via the transport-defined A2A extension activation mechanism.
 
@@ -86,7 +86,7 @@ For gRPC, this is indicated via the X-A2A-Extensions metadata value.
 
 Activating this extension implies that the server can send A2UI-specific messages (like updateComponents) and the client is expected to send A2UI-specific events (like action).
 
-## Data encoding[¶](#data-encoding "Permanent link")
+## Data encoding
 
 A2UI messages are encoded as an A2A `DataPart`.
 
@@ -96,7 +96,7 @@ To identify a `DataPart` as containing A2UI data, it must have the following met
 
 The `data` field of the `DataPart` contains a **list** of A2UI JSON messages (e.g., `createSurface`, `updateComponents`, `action`). It MUST be an array of messages.
 
-### Processing Rules[¶](#processing-rules "Permanent link")
+### Processing Rules
 
 The `data` field contains a list of messages. This list is **NOT** a transactional unit. Receivers (both Clients and Agents) MUST process messages in the list sequentially.
 
@@ -104,7 +104,7 @@ If a single message in the list fails to validate or apply (e.g., due to a schem
 
 Atomicity is guaranteed only at the **individual message** level. However, for a better user experience, a renderer SHOULD NOT repaint the UI until all messages in the list have been processed. This prevents intermediate states from flickering to the user.
 
-### Server-to-client messages[¶](#server-to-client-messages "Permanent link")
+### Server-to-client messages
 
 When an agent sends a message to a client (or another agent acting as a client/renderer), the `data` payload must validate against the **Server-to-Client Message List Schema**.
 
@@ -142,7 +142,7 @@ Example DataPart:
 }
 ```
 
-### Client-to-server events[¶](#client-to-server-events "Permanent link")
+### Client-to-server events
 
 When a client (or an agent forwarding an event) sends a message to an agent, it also uses a `DataPart` with the same `application/a2ui+json` MIME type. However, the `data` payload must validate against the **Client-to-Server Message List Schema**.
 

@@ -1,11 +1,11 @@
 # guide_quickstart
 Source: https://a2ui.org/quickstart/
 
-# Quickstart: Run A2UI in 5 Minutes[¶](#quickstart-run-a2ui-in-5-minutes "Permanent link")
+# Quickstart: Run A2UI in 5 Minutes
 
 Get hands-on with A2UI by running the restaurant finder demo. This guide will have you experiencing agent-generated UI in less than 5 minutes.
 
-## What You'll Build[¶](#what-youll-build "Permanent link")
+## What You'll Build
 
 By the end of this quickstart, you'll have:
 
@@ -14,7 +14,7 @@ By the end of this quickstart, you'll have:
 * An interactive restaurant finder with form generation, time selection, and confirmation flows.
 * Understanding of how A2UI messages flow from agent to UI.
 
-## Prerequisites[¶](#prerequisites "Permanent link")
+## Prerequisites
 
 Before you begin, make sure you have:
 
@@ -26,14 +26,14 @@ WARNING: Security Notice
 
 This demo runs an A2A agent that uses Gemini to generate A2UI responses. The agent has access to your API key and will make requests to Google's Gemini API. Always review agent code before running it in production environments.
 
-## Step 1: Clone the Repository[¶](#step-1-clone-the-repository "Permanent link")
+## Step 1: Clone the Repository
 
 ```
 git clone https://github.com/a2ui-project/a2ui.git
 cd a2ui
 ```
 
-## Step 2: Set Your API Key[¶](#step-2-set-your-api-key "Permanent link")
+## Step 2: Set Your API Key
 
 Export your Gemini API key as an environment variable:
 
@@ -41,7 +41,7 @@ Export your Gemini API key as an environment variable:
 export GEMINI_API_KEY="your_gemini_api_key_here"
 ```
 
-## Step 3: Navigate to the Lit Client Samples Directory[¶](#step-3-navigate-to-the-lit-client-samples-directory "Permanent link")
+## Step 3: Navigate to the Lit Client Samples Directory
 
 The client application source code is located in `samples/client/lit/shell`. Navigate to the parent samples directory to run the demo:
 
@@ -49,7 +49,7 @@ The client application source code is located in `samples/client/lit/shell`. Nav
 cd samples/client/lit
 ```
 
-## Step 4: Install and Run[¶](#step-4-install-and-run "Permanent link")
+## Step 4: Install and Run
 
 Run the demo launcher (ensuring Corepack is enabled so Node automatically fetches the correct Yarn version):
 
@@ -81,7 +81,7 @@ The source code for the Restaurant Finder agent is located in [`samples/agent/ad
 
 **Package Manager Usage:** Running the quickstart demo application within the A2UI repository requires Yarn as configured by Corepack workspaces. For your own regular usage and standalone projects outside this repository, use the package manager of your choice (e.g. npm, pnpm).
 
-### Running Manually (Alternative)[¶](#running-manually-alternative "Permanent link")
+### Running Manually (Alternative)
 
 If you prefer to run the agent and client in separate terminals, or need to troubleshoot:
 
@@ -103,7 +103,7 @@ NOTE: Demo Running
 
 If everything worked, you should see the web app in your browser. The agent is now ready to generate UI!
 
-## Step 5: Try It Out[¶](#step-5-try-it-out "Permanent link")
+## Step 5: Try It Out
 
 In the web app, try these prompts:
 
@@ -111,7 +111,7 @@ In the web app, try these prompts:
 2. **"Find Italian restaurants near me"** - See dynamic search results
 3. **"What are your hours?"** - Experience different UI layouts for different intents
 
-### What's Happening Behind the Scenes[¶](#whats-happening-behind-the-scenes "Permanent link")
+### What's Happening Behind the Scenes
 
 ```
 ┌─────────────┐         ┌──────────────┐         ┌────────────────┐
@@ -144,7 +144,7 @@ In the web app, try these prompts:
 5. **The A2UI renderer** converts them into native web components
 6. **You see the UI** rendered in your browser
 
-## Anatomy of an A2UI Message[¶](#anatomy-of-an-a2ui-message "Permanent link")
+## Anatomy of an A2UI Message
 
 Let's peek at what the agent is sending. Here's a simplified example of the JSON messages:
 
@@ -208,11 +208,11 @@ TIP: It's Just JSON
 
 Notice how readable and structured this is? LLMs can generate this easily, and it's safe to transmit and render—no code execution required.
 
-## Exploring Other Demos[¶](#exploring-other-demos "Permanent link")
+## Exploring Other Demos
 
 The repository includes several other demos:
 
-### Component Gallery (No Agent Required)[¶](#component-gallery-no-agent-required "Permanent link")
+### Component Gallery (No Agent Required)
 
 See all available A2UI components:
 
@@ -222,7 +222,7 @@ yarn start gallery
 
 This runs a client-only demo showcasing every standard component (Card, Button, TextField, Timeline, etc.) with live examples and code samples.
 
-### Other Languages and Frameworks[¶](#other-languages-and-frameworks "Permanent link")
+### Other Languages and Frameworks
 
 While this guide uses the Lit client as an example, A2UI provides samples for other popular frameworks in the `samples/client` directory:
 
@@ -231,23 +231,23 @@ While this guide uses the Lit client as an example, A2UI provides samples for ot
 
 Explore the [samples/client](https://github.com/a2ui-project/a2ui/blob/main/samples/client) directory to see all available client implementations.
 
-## What's Next?[¶](#whats-next "Permanent link")
+## What's Next?
 
 Now that you've seen A2UI in action, you're ready to:
 
-* **[Learn Core Concepts](../concepts/overview/)**: Understand surfaces, components, and data binding
-* **[Set Up Your Own Client](../guides/client-setup/)**: Integrate A2UI into your own app
-* **[Build an Agent](../guides/agent-development/)**: Create agents that generate A2UI responses
-* **[Use an Existing Agent App](../guides/a2ui-with-any-agent-framework/)**: Add A2UI through CopilotKit + AG-UI for ADK, LangGraph, CrewAI, Mastra, or a custom service
-* **[Explore the Protocol](../reference/messages/)**: Dive into the technical specification
+* **[Learn Core Concepts](./concept_overview.md)**: Understand surfaces, components, and data binding
+* **[Set Up Your Own Client](./guide_client_setup.md)**: Integrate A2UI into your own app
+* **[Build an Agent](./guide_agent_development.md)**: Create agents that generate A2UI responses
+* **[Use an Existing Agent App](./guide_a2ui_with_any_agent_framework.md)**: Add A2UI through CopilotKit + AG-UI for ADK, LangGraph, CrewAI, Mastra, or a custom service
+* **[Explore the Protocol](./ref_messages.md)**: Dive into the technical specification
 
-## Troubleshooting[¶](#troubleshooting "Permanent link")
+## Troubleshooting
 
-### Port Already in Use[¶](#port-already-in-use "Permanent link")
+### Port Already in Use
 
 If port 5173 is already in use, the dev server will automatically try the next available port. Check the terminal output for the actual URL.
 
-### API Key Issues[¶](#api-key-issues "Permanent link")
+### API Key Issues
 
 If you see errors about missing API keys:
 
@@ -255,11 +255,11 @@ If you see errors about missing API keys:
 2. Make sure it's a valid Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
 3. Try re-exporting: `export GEMINI_API_KEY="your_key"`
 
-### Connection Errors on Startup[¶](#connection-errors-on-startup "Permanent link")
+### Connection Errors on Startup
 
 If you see `ERR_CONNECTION_REFUSED` errors when the browser opens, **don't worry** — this is a known race condition ([#587](https://github.com/a2ui-project/a2ui/issues/587)). The web app starts faster than the Python agent backend. Just wait a few seconds and refresh the page.
 
-### Python / uv Issues[¶](#python-uv-issues "Permanent link")
+### Python / uv Issues
 
 The demo agents require [uv](https://docs.astral.sh/uv/) to run. If you see `uv: command not found`:
 
@@ -282,13 +282,13 @@ cd samples/agent/adk/restaurant_finder
 uv run .
 ```
 
-### Still Having Issues?[¶](#still-having-issues "Permanent link")
+### Still Having Issues?
 
 * Check the [GitHub Issues](https://github.com/a2ui-project/a2ui/issues)
 * Review the [samples/client/lit/README.md](https://github.com/a2ui-project/a2ui/blob/main/samples/client/lit)
 * Join the community discussions
 
-## Understanding the Demo Code[¶](#understanding-the-demo-code "Permanent link")
+## Understanding the Demo Code
 
 Want to see how it works? Check out:
 

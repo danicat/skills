@@ -26,5 +26,5 @@
 - **Placeholders**: Use italic formatting for variables in examples.
 
 ## See Also
-- [Content Recommendations](content_recommendations.md)
-- [Formatting Guide](formatting_guide.md)
+- [Style Guide](style_guide/style.md)
+- [Text Formatting](style_guide/text-formatting.md)

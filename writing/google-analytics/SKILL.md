@@ -1,6 +1,22 @@
 ---
 name: google-analytics
-description: Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users, pageviews, dwell time, engagement events, acquisition channels, and outbound clicks) into a local SQLite database without data loss, run full historical backfills and incremental syncs, and execute deep SQL analytics over website traffic and release milestones. Activate whenever analyzing Google Analytics 4 performance, auditing reader dwell time, evaluating release cohort impact, querying GA4 data via SQL, or tracking user journeys and outbound link exits.
+description: >
+  Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users,
+  pageviews, dwell time, engagement events, acquisition channels, and outbound
+  clicks) into a local SQLite database without data loss, run full historical
+  backfills and incremental syncs, and execute deep SQL analytics over website
+  traffic and release milestones. Activate whenever analyzing Google Analytics 4
+  performance, auditing reader dwell time, evaluating release cohort impact,
+  querying GA4 data via SQL, or tracking user journeys and outbound link exits.
+license: Apache-2.0
+metadata:
+  category: writing
+  tags: "writing, analytics, ga4, google-analytics, sqlite, metrics, dwell-time"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/google-analytics/
+  canonical: https://skills.danicat.dev/writing/google-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/google-analytics
 ---
 
 # Google Analytics 4 SQLite Ingestion & SQL Analytics

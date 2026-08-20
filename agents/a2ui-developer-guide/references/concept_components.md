@@ -1,11 +1,11 @@
 # concept_components
 Source: https://a2ui.org/concepts/components/
 
-# Components & Structure[¶](#components-structure "Permanent link")
+# Components & Structure
 
 A2UI uses an **adjacency list model** for component hierarchies. Instead of nested JSON trees, components are a flat list with ID references.
 
-## Why Flat Lists?[¶](#why-flat-lists "Permanent link")
+## Why Flat Lists?
 
 **Traditional nested approach:**
 
@@ -20,7 +20,7 @@ A2UI uses an **adjacency list model** for component hierarchies. Instead of nest
 * Update any component by ID.
 * Clear separation of structure and data.
 
-## The Adjacency List Model[¶](#the-adjacency-list-model "Permanent link")
+## The Adjacency List Model
 
 v0.8v0.9 and later
 
@@ -137,7 +137,7 @@ v0.9 and later use a flatter component format: `"component": "Text"` instead of 
 
 Components reference children by ID, not by nesting.
 
-## Component Basics[¶](#component-basics "Permanent link")
+## Component Basics
 
 Every component has:
 
@@ -168,15 +168,15 @@ v0.8v0.9 and later
 }
 ```
 
-## The Basic Catalog[¶](#the-basic-catalog "Permanent link")
+## The Basic Catalog
 
-To help developers get started quickly, the A2UI team maintains the [Basic Catalog](../../specification/v0_9_1/catalogs/basic/catalog.json).
+To help developers get started quickly, the A2UI team maintains the [Basic Catalog](./schema_v0.9.1_catalog.json).
 
 This is a pre-defined catalog file that contains a basic set of general-purpose components (Buttons, Inputs, Cards). It is not a special "type" of catalog; it is simply a version of a catalog that has open source renderers available.
 
-For the complete component gallery with examples, see [Component Reference](../../reference/components/).
+For the complete component gallery with examples, see [Component Reference](./ref_components.md).
 
-## Static vs. Dynamic Children[¶](#static-vs-dynamic-children "Permanent link")
+## Static vs. Dynamic Children
 
 v0.8v0.9 and later
 
@@ -203,7 +203,7 @@ v0.8v0.9 and later
 }
 ```
 
-For each item in `/items`, render the `item-template`. See [Data Binding](../data-binding/) for details.
+For each item in `/items`, render the `item-template`. See [Data Binding](./concept_data_binding.md) for details.
 
 **Static** - Fixed list of child IDs:
 
@@ -224,9 +224,9 @@ For each item in `/items`, render the `item-template`. See [Data Binding](../dat
 }
 ```
 
-For each item in `/items`, render the `item-template`. See [Data Binding](../data-binding/) for details.
+For each item in `/items`, render the `item-template`. See [Data Binding](./concept_data_binding.md) for details.
 
-## Hydrating with Values[¶](#hydrating-with-values "Permanent link")
+## Hydrating with Values
 
 Components get their values two ways:
 
@@ -240,7 +240,7 @@ v0.8v0.9 and later
 
 LLMs can generate components with literal values or bind them to data paths for dynamic content.
 
-## Composing Surfaces[¶](#composing-surfaces "Permanent link")
+## Composing Surfaces
 
 Components compose into **surfaces** (widgets):
 
@@ -258,7 +258,7 @@ v0.8v0.9 and later
 
 A surface is a complete, cohesive UI (form, dashboard, chat, etc.).
 
-## Incremental Updates[¶](#incremental-updates "Permanent link")
+## Incremental Updates
 
 Incremental updates support the following operations:
 
@@ -268,15 +268,15 @@ Incremental updates support the following operations:
 
 The flat structure makes all updates simple ID-based operations.
 
-## Defining Your Own Catalog[¶](#defining-your-own-catalog "Permanent link")
+## Defining Your Own Catalog
 
 While the Basic Catalog is useful for starting out, most production applications will define their own catalog to reflect their specific design system.
 
 By defining your own catalog, you restrict the agent to using exactly the components and visual language that exist in your application, rather than generic inputs or buttons.
 
-See [Defining Your Own Catalog Guide](../../guides/defining-your-own-catalog/) for implementation details.
+See [Defining Your Own Catalog Guide](./guide_defining_own_catalog.md) for implementation details.
 
-## Best Practices[¶](#best-practices "Permanent link")
+## Best Practices
 
 1. **Descriptive IDs**: Use `"user-profile-card"` not `"c1"`
 2. **Shallow hierarchies**: Avoid deep nesting

@@ -1,13 +1,13 @@
 # guide_defining_own_catalog
 Source: https://a2ui.org/guides/defining-your-own-catalog/
 
-# Defining Your Own Catalog[¶](#defining-your-own-catalog "Permanent link")
+# Defining Your Own Catalog
 
 While the [Basic Catalog](https://github.com/a2ui-project/a2ui/blob/main/specification/v0_9/catalogs/basic/catalog.json) is useful for starting out and bootstrapping an application, most production applications will define their own catalog to reflect their specific design system.
 
 By defining your own catalog, you restrict the agent to using exactly the components and visual language that exist in your application, rather than generic inputs or buttons.
 
-## Why Define Your Own Catalog?[¶](#why-define-your-own-catalog "Permanent link")
+## Why Define Your Own Catalog?
 
 Every A2UI surface is driven by a **Catalog**. A catalog is simply a JSON Schema file that tells the agent which components, functions, and themes are available for it to use.
 
@@ -19,7 +19,7 @@ Defining your own catalog offers the following benefits:
 
 The Basic Catalog is just one example and is intentionally sparse to remain easily implementable by different renderers.
 
-## How It Works[¶](#how-it-works "Permanent link")
+## How It Works
 
 1. **Define the Catalog**: Create a catalog definition (JSON Schema) listing the components, functions, and styles your application supports.
 2. **Register the Catalog**: Register the catalog and its corresponding component implementations (renderers) with your client application.
@@ -27,7 +27,7 @@ The Basic Catalog is just one example and is intentionally sparse to remain easi
 4. **Agent Selects Catalog**: The agent chooses a catalog for a given UI surface (via `catalogId` inside the creation message, like `createSurface`).
 5. **Agent Generates UI**: The agent generates component messages using the components defined in that catalog by name.
 
-## Implementation Guide[¶](#implementation-guide "Permanent link")
+## Implementation Guide
 
 It is recommended to create catalogs that directly map to your existing component library.
 
@@ -48,7 +48,7 @@ To implement your own catalog in Flutter:
 
 *Detailed Flutter integration guide coming soon.*
 
-## Security Considerations[¶](#security-considerations "Permanent link")
+## Security Considerations
 
 When defining and registering catalogs:
 
@@ -56,8 +56,8 @@ When defining and registering catalogs:
 2. **Validate properties**: Always validate component properties from agent messages to ensure they match expected type constraints.
 3. **Sanitize text**: Avoid rendering un-sanitized content provided by the agent unless safe bounds are established.
 
-## Next Steps[¶](#next-steps "Permanent link")
+## Next Steps
 
-* **[Theming & Styling](../theming/)**: Customize the look and feel of components.
-* **[Component Reference](../../reference/components/)**: Explore standard types that might be available for reuse.
-* **[Agent Development](../agent-development/)**: Build agents that interact with your Catalog.
+* **[Theming & Styling](./guide_theming.md)**: Customize the look and feel of components.
+* **[Component Reference](./ref_components.md)**: Explore standard types that might be available for reuse.
+* **[Agent Development](./guide_agent_development.md)**: Build agents that interact with your Catalog.

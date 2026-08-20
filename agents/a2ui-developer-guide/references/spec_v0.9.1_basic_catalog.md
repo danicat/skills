@@ -1,7 +1,7 @@
 # spec_v0.9.1_basic_catalog
 Source: https://a2ui.org/specification/v0.9.1-basic-catalog-implementation-guide/
 
-# Basic Catalog Implementation Guide v0.9.1 — Current[¶](#basic-catalog-implementation-guide-v091-current "Permanent link")
+# Basic Catalog Implementation Guide v0.9.1 — Current
 
 > NOTE: Living Document
 >
@@ -9,7 +9,7 @@ Source: https://a2ui.org/specification/v0.9.1-basic-catalog-implementation-guide
 
 ---
 
-# A2UI Basic Catalog Implementation Guide[¶](#a2ui-basic-catalog-implementation-guide "Permanent link")
+# A2UI Basic Catalog Implementation Guide
 
 This guide is designed for renderer and client developers implementing the A2UI Basic Catalog (v0.9). It details how to visually present and functionally implement each component and client-side function defined in the catalog.
 
@@ -17,9 +17,9 @@ When building your framework-specific adapters (Layer 3) over the generic A2UI b
 
 ---
 
-## 1. Components[¶](#1-components "Permanent link")
+## 1. Components
 
-### Text[¶](#text "Permanent link")
+### Text
 
 Displays text content.
 
@@ -30,7 +30,7 @@ Displays text content.
 * `variant="caption"`: Render as smaller text, typically italicized or in a lighter/muted color. Suggested font size: 0.8x base.
 * `variant="body"` (default): Standard body text. Uses the base font size (e.g., 16dp/16px).
 
-### Image[¶](#image "Permanent link")
+### Image
 
 Displays an image from a URL.
 
@@ -45,25 +45,25 @@ Displays an image from a URL.
 * `variant="largeFeature"`: Render as a large prominent image (e.g., 100% width, max height 400dp).
 * `variant="header"`: Render as a full-width banner image, usually at the top of a surface (e.g., 100% width, height 200dp, scaling mode set to cover/crop).
 
-### Icon[¶](#icon "Permanent link")
+### Icon
 
 Displays a standard system icon.
 
 **Rendering Guidelines:** Map the icon `name` to a system or bundled icon set (e.g., Material Symbols, SF Symbols). The string `name` from the data model (e.g., `accountCircle`) should be converted to the required format (like snake\_case `account_circle`) if required by the icon engine. Suggested styling: 24dp size and inherit the current text color.
 
-### Video[¶](#video "Permanent link")
+### Video
 
 A video player.
 
 **Rendering Guidelines:** Render using a native video player component with user controls enabled. Ensure the video container spans the full width of the parent's container for responsiveness. Scrubbing (seeking) should be supported if provided by the native control.
 
-### AudioPlayer[¶](#audioplayer "Permanent link")
+### AudioPlayer
 
 An audio player.
 
 **Rendering Guidelines:** Render using a native audio player component with user controls enabled. Like video, its container should span the full width of its parent. Scrubbing (seeking) should be supported if provided by the native control.
 
-### Row[¶](#row "Permanent link")
+### Row
 
 A horizontal layout container.
 
@@ -73,7 +73,7 @@ A horizontal layout container.
 * `justify`: Maps to main-axis alignment (e.g., `justify-content` in CSS, `horizontalArrangement` in Compose). Use equivalents for pushing items to edges (`spaceBetween`) or packing them together (`start`, `center`, `end`).
 * `align`: Maps to cross-axis alignment (e.g., `align-items` in CSS, `verticalAlignment` in Compose). Use equivalents for top (`start`), center, or bottom (`end`).
 
-### Column[¶](#column "Permanent link")
+### Column
 
 A vertical layout container.
 
@@ -83,7 +83,7 @@ A vertical layout container.
 * `justify`: Maps to main-axis alignment on the vertical axis.
 * `align`: Maps to cross-axis alignment on the horizontal axis.
 
-### List[¶](#list "Permanent link")
+### List
 
 A scrollable list of components.
 
@@ -93,20 +93,20 @@ A scrollable list of components.
 * `direction="vertical"` (default): Implement as a vertically scrollable view (e.g., CSS `overflow-y: auto`, Compose `LazyColumn`, SwiftUI `ScrollView` vertical).
 * `direction="horizontal"`: Implement as a horizontally scrollable view. Hide the scrollbar for a cleaner look if supported by the platform.
 
-### Card[¶](#card "Permanent link")
+### Card
 
 A container with card-like styling that visually groups its child.
 
 **Rendering Guidelines:** Applies a background color distinct from the main surface, rounded corners (e.g., 8dp or 12dp), a subtle shadow or elevation, and inner padding (e.g., 16dp). Note that the card accepts exactly **one** child. If the user wants multiple elements inside a card, they must provide a container (like `Column`) as the single child.
 
-### Tabs[¶](#tabs "Permanent link")
+### Tabs
 
 A set of tabs, each with a title and a corresponding child component.
 
 **Rendering Guidelines:** Render a horizontal row of interactive tab headers for the `titles`. Visually indicate the active tab (e.g., bold text, colored bottom border).
 **Behavior & State:** Maintain a local `selectedIndex` state (defaulting to 0). When a tab header is tapped, update `selectedIndex` and render *only* the `child` component that corresponds to that index.
 
-### Divider[¶](#divider "Permanent link")
+### Divider
 
 A dividing line to separate content.
 
@@ -115,7 +115,7 @@ A dividing line to separate content.
 * `axis="horizontal"` (default): Render a 1dp tall line spanning 100% width with a subtle border/outline color.
 * `axis="vertical"`: Render a 1dp wide line with a set height, spanning the height of the container.
 
-### Modal[¶](#modal "Permanent link")
+### Modal
 
 A dialog window.
 
@@ -127,7 +127,7 @@ A dialog window.
 
 **Behavior & State:** This component behaves differently than a standard container. It acts as a **Modal Entry Point**. When instantiated, the user only sees the `trigger` child component on the screen (which usually acts and looks like a Button). The modal logic intercepts interactions (taps/clicks) on the `trigger`. When the `trigger` is tapped, the modal opens and displays the `content` child component.
 
-### Button[¶](#button "Permanent link")
+### Button
 
 An interactive button that dispatches a protocol action.
 
@@ -139,7 +139,7 @@ An interactive button that dispatches a protocol action.
 * `variant="primary"`: Prominent call-to-action button using the theme's `primaryColor` for its background, and contrasting text.
 * `variant="borderless"`: Button with no background or border, appearing like a clickable text link.
 
-### TextField[¶](#textfield "Permanent link")
+### TextField
 
 A field for user text input.
 
@@ -152,14 +152,14 @@ A field for user text input.
 * `variant="number"`: Render as a numeric input field, typically showing a numeric keyboard on mobile.
 * `variant="obscured"`: Render as an obscured password/secure field.
 
-### CheckBox[¶](#checkbox "Permanent link")
+### CheckBox
 
 A toggleable control with a label.
 
 **Rendering Guidelines:** Render a native checkbox or toggle switch component alongside a text label.
 **Behavior & State:** Triggers two-way binding on the `value` path, setting it to boolean `true` or `false` when interacted with.
 
-### ChoicePicker[¶](#choicepicker "Permanent link")
+### ChoicePicker
 
 A component for selecting one or more options from a list.
 
@@ -171,14 +171,14 @@ A component for selecting one or more options from a list.
 
 **Behavior & State:** Binds to an array of strings in the data model representing the active selections. Toggle selections in the data model upon user interaction.
 
-### Slider[¶](#slider "Permanent link")
+### Slider
 
 A control for selecting a numeric value within a range.
 
 **Rendering Guidelines:** Render using the platform's native slider or seek bar component. Optionally display the current numeric value next to the slider track.
 **Behavior & State:** Set `min` and `max` limits. Perform two-way binding, updating the numeric `value` path as the user drags the slider. Note that the value is a `number` rather than an integer, allowing for decimal ranges (e.g., 0.0 to 1.0).
 
-### DateTimeInput[¶](#datetimeinput "Permanent link")
+### DateTimeInput
 
 An input for date and/or time.
 
@@ -192,7 +192,7 @@ An input for date and/or time.
 
 ---
 
-## 2. Client-Side Functions[¶](#2-client-side-functions "Permanent link")
+## 2. Client-Side Functions
 
 Functions provide client-side logic for validation, interpolation, and operations. As defined in the Architecture Guide, the reactivity of function arguments is generally handled by the Core Data Layer (specifically the Binder/Context layer).
 
@@ -201,7 +201,7 @@ When a function is called, the system resolves its arguments. If an argument is 
 
 However, complex functions like `formatString` must manually interact with the Context to parse and subscribe to nested dynamic dependencies.
 
-### `formatString`[¶](#formatstring "Permanent link")
+### `formatString`
 
 **Description:** The core interpolation engine. Parses the `args.value` string for `${expression}` blocks, combining literal strings, data paths, and other client-side function results.
 
@@ -216,37 +216,37 @@ Because `formatString` contains dynamic expressions embedded *within* a string l
 3. **Context Resolution:** For every parsed `DataPath` or `FunctionCall` token, use the `DataContext` (e.g., `context.resolveSignal(token)`) to turn it into a reactive stream/signal.
 4. **Reactive Return:** The function MUST return a computed reactive stream (e.g., a `computed(() => ...)` signal). Inside this computed stream, unwrap all the resolved signals, convert them to strings, and concatenate them with the literal string parts.
 
-### `required`[¶](#required "Permanent link")
+### `required`
 
 **Description:** Validates that a given value is present.
 
 **Logic:** Return `true` if `args.value` is strictly not `null`, not `undefined`, not an empty string `""`, and not an empty array `[]`. Otherwise, return `false`.
 
-### `regex`[¶](#regex "Permanent link")
+### `regex`
 
 **Description:** Validates a value against a regular expression.
 
 **Logic:** Instantiate a regular expression using `args.pattern`. Test the `args.value` string against it. Return `true` if it matches, `false` otherwise.
 
-### `length`[¶](#length "Permanent link")
+### `length`
 
 **Description:** Validates string length constraints.
 
 **Logic:** Ensure the length of the string `args.value` is `>= args.min` (if `min` is provided) and `<= args.max` (if `max` is provided).
 
-### `numeric`[¶](#numeric "Permanent link")
+### `numeric`
 
 **Description:** Validates numeric range constraints.
 
 **Logic:** Parse `args.value` as a number. Ensure it is `>= args.min` (if `min` is provided) and `<= args.max` (if `max` is provided). Return `true` if valid, `false` if invalid or if it cannot be parsed as a number.
 
-### `email`[¶](#email "Permanent link")
+### `email`
 
 **Description:** Validates an email address.
 
 **Logic:** Test `args.value` against a standard email regex pattern (e.g., `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`).
 
-### `formatNumber`[¶](#formatnumber "Permanent link")
+### `formatNumber`
 
 **Description:** Formats a numeric value.
 
@@ -255,43 +255,43 @@ Because `formatString` contains dynamic expressions embedded *within* a string l
 * If `args.decimals` is provided, force both the minimum and maximum fraction digits to that value.
 * Enable grouping (e.g., thousands separators) unless `args.grouping` is explicitly set to `false`.
 
-### `formatCurrency`[¶](#formatcurrency "Permanent link")
+### `formatCurrency`
 
 **Description:** Formats a number as a currency string.
 
 **Logic:** Similar to `formatNumber`, but configured for currency style formatting. Apply the ISO 4217 currency code provided in `args.currency` (e.g., 'USD', 'EUR').
 
-### `formatDate`[¶](#formatdate "Permanent link")
+### `formatDate`
 
 **Description:** Formats a timestamp into a date string.
 
 **Logic:** Parse `args.value` into a native Date/Time object. Interpret the Unicode TR35 `args.format` string (e.g., `yyyy-MM-dd`, `HH:mm`) and construct the formatted date string. You will likely need a platform-specific date formatting library to parse the TR35 pattern.
 
-### `pluralize`[¶](#pluralize "Permanent link")
+### `pluralize`
 
 **Description:** Returns a localized pluralized string.
 
 **Logic:** Resolve the plural category for the numeric `args.value` based on the current locale (e.g., using `Intl.PluralRules` on the web). Map the resulting category (`zero`, `one`, `two`, `few`, `many`, `other`) to the corresponding string provided in the `args` object. If the specific category string is missing from `args`, fallback to `args.other`.
 
-### `openUrl`[¶](#openurl "Permanent link")
+### `openUrl`
 
 **Description:** Opens a URL.
 
 **Logic:** Open `args.url` using the native platform's URL handler (e.g., opening in the system browser or deep-linking to an app). This function returns `void` and is executed as a side-effect.
 
-### `and`[¶](#and "Permanent link")
+### `and`
 
 **Description:** Logical AND operator.
 
 **Logic:** Iterate through the boolean array `args.values`. Return `true` only if all values are true. Short-circuit evaluation is encouraged.
 
-### `or`[¶](#or "Permanent link")
+### `or`
 
 **Description:** Logical OR operator.
 
 **Logic:** Iterate through the boolean array `args.values`. Return `true` if at least one value is true. Short-circuit evaluation is encouraged.
 
-### `not`[¶](#not "Permanent link")
+### `not`
 
 **Description:** Logical NOT operator.
 
@@ -299,7 +299,7 @@ Because `formatString` contains dynamic expressions embedded *within* a string l
 
 ---
 
-## 3. Layout Spacing: Margins and Padding[¶](#3-layout-spacing-margins-and-padding "Permanent link")
+## 3. Layout Spacing: Margins and Padding
 
 A common challenge in dynamic UI frameworks is preventing "spacing multiplication," where nested containers (e.g., a `Text` inside a `Row` inside a `Column`) result in accumulated empty space that throws off the design.
 
@@ -315,7 +315,7 @@ Applying margins directly to the visual elements—rather than relying on paddin
 
 ---
 
-## 4. Color, Contrast, and Nesting[¶](#4-color-contrast-and-nesting "Permanent link")
+## 4. Color, Contrast, and Nesting
 
 A common challenge in dynamically generated UI is ensuring proper contrast and visual hierarchy when components are nested. For example:
 
@@ -324,7 +324,7 @@ A common challenge in dynamically generated UI is ensuring proper contrast and v
 
 To keep the A2UI rendering layer simple and performant, **do not manually calculate or pass color properties down the A2UI component tree**. Instead, rely entirely on the native context and theme inheritance mechanisms provided by your target UI framework.
 
-### Text and Icon Contrast[¶](#text-and-icon-contrast "Permanent link")
+### Text and Icon Contrast
 
 When an element defines a strong background color (like a `primary` `Button` using the theme's `primaryColor`), it must also define the expected text color for its content. It should propagate this expectation implicitly.
 
@@ -335,7 +335,7 @@ When an element defines a strong background color (like a `primary` `Button` usi
 
 *Rule of Thumb:* Leaf components like `Text` and `Icon` should **never** hardcode their colors unless explicitly instructed by a property. They must always inherit from their environment.
 
-### Nesting Containers (Cards)[¶](#nesting-containers-cards "Permanent link")
+### Nesting Containers (Cards)
 
 When a `Card` is nested within another `Card`, or placed on different background surfaces, it needs to remain distinct. Attempting to alternate surface colors based on depth adds significant complexity to the renderer.
 

@@ -1,9 +1,9 @@
 # spec_v0.9.1_core
 Source: https://a2ui.org/specification/v0.9.1-a2ui/
 
-# A2UI Protocol v0.9.1 — Current[¶](#a2ui-protocol-v091-current "Permanent link")
+# A2UI Protocol v0.9.1 — Current
 
-> Version 0.9.1 is the current production release. For the legacy version, see [v0.8 (Legacy)](../v0.8-a2ui/).
+> Version 0.9.1 is the current production release. For the legacy version, see [v0.8 (Legacy)](./spec_v0.9.1_core.md).
 >
 > NOTE: Living Document
 >
@@ -11,8 +11,8 @@ Source: https://a2ui.org/specification/v0.9.1-a2ui/
 
 For more information, see the following related documentation:
 
-* [v0.9 Protocol Specification](../v0.9-a2ui/) (Previous Stable).
-* [Evolution Guide: v0.9 → v0.9.1](../v0.9.1-evolution-guide/).
+* [v0.9 Protocol Specification](./spec_v0.9.1_core.md) (Previous Stable).
+* [Evolution Guide: v0.9 → v0.9.1](./spec_v0.9.1_evolution.md).
 
 ---
 
@@ -20,7 +20,7 @@ For more information, see the following related documentation:
 
 
 
-![A2UI Protocol Logo](../../../assets/A2UI_dark.svg)
+![A2UI Protocol Logo](https://a2ui.org/assets/A2UI_dark.svg)
 
 # A2UI (Agent to UI) Protocol v0.9.1
 
@@ -33,7 +33,7 @@ A Specification for a JSON-Based, Streaming UI Protocol.
 
 A Specification for a JSON-Based, Streaming UI Protocol
 
-## Introduction[¶](#introduction "Permanent link")
+## Introduction
 
 The A2UI Protocol is designed for dynamically rendering user interfaces from a stream of JSON objects sent from a server (Agent). Its core philosophy emphasizes a clean separation of UI structure and application data, enabling progressive rendering as the client processes each message.
 
@@ -44,7 +44,7 @@ Communication occurs via a stream of JSON objects. The client parses each object
 * `updateDataModel`: Provides new data to be inserted into or to replace a surface's data model.
 * `deleteSurface`: Explicitly removes a surface and its contents from the UI.
 
-## Changes from previous versions[¶](#changes-from-previous-versions "Permanent link")
+## Changes from previous versions
 
 Version 0.9 introduced A2UI's prompt-first protocol family. While v0.8 was optimized for LLMs that support structured output, v0.9 is designed to be embedded directly within a model's prompt. The LLM is then asked to produce JSON that matches the provided examples and schema descriptions.
 
@@ -55,9 +55,9 @@ This "prompt-first" approach offers several advantages:
 
 The main disadvantage of this approach is that it requires more complex post-generation validation, as the LLM is not strictly constrained by the schema. This requires robust error handling and correction, so the system can identify discrepancies and attempt to fix them before rendering, or request a retry or correction from the LLM.
 
-See [the evolution guide](../v0.9.1-evolution-guide/) for a detailed explanation of the differences between v0.9 and v0.9.1.
+See [the evolution guide](./spec_v0.9.1_evolution.md) for a detailed explanation of the differences between v0.9 and v0.9.1.
 
-## Protocol overview & data flow[¶](#protocol-overview-data-flow "Permanent link")
+## Protocol overview & data flow
 
 The A2UI protocol uses a unidirectional stream of JSON messages from the server to the client to describe and update the UI. The client consumes this stream, builds the UI, and renders it. User interactions are handled separately, typically by sending events to a different endpoint, which may in turn trigger new messages on the UI stream.
 
@@ -93,11 +93,11 @@ sequenceDiagram
     Client-->>-Server: (UI is gone)
 ```
 
-## Transport decoupling[¶](#transport-decoupling "Permanent link")
+## Transport decoupling
 
 The A2UI protocol is designed to be transport-agnostic. It defines the JSON message structure and the semantic contract between the server (Agent) and the client (Renderer), but it does not mandate a specific transport layer.
 
-### The transport contract[¶](#the-transport-contract "Permanent link")
+### The transport contract
 
 To support A2UI, a transport layer must fulfill the following contract:
 
@@ -108,11 +108,11 @@ To support A2UI, a transport layer must fulfill the following contract:
    * **Capabilities exchange**: Client capabilities (supported catalogs, custom components) and Server capabilities are exchanged via metadata or transport-specific handshakes (like Agent Cards in A2A or initialization in MCP).
 4. **Bidirectional capability (optional)**: While the rendering stream is unidirectional (Server -> Client), interactive applications require a return channel for `action` messages (Client -> Server).
 
-### Transport bindings[¶](#transport-bindings "Permanent link")
+### Transport bindings
 
 While A2UI is agnostic, it is most commonly used with the following transports.
 
-#### A2A (Agent2Agent) binding[¶](#a2a-agent2agent-binding "Permanent link")
+#### A2A (Agent2Agent) binding
 
 [A2A (Agent-to-Agent)](https://a2a-protocol.org/latest/) is an excellent transport option for A2UI in agentic systems, extending A2A with additional payloads.
 A2A is uniquely capable of handling remote agent communication, and can also provide a secure and effecient transport between an agentic backend and front end application.
@@ -123,12 +123,12 @@ A2A is uniquely capable of handling remote agent communication, and can also pro
 * **Capabilities**: The `a2uiClientCapabilities` object is placed in the `metadata` field of every A2A `Message` sent from the client to the server.
 * **Context**: A2UI sessions typically map to A2A `contextId`. All messages for a set of related surfaces should share the same `contextId`.
 
-#### AG UI (Agent to User Interface) binding[¶](#ag-ui-agent-to-user-interface-binding "Permanent link")
+#### AG UI (Agent to User Interface) binding
 
 **[AG-UI](https://docs.ag-ui.com/introduction)** is also an excellent transport option for A2UI Agent–User Interaction protocol.
 AG UI provides convenient integrations into many agent frameworks and frontends. AG UI provides low latency and shared state message passing between front ends and agentic backends.
 
-#### Other transports[¶](#other-transports "Permanent link")
+#### Other transports
 
 A2UI can also be carried over:
 
@@ -137,11 +137,11 @@ A2UI can also be carried over:
 * **[WebSockets](https://en.wikipedia.org/wiki/WebSocket)**: For bidirectional, real-time sessions.
 * **[REST](https://cloud.google.com/discover/what-is-rest-api?hl=en)**: For simple use case, REST APIs will work but lack streaming capabilities.
 
-## The protocol schemas[¶](#the-protocol-schemas "Permanent link")
+## The protocol schemas
 
 A2UI v0.9.1 is defined by three interacting JSON schemas.
 
-### Common types[¶](#common-types "Permanent link")
+### Common types
 
 The [`common_types.json`] schema defines reusable primitives used throughout the protocol.
 
@@ -151,11 +151,11 @@ The [`common_types.json`] schema defines reusable primitives used throughout the
 * `object`: A template for generating children from a data binding list (requires a template `componentId` and a data binding `path`).
 * **`ComponentId`**: A reference to the unique ID of another component within the same surface.
 
-### Server to client message structure: the envelope[¶](#server-to-client-message-structure-the-envelope "Permanent link")
+### Server to client message structure: the envelope
 
 The [`server_to_client.json`] schema is the top-level entry point. Every message streamed by the server must validate against this schema. It handles the message dispatching.
 
-### The Basic Catalog[¶](#the-basic-catalog "Permanent link")
+### The Basic Catalog
 
 The [`catalogs/basic/catalog.json`] schema contains the definitions for all specific UI components (e.g., `Text`, `Button`, `Row`), functions (e.g., `required`, `email`), and the theme schema.
 
@@ -172,7 +172,7 @@ This indirection allows the same core envelope schema to be used with any compli
 
 Defining your own catalog allows you to restrict the agent to using exactly the components and visual language that exist in your application. To use your own catalog, simply include it in the prompt in place of the basic catalog. It should have the same form as the basic catalog and use common elements in the [`common_types.json`] schema.
 
-### Validator compliance when defining catalogs[¶](#validator-compliance-when-defining-catalogs "Permanent link")
+### Validator compliance when defining catalogs
 
 To ensure that automated validators can verify the integrity of your UI tree (checking that parents reference existing children), any catalog you define MUST adhere to the following strict typing rules:
 
@@ -186,11 +186,11 @@ To ensure that automated validators can verify the integrity of your UI tree (ch
 
 Validators determine which fields represent structural links by looking for these specific schema references. If you use a raw string type for an ID, the validator will treat it as static text (like a URL or label) and will not check if the target component exists.
 
-## Envelope message structure[¶](#envelope-message-structure "Permanent link")
+## Envelope message structure
 
 The envelope defines four primary message types, and every message streamed by the server must be a JSON object containing exactly one of the following keys: `createSurface`, `updateComponents`, `updateDataModel`, or `deleteSurface`. The key indicates the type of message, and these are the messages that make up each message in the protocol stream.
 
-### `createSurface`[¶](#createsurface "Permanent link")
+### `createSurface`
 
 This message signals the client to create a new surface and begin rendering it. A surface must be created before any `updateComponents` or `updateDataModel` messages can be sent to it. While typically achieved by the agent sending a `createSurface` message, an agent may skip this if it knows the surface has already been created (e.g., by another agent). Once a surface is created, its `surfaceId` and `catalogId` are fixed; to reconfigure them, the surface must be deleted and recreated. It is an error to send `createSurface` for a `surfaceId` that already exists without first deleting it. One of the components in one of the component lists MUST have an `id` of `root` to serve as the root of the component tree.
 
@@ -217,7 +217,7 @@ This message signals the client to create a new surface and begin rendering it. 
 }
 ```
 
-### `updateComponents`[¶](#updatecomponents "Permanent link")
+### `updateComponents`
 
 This message provides a list of UI components to be added to or updated within a specific surface. The components are provided as a flat list, and their relationships are defined by ID references in an adjacency list. This message may only be sent to a surface that has already been created. Note that components may reference children or data bindings that do not yet exist; clients should handle this gracefully by rendering placeholders (progressive rendering).
 
@@ -254,7 +254,7 @@ This message provides a list of UI components to be added to or updated within a
 }
 ```
 
-### `updateDataModel`[¶](#updatedatamodel "Permanent link")
+### `updateDataModel`
 
 This message is used to send or update the data that populates the UI components. It allows the server to change the UI's content without resending the entire component structure. The `updateDataModel` message replaces the value at the specified `path` with the new content. If `path` is omitted (or is `/`), the entire data model for the surface is replaced.
 
@@ -277,7 +277,7 @@ This message is used to send or update the data that populates the UI components
 }
 ```
 
-### `deleteSurface`[¶](#deletesurface "Permanent link")
+### `deleteSurface`
 
 This message instructs the client to remove a surface and all its associated components and data from the UI.
 
@@ -296,7 +296,7 @@ This message instructs the client to remove a surface and all its associated com
 }
 ```
 
-## Example Stream[¶](#example-stream "Permanent link")
+## Example Stream
 
 The following example demonstrates a complete interaction to render a Contact Form, expressed as a JSONL stream.
 
@@ -307,11 +307,11 @@ The following example demonstrates a complete interaction to render a Contact Fo
 {"version": "v0.9.1", "deleteSurface":{"surfaceId":"contact_form_1"}}
 ```
 
-## Component model[¶](#component-model "Permanent link")
+## Component model
 
 A2UI's component model is designed for flexibility, separating the protocol's structure from the set of available UI components.
 
-### The component object[¶](#the-component-object "Permanent link")
+### The component object
 
 Each object in the `components` array of an `updateComponents` message defines a single UI component. It has the following structure:
 
@@ -321,11 +321,11 @@ Each object in the `components` array of an `updateComponents` message defines a
 
 This structure is designed to be both flexible and strictly validated.
 
-### The component catalog[¶](#the-component-catalog "Permanent link")
+### The component catalog
 
 The set of available UI components and functions is defined in a **Catalog**. The basic catalog is defined in [`catalogs/basic/catalog.json`]. While the Basic Catalog is useful for starting out, most production applications will define their own catalog to reflect their specific design system. The server must generate messages that conform to the catalog understood by the client.
 
-### UI composition: the adjacency list model[¶](#ui-composition-the-adjacency-list-model "Permanent link")
+### UI composition: the adjacency list model
 
 The A2UI protocol defines the UI as a flat list of components. The tree structure is built implicitly using ID references. This is known as an adjacency list model.
 
@@ -357,11 +357,11 @@ flowchart TD
     A -- "Parsed and stored" --> E
 ```
 
-### Defining actions[¶](#defining-actions "Permanent link")
+### Defining actions
 
 Interactive components (like `Button`) use an `action` property to define what happens when the user interacts with them. Actions can either trigger an event sent to the server or execute a local client-side function.
 
-#### Server actions[¶](#server-actions "Permanent link")
+#### Server actions
 
 To send an event to the server, use the `event` property within the `action` object. It requires a `name` and an optional `context`.
 
@@ -380,7 +380,7 @@ To send an event to the server, use the `event` property within the `action` obj
 }
 ```
 
-#### Local actions[¶](#local-actions "Permanent link")
+#### Local actions
 
 To execute a local function, use the `functionCall` property within the `action` object. This property references a standard `FunctionCall` object.
 
@@ -399,11 +399,11 @@ To execute a local function, use the `functionCall` property within the `action`
 }
 ```
 
-## Data model representation: binding, scope[¶](#data-model-representation-binding-scope "Permanent link")
+## Data model representation: binding, scope
 
 This section describes how UI components **represent** and reference data from the Data Model. A2UI relies on a strictly defined relationship between the UI structure (Components) and the state (Data Model), defining the mechanics of path resolution, variable scope during iteration.
 
-### Path resolution & scope[¶](#path-resolution-scope "Permanent link")
+### Path resolution & scope
 
 Data bindings in A2UI are defined using **JSON Pointers** ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)). How a pointer is resolved depends on the current **Evaluation Scope**.
 
@@ -412,13 +412,13 @@ Data bindings in A2UI are defined using **JSON Pointers** ([RFC 6901](https://da
 >
 > **Note on progressive rendering:** During the initial streaming phase, data paths may resolve to `undefined` if the `updateDataModel` message containing that data has not yet arrived. Renderers should handle `undefined` values gracefully (e.g., by treating them as empty strings or showing a loading indicator) to support progressive rendering.
 
-#### The root scope[¶](#the-root-scope "Permanent link")
+#### The root scope
 
 By default, all components operate in the **Root Scope**.
 
 * Paths starting with `/` (e.g., `/user/profile/name`) are **Absolute Paths**. They always resolve from the root of the Data Model, regardless of where the component is nested in the UI tree.
 
-#### Collection scopes (relative paths)[¶](#collection-scopes-relative-paths "Permanent link")
+#### Collection scopes (relative paths)
 
 When a container component (such as `Column`, `Row`, or `List`) utilizes the **Template** feature of `ChildList`, it creates a new **Child Scope** for each item in the bound array.
 
@@ -429,7 +429,7 @@ When a container component (such as `Column`, `Row`, or `List`) utilizes the **T
 * It is an error to use a non-numeric index on a path segment that refers to an array.
 * **Mixing scopes:** Components inside a Child Scope can still access the Root Scope by using an Absolute Path.
 
-#### Example: scope resolution[¶](#example-scope-resolution "Permanent link")
+#### Example: scope resolution
 
 **Data model:**
 
@@ -473,7 +473,7 @@ When a container component (such as `Column`, `Row`, or `List`) utilizes the **T
 }
 ```
 
-#### Type conversion[¶](#type-conversion "Permanent link")
+#### Type conversion
 
 When a non-string value is interpolated, the client converts it to a string:
 
@@ -481,24 +481,24 @@ When a non-string value is interpolated, the client converts it to a string:
 * **null/undefined**: An empty string `""`.
 * **Objects/Arrays**: Stringified as JSON to ensure consistency across different client implementations.
 
-### Two-way binding & input components[¶](#two-way-binding-input-components "Permanent link")
+### Two-way binding & input components
 
 Interactive components that accept user input (`TextField`, `CheckBox`, `Slider`, `ChoicePicker`, `DateTimeInput`) establish a **Two-Way Binding** with the Data Model.
 
-#### The read/write contract[¶](#the-readwrite-contract "Permanent link")
+#### The read/write contract
 
 Unlike static display components (like `Text`), input components modify the client-side data model immediately upon user interaction.
 
 1. **Read (Model -> View):** When the component renders, it reads its value from the bound `path`. If the Data Model is updated via `updateDataModel`, the component re-renders to reflect the new value.
 2. **Write (View -> Model):** When the user interacts with the component (e.g., types a character, toggles a box), the client **immediately** updates the value at the bound `path` in the local Data Model.
 
-#### Reactivity[¶](#reactivity "Permanent link")
+#### Reactivity
 
 Because the local Data Model is the single source of truth, updates from input components are **reactive**.
 
 * If a `TextField` is bound to `/user/name`, and a separate `Text` label is also bound to `/user/name`, the label must update in real-time as the user types in the text field.
 
-#### Server synchronization[¶](#server-synchronization "Permanent link")
+#### Server synchronization
 
 It is critical to note that Two-Way Binding is **local to the client**.
 
@@ -506,7 +506,7 @@ It is critical to note that Two-Way Binding is **local to the client**.
 * The updated state is sent to the server only when a specific **User Action** is triggered (e.g., a `Button` click).
 * When an `action` is dispatched, the `context` property of the action can reference the modified data paths to send the user's input back to the server.
 
-#### Example: form submission pattern[¶](#example-form-submission-pattern "Permanent link")
+#### Example: form submission pattern
 
 1. **Bind:** `TextField` is bound to `/formData/email`.
 2. **Interact:** User types "jane@example.com". The local model at `/formData/email` is updated.
@@ -524,13 +524,13 @@ It is critical to note that Two-Way Binding is **local to the client**.
    ```
 4. **Send:** When clicked, the client resolves `/formData/email` (getting "jane@example.com") and sends it in the `action` payload.
 
-## Data model updates: synchronization and convergence[¶](#data-model-updates-synchronization-and-convergence "Permanent link")
+## Data model updates: synchronization and convergence
 
 While the sections above describe how components reference data, this section defines how the Data Model itself is **updated** and synchronized.
 
 To support reliable data synchronization between the Renderer and the Agent that created the surface, the A2UI protocol uses a simple synchronization mechanism controlled by the `sendDataModel` property in the `createSurface` message.
 
-### Server to client updates[¶](#server-to-client-updates "Permanent link")
+### Server to client updates
 
 The server sends `updateDataModel` messages to modify the client's data model. These updates follow strict upsert semantics:
 
@@ -588,20 +588,20 @@ The `updateDataModel` message replaces the value at the specified `path` with th
 }
 ```
 
-### Client to server updates[¶](#client-to-server-updates "Permanent link")
+### Client to server updates
 
-When `sendDataModel` is set to `true` for a surface, the client automatically appends the **entire data model** of that surface to the metadata of every message (such as `action` or user query) sent to the server that created the surface. The data model is included using the transport's metadata facility (e.g., the `metadata` field in A2A or a header in HTTP). The payload follows the schema in [`client_data_model.json`](../v0_9_1/json/client_data_model.json).
+When `sendDataModel` is set to `true` for a surface, the client automatically appends the **entire data model** of that surface to the metadata of every message (such as `action` or user query) sent to the server that created the surface. The data model is included using the transport's metadata facility (e.g., the `metadata` field in A2A or a header in HTTP). The payload follows the schema in [`client_data_model.json`](./schema_v0.9.1_client_data_model.json).
 
 * **Targeted Delivery**: The data model is sent exclusively to the server that created the surface. Data cannot leak to other agents or servers.
 * **Trigger:** Data is sent only when a client-to-server message is triggered (e.g., by a user action like a button click). Passive data changes (like typing in a text field) do not trigger a network request on their own; they simply update the local state, which will be sent with the next action.
 * **Payload:** The data model is included in the transport metadata, tagged by its `surfaceId`.
 * **Convergence:** The server treats the received data model as the current state of the client at the time of the action.
 
-## Client-side logic & validation[¶](#client-side-logic-validation "Permanent link")
+## Client-side logic & validation
 
 A2UI v0.9 generalizes client-side logic into **Functions**. These can be used for validation, data transformation, and dynamic property binding.
 
-### Registered functions[¶](#registered-functions "Permanent link")
+### Registered functions
 
 The client supports a set of named **Functions** (e.g., `required`, `regex`, `email`, `add`, `concat`) which are defined in the JSON schema (e.g. `catalogs/basic/catalog.json`) alongside the component definitions. The server references these functions by name in `FunctionCall` objects. This avoids sending executable code. The client determines each function's execution boundary at runtime by reading its configuration from the active catalog definition.
 
@@ -625,7 +625,7 @@ Input components (like `TextField`, `CheckBox`) can define a list of checks. Eac
 ]
 ```
 
-### Example: button validation[¶](#example-button-validation "Permanent link")
+### Example: button validation
 
 Buttons can also define `checks`. If any check fails, the button is automatically disabled. This allows the button's state to depend on the validity of data in the model.
 
@@ -667,11 +667,11 @@ Buttons can also define `checks`. If any check fails, the button is automaticall
 }
 ```
 
-## Basic Component Catalog[¶](#basic-component-catalog "Permanent link")
+## Basic Component Catalog
 
 The [`catalogs/basic/catalog.json`] provides the baseline set of components and functions.
 
-### Components[¶](#components "Permanent link")
+### Components
 
 | Component | Description |
 | --- | --- |
@@ -694,7 +694,7 @@ The [`catalogs/basic/catalog.json`] provides the baseline set of components and 
 | **ChoicePicker** | A component for selecting one or more options. |
 | **Slider** | A slider for selecting a numeric value within a range. |
 
-### Functions[¶](#functions "Permanent link")
+### Functions
 
 | Function | Description |
 | --- | --- |
@@ -713,7 +713,7 @@ The [`catalogs/basic/catalog.json`] provides the baseline set of components and 
 | **or** | Logical OR operation on a list of boolean values. |
 | **not** | Logical NOT operation on a boolean value. |
 
-### Theme[¶](#theme "Permanent link")
+### Theme
 
 The basic catalog defines the following theme properties that can be set in the `createSurface` message:
 
@@ -723,21 +723,21 @@ The basic catalog defines the following theme properties that can be set in the 
 | **iconUrl** | URI | A URL for an image (e.g., logo or avatar) that identifies the agent or tool associated with the surface. |
 | **agentDisplayName** | String | Text to be displayed next to the surface to identify the agent or tool that created it (e.g. "Weather Bot"). |
 
-#### Identity and attribution[¶](#identity-and-attribution "Permanent link")
+#### Identity and attribution
 
 The `iconUrl` and `agentDisplayName` fields are used to provide attribution to the user, identifying which sub-agent or tool is responsible for a particular UI surface.
 
 In multi-agent systems or orchestrators, the orchestrator is responsible for setting or validating these fields. This ensures that the identity displayed to the user matches the actual agent server being contacted, preventing malicious agents from impersonating trusted services. For example, an orchestrator might overwrite these fields with the verified identity of the sub-agent before forwarding the `createSurface` message to the client.
 
-### The `formatString` function[¶](#the-formatstring-function "Permanent link")
+### The `formatString` function
 
 The `formatString` function supports embedding dynamic expressions directly within string properties. This allows for mixing static text with data model values and function results.
 
-#### `formatString` syntax[¶](#formatstring-syntax "Permanent link")
+#### `formatString` syntax
 
 Interpolated expressions are enclosed in `${...}`. To include a literal `${` in a string, it must be escaped as `\${`.
 
-#### `formatString` data model binding[¶](#formatstring-data-model-binding "Permanent link")
+#### `formatString` data model binding
 
 Values from the data model can be interpolated using their JSON Pointer path.
 
@@ -759,7 +759,7 @@ Values from the data model can be interpolated using their JSON Pointer path.
 }
 ```
 
-#### `formatString` client-side functions[¶](#formatstring-client-side-functions "Permanent link")
+#### `formatString` client-side functions
 
 Results of client-side functions can be interpolated. Function calls are identified by the presence of parentheses `()`.
 
@@ -768,14 +768,14 @@ Results of client-side functions can be interpolated. Function calls are identif
 
 Arguments can be **Literals** (quoted strings, numbers, or booleans), or **Nested Expressions**.
 
-#### `formatString` nested interpolation[¶](#formatstring-nested-interpolation "Permanent link")
+#### `formatString` nested interpolation
 
 Expressions can be nested using additional `${...}` wrappers inside an outer expression to make bindings explicit or to chain function calls.
 
 * **Explicit Binding**: `${formatDate(value:${/currentDate}, format:'yyyy-MM-dd')}`
 * **Nested Functions**: `${upper(${now()})}`
 
-#### `formatString` type conversion[¶](#formatstring-type-conversion "Permanent link")
+#### `formatString` type conversion
 
 When a non-string value is interpolated, the client converts it to a string:
 
@@ -783,7 +783,7 @@ When a non-string value is interpolated, the client converts it to a string:
 * **Null/Undefined**: An empty string `""`.
 * **Objects/Arrays**: Stringified as JSON to ensure consistency across different client implementations.
 
-## Usage pattern: the prompt-generate-validate loop[¶](#usage-pattern-the-prompt-generate-validate-loop "Permanent link")
+## Usage pattern: the prompt-generate-validate loop
 
 The A2UI protocol is designed to be used in a three-step loop with a Large Language Model:
 
@@ -797,7 +797,7 @@ The A2UI protocol is designed to be used in a three-step loop with a Large Langu
 
 This loop allows for a high degree of flexibility and robustness, as the system can leverage the generative capabilities of the LLM while still enforcing the structural integrity of the UI protocol.
 
-### Standard validation error format[¶](#standard-validation-error-format "Permanent link")
+### Standard validation error format
 
 If validation fails, the client (or the system acting on behalf of the client) should send an `error` message back to the LLM. To ensure the LLM can understand and correct the error, use the following standard format within the `error` message payload:
 
@@ -819,11 +819,11 @@ If validation fails, the client (or the system acting on behalf of the client) s
 }
 ```
 
-## Client-to-server messages[¶](#client-to-server-messages "Permanent link")
+## Client-to-server messages
 
 The protocol also defines messages that the client can send to the server, which are defined in the [`client_to_server.json`] schema. These are used for handling user interactions and reporting client-side information.
 
-### `action`[¶](#action "Permanent link")
+### `action`
 
 This message is sent when the user interacts with a component that has an `action` defined, such as a `Button`.
 
@@ -835,15 +835,15 @@ This message is sent when the user interacts with a component that has an `actio
 * `timestamp` (string, required): An ISO 8601 timestamp.
 * `context` (object, required): A JSON object containing any context provided in the component's `action` property.
 
-### Capabilities & metadata[¶](#capabilities-metadata "Permanent link")
+### Capabilities & metadata
 
 In A2UI v0.9, capabilities and other metadata are exchanged via **Transport metadata** or initialization payloads (e.g., A2A metadata, Agent Cards, or MCP initialization), rather than as first-class A2UI messages.
 
-#### Server capabilities[¶](#server-capabilities "Permanent link")
+#### Server capabilities
 
 A server (or agent) advertises its capabilities using the [`server_capabilities.json`] schema. This indicates which catalogs it can generate UI for, and whether it accepts inline catalogs from the client. The exact mechanism depends on the transport (e.g., the `params` object in an A2A AgentCard, or server capabilities in MCP).
 
-#### Client capabilities[¶](#client-capabilities "Permanent link")
+#### Client capabilities
 
 The `a2uiClientCapabilities` object in the A2A `Message`'s `metadata` field follows the [`client_capabilities.json`] schema.
 
@@ -852,7 +852,7 @@ The `a2uiClientCapabilities` object in the A2A `Message`'s `metadata` field foll
 * `supportedCatalogIds` (array of strings, required): URIs of supported catalogs.
 * `inlineCatalogs`: An array of inline catalog definitions provided directly by the client (useful for custom or ad-hoc components and functions).
 
-#### Client data model[¶](#client-data-model "Permanent link")
+#### Client data model
 
 When `sendDataModel` is enabled for a surface, the client includes the `a2uiClientDataModel` object in the metadata, following the [`client_data_model.json`] schema.
 
@@ -860,6 +860,6 @@ When `sendDataModel` is enabled for a surface, the client includes the `a2uiClie
 
 * `surfaces` (object, required): A map of surface IDs to their current data models.
 
-### `error`[¶](#error "Permanent link")
+### `error`
 
 This message is used to report a client-side error to the server.

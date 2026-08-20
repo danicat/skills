@@ -1,11 +1,11 @@
 # concept_data_binding
 Source: https://a2ui.org/concepts/data-binding/
 
-# Data Binding[¶](#data-binding "Permanent link")
+# Data Binding
 
 Data binding connects UI components to application state using JSON Pointer paths ([RFC 6901](https://tools.ietf.org/html/rfc6901)). It allows A2UI to efficiently define layouts for large arrays of data and to show updated content without regenerating it from scratch.
 
-## Structure vs. State[¶](#structure-vs-state "Permanent link")
+## Structure vs. State
 
 A2UI separates:
 
@@ -19,7 +19,7 @@ This enables:
 * Reusable templates.
 * Bidirectional binding.
 
-## The Data Model[¶](#the-data-model "Permanent link")
+## The Data Model
 
 Each surface has a JSON object holding state:
 
@@ -33,7 +33,7 @@ Each surface has a JSON object holding state:
 }
 ```
 
-## JSON Pointer Paths[¶](#json-pointer-paths "Permanent link")
+## JSON Pointer Paths
 
 **Syntax:**
 
@@ -50,7 +50,7 @@ Each surface has a JSON object holding state:
 * `/user/name` → `"Alice"`
 * `/items/0` → `"Apple"`
 
-## Literal vs. Path Values[¶](#literal-vs-path-values "Permanent link")
+## Literal vs. Path Values
 
 v0.8v0.9 and later
 
@@ -102,7 +102,7 @@ v0.8v0.9 and later
 
 When `/user/name` changes from "Alice" to "Bob", the text **automatically updates** to "Bob".
 
-## Reactive Updates[¶](#reactive-updates "Permanent link")
+## Reactive Updates
 
 Components bound to data paths automatically update when the data changes:
 
@@ -132,7 +132,7 @@ v0.8v0.9 and later
 
 No component updates needed—just data updates.
 
-## Dynamic Lists[¶](#dynamic-lists "Permanent link")
+## Dynamic Lists
 
 Use templates to render arrays:
 
@@ -178,7 +178,7 @@ v0.8v0.9 and later
 
 **Result:** Two cards rendered, one per product.
 
-### Scoped Paths[¶](#scoped-paths "Permanent link")
+### Scoped Paths
 
 Inside a template, paths are scoped to the array item:
 
@@ -211,7 +211,7 @@ v0.8v0.9 and later
 
 Adding/removing items automatically updates the rendered components.
 
-## Input Bindings[¶](#input-bindings "Permanent link")
+## Input Bindings
 
 Interactive components update the data model bidirectionally:
 
@@ -229,7 +229,7 @@ v0.8v0.9 and later
 | **CheckBox** | `{"value": {"path": "/form/agreed"}}` | Checks box | `/form/agreed` = `true` |
 | **ChoicePicker** | `{"value": {"path": "/form/country"}}` | Selects "Canada" | `/form/country` = `["ca"]` |
 
-## Best Practices[¶](#best-practices "Permanent link")
+## Best Practices
 
 * **Use granular updates**: Update only changed paths.
 

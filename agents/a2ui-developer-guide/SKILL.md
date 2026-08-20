@@ -1,10 +1,18 @@
 ---
 name: a2ui-developer-guide
-description: A comprehensive developer guide for A2UI v0.9.1. Trigger this skill for ANY question, bug, or coding task related to Agent-Driven User Interfaces (A2UI), MCP integrations, or component authoring.
+description: >
+  A comprehensive developer guide for A2UI v0.9.1. Trigger this skill for ANY
+  question, bug, or coding task related to Agent-Driven User Interfaces (A2UI),
+  MCP integrations, or component authoring. Do not trigger for standard web, HTML, or React components unrelated to A2UI.
 license: Apache-2.0
 metadata:
+  category: agents
+  tags: "agents, a2ui, protocol, ui, streaming, json-lines, components"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/agents/a2ui-developer-guide/
+  canonical: https://skills.danicat.dev/agents/a2ui-developer-guide/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/agents/a2ui-developer-guide
 ---
 
 # A2UI Developer Guide

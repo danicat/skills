@@ -1,11 +1,21 @@
 ---
 name: inverted-pyramid
 description: >
-  Structure and prioritize technical articles, developer documentation, engineering READMEs, and guides using the Inverted Pyramid model (highest-value summaries and prescribed actions first, cascading down to usage, architecture, and legal details). Activate this skill whenever auditing, authoring, or refactoring documentation, README files, or technical guides to ensure action-first, scannable information hierarchy.
+  Structure and prioritize technical articles, developer documentation,
+  engineering READMEs, and guides using the Inverted Pyramid model
+  (highest-value summaries and prescribed actions first, cascading down to
+  usage, architecture, and legal details). Activate this skill whenever
+  auditing, authoring, or refactoring documentation, README files, or technical
+  guides to ensure action-first, scannable information hierarchy.
 license: Apache-2.0
 metadata:
+  category: writing
+  tags: "writing, inverted-pyramid, information-hierarchy, scannable-docs, lead"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/inverted-pyramid/
+  canonical: https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/inverted-pyramid
 ---
 
 # Inverted Pyramid Documentation Model
@@ -76,4 +86,3 @@ User-facing project documentation **must** follow this strict structural sequenc
 - **Sentence-Case Headings**: Keep headings clear, concise, and sentence-cased, leading with high-value nouns or active verbs.
 - **Table Density**: Use tables for CLI flags, tool comparisons, and option summaries rather than loose bullet lists.
 - **Copy-Paste Code Blocks**: Every command block must be complete and ready to execute without editing placeholders unless explicitly highlighted.
-

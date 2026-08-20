@@ -1,7 +1,7 @@
 # guide_renderer_development
 Source: https://a2ui.org/guides/renderer-development/
 
-# A2UI Renderer Implementation Guide[¶](#a2ui-renderer-implementation-guide "Permanent link")
+# A2UI Renderer Implementation Guide
 
 This document outlines the required features for a new renderer implementation of the A2UI protocol. It is intended for developers building new renderers (e.g., for React, Flutter, iOS, etc.).
 
@@ -9,11 +9,11 @@ This document outlines the required features for a new renderer implementation o
 >
 > This guide provides implementation checklists for v0.8, v0.9.1 (Current Production), and v1.0 (Candidate). Use the tabs below to select the version you are targeting.
 
-## Web Renderers: Use `@a2ui/web_core` (`web_core`)[¶](#web-renderers-use-a2uiweb_core-web_core "Permanent link")
+## Web Renderers: Use `@a2ui/web_core` (`web_core`)
 
 If you're building a renderer for the web (React, Vue, Svelte, etc.), you don't need to implement message processing, state management, or schema validation from scratch. The **[`@a2ui/web_core`](https://github.com/a2ui-project/a2ui/tree/main/renderers/web_core)** package (`web_core`) provides all the framework-agnostic logic that the maintained Lit, Angular, and React renderers share.
 
-### What `web_core` provides[¶](#what-web_core-provides "Permanent link")
+### What `web_core` provides
 
 | Module | What it does |
 | --- | --- |
@@ -24,7 +24,7 @@ If you're building a renderer for the web (React, Vue, Svelte, etc.), you don't 
 | **Types & Schemas** | TypeScript types for all A2UI components, primitives, colors, styles, and JSON schema validation |
 | **Expression parser** | Client-side function evaluation (v0.9+) |
 
-### How the maintained renderers use it[¶](#how-the-maintained-renderers-use-it "Permanent link")
+### How the maintained renderers use it
 
 All three web renderers follow the same pattern — `web_core` handles the protocol, the renderer handles the UI:
 
@@ -52,7 +52,7 @@ Your renderer only needs to:
 
 See the [React renderer](https://github.com/a2ui-project/a2ui/tree/main/renderers/react), [Lit renderer](https://github.com/a2ui-project/a2ui/tree/main/renderers/lit), and [Angular renderer](https://github.com/a2ui-project/a2ui/tree/main/renderers/angular) for working examples of this pattern.
 
-### Version support[¶](#version-support "Permanent link")
+### Version support
 
 `web_core` exports API sets per version:
 
@@ -66,7 +66,7 @@ See the [React renderer](https://github.com/a2ui-project/a2ui/tree/main/renderer
 
 ---
 
-## I. Core Protocol Implementation Checklist[¶](#i-core-protocol-implementation-checklist "Permanent link")
+## I. Core Protocol Implementation Checklist
 
 This section details the fundamental mechanics of the A2UI protocol. A compliant renderer must implement these systems to successfully parse the server stream, manage state, and handle user interactions.
 
@@ -136,7 +136,7 @@ All requirements from v0.9.1, with the following extensions:
 
 ---
 
-## II. Basic Component Catalog Checklist[¶](#ii-basic-component-catalog-checklist "Permanent link")
+## II. Basic Component Catalog Checklist
 
 To ensure a consistent user experience across platforms, A2UI defines a basic set of components. Your client should map these abstract definitions to their corresponding native UI widgets.
 

@@ -10,13 +10,13 @@ A curated collection of specialized skills for AI agents and pair programmers, o
 Install skills directly from this repository using the Skills CLI:
 
 ```bash
-# Install a specific skill by category path:
-npx skills install github.com/danicat/skills/coding/engineering-flow
-npx skills install github.com/danicat/skills/game-dev/ebitengineer
-npx skills install github.com/danicat/skills/agents/skill-optimizer
+# Install a specific skill from this repository:
+npx skills add danicat/skills --skill engineering-flow -y
+npx skills add danicat/skills --skill ebitengineer -y
+npx skills add danicat/skills --skill skill-optimizer -y
 
-# Install an entire repository or category:
-npx skills install github.com/danicat/skills
+# Install all skills from this repository:
+npx skills add danicat/skills -y
 ```
 
 ---

@@ -1,11 +1,22 @@
 ---
 name: buffer
 description: >
-  Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing connected Buffer social channels, inspecting accounts, creating ideas, scheduling posts to queues, validating payloads via --dry-run, querying post statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer authentication and environment issues. Activate whenever interacting with Buffer or automating cross-platform social publishing from the terminal.
+  Manage, draft, schedule, and publish social media content across connected
+  channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing
+  connected Buffer social channels, inspecting accounts, creating ideas,
+  scheduling posts to queues, validating payloads via --dry-run, querying post
+  statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer
+  authentication and environment issues. Activate whenever interacting with
+  Buffer or automating cross-platform social publishing from the terminal.
 license: Apache-2.0
 metadata:
+  category: writing
+  tags: "writing, social-media, buffer, publishing, automation, cli"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/buffer/
+  canonical: https://skills.danicat.dev/writing/buffer/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/buffer
 ---
 
 # Buffer CLI Playbook

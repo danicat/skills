@@ -1,11 +1,25 @@
 ---
 name: social-copy
 description: >
-  Draft, audit, and optimize high-performing technical, developer, and open-source social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads. When working on campaigns without an existing blog post source, first inspects deep git logs and commit bodies, uses /grill-me style interactive interview to uncover real technical nuance, and authors a comprehensive canonical narrative foundation before cutting platform-specific derivatives. Automatically synchronizes the campaign master source whenever new evidence is discovered. Activate whenever drafting social posts, cross-platform release announcements, or engineering field notes, even if not explicitly requested.
+  Draft, audit, and optimize high-performing technical, developer, and
+  open-source social media copy across LinkedIn, Twitter/X, Bluesky, Instagram,
+  Reddit, and Threads. When working on campaigns without an existing blog post
+  source, first inspects deep git logs and commit bodies, uses /grill-me style
+  interactive interview to uncover real technical nuance, and authors a
+  comprehensive canonical narrative foundation before cutting platform-specific
+  derivatives. Automatically synchronizes the campaign master source whenever
+  new evidence is discovered. Activate whenever drafting social posts,
+  cross-platform release announcements, or engineering field notes, even if not
+  explicitly requested.
 license: Apache-2.0
 metadata:
+  category: writing
+  tags: "writing, social-copy, developer-marketing, linkedin, twitter, bluesky"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/social-copy/
+  canonical: https://skills.danicat.dev/writing/social-copy/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/social-copy
 ---
 
 # Social Copy Playbook

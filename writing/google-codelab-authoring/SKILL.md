@@ -1,11 +1,22 @@
 ---
 name: google-codelab-authoring
 description: >
-  Use this skill when authoring, modifying, or auditing interactive developer tutorials and self-paced guides in the Google Codelabs (.lab.md) format. Activate whenever the user requests building a "codelab", "tutorial", "hands-on guide", or "step-by-step developer lab", or mentions publishing with the Codelab Asset Tool (Claat). Trigger also when converting existing documentation, blog posts, or readme files into structured tutorials, or when fixing formatting and validation issues in existing .lab.md files.
+  Use this skill when authoring, modifying, or auditing interactive developer
+  tutorials and self-paced guides in the Google Codelabs (.lab.md) format.
+  Activate whenever the user requests building a "codelab", "tutorial",
+  "hands-on guide", or "step-by-step developer lab", or mentions publishing with
+  the Codelab Asset Tool (Claat). Trigger also when converting existing
+  documentation, blog posts, or readme files into structured tutorials, or when
+  fixing formatting and validation issues in existing .lab.md files.
 license: Apache-2.0
 metadata:
+  category: writing
+  tags: "writing, codelab, claat, tutorials, hands-on, developer-guides"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/google-codelab-authoring/
+  canonical: https://skills.danicat.dev/writing/google-codelab-authoring/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/google-codelab-authoring
 ---
 
 # Google Codelab Authoring

@@ -1,12 +1,27 @@
 ---
 name: swarm-coding
 description: >
-  Use this skill when executing complex, multi-component engineering tasks, large-scale refactorings, or full-stack features that can be decomposed into parallelizable work. MANDATORY: Trigger immediately upon any mention of the word "swarm" (case-insensitive) in relation to planning or executing a task. Trigger immediately for: full-stack development (frontend + backend), multi-service integrations, complex database migrations, API contract designs, or high-ambiguity technical challenges requiring dedicated research (SPIKEs). Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic script modifications where spawning subagents would introduce unnecessary communication overhead.
+  Use this skill when executing complex, multi-component engineering tasks,
+  large-scale refactorings, or full-stack features that can be decomposed into
+  parallelizable work. MANDATORY: Trigger immediately upon any mention of the
+  word "swarm" (case-insensitive) in relation to planning or executing a task.
+  Trigger immediately for: full-stack development (frontend + backend),
+  multi-service integrations, complex database migrations, API contract designs,
+  or high-ambiguity technical challenges requiring dedicated research (SPIKEs).
+  Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic
+  script modifications where spawning subagents would introduce unnecessary
+  communication overhead.
 license: Apache-2.0
 metadata:
+  category: agents
+  tags: "agents, swarm-coding, multi-agent, coordinator, parallelism, worktrees"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.0"
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/agents/swarm-coding/
+  canonical: https://skills.danicat.dev/agents/swarm-coding/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/agents/swarm-coding
 ---
+
 # Swarm Coding
 
 Swarm Coding divides complex objectives among multiple specialized subagents structured in a clear hierarchical team. This divide-and-conquer strategy isolates context and improves code quality by keeping subagent tasks small and focused.

@@ -1,11 +1,29 @@
 ---
 name: double-diamond
 description: >
-  Use this skill when executing complex engineering initiatives, architectural overhauls, high-ambiguity technical spikes, or full-stack features using the Agile Double-Diamond methodology (Inception -> Discover -> Define -> Develop -> Deliver). Orchestrates three distinct stages: Pre-Diamond Inception (rigorous user grilling via /grill-me to align on scope and tech constraints), Diamond 1 (Problem Space: parallel research subagents discover constraints, coordinator converges on a formal Technical Specification, followed by an interactive User Steering Gate), and Diamond 2 (Solution Space: parallel developer subagents implement disjoint work packages, coordinator converges via end-to-end compiler verification and delivery quality gates). Configurable Degree of Parallelism (DOP) and agent budget. Trigger on any mention of "double-diamond", "double diamond", "two-phase swarm", or when the user requests an explicit research-then-implement workflow. Do NOT use for simple single-file edits or isolated bug fixes.
+  Use this skill when executing complex engineering initiatives, architectural
+  overhauls, high-ambiguity technical spikes, or full-stack features using the
+  Agile Double-Diamond methodology (Inception -> Discover -> Define -> Develop
+  -> Deliver). Orchestrates three distinct stages: Pre-Diamond Inception
+  (rigorous user grilling via /grill-me to align on scope and tech constraints),
+  Diamond 1 (Problem Space: parallel research subagents discover constraints,
+  coordinator converges on a formal Technical Specification, followed by an
+  interactive User Steering Gate), and Diamond 2 (Solution Space: parallel
+  developer subagents implement disjoint work packages, coordinator converges
+  via end-to-end compiler verification and delivery quality gates). Configurable
+  Degree of Parallelism (DOP) and agent budget. Trigger on any mention of
+  "double-diamond", "double diamond", "two-phase swarm", or when the user
+  requests an explicit research-then-implement workflow. Do NOT use for simple
+  single-file edits or isolated bug fixes.
 license: Apache-2.0
 metadata:
+  category: agents
+  tags: "agents, double-diamond, agile, swarm, orchestration, architecture, planning"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/agents/double-diamond/
+  canonical: https://skills.danicat.dev/agents/double-diamond/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/agents/double-diamond
 ---
 
 # Double-Diamond Multi-Agent Orchestration
@@ -96,7 +114,7 @@ Start >    APIs, dependencies & spikes  > Spec  >     modules in parallel       
 3. **Bypassing the User Steering Gate:** Never transition directly from specification writing into developer spawning without presenting the specification and trade-offs to the user for explicit confirmation.
 4. **Overlapping File Allocations:** Never assign two parallel developer agents to the same file or overlapping directory. Work Packages MUST be strictly disjoint to avoid merge conflicts and race conditions.
 5. **Broad Root Test Execution during Development:** Developer agents must execute fine-grained, package-scoped unit tests (`go test ./internal/pkg/...` or `npm test -- path/to/test.ts`) rather than full repository sweeps (`go test ./...`), preventing false test failures while sibling agents are midway through edits.
-6. **Passive Polling Loops:** Coordinator agents should never poll subagent statuses in a tight loop; leverage the messaging system's automatic reactive wakeup upon subagent task completion.
+6. **Passive Polling Loops:** Coordinator agents should never poll subagent statuses in a tight loop; rely on the messaging system's automatic reactive wakeup upon subagent task completion.
 
 ---
 

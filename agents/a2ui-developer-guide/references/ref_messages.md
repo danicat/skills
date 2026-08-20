@@ -1,11 +1,11 @@
 # ref_messages
 Source: https://a2ui.org/reference/messages/
 
-# Message Types[¶](#message-types "Permanent link")
+# Message Types
 
 This reference provides detailed documentation for all A2UI message types.
 
-## Message Format[¶](#message-format "Permanent link")
+## Message Format
 
 All A2UI messages are JSON objects sent as JSON Lines (JSONL). Each line contains exactly one message.
 
@@ -25,13 +25,13 @@ All v0.9 messages include a `"version": "v0.9"` field.
 
 ---
 
-## beginRendering (v0.8) / createSurface (v0.9)[¶](#beginrendering-v08-createsurface-v09 "Permanent link")
+## beginRendering (v0.8) / createSurface (v0.9)
 
 Signals the client to initialize and render a surface.
 
 v0.8 — `beginRendering`v0.9 — `createSurface`
 
-### Schema[¶](#schema "Permanent link")
+### Schema
 
 ```
 {
@@ -44,7 +44,7 @@ v0.8 — `beginRendering`v0.9 — `createSurface`
 }
 ```
 
-### Properties[¶](#properties "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -53,7 +53,7 @@ v0.8 — `beginRendering`v0.9 — `createSurface`
 | `catalogId` | string | ❌ | Identifier for the component catalog. Defaults to the v0.8 basic catalog if omitted. |
 | `styles` | object | ❌ | Styling information for the UI, as defined by the catalog. |
 
-### Example[¶](#example "Permanent link")
+### Example
 
 ```
 {
@@ -78,7 +78,7 @@ v0.8 — `beginRendering`v0.9 — `createSurface`
 
 Must be sent after component definitions. The client buffers `surfaceUpdate` and `dataModelUpdate` messages until `beginRendering` is received.
 
-### Schema[¶](#schema_1 "Permanent link")
+### Schema
 
 ```
 {
@@ -92,7 +92,7 @@ Must be sent after component definitions. The client buffers `surfaceUpdate` and
 }
 ```
 
-### Properties[¶](#properties_1 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ Must be sent after component definitions. The client buffers `surfaceUpdate` and
 | `theme` | object | ❌ | Theme configuration (e.g., `primaryColor`). |
 | `sendDataModel` | boolean | ❌ | If true, client sends data model changes back to the server. |
 
-### Example[¶](#example_1 "Permanent link")
+### Example
 
 ```
 {
@@ -117,13 +117,13 @@ In v0.9, `createSurface` replaces `beginRendering`. The root is determined by co
 
 ---
 
-## surfaceUpdate (v0.8) / updateComponents (v0.9)[¶](#surfaceupdate-v08-updatecomponents-v09 "Permanent link")
+## surfaceUpdate (v0.8) / updateComponents (v0.9)
 
 Add or update components within a surface.
 
 v0.8 — `surfaceUpdate`v0.9 — `updateComponents`
 
-### Schema[¶](#schema_2 "Permanent link")
+### Schema
 
 ```
 {
@@ -141,21 +141,21 @@ v0.8 — `surfaceUpdate`v0.9 — `updateComponents`
 }
 ```
 
-### Properties[¶](#properties_2 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `surfaceId` | string | ✅ | ID of the surface to update |
 | `components` | array | ✅ | Array of component definitions |
 
-### Component Object[¶](#component-object "Permanent link")
+### Component Object
 
 Each object in the `components` array must have:
 
 * `id` (string, required): Unique identifier within the surface
 * `component` (object, required): A wrapper object that contains exactly one key, which is the component type (e.g., `Text`, `Button`).
 
-### Examples[¶](#examples "Permanent link")
+### Examples
 
 **Single component:**
 
@@ -245,7 +245,7 @@ Each object in the `components` array must have:
 
 The component with `id: "greeting"` is updated (not duplicated).
 
-### Usage Notes[¶](#usage-notes "Permanent link")
+### Usage Notes
 
 Keep these usage notes in mind:
 - One component must be designated as the `root` in the `beginRendering` message to serve as the tree root.
@@ -254,7 +254,7 @@ Keep these usage notes in mind:
 - Children are referenced by ID.
 - Components can be added incrementally (streaming).
 
-### Schema[¶](#schema_3 "Permanent link")
+### Schema
 
 ```
 {
@@ -270,14 +270,14 @@ Keep these usage notes in mind:
 }
 ```
 
-### Properties[¶](#properties_3 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `surfaceId` | string | ✅ | ID of the surface to update |
 | `components` | array | ✅ | Array of component definitions |
 
-### Component Object[¶](#component-object_1 "Permanent link")
+### Component Object
 
 In v0.9, component structure is flatter:
 
@@ -285,7 +285,7 @@ In v0.9, component structure is flatter:
 * `component` (string, required): Component type name (e.g., `"Text"`, `"Button"`)
 * All other properties are top-level on the component object.
 
-### Examples[¶](#examples_1 "Permanent link")
+### Examples
 
 **Single component:**
 
@@ -358,7 +358,7 @@ In v0.9, component structure is flatter:
 }
 ```
 
-### Usage Notes[¶](#usage-notes_1 "Permanent link")
+### Usage Notes
 
 Keep these usage notes in mind:
 - One component must have `"id": "root"` to serve as the tree root (convention, not a separate message field).
@@ -367,7 +367,7 @@ Keep these usage notes in mind:
 - Data binding uses `{"path": "/pointer"}` (JSON Pointer) — same key name as v0.8 but with standard JSON Pointer paths.
 - Components can be added incrementally (streaming).
 
-### Errors[¶](#errors "Permanent link")
+### Errors
 
 | Error | Cause | Solution |
 | --- | --- | --- |
@@ -379,13 +379,13 @@ Keep these usage notes in mind:
 
 ---
 
-## dataModelUpdate (v0.8) / updateDataModel (v0.9)[¶](#datamodelupdate-v08-updatedatamodel-v09 "Permanent link")
+## dataModelUpdate (v0.8) / updateDataModel (v0.9)
 
 Update the data model that components bind to.
 
 v0.8 — `dataModelUpdate`v0.9 — `updateDataModel`
 
-### Schema[¶](#schema_4 "Permanent link")
+### Schema
 
 ```
 {
@@ -403,7 +403,7 @@ v0.8 — `dataModelUpdate`v0.9 — `updateDataModel`
 }
 ```
 
-### Properties[¶](#properties_4 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -411,11 +411,11 @@ v0.8 — `dataModelUpdate`v0.9 — `updateDataModel`
 | `path` | string | ❌ | Path to a location within the data model (e.g., `user`). If omitted, the update applies to the root. |
 | `contents` | array | ✅ | An array of data entries as an adjacency list. Each entry has a `key` and a typed `value*` property. |
 
-### The `contents` Adjacency List[¶](#the-contents-adjacency-list "Permanent link")
+### The `contents` Adjacency List
 
 The `contents` array is a list of key-value pairs. Each object in the array must have a `key` and exactly one `value*` property (`valueString`, `valueNumber`, `valueBoolean`, or `valueMap`). This structure is LLM-friendly and avoids issues with inferring types from a generic `value` field.
 
-### Examples[¶](#examples_2 "Permanent link")
+### Examples
 
 **Initialize entire model:**
 
@@ -453,7 +453,7 @@ The `contents` array is a list of key-value pairs. Each object in the array must
 
 This will change `/user/email` without affecting `/user/name`.
 
-### Usage Notes[¶](#usage-notes_2 "Permanent link")
+### Usage Notes
 
 Keep these usage notes in mind:
 - Data model is per-surface.
@@ -462,7 +462,7 @@ Keep these usage notes in mind:
 - Uses typed value fields (`valueString`, `valueNumber`, `valueBoolean`, `valueMap`) — LLM-friendly, no type inference needed.
 - Any data transformation (e.g., formatting a date) must be done by the server before sending the message.
 
-### Schema[¶](#schema_5 "Permanent link")
+### Schema
 
 ```
 {
@@ -475,7 +475,7 @@ Keep these usage notes in mind:
 }
 ```
 
-### Properties[¶](#properties_5 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -483,7 +483,7 @@ Keep these usage notes in mind:
 | `path` | string | ❌ | JSON Pointer path (e.g., `/user/email`). Defaults to `/` (root). |
 | `value` | any | ❌ | The value to set. If omitted, the key at `path` is removed. |
 
-### Examples[¶](#examples_3 "Permanent link")
+### Examples
 
 **Initialize entire model:**
 
@@ -517,7 +517,7 @@ Keep these usage notes in mind:
 }
 ```
 
-### Usage Notes[¶](#usage-notes_3 "Permanent link")
+### Usage Notes
 
 Keep these usage notes in mind:
 - v0.9 uses standard JSON Pointer paths and plain JSON values — no typed wrappers.
@@ -528,13 +528,13 @@ Keep these usage notes in mind:
 
 ---
 
-## deleteSurface[¶](#deletesurface "Permanent link")
+## deleteSurface
 
 Remove a surface and all its components and data.
 
 v0.8 — `deleteSurface`v0.9 — `deleteSurface`
 
-### Schema[¶](#schema_6 "Permanent link")
+### Schema
 
 ```
 {
@@ -544,7 +544,7 @@ v0.8 — `deleteSurface`v0.9 — `deleteSurface`
 }
 ```
 
-### Example[¶](#example_2 "Permanent link")
+### Example
 
 ```
 {
@@ -554,7 +554,7 @@ v0.8 — `deleteSurface`v0.9 — `deleteSurface`
 }
 ```
 
-### Schema[¶](#schema_7 "Permanent link")
+### Schema
 
 ```
 {
@@ -565,7 +565,7 @@ v0.8 — `deleteSurface`v0.9 — `deleteSurface`
 }
 ```
 
-### Example[¶](#example_3 "Permanent link")
+### Example
 
 ```
 {
@@ -576,13 +576,13 @@ v0.8 — `deleteSurface`v0.9 — `deleteSurface`
 }
 ```
 
-### Properties[¶](#properties_6 "Permanent link")
+### Properties
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `surfaceId` | string | ✅ | ID of the surface to delete |
 
-### Usage Notes[¶](#usage-notes_4 "Permanent link")
+### Usage Notes
 
 Keep these usage notes in mind:
 
@@ -595,9 +595,9 @@ Keep these usage notes in mind:
 
 ---
 
-## Message Ordering[¶](#message-ordering "Permanent link")
+## Message Ordering
 
-### Requirements[¶](#requirements "Permanent link")
+### Requirements
 
 Message ordering must satisfy the following requirements:
 
@@ -606,7 +606,7 @@ Message ordering must satisfy the following requirements:
 3. Messages for different surfaces are independent.
 4. Multiple messages can update the same surface incrementally.
 
-### Recommended Order[¶](#recommended-order "Permanent link")
+### Recommended Order
 
 v0.8v0.9
 
@@ -622,7 +622,7 @@ v0.8v0.9
 { "version": "v0.9", "updateDataModel":  { "surfaceId": "main", "path": "/", "value": {...} } }
 ```
 
-### Progressive Building[¶](#progressive-building "Permanent link")
+### Progressive Building
 
 v0.8v0.9
 
@@ -641,7 +641,7 @@ v0.8v0.9
 { "version": "v0.9", "updateDataModel":  { "surfaceId": "main", "path": "/", "value": {...} } }
 ```
 
-## Validation[¶](#validation "Permanent link")
+## Validation
 
 v0.8v0.9
 
@@ -655,8 +655,8 @@ Validate against:
 * **[server\_to\_client.json](https://github.com/a2ui-project/a2ui/blob/main/specification/v0_9/json/server_to_client.json)**: Message envelope schema.
 * **[catalogs/basic/catalog.json](https://github.com/a2ui-project/a2ui/blob/main/specification/v0_9/catalogs/basic/catalog.json)**: Component schemas.
 
-## Further Reading[¶](#further-reading "Permanent link")
+## Further Reading
 
-* **[Component Gallery](../components/)**: All available component types
-* **[Data Binding Guide](../../concepts/data-binding/)**: How data binding works
-* **[Agent Development Guide](../../guides/agent-development/)**: Generate valid messages
+* **[Component Gallery](./concept_components.md)**: All available component types
+* **[Data Binding Guide](./concept_data_binding.md)**: How data binding works
+* **[Agent Development Guide](./guide_agent_development.md)**: Generate valid messages

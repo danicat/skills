@@ -1,11 +1,24 @@
 ---
 name: skill-optimizer
 description: >
-  Analyze, author, evaluate, and optimize Agent Skills according to the official Agent Skills specification. Activate when creating new skills, auditing existing skills, installing reference tools like skill-creator via npx skills add, optimizing trigger descriptions with train/validation splits, designing eval suites (evals.json), setting up blind comparisons, bundling self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP server (https://agentskills.io/mcp), or organizing progressive disclosure structures (scripts/, references/, assets/, evals/). Use whenever reviewing, refactoring, or grading skills.
+  Analyze, author, evaluate, and optimize Agent Skills according to the official
+  Agent Skills specification. Activate when creating new skills, auditing
+  existing skills, installing reference tools like skill-creator via npx skills
+  add, optimizing trigger descriptions with train/validation splits, designing
+  eval suites (evals.json), setting up blind comparisons, bundling
+  self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP
+  server (https://agentskills.io/mcp), or organizing progressive disclosure
+  structures (scripts/, references/, assets/, evals/). Use whenever reviewing,
+  refactoring, or grading skills.
 license: Apache-2.0
 metadata:
+  category: agents
+  tags: "agents, skill-optimizer, evals, benchmarks, testing, authoring, specification"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.3.2"
+  homepage: https://skills.danicat.dev/agents/skill-optimizer/
+  canonical: https://skills.danicat.dev/agents/skill-optimizer/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/agents/skill-optimizer
 ---
 
 # Agent Skill Optimizer

@@ -1,7 +1,7 @@
 # ref_components
 Source: https://a2ui.org/reference/components/
 
-# Component Gallery[¶](#component-gallery "Permanent link")
+# Component Gallery
 
 This page showcases all A2UI components with examples and usage patterns.
 
@@ -15,9 +15,9 @@ This page showcases all A2UI components with examples and usage patterns.
 
 ---
 
-## Layout Components[¶](#layout-components "Permanent link")
+## Layout Components
 
-### Row[¶](#row "Permanent link")
+### Row
 
 Horizontal layout container. Children are arranged left-to-right.
 
@@ -50,7 +50,7 @@ v0.8v0.9
 }
 ```
 
-### Column[¶](#column "Permanent link")
+### Column
 
 Vertical layout container. Children are arranged top-to-bottom.
 
@@ -83,7 +83,7 @@ v0.8v0.9
 }
 ```
 
-### List[¶](#list "Permanent link")
+### List
 
 Scrollable list of items. Supports static children and dynamic templates.
 
@@ -124,9 +124,9 @@ v0.8v0.9
 
 ---
 
-## Display Components[¶](#display-components "Permanent link")
+## Display Components
 
-### Text[¶](#text "Permanent link")
+### Text
 
 Display text content with styling hints.
 
@@ -161,7 +161,7 @@ v0.8v0.9
 }
 ```
 
-### Image[¶](#image "Permanent link")
+### Image
 
 Display images from URLs.
 
@@ -194,7 +194,7 @@ v0.8v0.9
 }
 ```
 
-### Icon[¶](#icon "Permanent link")
+### Icon
 
 Display icons from the basic set defined in the catalog.
 
@@ -223,7 +223,7 @@ v0.8v0.9
 }
 ```
 
-### Divider[¶](#divider "Permanent link")
+### Divider
 
 Visual separator line.
 
@@ -254,9 +254,9 @@ v0.8v0.9
 
 ---
 
-## Interactive Components[¶](#interactive-components "Permanent link")
+## Interactive Components
 
-### Button[¶](#button "Permanent link")
+### Button
 
 Clickable button that triggers an action.
 
@@ -295,7 +295,7 @@ v0.8v0.9
 }
 ```
 
-### TextField[¶](#textfield "Permanent link")
+### TextField
 
 Text input field with optional validation.
 
@@ -332,7 +332,7 @@ v0.8v0.9
 }
 ```
 
-### CheckBox[¶](#checkbox "Permanent link")
+### CheckBox
 
 Boolean toggle.
 
@@ -363,7 +363,7 @@ v0.8v0.9
 }
 ```
 
-### Slider[¶](#slider "Permanent link")
+### Slider
 
 Numeric range input.
 
@@ -396,7 +396,7 @@ v0.8v0.9
 }
 ```
 
-### DateTimeInput[¶](#datetimeinput "Permanent link")
+### DateTimeInput
 
 Date and/or time picker.
 
@@ -429,7 +429,7 @@ v0.8v0.9
 }
 ```
 
-### MultipleChoice (v0.8) / ChoicePicker (v0.9)[¶](#multiplechoice-v08-choicepicker-v09 "Permanent link")
+### MultipleChoice (v0.8) / ChoicePicker (v0.9)
 
 Select one or more options from a list.
 
@@ -470,9 +470,9 @@ v0.8v0.9
 
 ---
 
-## Container Components[¶](#container-components "Permanent link")
+## Container Components
 
-### Card[¶](#card "Permanent link")
+### Card
 
 Container with elevation/border and padding.
 
@@ -501,7 +501,7 @@ v0.8v0.9
 }
 ```
 
-### Modal[¶](#modal "Permanent link")
+### Modal
 
 Overlay dialog triggered by an entry point component.
 
@@ -532,7 +532,7 @@ v0.8v0.9
 }
 ```
 
-### Tabs[¶](#tabs "Permanent link")
+### Tabs
 
 Tabbed interface for organizing content into switchable panels.
 
@@ -569,7 +569,7 @@ v0.8v0.9
 
 ---
 
-## Common Properties[¶](#common-properties "Permanent link")
+## Common Properties
 
 All components share:
 
@@ -577,7 +577,7 @@ All components share:
 * `accessibility`: Accessibility attributes (label, role).
 * `weight`: Flex-grow value when inside a Row or Column.
 
-## Version Differences Summary[¶](#version-differences-summary "Permanent link")
+## Version Differences Summary
 
 The component names and properties are largely the same across versions. The structural differences are:
 
@@ -594,7 +594,7 @@ The component names and properties are largely the same across versions. The str
 | Layout alignment | `distribution`, `alignment` | `justify`, `align` |
 | TextField value | `text` | `value` |
 
-## Live Examples[¶](#live-examples "Permanent link")
+## Live Examples
 
 To see all components in action:
 
@@ -605,7 +605,7 @@ yarn start gallery
 
 **Package Manager Usage:** Running the built-in sample applications within the A2UI repository requires Yarn (`yarn start gallery`) as configured by Corepack workspaces. For your own regular usage and standalone projects outside this repository, use the package manager of your choice (e.g. npm, pnpm).
 
-## Further Reading[¶](#further-reading "Permanent link")
+## Further Reading
 
 > NOTE: Schema Files
 >
@@ -615,5 +615,5 @@ yarn start gallery
 >
 > [Basic Catalog Definition (JSON Schema)](https://github.com/a2ui-project/a2ui/blob/main/specification/v0_9/catalogs/basic/catalog.json)
 
-* **[Defining Your Own Catalog](../../guides/defining-your-own-catalog/)**: Build your own components
-* **[Theming Guide](../../guides/theming/)**: Style components to match your brand
+* **[Defining Your Own Catalog](./guide_defining_own_catalog.md)**: Build your own components
+* **[Theming Guide](./guide_theming.md)**: Style components to match your brand

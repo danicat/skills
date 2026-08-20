@@ -1,11 +1,22 @@
 ---
 name: pyhd
 description: >
-  Use this skill when writing, editing, refactoring, debugging, or testing Python code, or when configuring Python project environments. Activate on any request to add Python features, fix bugs, resolve import errors, run pytest suites, configure linter rules in pyproject.toml, or manage packages and dependencies using uv. Trigger this skill even if the user does not explicitly mention Ruff, uv, or formatting, but asks for Python-related modifications, script creation, or dependency updates.
+  Use this skill when writing, editing, refactoring, debugging, or testing
+  Python code, or when configuring Python project environments. Activate on any
+  request to add Python features, fix bugs, resolve import errors, run pytest
+  suites, configure linter rules in pyproject.toml, or manage packages and
+  dependencies using uv. Trigger this skill even if the user does not explicitly
+  mention Ruff, uv, or formatting, but asks for Python-related modifications,
+  script creation, or dependency updates.
 license: Apache-2.0
 metadata:
+  category: coding
+  tags: "coding, python, uv, packaging, typing, ruff, formatting, pyproject"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/coding/pyhd/
+  canonical: https://skills.danicat.dev/coding/pyhd/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/coding/pyhd
 ---
 
 # Pyhd (Python Development)

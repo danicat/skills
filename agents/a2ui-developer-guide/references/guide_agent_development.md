@@ -1,11 +1,11 @@
 # guide_agent_development
 Source: https://a2ui.org/guides/agent-development/
 
-# Agent Development Guide[¶](#agent-development-guide "Permanent link")
+# Agent Development Guide
 
 Build AI agents that generate A2UI interfaces. This guide covers generating and streaming UI messages from LLMs.
 
-## Quick Overview[¶](#quick-overview "Permanent link")
+## Quick Overview
 
 Building an A2UI agent:
 
@@ -14,7 +14,7 @@ Building an A2UI agent:
 3. **Validate & stream** → Check schema, send to client
 4. **Handle actions** → Respond to user interactions
 
-## Start with a simple agent[¶](#start-with-a-simple-agent "Permanent link")
+## Start with a simple agent
 
 This guide uses the ADK to build a simple agent, starting with text and upgrading it to A2UI.
 
@@ -99,7 +99,7 @@ adk web
 
 Select `my_agent` from the list, and ask questions about restaurants in New York. You should see a list of restaurants in the UI as plain text.
 
-## Generating A2UI Messages[¶](#generating-a2ui-messages "Permanent link")
+## Generating A2UI Messages
 
 Getting the LLM to generate A2UI messages requires some prompt engineering. The SDK provides the `A2uiSchemaManager` to help you generate a system prompt that includes the A2UI schema and examples from your component catalog.
 
@@ -159,7 +159,7 @@ root_agent = Agent(
 )
 ```
 
-## Understanding the Output[¶](#understanding-the-output "Permanent link")
+## Understanding the Output
 
 Your agent will no longer strictly output text. Instead, it will output text and a **JSON list** of A2UI messages.
 

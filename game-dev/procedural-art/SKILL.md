@@ -1,7 +1,21 @@
 ---
 name: procedural-art
-description: >-
-  Use this skill when designing, generating, or optimizing pure-code procedural 2D sprites, tilemaps, vector graphics, particle systems, or visual effects without external image files. Activate for any tasks involving procedural rasterization, color palette theory, 2D matrix transformations, order of operations (scale, rotate, translate), particle pools, sub-frame interpolation/easing curves, or bitmap pixel crafting in game development.
+description: >
+  Use this skill when designing, generating, or optimizing pure-code procedural
+  2D sprites, tilemaps, vector graphics, particle systems, or visual effects
+  without external image files. Activate for any tasks involving procedural
+  rasterization, color palette theory, 2D matrix transformations, order of
+  operations (scale, rotate, translate), particle pools, sub-frame
+  interpolation/easing curves, or bitmap pixel crafting in game development.
+license: Apache-2.0
+metadata:
+  category: game-dev
+  tags: "game-dev, procedural-art, sprites, pixel-art, vector, shaders, particles"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "1.0.0"
+  homepage: https://skills.danicat.dev/game-dev/procedural-art/
+  canonical: https://skills.danicat.dev/game-dev/procedural-art/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/game-dev/procedural-art
 ---
 
 # Procedural Art: Pure-Code 2D Sprites, Tiles, Particle Systems & Vector Graphics Guide

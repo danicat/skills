@@ -1,0 +1,168 @@
+{
+  "updatedAt": "2026-08-20T23:31:29.135Z",
+  "totalSkills": 27,
+  "skills": {
+    "ebitengineer": {
+      "v": "1.2.0",
+      "h": "63b28d715b6f",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md"
+    },
+    "game-design": {
+      "v": "1.0.0",
+      "h": "8bcb77907dcd",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/game-design/SKILL.md"
+    },
+    "procedural-art": {
+      "v": "1.0.0",
+      "h": "e61fcc5001f7",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md"
+    },
+    "procedural-composer": {
+      "v": "1.0.0",
+      "h": "a158226f7651",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md"
+    },
+    "sprite-animation": {
+      "v": "1.0.0",
+      "h": "a4b7df667ec7",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md"
+    },
+    "vibe-game-developer": {
+      "v": "1.0.0",
+      "h": "6d6b016f7606",
+      "c": "game-dev",
+      "u": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md"
+    },
+    "lyria": {
+      "v": "0.1.0",
+      "h": "55c212a46f62",
+      "c": "media",
+      "u": "https://skills.danicat.dev/media/lyria/SKILL.md"
+    },
+    "nano-banana": {
+      "v": "0.1.0",
+      "h": "8db6f49d0733",
+      "c": "media",
+      "u": "https://skills.danicat.dev/media/nano-banana/SKILL.md"
+    },
+    "engineering-flow": {
+      "v": "0.1.0",
+      "h": "2c311f202432",
+      "c": "coding",
+      "u": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md"
+    },
+    "find-examples": {
+      "v": "0.1.0",
+      "h": "6bfaeec21547",
+      "c": "coding",
+      "u": "https://skills.danicat.dev/coding/find-examples/SKILL.md"
+    },
+    "godoctor": {
+      "v": "0.34.0",
+      "h": "8cf3d024db50",
+      "c": "coding",
+      "u": "https://skills.danicat.dev/coding/godoctor/SKILL.md"
+    },
+    "latest-version": {
+      "v": "0.1.0",
+      "h": "a395bcdf5b62",
+      "c": "coding",
+      "u": "https://skills.danicat.dev/coding/latest-version/SKILL.md"
+    },
+    "pyhd": {
+      "v": "0.1.0",
+      "h": "6ef527ac02f5",
+      "c": "coding",
+      "u": "https://skills.danicat.dev/coding/pyhd/SKILL.md"
+    },
+    "a2ui-developer-guide": {
+      "v": "0.1.0",
+      "h": "b19f26564742",
+      "c": "agents",
+      "u": "https://skills.danicat.dev/agents/a2ui-developer-guide/SKILL.md"
+    },
+    "double-diamond": {
+      "v": "0.1.0",
+      "h": "ad9381841292",
+      "c": "agents",
+      "u": "https://skills.danicat.dev/agents/double-diamond/SKILL.md"
+    },
+    "skill-optimizer": {
+      "v": "0.3.2",
+      "h": "b28625fef57e",
+      "c": "agents",
+      "u": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md"
+    },
+    "swarm-coding": {
+      "v": "0.1.0",
+      "h": "eec2269e6049",
+      "c": "agents",
+      "u": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md"
+    },
+    "buffer": {
+      "v": "0.1.0",
+      "h": "2be7b9cd0fb8",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/buffer/SKILL.md"
+    },
+    "buffer-analytics": {
+      "v": "0.1.0",
+      "h": "92aa45a29d28",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/buffer-analytics/SKILL.md"
+    },
+    "deslopify": {
+      "v": "0.1.0",
+      "h": "01c25a89ba04",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/deslopify/SKILL.md"
+    },
+    "google-analytics": {
+      "v": "0.1.0",
+      "h": "5f1e3f26da15",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/google-analytics/SKILL.md"
+    },
+    "google-blog-style": {
+      "v": "0.2.0",
+      "h": "a7c8e2afe0f4",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/google-blog-style/SKILL.md"
+    },
+    "google-codelab-authoring": {
+      "v": "0.1.0",
+      "h": "becec09ea1c3",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/google-codelab-authoring/SKILL.md"
+    },
+    "inverted-pyramid": {
+      "v": "0.1.0",
+      "h": "e475d83852cd",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md"
+    },
+    "search-analytics": {
+      "v": "0.1.0",
+      "h": "38714feef3c4",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/search-analytics/SKILL.md"
+    },
+    "seo-optimizer": {
+      "v": "0.1.0",
+      "h": "2aecd39c2036",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md"
+    },
+    "social-copy": {
+      "v": "0.1.0",
+      "h": "5734ffbc304f",
+      "c": "writing",
+      "u": "https://skills.danicat.dev/writing/social-copy/SKILL.md"
+    }
+  }
+}

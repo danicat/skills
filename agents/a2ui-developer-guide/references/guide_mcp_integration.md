@@ -1,23 +1,23 @@
 # guide_a2ui_in_mcp_apps
 Source: https://a2ui.org/guides/a2ui-in-mcp-apps/
 
-# A2UI Dynamic Rendering within MCP Applications[¶](#a2ui-dynamic-rendering-within-mcp-applications "Permanent link")
+# A2UI Dynamic Rendering within MCP Applications
 
 This guide shows you how to serve rich, interactive A2UI interfaces within [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) using Tools and Embedded Resources. By the end, you'll have a working MCP server that returns an MCP App which can render A2UI components and handle A2UI interactions. By supporting native A2UI within MCP Apps, your MCP server can securely collaborate with remote agents while maintaining consistency over UI styling.
 
-![Generative document editor demo — highlighting text and interacting with dynamic A2UI controls to generate and revise content](../../assets/editor.gif)
+![Generative document editor demo — highlighting text and interacting with dynamic A2UI controls to generate and revise content](https://a2ui.org/assets/editor.gif)
 
-## Prerequisites[¶](#prerequisites "Permanent link")
+## Prerequisites
 
 * **[Python 3.10+](https://www.python.org/)**
 * **[uv](https://docs.astral.sh/uv/)** — fast Python package manager
 * **[Node.js 18+](https://nodejs.org/)** (for the MCP Inspector)
 
-## Quick Start: Run the Sample[¶](#quick-start-run-the-sample "Permanent link")
+## Quick Start: Run the Sample
 
 For detailed instructions on how to run this sample, please refer to the [README.md](https://github.com/a2ui-project/a2ui/blob/main/samples/community/mcp/a2ui-in-mcpapps/README.md).
 
-## Architecture Overview[¶](#architecture-overview "Permanent link")
+## Architecture Overview
 
 The system consists of three main actors interacting through a chain of communication:
 
@@ -74,11 +74,11 @@ flowchart TD
     %% Updated links to point to AppLogic instead of the McpApp subgraph
 ```
 
-## Deep Dive: The Communication Flow[¶](#deep-dive-the-communication-flow "Permanent link")
+## Deep Dive: The Communication Flow
 
 A key aspect of this pattern is that the **MCP App** renders the A2UI payloads directly, rather than relying on the Client Host Application to do so.
 
-### Loading A2UI Components in MCP Apps[¶](#loading-a2ui-components-in-mcp-apps "Permanent link")
+### Loading A2UI Components in MCP Apps
 
 Here is the sequence of events for dynamically loading A2UI components into MCP Apps:
 
@@ -92,7 +92,7 @@ Here is the sequence of events for dynamically loading A2UI components into MCP 
 6. **Response forwarding**: The Host receives the tool result and forwards it back down through the Sandbox Proxy to the MCP App.
 7. **Rendering**: The MCP App extracts the A2UI JSON payload from the resource and feeds it into its local A2UI `MessageProcessor`, which updates the A2UI surface dynamically.
 
-### Handling User Actions[¶](#handling-user-actions "Permanent link")
+### Handling User Actions
 
 Interactivity within the rendered A2UI surface is handled by reversing the flow:
 
@@ -103,7 +103,7 @@ Interactivity within the rendered A2UI surface is handled by reversing the flow:
 5. The Host calls the corresponding tool on the MCP Server.
 6. The Server returns a new A2UI payload (representing the updated state), which is piped back to the MCP App to update the rendering.
 
-### Sequence Diagram[¶](#sequence-diagram "Permanent link")
+### Sequence Diagram
 
 ```
 sequenceDiagram
@@ -146,11 +146,11 @@ sequenceDiagram
     end
 ```
 
-## How to Implement[¶](#how-to-implement "Permanent link")
+## How to Implement
 
 To build your own MCP App with A2UI capabilities, follow these steps:
 
-### Step 1: Inlining the Renderer[¶](#step-1-inlining-the-renderer "Permanent link")
+### Step 1: Inlining the Renderer
 
 MCP Apps are typically delivered as a single HTML resource from the MCP Server. To achieve this with a modern framework like Angular or React:
 
@@ -182,7 +182,7 @@ If your project uses Vite (common for React, Vue, or Lit), you can achieve the s
 
    This will ensure that all JS and CSS assets are inlined into the `index.html` file on build, making it ready to be served by your MCP server as a single resource.
 
-### Step 2: Leveraging A2UI-over-MCP[¶](#step-2-leveraging-a2ui-over-mcp "Permanent link")
+### Step 2: Leveraging A2UI-over-MCP
 
 Your inlined app is now running in the sandbox. To leverage A2UI:
 
@@ -238,7 +238,7 @@ function callHostMethod(method: string, params: any = {}): Promise<any> {
 }
 ```
 
-### Step 3: Handling User Actions on A2UI Components[¶](#step-3-handling-user-actions-on-a2ui-components "Permanent link")
+### Step 3: Handling User Actions on A2UI Components
 
 To handle interactivity within the rendered A2UI surface, your MCP App must capture A2UI events and forward them to the Host using JSON-RPC.
 
@@ -269,7 +269,7 @@ this.processor.events.subscribe(async event => {
 
 This pattern enables the MCP App to serve as a dynamic interface for the MCP Server's A2UI capabilities while maintaining strict security isolation.
 
-### Inlined MCP App HTML Pseudocode[¶](#inlined-mcp-app-html-pseudocode "Permanent link")
+### Inlined MCP App HTML Pseudocode
 
 To put this all together, here is an HTML mockup representing a compiled and inlined MCP Application. It defines the placeholder UI with a native `<a2ui-surface>` element, initializes the `AppBridge` to communicate with the outer host, fetches its dynamic A2UI layout on load, and processes events using the loaded A2UI SDK:
 
@@ -337,13 +337,13 @@ To put this all together, here is an HTML mockup representing a compiled and inl
 </html>
 ```
 
-## Security Considerations[¶](#security-considerations "Permanent link")
+## Security Considerations
 
 * **Explicit Target Origin**: Always use specific target origins (e.g., `'https://trusted-host.com'`) instead of `*` when calling `postMessage` if the host origin is known. This prevents malicious iframes from intercepting your RPC requests.
 * **Null Origin Handling**: Remember that inside a strict sandbox (`sandbox="allow-scripts"` without `allow-same-origin`), `window.location.origin` will evaluate to `"null"`. You must validate incoming messages carefully by comparing `event.source` against the expected window object (e.g., `window.parent`).# guide_a2ui_over_mcp
 Source: https://a2ui.org/guides/a2ui_over_mcp/
 
-# A2UI over Model Context Protocol (MCP)[¶](#a2ui-over-model-context-protocol-mcp "Permanent link")
+# A2UI over Model Context Protocol (MCP)
 
 This guide shows you how to serve **rich, interactive A2UI interfaces** from an **MCP server** using Tools and Embedded Resources. By the end, you'll have a working MCP server that returns A2UI components to any MCP-compatible client.
 
@@ -352,7 +352,7 @@ This guide shows you how to serve **rich, interactive A2UI interfaces** from an 
 Your browser does not support the video tag.
 ](https://raw.githubusercontent.com/a2ui-project/a2ui/main/docs/assets/guides-a2ui-over-mcp-tour.mp4)
 
-## Prerequisites[¶](#prerequisites "Permanent link")
+## Prerequisites
 
 Ensure you have the following installed before you begin:
 
@@ -360,7 +360,7 @@ Ensure you have the following installed before you begin:
 * **[uv](https://docs.astral.sh/uv/)** for fast Python package management.
 * **Node.js** (version 18 or later) for the MCP Inspector.
 
-## Quick Start: Run the Sample[¶](#quick-start-run-the-sample "Permanent link")
+## Quick Start: Run the Sample
 
 Before diving into the protocol details, let's get a working example running. The A2UI repo includes a ready-to-go MCP recipe demo.
 
@@ -373,7 +373,7 @@ cd a2ui/samples/mcp/a2ui-over-mcp-recipe
 uv run .
 ```
 
-### Option A: Interacting via the MCP Inspector[¶](#option-a-interacting-via-the-mcp-inspector "Permanent link")
+### Option A: Interacting via the MCP Inspector
 
 In a separate terminal, launch the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) to interact with the server:
 
@@ -398,7 +398,7 @@ In the Inspector:
 > pip install a2ui-agent-sdk
 > ```
 
-### Option B: Running the Recipe Client Web App[¶](#option-b-running-the-recipe-client-web-app "Permanent link")
+### Option B: Running the Recipe Client Web App
 
 For a fully rendered interactive experience that visually demonstrates A2UI over MCP, run the included web application:
 
@@ -423,11 +423,11 @@ For a fully rendered interactive experience that visually demonstrates A2UI over
 
 You will see a premium, responsive dual-column interface where the left column renders the Selection Form from MCP Resource (`a2ui://recipe-form`). Picking options and clicking **"Get Recipe"** executes the MCP Tool (`get_recipe_a2ui`), dynamically rendering the returned custom A2UI recipe card in the right column.
 
-![Dynamic Recipe Studio demo showing selection form on the left and dynamic recipe card generation on the right](../../assets/recipe_sample.gif)
+![Dynamic Recipe Studio demo showing selection form on the left and dynamic recipe card generation on the right](https://a2ui.org/assets/recipe_sample.gif)
 
 See all samples at [`samples/community/mcp/`](https://github.com/a2ui-project/a2ui/tree/main/samples/community/mcp).
 
-## How It Works[¶](#how-it-works "Permanent link")
+## How It Works
 
 There are two primary ways an MCP server can deliver A2UI content to a client:
 
@@ -440,7 +440,7 @@ MIME Type Uniformity
 
 Regardless of the delivery channel (whether fetched directly as a Resource or returned inside a Tool's `CallToolResult`), the A2UI JSON payload is always identified by the `application/a2ui+json` MIME type. In Tool responses, the payload must be wrapped inside an `EmbeddedResource` carrying this MIME type. This uniform identification allows client-side middleware to seamlessly intercept and route both static resources and dynamic tool responses to A2UI.
 
-### 1. Resource-based Delivery Flow (`resources/read`)[¶](#1-resource-based-delivery-flow-resourcesread "Permanent link")
+### 1. Resource-based Delivery Flow (`resources/read`)
 
 ```
 Client → resources/read → MCP Server
@@ -453,7 +453,7 @@ Client ← ResourceContents ← MCP Server
 A2UI Renderer displays UI
 ```
 
-### 2. Tool-based Delivery Flow (`tools/call`)[¶](#2-tool-based-delivery-flow-toolscall "Permanent link")
+### 2. Tool-based Delivery Flow (`tools/call`)
 
 ```
 Client → tools/call → MCP Server
@@ -468,11 +468,11 @@ Client ← CallToolResult ← MCP Server
 A2UI Renderer displays UI
 ```
 
-## Resources vs. Tools: Separation of Utility Focus[¶](#resources-vs-tools-separation-of-utility-focus "Permanent link")
+## Resources vs. Tools: Separation of Utility Focus
 
 When designing an A2UI integration over MCP, you should choose between **Resources** and **Tools** depending on whether the UI payload is static or dynamic.
 
-### 1. Static UI via MCP Resources (`resources/read`)[¶](#1-static-ui-via-mcp-resources-resourcesread "Permanent link")
+### 1. Static UI via MCP Resources (`resources/read`)
 
 For simple, static user interfaces that do not depend on user prompt inputs or conversation history, you should serve A2UI directly as an MCP Resource.
 
@@ -506,7 +506,7 @@ async def read_resource(uri: str) -> list[ReadResourceContents]:
     raise ValueError(f"Unknown resource: {uri}")
 ```
 
-### 2. Dynamic UI via MCP Tools (`tools/call`)[¶](#2-dynamic-ui-via-mcp-tools-toolscall "Permanent link")
+### 2. Dynamic UI via MCP Tools (`tools/call`)
 
 For user interfaces that need to be generated dynamically based on the conversational context, user parameters, or real-time data, you should serve A2UI inside an MCP Tool's response.
 
@@ -545,11 +545,11 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> types.CallTo
         ])
 ```
 
-## Catalog Negotiation[¶](#catalog-negotiation "Permanent link")
+## Catalog Negotiation
 
 Before a server can send A2UI to a client, they must establish which catalogs are available. Depending on your architecture, this can happen in one of two ways.
 
-### Option A: During MCP Initialization (Recommended)[¶](#option-a-during-mcp-initialization-recommended "Permanent link")
+### Option A: During MCP Initialization (Recommended)
 
 MCP is a stateful session protocol, so the most efficient approach is to declare capabilities once during connection setup. The client declares its A2UI support under `capabilities`:
 
@@ -581,7 +581,7 @@ MCP is a stateful session protocol, so the most efficient approach is to declare
 
 The server stores this state for the duration of the session.
 
-### Option B: Per-Message Metadata (For Stateless Servers)[¶](#option-b-per-message-metadata-for-stateless-servers "Permanent link")
+### Option B: Per-Message Metadata (For Stateless Servers)
 
 If your server must remain stateless, the client can pass A2UI capabilities in the `_meta` field of every tool call:
 
@@ -609,11 +609,11 @@ If your server must remain stateless, the client can pass A2UI capabilities in t
 }
 ```
 
-## Handling User Actions[¶](#handling-user-actions "Permanent link")
+## Handling User Actions
 
 Interactive components like `Button` can trigger actions that are sent back to the server as MCP tool calls.
 
-### 1. Define a Button with an Action[¶](#1-define-a-button-with-an-action "Permanent link")
+### 1. Define a Button with an Action
 
 In your A2UI JSON, add an `action` to a component:
 
@@ -637,7 +637,7 @@ In your A2UI JSON, add an `action` to a component:
 }
 ```
 
-### 2. Client Sends the Action as a Tool Call[¶](#2-client-sends-the-action-as-a-tool-call "Permanent link")
+### 2. Client Sends the Action as a Tool Call
 
 When the user clicks the button, the client resolves data bindings (like `/dates/start`) against the surface state and sends a tool call:
 
@@ -659,7 +659,7 @@ When the user clicks the button, the client resolves data bindings (like `/dates
 }
 ```
 
-### 3. Handle the Action on the Server[¶](#3-handle-the-action-on-the-server "Permanent link")
+### 3. Handle the Action on the Server
 
 ```
 @self.tool()
@@ -676,7 +676,7 @@ async def action(name: str, context: dict) -> types.CallToolResult:
     raise ValueError(f"Unknown action: {name}")
 ```
 
-## Error Handling[¶](#error-handling "Permanent link")
+## Error Handling
 
 Clients can report A2UI rendering errors back to the server via a tool call:
 
@@ -711,7 +711,7 @@ async def error(code: str, message: str, surfaceId: str = "") -> types.CallToolR
     ])
 ```
 
-## Verbalization and Visibility Control[¶](#verbalization-and-visibility-control "Permanent link")
+## Verbalization and Visibility Control
 
 Control whether the LLM can "read" A2UI payloads in subsequent turns using MCP **Resource Annotations**:
 
@@ -734,7 +734,7 @@ a2ui_resource = types.EmbeddedResource(
 | `["user"]` | Rendered for the user; hidden from LLM context |
 | `["assistant"]` | Available to LLM for follow-up reasoning; not rendered |
 
-## Using the A2UI Agent SDK[¶](#using-the-a2ui-agent-sdk "Permanent link")
+## Using the A2UI Agent SDK
 
 For production use, the **A2UI Agent SDK** handles schema management, validation, and prompt generation for you:
 
@@ -756,39 +756,39 @@ selected_catalog = schema_manager.get_selected_catalog()
 selected_catalog.validator.validate(a2ui_payload)
 ```
 
-See the full [Agent Development Guide](../agent-development/) for details on schema management, dynamic catalogs, and streaming.
+See the full [Agent Development Guide](./guide_agent_development.md) for details on schema management, dynamic catalogs, and streaming.
 
-## Next Steps[¶](#next-steps "Permanent link")
+## Next Steps
 
-* [A2UI Specification](../../specification/v0.9-a2ui/) — full protocol reference
-* [Component Gallery](../../reference/components/) — browse available components
-* [MCP Apps in A2UI Surface](../mcp-apps-in-a2ui/) — embed HTML-based MCP apps inside A2UI
-* [Client Setup](../client-setup/) — build a renderer that displays A2UI# guide_mcp_apps_in_a2ui
+* [A2UI Specification](./spec_v0.9.1_core.md) — full protocol reference
+* [Component Gallery](./ref_components.md) — browse available components
+* [MCP Apps in A2UI Surface](./guide_mcp_integration.md#mcp-apps-in-a2ui-surface) — embed HTML-based MCP apps inside A2UI
+* [Client Setup](./guide_client_setup.md) — build a renderer that displays A2UI# guide_mcp_apps_in_a2ui
 Source: https://a2ui.org/guides/mcp-apps-in-a2ui/
 
-# MCP Apps Integration in A2UI Surfaces[¶](#mcp-apps-integration-in-a2ui-surfaces "Permanent link")
+# MCP Apps Integration in A2UI Surfaces
 
 This guide explains how **Model Context Protocol (MCP) Applications** are integrated and displayed within the **A2UI** surface, along with the security model and testing guidelines.
 
-> NOTE: Looking for the core A2UI-over-MCP protocol? See [A2UI over MCP](../a2ui_over_mcp/) for how to return A2UI JSON payloads from MCP tool calls.
+> NOTE: Looking for the core A2UI-over-MCP protocol? See [A2UI over MCP](./guide_mcp_integration.md#a2ui-over-mcp) for how to return A2UI JSON payloads from MCP tool calls.
 
-## Overview[¶](#overview "Permanent link")
+## Overview
 
 The Model Context Protocol (MCP) allows MCP servers to deliver rich, interactive HTML-based user interfaces to hosts. A2UI provides a secure environment to run these third-party applications.
 
-![MCP Calculator demo — loading the app, opening the calculator, and chatting with the agent](../../assets/mcp-apps-calculator-demo.gif)
+![MCP Calculator demo — loading the app, opening the calculator, and chatting with the agent](https://a2ui.org/assets/mcp-apps-calculator-demo.gif)
 
-## Double-Iframe Isolation Pattern[¶](#double-iframe-isolation-pattern "Permanent link")
+## Double-Iframe Isolation Pattern
 
 To run untrusted third-party code securely, A2UI utilizes a **double-iframe** isolation pattern. This approach isolates raw DOM injection from the main application while maintaining a structured JSON-RPC channel.
 
-### Security Rationale[¶](#security-rationale "Permanent link")
+### Security Rationale
 
 Standard single-iframe sandboxing with `allow-scripts` is often bypassed if combined with `allow-same-origin`, which defeats the containerization. Any iframe with `allow-scripts` and `allow-same-origin` can escape its sandbox by programmatically interacting with its parent DOM or removing its own sandbox attribute.
 
 To prevent this, A2UI strictly excludes `allow-same-origin` for the inner iframe where the third-party application runs.
 
-### The Architecture[¶](#the-architecture "Permanent link")
+### The Architecture
 
 1. **[Sandbox Proxy (`sandbox.html`)](https://github.com/a2ui-project/a2ui/blob/main/samples/client/shared/mcp_apps_inner_iframe/sandbox.html)**: An intermediate `iframe` served from the same origin. It isolates raw DOM injection from the main app while maintaining a structured JSON-RPC channel.
    * Permissions: **Do not sandbox** in the host template (e.g., [`mcp-app.ts`](https://github.com/a2ui-project/a2ui/blob/main/samples/community/client/lit/mcp-apps-in-a2ui-sample/mcp-app.ts) or [`mcp-apps-component.ts`](https://github.com/a2ui-project/a2ui/blob/main/samples/community/client/lit/mcp-apps-in-a2ui-sample/ui/custom-components/mcp-apps-component.ts)).
@@ -797,7 +797,7 @@ To prevent this, A2UI strictly excludes `allow-same-origin` for the inner iframe
    * Permissions: `sandbox="allow-scripts allow-forms allow-popups allow-modals"` (**MUST NOT** include `allow-same-origin`).
    * Isolation: Removes access to `localStorage`, `sessionStorage`, `IndexedDB`, and cookies due to unique origin.
 
-### Physical Iframe Nesting[¶](#physical-iframe-nesting "Permanent link")
+### Physical Iframe Nesting
 
 ```
 flowchart TD
@@ -812,7 +812,7 @@ flowchart TD
     end
 ```
 
-### End-to-End Architecture & Lifecycle Flow[¶](#end-to-end-architecture-lifecycle-flow "Permanent link")
+### End-to-End Architecture & Lifecycle Flow
 
 The complete cycle—including layout tree hierarchy, completely separated backend actors (the Proxy Agent and the MCP Server), and how isolated third-party widgets interact reactively with their native siblings (e.g., the Pong game's scoreboard)—is detailed below:
 
@@ -850,7 +850,7 @@ graph TD
     McpComponent -.->|"No Direct Access (Strictly Isolated)"| SiblingComponent
 ```
 
-#### How the Sibling Update Loop Works:[¶](#how-the-sibling-update-loop-works "Permanent link")
+#### How the Sibling Update Loop Works:
 
 1. **Initialize postMessage Event Bridge (1)**: The host shell instantiates the double-iframe sandbox and establishes a secure message relay bridge with the `McpApp` component.
 2. **Tool Action Request (2)**: When a user interacts with the sandboxed app (e.g., scores a point in the Pong game), the app triggers a tool action by posting a message over the postMessage bridge.
@@ -858,11 +858,11 @@ graph TD
 4. **State Mutation & Sync (4)**: The agent processes the action, mutates the master session state, and pushes a `dataModelUpdate` back to the host state manager.
 5. **Reactive State Update (5)**: The host updates its local store, triggering a reactive update on sibling A2UI components (such as native scoreboards or displays) bound to that state path. Direct communication between the sandboxed component and native sibling elements is strictly blocked to maintain containerization security.
 
-## Usage / Code Example[¶](#usage-code-example "Permanent link")
+## Usage / Code Example
 
 The MCP Apps component typically resolves to a `custom` node in the A2UI catalog. Here is how a developer might use it in their code.
 
-### 1. Register within the Catalog[¶](#1-register-within-the-catalog "Permanent link")
+### 1. Register within the Catalog
 
 You must register the component in your catalog application. For example, in Angular:
 
@@ -884,7 +884,7 @@ export const DEMO_CATALOG = {
 } as Catalog;
 ```
 
-### 2. Usage in A2UI Message[¶](#2-usage-in-a2ui-message "Permanent link")
+### 2. Usage in A2UI Message
 
 In the Host or Agent context, send an A2UI message that translates to this custom node.
 
@@ -912,7 +912,7 @@ If the content is complex or requires encoding, you can pass a URL-encoded strin
 }
 ```
 
-## Communication Protocol[¶](#communication-protocol "Permanent link")
+## Communication Protocol
 
 Communication between the Host and the embedded inner iframe is facilitated via a structured JSON-RPC channel over `postMessage`.
 
@@ -920,14 +920,14 @@ Communication between the Host and the embedded inner iframe is facilitated via 
 * **Bridging**: An `AppBridge` handles message relaying. Developers (specifically the MCP App Developer inside the untrusted iframe) can call tools on the MCP server using `bridge.callTool()`.
 * **The Host**: Resolves callbacks (e.g., specific resizing, Tool results).
 
-### Limitations[¶](#limitations "Permanent link")
+### Limitations
 
 Because `allow-same-origin` is strictly omitted for the innermost iframe, the following conditions apply:
 
 * The MCP app **cannot** use `localStorage`, `sessionStorage`, `IndexedDB`, or cookies. Each application runs with a unique origin.
 * Direct DOM manipulation by the parent is blocked. All interactions must proceed via message passing.
 
-## Prerequisites[¶](#prerequisites "Permanent link")
+## Prerequisites
 
 To run the samples, ensure you have the following installed:
 
@@ -948,17 +948,17 @@ To run the samples, ensure you have the following installed:
 > echo 'GEMINI_API_KEY=your-api-key-here' > .env
 > ```
 
-## Samples[¶](#samples "Permanent link")
+## Samples
 
 There are two primary samples demonstrating MCP Apps integration. Each sample requires running **multiple terminals** — one for each backend service and one for the client.
 
 ---
 
-### Sample 1: MCP App Standalone Sample (Lit Client & ADK Agent)[¶](#sample-1-mcp-app-standalone-sample-lit-client-adk-agent "Permanent link")
+### Sample 1: MCP App Standalone Sample (Lit Client & ADK Agent)
 
 This sample verifies the sandbox with a Lit-based client and an ADK-based A2A agent.
 
-#### Step 1: Start the Agent[¶](#step-1-start-the-agent "Permanent link")
+#### Step 1: Start the Agent
 
 In a separate terminal, navigate to the agent directory and start the agent:
 
@@ -969,7 +969,7 @@ uv run agent.py
 
 The agent will run on `http://localhost:8000`.
 
-#### Step 2: Start the Client[¶](#step-2-start-the-client "Permanent link")
+#### Step 2: Start the Client
 
 In a new terminal, navigate to the client directory and start the dev server (requires building the Lit renderer first):
 
@@ -981,7 +981,7 @@ yarn dev
 
 The client starts at `http://localhost:5173/`.
 
-#### Step 3: Open in Browser[¶](#step-3-open-in-browser "Permanent link")
+#### Step 3: Open in Browser
 
 Open your browser and navigate to `http://localhost:5173/`. You should see the A2UI interface loading the MCP App.
 
@@ -989,11 +989,11 @@ Open your browser and navigate to `http://localhost:5173/`. You should see the A
 
 ---
 
-### Sample 2: MCP Apps (Calculator + Pong) (Angular Client + MCP Server + Proxy Agent)[¶](#sample-2-mcp-apps-calculator-pong-angular-client-mcp-server-proxy-agent "Permanent link")
+### Sample 2: MCP Apps (Calculator + Pong) (Angular Client + MCP Server + Proxy Agent)
 
 This sample verifies the sandbox with an Angular-based client, an MCP Proxy Agent, and a remote MCP Server. It requires **three** backend processes.
 
-#### Step 1: Start the MCP Server (Calculator)[¶](#step-1-start-the-mcp-server-calculator "Permanent link")
+#### Step 1: Start the MCP Server (Calculator)
 
 ```
 cd samples/mcp/mcp-apps-calculator/
@@ -1002,7 +1002,7 @@ uv run .
 
 The MCP server starts on `http://localhost:8000` using SSE transport.
 
-#### Step 2: Start the MCP Apps Proxy Agent[¶](#step-2-start-the-mcp-apps-proxy-agent "Permanent link")
+#### Step 2: Start the MCP Apps Proxy Agent
 
 In a **new terminal**:
 
@@ -1014,7 +1014,7 @@ uv run .
 
 The proxy agent starts on `http://localhost:10006` by default.
 
-#### Step 3: Build and Start the Angular Client[¶](#step-3-build-and-start-the-angular-client "Permanent link")
+#### Step 3: Build and Start the Angular Client
 
 In a **new terminal**:
 
@@ -1033,7 +1033,7 @@ yarn start -- mcp_calculator
 
 The client starts at `http://localhost:4200/`.
 
-#### Step 4: Open in Browser[¶](#step-4-open-in-browser "Permanent link")
+#### Step 4: Open in Browser
 
 Navigate to:
 
@@ -1049,11 +1049,11 @@ http://localhost:4200/?disable_security_self_test=true
 
 ---
 
-## URL Options for Testing[¶](#url-options-for-testing "Permanent link")
+## URL Options for Testing
 
 For testing purposes, you can opt-out of the security self-test by using specific URL query parameters.
 
-### `disable_security_self_test=true`[¶](#disable_security_self_testtrue "Permanent link")
+### `disable_security_self_test=true`
 
 This query parameter allows you to bypass the security self-test that verifies iframe isolation. This is useful for debugging and testing environments where the double-iframe setup may not pass strict origin checks (e.g., `localhost` development).
 
@@ -1063,7 +1063,7 @@ Example usage:
 http://localhost:4200/?disable_security_self_test=true
 ```
 
-## Troubleshooting[¶](#troubleshooting "Permanent link")
+## Troubleshooting
 
 | Problem | Solution |
 | --- | --- |

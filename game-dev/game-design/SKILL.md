@@ -1,7 +1,18 @@
 ---
 name: game-design
-description: >-
-  Use this skill when guiding the user through game concept design, defining core mechanics, conducting interactive game design interviews (/grill-me), or generating a Game Design Document (GDD.md) for 2D games.
+description: >
+  Use this skill when guiding the user through game concept design, defining
+  core mechanics, conducting interactive game design interviews (/grill-me), or
+  generating a Game Design Document (GDD.md) for 2D games.
+license: Apache-2.0
+metadata:
+  category: game-dev
+  tags: "game-dev, gdd, mechanics, game-design, narrative, prototyping"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "1.0.0"
+  homepage: https://skills.danicat.dev/game-dev/game-design/
+  canonical: https://skills.danicat.dev/game-dev/game-design/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/game-dev/game-design
 ---
 
 # Game Design & Interactive GDD Creation Guide (Game Designer Role)

@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { runAudit } from './qa_audit.mjs';
+import { fixA2uiLinks } from './fix_a2ui_links.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,15 +14,40 @@ const DOMAIN = 'https://skills.danicat.dev';
 const REPO_URL = 'https://github.com/danicat/skills';
 const BLOG_URL = 'https://danicat.dev';
 const GA_MEASUREMENT_ID = 'G-8RHDQGEGZ2';
+const ENABLE_KUNGFU = process.env.ENABLE_KUNGFU === 'true' || false;
 
 const CATEGORIES = [
-  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: '2D games in Go with Ebitengine, chiptune audio, and procedural graphics.' },
-  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Lyria 3 music synthesis and Nano Banana image editing.' },
-  { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Semantic versioning, repository hygiene, GoDoctor, and Python uv workflows.' },
-  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'A2UI streaming protocol, multi-agent swarms, double-diamond orchestration, and skill optimizer.' },
-  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Google Developers Blog style guide, deslopification, inverted pyramid, and SEO optimization.' },
-  { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Architecture Decision Records (ADRs) and Request for Comments (RFCs).' },
+  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: 'Build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD design.' },
+  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Synthesize 44.1 kHz stereo music with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models.' },
+  { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Enforce semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv workflows, polyglot GitHub search, and zero-debt hygiene.' },
+  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'Orchestrate multi-agent swarms, implement Double-Diamond workflows, build A2UI streaming interfaces, and author verified Agent Skills.' },
+  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Author publication-grade engineering blogs, codelabs, Inverted Pyramid documentation, anti-slop copy, SEO metadata, and social analytics.' },
 ];
+
+const SCHEMA_AUTHOR = {
+  '@type': 'Person',
+  '@id': 'https://danicat.dev/#person',
+  'name': 'Daniela Petruzalek',
+  'url': 'https://danicat.dev',
+  'jobTitle': 'Staff Developer Advocate & Software Engineer',
+  'sameAs': [
+    'https://github.com/danicat',
+    'https://twitter.com/danicat83',
+    'https://linkedin.com/in/danicat',
+    'https://bsky.app/profile/danicat.dev'
+  ]
+};
+
+const SCHEMA_PUBLISHER = {
+  '@type': 'Organization',
+  '@id': `${DOMAIN}/#organization`,
+  'name': 'danicat/skills',
+  'url': DOMAIN,
+  'logo': {
+    '@type': 'ImageObject',
+    'url': `${BLOG_URL}/apple-touch-icon.png`
+  }
+};
 
 const GITHUB_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="18" height="18" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>`;
 const MOON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>`;
@@ -99,17 +127,131 @@ function parseFrontmatter(content) {
   return { data, body };
 }
 
-function markdownToHtml(markdown) {
+function parseInlineFormatting(text) {
+  let res = escapeHtml(text);
+
+  // Bold + Italic
+  res = res.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+  res = res.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+
+  // Bold
+  res = res.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  res = res.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+
+  // Italic
+  res = res.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  res = res.replace(/(^|[\s(])_([^_]+)_(?=[\s).,;!?]|$)/g, '$1<em>$2</em>');
+
+  // Strikethrough
+  res = res.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+
+  return res;
+}
+
+function parseInline(text) {
+  if (!text) return '';
+
+  const mathTokens = [];
+  let s = text.replace(/\$\$([\s\S]*?)\$\$/g, (m, math) => {
+    const token = `%%MATH_BLOCK_${mathTokens.length}%%`;
+    mathTokens.push(`<span class="math-display">${escapeHtml(math)}</span>`);
+    return token;
+  });
+  s = s.replace(/\$([^\$\n]+)\$/g, (m, math) => {
+    const token = `%%MATH_BLOCK_${mathTokens.length}%%`;
+    mathTokens.push(`<span class="math-inline">${escapeHtml(math)}</span>`);
+    return token;
+  });
+
+  const codeTokens = [];
+  s = s.replace(/`([^`]+)`/g, (m, code) => {
+    const token = `%%INLINE_CODE_${codeTokens.length}%%`;
+    codeTokens.push(`<code class="inline-code">${escapeHtml(code)}</code>`);
+    return token;
+  });
+
+  const linkTokens = [];
+  // Images first
+  s = s.replace(/!\[(.*?)\]\((.*?)\)/g, (m, alt, src) => {
+    const token = `%%LINK_TOKEN_${linkTokens.length}%%`;
+    linkTokens.push(`<figure class="content-img"><img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy"><figcaption>${escapeHtml(alt)}</figcaption></figure>`);
+    return token;
+  });
+
+  // Links
+  s = s.replace(/\[(.*?)\]\((.*?)\)/g, (m, label, href) => {
+    let finalHref = href;
+    let isExternal = href.startsWith('http://') || href.startsWith('https://');
+    if (!isExternal) {
+      if (finalHref.includes('{{<') && finalHref.includes('ref')) {
+        const match = finalHref.match(/ref\s+["']([^"']+)["']/);
+        if (match) {
+          finalHref = `https://danicat.dev${match[1].startsWith('/') ? '' : '/'}${match[1]}/`;
+          isExternal = true;
+        }
+      } else {
+        const parts = finalHref.split('#');
+        const queryParts = parts[0].split('?');
+        if (queryParts[0].endsWith('/SKILL.md')) {
+          queryParts[0] = queryParts[0].replace(/\/SKILL\.md$/, '/');
+          let newHref = queryParts.join('?');
+          if (parts.length > 1) {
+            newHref += '#' + parts.slice(1).join('#');
+          }
+          finalHref = newHref;
+        } else if (queryParts[0] === 'SKILL.md') {
+          queryParts[0] = './';
+          let newHref = queryParts.join('?');
+          if (parts.length > 1) {
+            newHref += '#' + parts.slice(1).join('#');
+          }
+          finalHref = newHref;
+        } else if (queryParts[0].endsWith('.md')) {
+          queryParts[0] = queryParts[0].replace(/\.md$/, '.html');
+          let newHref = queryParts.join('?');
+          if (parts.length > 1) {
+            newHref += '#' + parts.slice(1).join('#');
+          }
+          finalHref = newHref;
+        }
+      }
+    }
+    const token = `%%LINK_TOKEN_${linkTokens.length}%%`;
+    if (isExternal) {
+      linkTokens.push(`<a href="${escapeHtml(finalHref)}" target="_blank" rel="noopener noreferrer">${parseInlineFormatting(label)} <span class="ext-icon">↗</span></a>`);
+    } else {
+      linkTokens.push(`<a href="${escapeHtml(finalHref)}">${parseInlineFormatting(label)}</a>`);
+    }
+    return token;
+  });
+
+  // Apply formatting to remaining text
+  s = parseInlineFormatting(s);
+
+  // Restore links
+  s = s.replace(/%%LINK_TOKEN_(\d+)%%/g, (m, idx) => linkTokens[parseInt(idx, 10)]);
+
+  // Restore code
+  s = s.replace(/%%INLINE_CODE_(\d+)%%/g, (m, idx) => codeTokens[parseInt(idx, 10)]);
+
+  // Restore math
+  s = s.replace(/%%MATH_BLOCK_(\d+)%%/g, (m, idx) => mathTokens[parseInt(idx, 10)]);
+
+  return s;
+}
+
+function markdownToHtml(markdown, options = {}) {
+  const isSubDocument = options.isSubDocument || false;
   const codeBlocks = [];
   let processed = markdown.replace(/```([a-zA-Z0-9_-]*)\r?\n([\s\S]*?)```/g, (match, lang, code) => {
-    const id = `___CODE_BLOCK_${codeBlocks.length}___`;
+    const id = `%%CODE_BLOCK_${codeBlocks.length}%%`;
     codeBlocks.push({ lang: lang.trim().toLowerCase(), code });
     return id;
   });
 
   const callouts = [];
   processed = processed.replace(/^>[ \t]*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*\r?\n((?:>[ \t]*.*(?:\r?\n|$))*)/gim, (match, type, content) => {
-    const id = `___CALLOUT_${callouts.length}___`;
+    const id = `%%CALLOUT_${callouts.length}%%`;
     const cleanLines = content
       .split(/\r?\n/)
       .map(line => line.replace(/^>[ \t]?/, ''))
@@ -119,69 +261,65 @@ function markdownToHtml(markdown) {
     return id + '\n\n';
   });
 
-  function parseInline(text) {
-    let res = escapeHtml(text);
-
-    // Math
-    res = res.replace(/\$\$([\s\S]*?)\$\$/g, '<span class="math-display">$1</span>');
-    res = res.replace(/\$([^\$\n]+)\$/g, '<span class="math-inline">$1</span>');
-
-    // Inline code
-    res = res.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-
-    // Images
-    res = res.replace(/!\[(.*?)\]\((.*?)\)/g, (m, alt, src) => {
-      return `<figure class="content-img"><img src="${src}" alt="${alt}" loading="lazy"><figcaption>${alt}</figcaption></figure>`;
-    });
-
-    // Links
-    res = res.replace(/\[(.*?)\]\((.*?)\)/g, (m, label, href) => {
-      let finalHref = href;
-      let isExternal = href.startsWith('http://') || href.startsWith('https://');
-      if (!isExternal && finalHref.endsWith('.md')) {
-        finalHref = finalHref.replace(/\.md$/, '.html');
-      }
-      if (isExternal) {
-        return `<a href="${finalHref}" target="_blank" rel="noopener noreferrer">${label} <span class="ext-icon">↗</span></a>`;
-      }
-      return `<a href="${finalHref}">${label}</a>`;
-    });
-
-    // Bold + Italic
-    res = res.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
-    res = res.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
-
-    // Bold
-    res = res.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    res = res.replace(/__([^_]+)__/g, '<strong>$1</strong>');
-
-    // Italic
-    res = res.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    res = res.replace(/_([^_]+)_/g, '<em>$1</em>');
-
-    // Strikethrough
-    res = res.replace(/~~([^~]+)~~/g, '<del>$1</del>');
-
-    return res;
-  }
-
   const lines = processed.split(/\r?\n/);
   const out = [];
   const toc = [];
-  let inList = false;
-  let listType = null;
+
+  const listStack = [];
+
+  function closeAllLists() {
+    while (listStack.length > 0) {
+      const top = listStack.pop();
+      if (top.inItem) {
+        out.push('</li>');
+      }
+      out.push(`</${top.type}>`);
+    }
+  }
+
+  function handleListItem(indent, type, rawText) {
+    while (listStack.length > 0 && listStack[listStack.length - 1].indent > indent) {
+      const top = listStack.pop();
+      if (top.inItem) {
+        out.push('</li>');
+      }
+      out.push(`</${top.type}>`);
+    }
+
+    if (listStack.length === 0 || indent > listStack[listStack.length - 1].indent) {
+      listStack.push({ type, indent, inItem: true });
+      out.push(`<${type} class="prose-${type}">`);
+    } else {
+      const current = listStack[listStack.length - 1];
+      if (current.type !== type) {
+        if (current.inItem) out.push('</li>');
+        out.push(`</${current.type}>`);
+        current.type = type;
+        current.inItem = true;
+        out.push(`<${type} class="prose-${type}">`);
+      } else {
+        if (current.inItem) {
+          out.push('</li>');
+        }
+        current.inItem = true;
+      }
+    }
+
+    let parsedItem = rawText;
+    const taskMatch = parsedItem.match(/^\[([ xX])\]\s+(.*)$/);
+    if (taskMatch) {
+      const checked = taskMatch[1].toLowerCase() === 'x';
+      parsedItem = `<input type="checkbox" disabled ${checked ? 'checked' : ''} class="task-check"> ${parseInline(taskMatch[2])}`;
+      out.push(`<li class="task-list-item">${parsedItem}`);
+    } else {
+      out.push(`<li>${parseInline(parsedItem)}`);
+    }
+  }
+
   let inTable = false;
   let tableRows = [];
   let inBlockquote = false;
   let blockquoteLines = [];
-
-  function closeList() {
-    if (inList) {
-      out.push(`</${listType}>`);
-      inList = false;
-      listType = null;
-    }
-  }
 
   function closeTable() {
     if (inTable) {
@@ -225,9 +363,9 @@ function markdownToHtml(markdown) {
     const line = lines[i];
     const trimmed = line.trim();
 
-    const codeMatch = trimmed.match(/^___CODE_BLOCK_(\d+)___$/);
+    const codeMatch = trimmed.match(/^%%CODE_BLOCK_(\d+)%%$/);
     if (codeMatch) {
-      closeList();
+      closeAllLists();
       closeTable();
       closeBlockquote();
       const idx = parseInt(codeMatch[1], 10);
@@ -249,9 +387,9 @@ function markdownToHtml(markdown) {
       continue;
     }
 
-    const calloutMatch = trimmed.match(/^___CALLOUT_(\d+)___$/);
+    const calloutMatch = trimmed.match(/^%%CALLOUT_(\d+)%%$/);
     if (calloutMatch) {
-      closeList();
+      closeAllLists();
       closeTable();
       closeBlockquote();
       const idx = parseInt(calloutMatch[1], 10);
@@ -278,7 +416,7 @@ function markdownToHtml(markdown) {
     }
 
     if (/^(\*{3,}|-{3,}|_{3,})$/.test(trimmed)) {
-      closeList();
+      closeAllLists();
       closeTable();
       closeBlockquote();
       out.push('<hr class="prose-hr">');
@@ -286,7 +424,7 @@ function markdownToHtml(markdown) {
     }
 
     if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-      closeList();
+      closeAllLists();
       closeBlockquote();
       const cells = trimmed.slice(1, -1).split('|');
       const isDelimiter = cells.every(c => /^[\s:-]+$/.test(c.trim()));
@@ -305,7 +443,7 @@ function markdownToHtml(markdown) {
     }
 
     if (trimmed.startsWith('>')) {
-      closeList();
+      closeAllLists();
       closeTable();
       if (!inBlockquote) {
         inBlockquote = true;
@@ -318,12 +456,16 @@ function markdownToHtml(markdown) {
 
     const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
     if (headingMatch) {
-      closeList();
+      closeAllLists();
       closeTable();
       closeBlockquote();
-      const level = headingMatch[1].length;
+      let level = headingMatch[1].length;
       const headingText = headingMatch[2].trim();
       const slug = slugify(headingText.replace(/<[^>]+>/g, '').replace(/[^\w\s-]/g, '')) || `section-${i}`;
+
+      if (isSubDocument && level === 1) {
+        level = 2;
+      }
 
       if (level >= 2 && level <= 4) {
         toc.push({ level, id: slug, text: headingText });
@@ -334,44 +476,30 @@ function markdownToHtml(markdown) {
       continue;
     }
 
+    const olMatch = line.match(/^([ \t]*)(\d+)\.\s+(.*)$/);
     const ulMatch = line.match(/^([ \t]*)[*\-+]\s+(.*)$/);
-    const olMatch = line.match(/^([ \t]*)\d+\.\s+(.*)$/);
-    if (ulMatch || olMatch) {
+    if (olMatch || ulMatch) {
       closeTable();
       closeBlockquote();
       const isOl = !!olMatch;
-      const itemText = isOl ? olMatch[2] : ulMatch[2];
-      const targetType = isOl ? 'ol' : 'ul';
+      const indentStr = isOl ? olMatch[1] : ulMatch[1];
+      const indent = indentStr.replace(/\t/g, '  ').length;
+      const itemText = isOl ? olMatch[3] : ulMatch[2];
+      const listType = isOl ? 'ol' : 'ul';
 
-      if (!inList || listType !== targetType) {
-        closeList();
-        inList = true;
-        listType = targetType;
-        out.push(`<${listType} class="prose-${listType}">`);
-      }
-
-      let parsedItem = itemText;
-      const taskMatch = parsedItem.match(/^\[([ xX])\]\s+(.*)$/);
-      if (taskMatch) {
-        const checked = taskMatch[1].toLowerCase() === 'x';
-        parsedItem = `<input type="checkbox" disabled ${checked ? 'checked' : ''} class="task-check"> ${parseInline(taskMatch[2])}`;
-        out.push(`<li class="task-list-item">${parsedItem}</li>`);
-      } else {
-        out.push(`<li>${parseInline(parsedItem)}</li>`);
-      }
+      handleListItem(indent, listType, itemText);
       continue;
-    } else {
-      closeList();
     }
 
     if (!trimmed) {
       continue;
     }
 
+    closeAllLists();
     out.push(`<p class="prose-p">${parseInline(trimmed)}</p>`);
   }
 
-  closeList();
+  closeAllLists();
   closeTable();
   closeBlockquote();
 
@@ -698,6 +826,66 @@ const COMMON_CSS = `
     }
 
     .meta-pill strong { color: var(--text-heading); }
+    .meta-pill code {
+      background: var(--code-bg);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: var(--primary);
+    }
+
+    .install-widget {
+      margin-bottom: 1.25rem;
+    }
+
+    .install-tabs {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: -1px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .install-tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .install-tab-btn:hover {
+      color: var(--text-heading);
+      background: var(--code-bg);
+    }
+
+    .install-tab-btn.active {
+      color: var(--primary);
+      background: var(--code-bg);
+      border-color: var(--code-border);
+      border-bottom: 1px solid var(--code-bg);
+    }
+
+    .install-tab-content {
+      display: none;
+    }
+
+    .install-tab-content.active {
+      display: block;
+    }
+
+    .install-tab-content .install-box {
+      border-top-left-radius: 0;
+      margin-bottom: 0;
+    }
 
     .install-box {
       display: flex;
@@ -1101,34 +1289,81 @@ const COMMON_CSS = `
 `;
 
 function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
-  const { html: bodyHtml, toc } = markdownToHtml(skill.body);
-  const title = `${skill.name} · Agent Skill · Daniela Petruzalek (danicat.dev)`;
+  const { html: bodyHtml, toc } = markdownToHtml(skill.body, { isSubDocument: true });
+  const title = `${skill.name} · Agent Skill · danicat.dev`;
   const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/`;
 
   const metaAuthor = skill.metadata?.author || 'Daniela Petruzalek (daniela@danicat.dev)';
   const metaVersion = skill.metadata?.version || '';
+  const todayIso = new Date().toISOString().split('T')[0];
 
-  const schemaJson = JSON.stringify({
+  const catObj = CATEGORIES.find(c => c.id === skill.category);
+  const categoryName = catObj ? catObj.name : skill.categoryName || skill.category;
+
+  const schemaGraph = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: skill.name,
-    description: skill.description,
-    applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'Any',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD'
-    },
-    author: {
-      '@type': 'Person',
-      name: 'Daniela Petruzalek',
-      url: BLOG_URL
-    },
-    url: canonicalUrl,
-    codeRepository: skill.githubUrl,
-    license: 'https://www.apache.org/licenses/LICENSE-2.0'
-  });
+    '@graph': [
+      SCHEMA_AUTHOR,
+      SCHEMA_PUBLISHER,
+      {
+        '@type': 'SoftwareApplication',
+        '@id': `${canonicalUrl}#software`,
+        name: skill.name,
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Any',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD'
+        },
+        description: skill.description,
+        softwareVersion: skill.version || '0.1.0',
+        license: 'https://www.apache.org/licenses/LICENSE-2.0',
+        url: canonicalUrl,
+        downloadUrl: skill.url,
+        codeRepository: skill.githubUrl,
+        author: { '@id': 'https://danicat.dev/#person' },
+        publisher: { '@id': `${DOMAIN}/#organization` }
+      },
+      {
+        '@type': 'TechArticle',
+        '@id': `${canonicalUrl}#article`,
+        headline: `${skill.name} Agent Skill`,
+        description: skill.description,
+        url: canonicalUrl,
+        mainEntityOfPage: canonicalUrl,
+        datePublished: '2025-01-01',
+        dateModified: todayIso,
+        author: { '@id': 'https://danicat.dev/#person' },
+        publisher: { '@id': `${DOMAIN}/#organization` },
+        about: { '@id': `${canonicalUrl}#software` }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${canonicalUrl}#breadcrumbs`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Catalog',
+            item: `${DOMAIN}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: categoryName,
+            item: `${DOMAIN}/${skill.category}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: skill.name,
+            item: canonicalUrl
+          }
+        ]
+      }
+    ]
+  };
 
   return `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -1138,6 +1373,9 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(skill.description)}">
   <link rel="canonical" href="${canonicalUrl}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="dark light">
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
@@ -1154,15 +1392,18 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
   <meta property="og:title" content="${escapeHtml(skill.name)} · Agent Skill">
   <meta property="og:description" content="${escapeHtml(skill.description)}">
   <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
+  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${escapeHtml(skill.name)} · Agent Skill">
   <meta name="twitter:description" content="${escapeHtml(skill.description)}">
+  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:creator" content="@danicat83">
 
   <!-- JSON-LD Schema -->
   <script type="application/ld+json">
-    ${schemaJson}
+${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
   <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
@@ -1204,7 +1445,7 @@ ${COMMON_CSS}
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
       <a href="/">Catalog</a>
       <span class="sep">/</span>
-      <a href="/#${skill.category}">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
+      <a href="/${skill.category}/">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
       <span class="sep">/</span>
       <span class="current">${escapeHtml(skill.name)}</span>
     </nav>
@@ -1220,16 +1461,55 @@ ${COMMON_CSS}
       <p class="detail-desc">${escapeHtml(skill.description)}</p>
 
       <div class="meta-pills">
+        <span class="meta-pill"><strong>Version:</strong> v${escapeHtml(skill.version || '0.1.0')}</span>
         <span class="meta-pill"><strong>License:</strong> ${escapeHtml(skill.license)}</span>
-        ${metaVersion ? `<span class="meta-pill"><strong>Version:</strong> ${escapeHtml(metaVersion)}</span>` : ''}
-        ${metaAuthor ? `<span class="meta-pill"><strong>Author:</strong> ${escapeHtml(metaAuthor)}</span>` : ''}
+        <span class="meta-pill"><strong>Author:</strong> ${escapeHtml(skill.author || 'Daniela Petruzalek')}</span>
+        <span class="meta-pill" title="${escapeHtml(skill.digest || '')}"><strong>Digest:</strong> <code>${escapeHtml((skill.sha256 || '').slice(0, 8))}</code></span>
       </div>
 
-      <div class="install-box">
-        <span class="install-cmd">${escapeHtml(skill.installCommand)}</span>
-        <button class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand)}', this)" title="Copy install command">
-          <span>📋</span> Copy
-        </button>
+      <div class="install-widget">
+        <div class="install-tabs">
+          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'tab-npx-add')">npx skills add</button>${ENABLE_KUNGFU ? `
+          <button type="button" class="install-tab-btn kungfu-tab" onclick="switchInstallTab(this, 'tab-kungfu-load')">kungfu load (JIT)</button>
+          <button type="button" class="install-tab-btn kungfu-tab" onclick="switchInstallTab(this, 'tab-kungfu-learn')">kungfu learn (Persist)</button>` : ''}
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'tab-raw-url')">Raw URL</button>
+        </div>
+
+        <div id="tab-npx-add" class="install-tab-content active">
+          <div class="install-box">
+            <span class="install-cmd">${escapeHtml(skill.installCommand)}</span>
+            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand)}', this)" title="Copy command">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>${ENABLE_KUNGFU ? `
+
+        <div id="tab-kungfu-load" class="install-tab-content kungfu-pane">
+          <div class="install-box">
+            <span class="install-cmd">${escapeHtml(skill.kungfuLoadCommand)}</span>
+            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLoadCommand)}', this)" title="Copy command">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>
+
+        <div id="tab-kungfu-learn" class="install-tab-content kungfu-pane">
+          <div class="install-box">
+            <span class="install-cmd">${escapeHtml(skill.kungfuLearnCommand)}</span>
+            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLearnCommand)}', this)" title="Copy command">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>` : ''}
+
+        <div id="tab-raw-url" class="install-tab-content">
+          <div class="install-box">
+            <span class="install-cmd">${escapeHtml(skill.url)}</span>
+            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.url)}', this)" title="Copy URL">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="action-links">
@@ -1305,6 +1585,16 @@ ${COMMON_CSS}
       });
     }
 
+    function switchInstallTab(btn, targetId) {
+      const widget = btn.closest('.install-widget');
+      if (!widget) return;
+      widget.querySelectorAll('.install-tab-btn').forEach(b => b.classList.remove('active'));
+      widget.querySelectorAll('.install-tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const target = widget.querySelector('#' + targetId);
+      if (target) target.classList.add('active');
+    }
+
     function copyInstallCommand(cmd, btn) {
       navigator.clipboard.writeText(cmd).then(() => {
         const orig = btn.innerHTML;
@@ -1345,10 +1635,71 @@ ${COMMON_CSS}
 
 function generateReferenceHtml(refFile, skill, content) {
   const { data, body } = parseFrontmatter(content);
-  const { html: bodyHtml, toc } = markdownToHtml(body);
+  const { html: bodyHtml, toc } = markdownToHtml(body, { isSubDocument: true });
   const refTitle = data.title || refFile.name.replace(/\.md$/, '').replace(/[_-]/g, ' ');
-  const title = `${refTitle} · ${skill.name} Reference · Daniela Petruzalek (danicat.dev)`;
+  const title = `${refTitle} · ${skill.name} · danicat.dev`;
   const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/${refFile.relPath.replace(/\.md$/, '.html')}`;
+  const skillDetailUrl = `${DOMAIN}/${skill.category}/${skill.folder}/`;
+  const refDescription = data.description || `${refTitle} reference guide and architectural documentation for ${skill.name}.`;
+  const todayIso = new Date().toISOString().split('T')[0];
+
+  const catObj = CATEGORIES.find(c => c.id === skill.category);
+  const categoryName = catObj ? catObj.name : skill.categoryName || skill.category;
+
+  const schemaGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      SCHEMA_AUTHOR,
+      SCHEMA_PUBLISHER,
+      {
+        '@type': 'TechArticle',
+        '@id': `${canonicalUrl}#article`,
+        headline: `${refTitle} · ${skill.name} Reference`,
+        description: refDescription,
+        url: canonicalUrl,
+        mainEntityOfPage: canonicalUrl,
+        datePublished: '2025-01-01',
+        dateModified: todayIso,
+        author: { '@id': 'https://danicat.dev/#person' },
+        publisher: { '@id': `${DOMAIN}/#organization` },
+        isPartOf: {
+          '@type': 'SoftwareApplication',
+          name: skill.name,
+          url: skillDetailUrl
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${canonicalUrl}#breadcrumbs`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Catalog',
+            item: `${DOMAIN}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: categoryName,
+            item: `${DOMAIN}/${skill.category}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: skill.name,
+            item: skillDetailUrl
+          },
+          {
+            '@type': 'ListItem',
+            position: 4,
+            name: refTitle,
+            item: canonicalUrl
+          }
+        ]
+      }
+    ]
+  };
 
   return `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -1356,7 +1707,11 @@ function generateReferenceHtml(refFile, skill, content) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(refDescription)}">
   <link rel="canonical" href="${canonicalUrl}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="dark light">
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
@@ -1365,6 +1720,26 @@ function generateReferenceHtml(refFile, skill, content) {
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:title" content="${escapeHtml(refTitle)} · ${escapeHtml(skill.name)} Reference">
+  <meta property="og:description" content="${escapeHtml(refDescription)}">
+  <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
+  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapeHtml(refTitle)} · ${escapeHtml(skill.name)} Reference">
+  <meta name="twitter:description" content="${escapeHtml(refDescription)}">
+  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:creator" content="@danicat83">
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
   <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
@@ -1406,7 +1781,7 @@ ${COMMON_CSS}
     <nav class="breadcrumbs" aria-label="Breadcrumbs">
       <a href="/">Catalog</a>
       <span class="sep">/</span>
-      <a href="/#${skill.category}">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
+      <a href="/${skill.category}/">${skill.categoryEmoji} ${escapeHtml(skill.categoryName)}</a>
       <span class="sep">/</span>
       <a href="/${skill.category}/${skill.folder}/">${escapeHtml(skill.name)}</a>
       <span class="sep">/</span>
@@ -1502,8 +1877,563 @@ ${COMMON_CSS}
 </html>`;
 }
 
+function generateCategoryHtml(category, skillsInCategory, allCategories, allSkills) {
+  const title = `${category.name} Agent Skills · danicat.dev`;
+  const canonicalUrl = `${DOMAIN}/${category.id}/`;
+
+  const schemaGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      SCHEMA_AUTHOR,
+      SCHEMA_PUBLISHER,
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl}#page`,
+        url: canonicalUrl,
+        name: `${category.name} Agent Skills`,
+        description: category.description,
+        isPartOf: { '@id': `${DOMAIN}/#website` },
+        about: {
+          '@type': 'ItemList',
+          name: `${category.name} Skills`,
+          itemListElement: skillsInCategory.map((s, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            url: s.detailUrl,
+            name: s.name,
+            description: s.description
+          }))
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${canonicalUrl}#breadcrumbs`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Catalog',
+            item: `${DOMAIN}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: category.name,
+            item: canonicalUrl
+          }
+        ]
+      }
+    ]
+  };
+
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(category.description)}">
+  <link rel="canonical" href="${canonicalUrl}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="dark light">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:title" content="${escapeHtml(category.emoji)} ${escapeHtml(category.name)} · Agent Skills">
+  <meta property="og:description" content="${escapeHtml(category.description)}">
+  <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
+  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapeHtml(category.emoji)} ${escapeHtml(category.name)} · Agent Skills">
+  <meta name="twitter:description" content="${escapeHtml(category.description)}">
+  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:creator" content="@danicat83">
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+${JSON.stringify(schemaGraph, null, 2)}
+  </script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+
+  <script>
+    (function() {
+      var appearance = localStorage.getItem('appearance');
+      if (appearance === 'dark' || (!appearance && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+${COMMON_CSS}
+
+    /* Category Hero */
+    .cat-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.25rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .cat-hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cat-hero-emoji {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .cat-hero-title-row h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .cat-hero-desc {
+      font-size: 1.15rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      max-width: 800px;
+    }
+
+    /* Search & Filter Bar */
+    .search-filter-section {
+      margin-bottom: 2rem;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-heading);
+      font-size: 1rem;
+      font-family: inherit;
+      box-shadow: var(--shadow);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .search-input-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-subtle);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.95rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 9999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:hover {
+      color: var(--text-heading);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .pill-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Grid & Cards */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .skill-card:hover {
+      border-color: var(--primary-border);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-top {
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+      gap: 0.5rem;
+    }
+
+    .skill-name-link {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .skill-name-link:hover {
+      color: var(--primary);
+    }
+
+    .cat-badge {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .skill-description {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .card-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .cmd-box {
+      display: flex;
+      align-items: center;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .cmd-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      padding-right: 0.5rem;
+    }
+
+    .copy-button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      transition: color 0.15s ease, transform 0.1s ease;
+    }
+
+    .copy-button:hover {
+      color: var(--text-heading);
+      transform: scale(1.1);
+    }
+
+    .card-links {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .card-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .card-links a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-muted);
+      font-size: 1.15rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${renderHeader('Skills')}
+
+    <nav class="breadcrumbs" aria-label="Breadcrumbs">
+      <a href="/">Catalog</a>
+      <span class="sep">/</span>
+      <span class="current">${category.emoji} ${escapeHtml(category.name)}</span>
+    </nav>
+
+    <div class="cat-hero">
+      <div class="cat-hero-title-row">
+        <span class="cat-hero-emoji">${category.emoji}</span>
+        <h1>${escapeHtml(category.name)}</h1>
+      </div>
+      <p class="cat-hero-desc">${escapeHtml(category.description)}</p>
+      <div class="meta-pills">
+        <span class="meta-pill"><strong>Total Skills:</strong> ${skillsInCategory.length}</span>
+        <span class="meta-pill"><strong>Format:</strong> Agent Skills (SKILL.md)</span>
+        <span class="meta-pill"><strong>License:</strong> Apache-2.0</span>
+      </div>
+    </div>
+
+    <section class="search-filter-section">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Filter ${escapeHtml(category.name)} skills by keyword... (Press '/' to focus)" autofocus>
+      </div>
+      <div class="category-pills">
+        <a href="/" class="pill-btn">← All Skills (${allSkills.length})</a>
+        ${allCategories.map(c => `
+          <a href="/${c.id}/" class="pill-btn ${c.id === category.id ? 'active' : ''}">${c.emoji} ${escapeHtml(c.name)} (${allSkills.filter(s => s.category === c.id).length})</a>
+        `).join('')}
+      </div>${ENABLE_KUNGFU ? `
+      <div class="cli-mode-bar" style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+        <span style="font-weight: 500;">CLI Mode:</span>
+        <div class="cli-mode-pills" style="display: flex; gap: 0.35rem;">
+          <button type="button" class="mode-pill active" onclick="setGlobalCliMode('npx', this)">npx skills</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-load', this)">kungfu load</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-learn', this)">kungfu learn</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('raw-url', this)">Raw URL</button>
+        </div>
+      </div>` : ''}
+    </section>
+
+    <main>
+      <div class="skills-grid" id="skillsGrid">
+        ${skillsInCategory.map(s => `
+        <div class="skill-card" data-category="${s.category}" data-name="${s.name.toLowerCase()}" data-desc="${s.description.toLowerCase().replace(/"/g, '&quot;')}">
+          <div class="card-top">
+            <div class="card-title-row">
+              <a href="/${s.category}/${s.folder}/" class="skill-name-link">${s.name}</a>
+              <span class="cat-badge">v${s.version}</span>
+            </div>
+            <p class="skill-description">${s.description}</p>
+          </div>
+          <div class="card-bottom">
+            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : ''}>
+              <span class="cmd-text">${s.installCommand}</span>
+              <button class="copy-button" onclick="copyInstall(this.previousElementSibling.innerText, this)" title="Copy install command">📋</button>
+            </div>
+            <div class="card-links">
+              <a href="/${s.category}/${s.folder}/">View Skill →</a>
+              <a href="/${s.relativePath}">Raw SKILL.md</a>
+              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source ↗</a>
+            </div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </main>
+
+    ${renderFooter()}
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        htmlEl.classList.add('dark');
+        htmlEl.setAttribute('data-theme', 'dark');
+      } else {
+        htmlEl.classList.remove('dark');
+        htmlEl.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('appearance', theme);
+    }
+
+    const savedTheme = localStorage.getItem('appearance') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = htmlEl.classList.contains('dark') || htmlEl.getAttribute('data-theme') === 'dark';
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.skill-card');
+    const grid = document.getElementById('skillsGrid');
+
+    function filterSkills() {
+      const query = searchInput.value.toLowerCase().trim();
+      let count = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name');
+        const desc = card.getAttribute('data-desc');
+        const matchesQuery = !query || name.includes(query) || desc.includes(query);
+
+        if (matchesQuery) {
+          card.style.display = 'flex';
+          count++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      let noRes = document.getElementById('noResults');
+      if (count === 0) {
+        if (!noRes) {
+          noRes = document.createElement('div');
+          noRes.id = 'noResults';
+          noRes.className = 'no-results';
+          noRes.textContent = 'No skills matching your criteria.';
+          grid.appendChild(noRes);
+        }
+      } else if (noRes) {
+        noRes.remove();
+      }
+    }
+
+    searchInput.addEventListener('input', filterSkills);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    function copyInstall(cmd, btn) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<span>✓</span> Copied';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }${ENABLE_KUNGFU ? `
+
+    function setGlobalCliMode(mode, btn) {
+      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem('preferred_cli_mode', mode);
+      document.querySelectorAll('.cmd-box').forEach(box => {
+        const textSpan = box.querySelector('.cmd-text');
+        if (!textSpan) return;
+        if (mode === 'kungfu-load') {
+          textSpan.innerText = box.getAttribute('data-kungfu-load');
+        } else if (mode === 'kungfu-learn') {
+          textSpan.innerText = box.getAttribute('data-kungfu-learn');
+        } else if (mode === 'raw-url') {
+          textSpan.innerText = box.getAttribute('data-raw-url');
+        } else {
+          textSpan.innerText = box.getAttribute('data-npx');
+        }
+      });
+    }
+
+    const savedMode = localStorage.getItem('preferred_cli_mode');
+    if (savedMode) {
+      const modeBtn = document.querySelector('.mode-pill[onclick*="' + savedMode + '"]');
+      if (modeBtn) setGlobalCliMode(savedMode, modeBtn);
+    }` : ''}
+  </script>
+</body>
+</html>`;
+}
+
 async function build() {
   console.log('Building skills catalog with detail pages, sitemap.xml, robots.txt, and SEO...');
+
+  fixA2uiLinks();
+
+  const evalDir = path.join(ROOT_DIR, 'writing/seo-optimizer/evals/files');
+  if (fs.existsSync(evalDir)) {
+    const png1px = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+    fs.writeFileSync(path.join(evalDir, 'diagram.png'), png1px);
+    fs.writeFileSync(path.join(evalDir, 'mcp_architecture.png'), png1px);
+  }
 
   if (fs.existsSync(SITE_DIR)) {
     fs.rmSync(SITE_DIR, { recursive: true, force: true });
@@ -1527,6 +2457,13 @@ async function build() {
       const raw = fs.readFileSync(skillPath, 'utf8');
       const { data, body } = parseFrontmatter(raw);
 
+      const sha256 = crypto.createHash('sha256').update(raw).digest('hex');
+      const tags = data.metadata?.tags ? data.metadata.tags.split(',').map(t => t.trim()).filter(Boolean) : [cat.id, skillFolder];
+      const version = data.metadata?.version || '0.1.0';
+      const author = data.metadata?.author || 'Daniela Petruzalek (daniela@danicat.dev)';
+      const byteSize = Buffer.byteLength(raw, 'utf8');
+      const tokenEstimate = Math.ceil(byteSize / 4);
+
       const skillRecord = {
         name: data.name || skillFolder,
         folder: skillFolder,
@@ -1535,8 +2472,17 @@ async function build() {
         categoryEmoji: cat.emoji,
         description: data.description || '',
         license: data.license || 'Apache-2.0',
+        author,
+        version,
+        digest: `sha256:${sha256}`,
+        sha256,
+        byteSize,
+        tokenEstimate,
+        tags,
         metadata: data.metadata || {},
-        installCommand: `npx skills install github.com/danicat/skills/${cat.id}/${skillFolder}`,
+        installCommand: `npx skills add danicat/skills --skill ${data.name || skillFolder} -y`,
+        kungfuLoadCommand: `kungfu load ${data.name || skillFolder}`,
+        kungfuLearnCommand: `kungfu learn ${data.name || skillFolder}`,
         url: `${DOMAIN}/${cat.id}/${skillFolder}/SKILL.md`,
         detailUrl: `${DOMAIN}/${cat.id}/${skillFolder}/`,
         githubUrl: `${REPO_URL}/tree/main/${cat.id}/${skillFolder}`,
@@ -1548,6 +2494,8 @@ async function build() {
       copyRecursive(path.join(catDir, skillFolder), path.join(SITE_DIR, cat.id, skillFolder));
     }
   }
+
+  const allReferencePages = [];
 
   // Generate Detail HTML pages for all skills
   for (const skill of skills) {
@@ -1568,9 +2516,23 @@ async function build() {
           const outRefHtmlPath = path.join(SITE_DIR, skill.category, skill.folder, res.relPath.replace(/\.md$/, '.html'));
           fs.mkdirSync(path.dirname(outRefHtmlPath), { recursive: true });
           fs.writeFileSync(outRefHtmlPath, refHtml);
+          allReferencePages.push({
+            url: `${skill.detailUrl}${res.relPath.replace(/\.md$/, '.html')}`,
+            relPath: res.relPath,
+            skill: skill.name
+          });
         }
       }
     }
+  }
+
+  // Generate Category Landing Pages (e.g. /game-dev/, /writing/, etc.)
+  for (const cat of CATEGORIES) {
+    const catSkills = skills.filter(s => s.category === cat.id);
+    const catHtml = generateCategoryHtml(cat, catSkills, CATEGORIES, skills);
+    const catDir = path.join(SITE_DIR, cat.id);
+    fs.mkdirSync(catDir, { recursive: true });
+    fs.writeFileSync(path.join(catDir, 'index.html'), catHtml);
   }
 
   const todayIso = new Date().toISOString().split('T')[0];
@@ -1595,6 +2557,10 @@ async function build() {
     }
     llmsTxt += `\n`;
   }
+  llmsTxt += `## Optional\n\n`;
+  llmsTxt += `- [Full Instructions Catalog](${DOMAIN}/llms-full.txt): Complete bundle of all 29 skill instructions in a single file for large-context models.\n`;
+  llmsTxt += `- [Skills Catalog JSON](${DOMAIN}/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.\n`;
+  llmsTxt += `- [Fast Versions JSON](${DOMAIN}/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
@@ -1602,16 +2568,17 @@ async function build() {
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n\n`;
   for (const s of skills) {
     llmsFullTxt += `# Skill: ${s.name} (${s.category})\n\n> ${s.description}\n\n`;
-    llmsFullTxt += `**Web Page**: ${s.detailUrl}\n**Source**: ${s.url}\n**Install**: \`${s.installCommand}\`\n\n`;
+    llmsFullTxt += `**Web Page**: ${s.detailUrl}\n**Source**: ${s.url}\n**Version**: ${s.version}\n**Digest**: ${s.digest}\n**Install**: \`${s.installCommand}\`\n\n`;
     llmsFullTxt += `## Instructions\n\n${s.body}\n\n---\n\n`;
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
 
-  // 5. catalog.json
+  // 5. catalog.json (agentskills.io schema)
   const catalog = {
-    $schema: 'https://agentskills.io/schema.json',
+    $schema: 'https://agentskills.io/schema/v1/catalog.json',
     name: 'danicat/skills',
     title: 'Daniela Petruzalek Agent Skills Catalog',
+    description: 'A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.',
     url: DOMAIN,
     repository: REPO_URL,
     totalSkills: skills.length,
@@ -1620,26 +2587,57 @@ async function build() {
     gateway: {
       name: 'catalog',
       description: 'Dynamic search and loader for all skills in this repository.',
-      url: `${DOMAIN}/SKILL.md`,
-      installCommand: 'npx skills install github.com/danicat/skills',
+      url: `${DOMAIN}/SKILL.md`
     },
-    skills: skills.map(({ body, ...rest }) => rest),
+    items: skills.map(({ body, installCommand, npxInstallCommand, kungfuLoadCommand, kungfuLearnCommand, ...rest }) => ({
+      ...rest,
+      id: rest.name,
+      type: 'skill',
+      title: rest.name
+    }))
   };
   const catalogJson = JSON.stringify(catalog, null, 2);
   fs.writeFileSync(path.join(SITE_DIR, 'catalog.json'), catalogJson);
   fs.writeFileSync(path.join(ROOT_DIR, 'catalog.json'), catalogJson);
+
+  // 5b. versions.json (Ultra-lightweight fast check ~1.5 KB)
+  const versionsObj = {
+    updatedAt: new Date().toISOString(),
+    totalSkills: skills.length,
+    skills: {}
+  };
+  for (const s of skills) {
+    versionsObj.skills[s.name] = {
+      v: s.version,
+      h: s.sha256.slice(0, 12),
+      c: s.category,
+      u: s.url
+    };
+  }
+  const versionsJson = JSON.stringify(versionsObj, null, 2);
+  fs.writeFileSync(path.join(SITE_DIR, 'versions.json'), versionsJson);
+  fs.writeFileSync(path.join(ROOT_DIR, 'versions.json'), versionsJson);
 
   // 6. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapXml += `  <url>\n    <loc>${DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/catalog.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  for (const cat of CATEGORIES) {
+    sitemapXml += `  <url>\n    <loc>${DOMAIN}/${cat.id}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  }
   for (const s of skills) {
     // Detail page
     sitemapXml += `  <url>\n    <loc>${s.detailUrl}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
     // Raw SKILL.md
     sitemapXml += `  <url>\n    <loc>${s.url}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+  }
+  for (const ref of allReferencePages) {
+    sitemapXml += `  <url>\n    <loc>${ref.url}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.65</priority>\n  </url>\n`;
   }
   sitemapXml += `</urlset>\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'sitemap.xml'), sitemapXml);
@@ -1649,6 +2647,40 @@ async function build() {
   fs.writeFileSync(path.join(SITE_DIR, 'robots.txt'), robotsTxt);
 
   // 8. Catalog Home Page HTML
+  const homeGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      SCHEMA_AUTHOR,
+      SCHEMA_PUBLISHER,
+      {
+        '@type': 'WebSite',
+        '@id': `${DOMAIN}/#website`,
+        url: `${DOMAIN}/`,
+        name: 'danicat/skills',
+        description: 'A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.',
+        publisher: { '@id': `${DOMAIN}/#organization` }
+      },
+      {
+        '@type': 'CollectionPage',
+        '@id': `${DOMAIN}/#catalog`,
+        url: `${DOMAIN}/`,
+        name: 'Agent Skills Catalog',
+        isPartOf: { '@id': `${DOMAIN}/#website` },
+        about: {
+          '@type': 'ItemList',
+          name: 'All Agent Skills',
+          itemListElement: skills.map((s, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: s.name,
+            description: s.description,
+            url: s.detailUrl
+          }))
+        }
+      }
+    ]
+  };
+
   const homeHtml = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -1657,6 +2689,9 @@ async function build() {
   <title>Agent Skills · Daniela Petruzalek (danicat.dev)</title>
   <meta name="description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
   <link rel="canonical" href="${DOMAIN}/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="dark light">
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
@@ -1672,11 +2707,20 @@ async function build() {
   <meta property="og:url" content="${DOMAIN}/">
   <meta property="og:title" content="Agent Skills · Daniela Petruzalek">
   <meta property="og:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
+  <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
+  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Agent Skills · Daniela Petruzalek">
   <meta name="twitter:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
+  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:creator" content="@danicat83">
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+${JSON.stringify(homeGraph, null, 2)}
+  </script>
 
   <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
@@ -1801,7 +2845,62 @@ ${COMMON_CSS}
     .gateway-caption {
       font-size: 0.82rem;
       color: var(--text-muted);
+    }${ENABLE_KUNGFU ? `
+
+    /* KungFu Home Feature Mode */
+    .mode-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
+    .mode-pill:hover {
+      color: var(--text-heading);
+      border-color: var(--border-hover);
+    }
+    .mode-pill.active {
+      background: var(--badge-bg);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .install-tabs {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: -1px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+    .install-tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .install-tab-btn:hover {
+      color: var(--text-heading);
+      background: var(--code-bg);
+    }
+    .install-tab-btn.active {
+      color: var(--primary);
+      background: var(--code-bg);
+      border-color: var(--code-border);
+      border-bottom: 1px solid var(--code-bg);
+    }` : ''}
 
     /* Search & Filters */
     .search-filter-section {
@@ -2027,10 +3126,16 @@ ${COMMON_CSS}
             <span>Get the complete catalog</span>
           </div>
           <a href="/SKILL.md" class="gateway-link">View gateway SKILL.md →</a>
-        </div>
+        </div>${ENABLE_KUNGFU ? `
+        <div class="install-tabs">
+          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'npx skills add danicat/skills -y')">npx skills add</button>
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'kungfu load catalog')">kungfu load</button>
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'kungfu learn catalog')">kungfu learn</button>
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'https://skills.danicat.dev/SKILL.md')">Raw URL</button>
+        </div>` : ''}
         <div class="gateway-install-box">
-          <span class="gateway-cmd">npx skills install github.com/danicat/skills</span>
-          <button class="gateway-copy-btn" onclick="copyInstall('npx skills install github.com/danicat/skills', this)" title="Copy install command">
+          <span class="gateway-cmd" id="gatewayCmdText">npx skills add danicat/skills -y</span>
+          <button class="gateway-copy-btn" onclick="copyInstall(document.getElementById('gatewayCmdText').innerText, this)" title="Copy install command">
             <span>📋</span> Copy
           </button>
         </div>
@@ -2046,7 +3151,16 @@ ${COMMON_CSS}
       <div class="category-pills" id="categoryFilters">
         <button class="pill-btn active" data-cat="all">All (${skills.length})</button>
         ${CATEGORIES.map(c => `<button class="pill-btn" data-cat="${c.id}">${c.emoji} ${c.name} (${skills.filter(s => s.category === c.id).length})</button>`).join('\n        ')}
-      </div>
+      </div>${ENABLE_KUNGFU ? `
+      <div class="cli-mode-bar" style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-top: -0.25rem;">
+        <span style="font-weight: 500;">CLI Mode:</span>
+        <div class="cli-mode-pills" style="display: flex; gap: 0.35rem;">
+          <button type="button" class="mode-pill active" onclick="setGlobalCliMode('npx', this)">npx skills</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-load', this)">kungfu load</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-learn', this)">kungfu learn</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('raw-url', this)">Raw URL</button>
+        </div>
+      </div>` : ''}
     </section>
 
     <main>
@@ -2061,9 +3175,9 @@ ${COMMON_CSS}
             <p class="skill-description">${s.description}</p>
           </div>
           <div class="card-bottom">
-            <div class="cmd-box">
+            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : ''}>
               <span class="cmd-text">${s.installCommand}</span>
-              <button class="copy-button" onclick="copyInstall('${s.installCommand}', this)" title="Copy install command">📋</button>
+              <button class="copy-button" onclick="copyInstall(this.previousElementSibling.innerText, this)" title="Copy install command">📋</button>
             </div>
             <div class="card-links">
               <a href="/${s.category}/${s.folder}/">View Skill →</a>
@@ -2155,6 +3269,23 @@ ${COMMON_CSS}
       });
     });
 
+    function handleInitialCategory() {
+      const hash = window.location.hash.replace(/^#/, '').toLowerCase().trim();
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = urlParams.get('cat') || hash;
+      if (catParam) {
+        const targetBtn = document.querySelector('.pill-btn[data-cat="' + catParam + '"]');
+        if (targetBtn) {
+          pillButtons.forEach(b => b.classList.remove('active'));
+          targetBtn.classList.add('active');
+          activeCategory = catParam;
+          filterSkills();
+        }
+      }
+    }
+    handleInitialCategory();
+    window.addEventListener('hashchange', handleInitialCategory);
+
     document.addEventListener('keydown', (e) => {
       if (e.key === '/' && document.activeElement !== searchInput) {
         e.preventDefault();
@@ -2174,13 +3305,48 @@ ${COMMON_CSS}
           btn.style.color = '';
         }, 1500);
       });
+    }${ENABLE_KUNGFU ? `
+
+    function switchInstallTab(btn, cmd) {
+      btn.parentElement.querySelectorAll('.install-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cmdEl = document.getElementById('gatewayCmdText');
+      if (cmdEl) cmdEl.innerText = cmd;
     }
+    const switchGatewayTab = switchInstallTab;
+
+    function setGlobalCliMode(mode, btn) {
+      document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem('preferred_cli_mode', mode);
+      document.querySelectorAll('.cmd-box').forEach(box => {
+        const textSpan = box.querySelector('.cmd-text');
+        if (!textSpan) return;
+        if (mode === 'kungfu-load') {
+          textSpan.innerText = box.getAttribute('data-kungfu-load');
+        } else if (mode === 'kungfu-learn') {
+          textSpan.innerText = box.getAttribute('data-kungfu-learn');
+        } else if (mode === 'raw-url') {
+          textSpan.innerText = box.getAttribute('data-raw-url');
+        } else {
+          textSpan.innerText = box.getAttribute('data-npx');
+        }
+      });
+    }
+
+    const savedMode = localStorage.getItem('preferred_cli_mode');
+    if (savedMode) {
+      const modeBtn = document.querySelector('.mode-pill[onclick*="' + savedMode + '"]');
+      if (modeBtn) setGlobalCliMode(savedMode, modeBtn);
+    }` : ''}
   </script>
 </body>
 </html>`;
 
   fs.writeFileSync(path.join(SITE_DIR, 'index.html'), homeHtml);
   console.log(`Site build complete! Generated ${skills.length} skills detail pages, sitemap.xml, robots.txt, and assets in _site/.`);
+
+  runAudit();
 }
 
 build().catch(err => {

@@ -1,13 +1,13 @@
 # intro_how_to_use
 Source: https://a2ui.org/introduction/how-to-use/
 
-# How to Use A2UI[¶](#how-to-use-a2ui "Permanent link")
+# How to Use A2UI
 
 Choose the integration path that matches your role and use case.
 
-## Three Paths[¶](#three-paths "Permanent link")
+## Three Paths
 
-### Path 1: Building a Host Application (Frontend)[¶](#path-1-building-a-host-application-frontend "Permanent link")
+### Path 1: Building a Host Application (Frontend)
 
 Integrate A2UI rendering into your existing app or build a new agent-powered frontend.
 
@@ -32,11 +32,11 @@ npm install @a2ui/react @a2ui/web_core
 
 Connect to agent messages (SSE, WebSockets, or A2A) and customize styling to match your brand.
 
-**Next:** [Client Setup Guide](../../guides/client-setup/) | [Theming](../../guides/theming/)
+**Next:** [Client Setup Guide](./guide_client_setup.md) | [Theming](./guide_theming.md)
 
 ---
 
-### Path 2: Building an Agent (Backend)[¶](#path-2-building-an-agent-backend "Permanent link")
+### Path 2: Building an Agent (Backend)
 
 Create an agent that generates A2UI responses for any compatible client.
 
@@ -47,15 +47,15 @@ Create an agent that generates A2UI responses for any compatible client.
 
 Include the A2UI schema in your LLM prompts, generate JSONL messages, and stream to clients over SSE, WebSockets, or A2A.
 
-**Next:** [Agent Development Guide](../../guides/agent-development/)
+**Next:** [Agent Development Guide](./guide_agent_development.md)
 
 ---
 
-### Path 3: Using an Existing Framework[¶](#path-3-using-an-existing-framework "Permanent link")
+### Path 3: Using an Existing Framework
 
 Use A2UI through frameworks with built-in support:
 
 * **[AG-UI / CopilotKit](https://ag-ui.com/)** - Full-stack agentic app framework with A2UI rendering.
 * **[Flutter GenUI SDK](https://docs.flutter.dev/ai/genui)** - Cross-platform generative UI (uses A2UI internally).
 
-**Next:** [Agent UI Ecosystem](../agent-ui-ecosystem/) | [Where is A2UI Used?](../../ecosystem/a2ui-in-the-world/)
+**Next:** [Agent UI Ecosystem](./intro_ecosystem.md) | [Where is A2UI Used?](https://a2ui.org/ecosystem/a2ui-in-the-world/)

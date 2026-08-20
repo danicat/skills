@@ -1,6 +1,19 @@
 ---
 name: nano-banana
-description: Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image, gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC auth. Supports "banana" as a verb (e.g., "please banana this") and multi-image character/style consistency.
+description: >
+  Generate or edit images using Nano Banana models (gemini-3.1-flash-lite-image,
+  gemini-3.1-flash-image, gemini-3-pro-image, gemini-2.5-flash-image) with ADC
+  auth. Supports "banana" as a verb (e.g., "please banana this") and multi-image
+  character/style consistency.
+license: Apache-2.0
+metadata:
+  category: media
+  tags: "media, nano-banana, image-generation, gemini, art, visual-assets"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/media/nano-banana/
+  canonical: https://skills.danicat.dev/media/nano-banana/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/media/nano-banana
 ---
 
 # Nano Banana Skill

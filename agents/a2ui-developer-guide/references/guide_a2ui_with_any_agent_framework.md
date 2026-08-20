@@ -1,7 +1,7 @@
 # guide_a2ui_with_any_agent_framework
 Source: https://a2ui.org/guides/a2ui-with-any-agent-framework/
 
-# Use A2UI with Any Agent Framework (Using AG-UI)[¶](#use-a2ui-with-any-agent-framework-using-ag-ui "Permanent link")
+# Use A2UI with Any Agent Framework (Using AG-UI)
 
 A2UI is a declarative UI format. [AG-UI](https://ag-ui.com/) is the transport
 that carries A2UI messages between an agent and an app. CopilotKit's
@@ -18,7 +18,7 @@ For Google ADK-specific setup, see the
 [Google ADK + A2UI guide](https://docs.copilotkit.ai/google-adk/generative-ui/a2ui).
 Refer to the CopilotKit docs for the latest API surface.
 
-## 1. Set up CopilotKit[¶](#1-set-up-copilotkit "Permanent link")
+## 1. Set up CopilotKit
 
 Install CopilotKit into your app with the agent framework of your choice
 (ADK, LangGraph, CrewAI, Mastra, etc.):
@@ -31,9 +31,9 @@ Or follow the [CopilotKit quickstart](https://docs.copilotkit.ai/quickstart)
 to wire it into an existing project. This is the standard CopilotKit setup,
 with no A2UI-specific scaffold.
 
-## 2. Enable A2UI[¶](#2-enable-a2ui "Permanent link")
+## 2. Enable A2UI
 
-### Backend[¶](#backend "Permanent link")
+### Backend
 
 Turn on A2UI in `CopilotRuntime`. For dynamic-schema flows, inject the
 `render_a2ui` tool so your agent can produce A2UI surfaces:
@@ -53,7 +53,7 @@ Scope to specific agents with `a2ui: { injectA2UITool: true, agents: ["my-agent"
 For fixed-schema flows where your agent already returns `a2ui_operations`,
 `a2ui: true` or `a2ui: {}` is enough.
 
-### Frontend[¶](#frontend "Permanent link")
+### Frontend
 
 The A2UI renderer activates automatically. This guide uses React/Next.js
 snippets; CopilotKit also supports A2UI through additional app surfaces,
@@ -70,7 +70,7 @@ import {myCustomTheme} from '@copilotkit/a2ui-renderer';
 </CopilotKitProvider>;
 ```
 
-### Custom components (BYOC)[¶](#custom-components-byoc "Permanent link")
+### Custom components (BYOC)
 
 A2UI ships with a built-in catalog (Text, Image, Card, …) that gets you a
 working surface immediately. The real power is extending it with *your*
@@ -85,7 +85,7 @@ three pieces:
 3. **Registration**: Pass the catalog through the provider so the A2UI
    renderer knows how to draw your components.
 
-#### 1. Define component schemas[¶](#1-define-component-schemas "Permanent link")
+#### 1. Define component schemas
 
 Create platform-agnostic definitions with Zod. The `description` field
 gets injected into the agent's prompt so the LLM knows when to reach for
@@ -117,7 +117,7 @@ export const myDefinitions = {
 export type MyDefinitions = typeof myDefinitions;
 ```
 
-#### 2. Create React renderers[¶](#2-create-react-renderers "Permanent link")
+#### 2. Create React renderers
 
 Map each definition to a React component. `createCatalog` is generic over
 the definitions type, so the props your renderer receives are type-checked
@@ -174,7 +174,7 @@ export const myCatalog = createCatalog(myDefinitions, myRenderers, {
 `includeBasicCatalog: true` keeps the built-in components available
 alongside your own (omit it to render *only* your components).
 
-#### 3. Pass the catalog to CopilotKit[¶](#3-pass-the-catalog-to-copilotkit "Permanent link")
+#### 3. Pass the catalog to CopilotKit
 
 app/layout.tsx
 
@@ -201,14 +201,14 @@ For the full BYOC reference (multiple catalogs, theming hooks, advanced
 patterns), see CopilotKit's
 [Custom Components (BYOC) section](https://docs.copilotkit.ai/generative-ui/a2ui).
 
-## 3. Advanced usage[¶](#3-advanced-usage "Permanent link")
+## 3. Advanced usage
 
 For the full A2UI integration surface (custom catalogs, fine-grained control,
 advanced patterns), see CopilotKit's
 [A2UI docs](https://docs.copilotkit.ai/generative-ui/a2ui).
 
-## What's next[¶](#whats-next "Permanent link")
+## What's next
 
 * **[A2UI Composer](https://a2ui-composer.ag-ui.com/)**: Build widgets visually.
-* **[Concepts › Transports](../../concepts/transports/)**: How A2UI maps onto AG-UI.
-* **[v0.9 specification](../../specification/v0.9-a2ui/)**: The underlying protocol.
+* **[Concepts › Transports](./concept_transports.md)**: How A2UI maps onto AG-UI.
+* **[v0.9 specification](./spec_v0.9.1_core.md)**: The underlying protocol.

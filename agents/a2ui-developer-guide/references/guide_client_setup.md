@@ -1,11 +1,11 @@
 # guide_client_setup
 Source: https://a2ui.org/guides/client-setup/
 
-# Client Setup Guide[¶](#client-setup-guide "Permanent link")
+# Client Setup Guide
 
 Integrate A2UI into your application using the renderer for your platform.
 
-## Renderers[¶](#renderers "Permanent link")
+## Renderers
 
 | Renderer | Platform | v0.8 | v0.9 | Status |
 | --- | --- | --- | --- | --- |
@@ -15,17 +15,17 @@ Integrate A2UI into your application using the renderer for your platform.
 | **[Flutter (GenUI SDK)](https://docs.flutter.dev/ai/genui)** | Mobile/Desktop/Web | ✅ | ✅ | ✅ Stable |
 | **Jetpack Compose** | Android | — | — | 🚧 Planned Q2 2026 |
 
-For more see all [A2UI Renderers](../../reference/renderers/) and [Community A2UI Renderers](../../ecosystem/renderers/).
+For more see all [A2UI Renderers](./ecosystem_renderers.md) and [Community A2UI Renderers](./ecosystem_renderers.md).
 
-## Component Catalogs[¶](#component-catalogs "Permanent link")
+## Component Catalogs
 
 A component catalog is any collection of components. A2UI provides a "Basic Catalog" but we expect you will add your own components, or shared libraries or fully replace the basic components with your own.
 
 **Your design system is what matters.** You can register any collection of components and functions, and A2UI will work with them. The catalog is just the contract between your agent and your renderer.
 
-See [Defining Your Own Catalog](../defining-your-own-catalog/) for how to define a catalog that matches your design system.
+See [Defining Your Own Catalog](./guide_defining_own_catalog.md) for how to define a catalog that matches your design system.
 
-## Shared Web Library[¶](#shared-web-library "Permanent link")
+## Shared Web Library
 
 All web renderers (Lit, Angular, React) share a common foundation: **`@a2ui/web_core`**. This library provides the message processor, state management, and data binding logic that every web renderer needs. Each framework-specific renderer builds on top of it, adding only the rendering layer for its framework.
 
@@ -35,7 +35,7 @@ The shared `web_core` library provides:
 
 * **Message Processor**: Manages A2UI state and processes incoming messages.
 
-## Web Components (Lit)[¶](#web-components-lit "Permanent link")
+## Web Components (Lit)
 
 ```
 npm install @a2ui/lit @a2ui/web_core
@@ -49,7 +49,7 @@ Once installed, you can use the renderer in your app. The Lit renderer uses:
 
 **See working example:** [Lit shell sample](https://github.com/a2ui-project/a2ui/tree/main/samples/client/lit/shell) — Check its README for detailed run instructions.
 
-## Angular[¶](#angular "Permanent link")
+## Angular
 
 ```
 npm install @a2ui/angular @a2ui/web_core
@@ -61,7 +61,7 @@ Once installed, you can use the renderer in your app. The Angular renderer provi
 * **`a2ui-v09-component-host` component**: A dynamic component host that renders A2UI components from a surface.
 * **`A2UI_RENDERER_CONFIG` token**: Used to configure the renderer with catalogs and action handlers.
 
-### Setup Example (v0.9)[¶](#setup-example-v09 "Permanent link")
+### Setup Example (v0.9)
 
 A2UI uses versioned imports for its protocol-specific implementations. For v0.9, configure your application providers as follows:
 
@@ -87,7 +87,7 @@ export const appConfig: ApplicationConfig = {
 
 **See working example:** [Angular samples](https://github.com/a2ui-project/a2ui/tree/main/samples/client/angular)
 
-### Streaming[¶](#streaming "Permanent link")
+### Streaming
 
 By default, the Angular client uses the streaming API. To disable streaming, set the `ENABLE_STREAMING` environment variable to `false` before starting the app:
 
@@ -98,7 +98,7 @@ yarn start restaurant
 
 **Package Manager Usage:** The `yarn start` command above is specific to running the sample application within the A2UI monorepo repository. For your own regular usage and standalone projects outside this repository, use the package manager of your choice (e.g. npm, pnpm).
 
-## React[¶](#react "Permanent link")
+## React
 
 ```
 npm install @a2ui/react @a2ui/web_core
@@ -112,7 +112,7 @@ The React renderer provides:
 
 **See working example:** [React shell](https://github.com/a2ui-project/a2ui/tree/main/samples/client/react/shell)
 
-## Flutter (GenUI SDK)[¶](#flutter-genui-sdk "Permanent link")
+## Flutter (GenUI SDK)
 
 ```
 flutter pub add flutter_genui
@@ -122,7 +122,7 @@ Flutter uses the GenUI SDK which provides native A2UI rendering.
 
 **Docs:** [GenUI SDK](https://docs.flutter.dev/ai/genui) | [GitHub](https://github.com/flutter/genui) | [README in GenUI Flutter Package](https://github.com/flutter/genui/blob/main/packages/genui/README.md#getting-started-with-genui)
 
-## Connecting to Agents[¶](#connecting-to-agents "Permanent link")
+## Connecting to Agents
 
 Your client application needs to:
 
@@ -138,9 +138,9 @@ Common transport options:
 
 See [samples/client/lit/shell/client.ts](https://github.com/a2ui-project/a2ui/tree/main/samples/client/lit/shell/client.ts) for an example of using the A2A protocol client.
 
-**See:** [Transports guide](../../concepts/transports/)
+**See:** [Transports guide](./concept_transports.md)
 
-## Handling User Actions[¶](#handling-user-actions "Permanent link")
+## Handling User Actions
 
 When users interact with A2UI components (clicking buttons, submitting forms, etc.), the client:
 
@@ -151,7 +151,7 @@ When users interact with A2UI components (clicking buttons, submitting forms, et
 
 See the `@a2uiaction` event handler in `#maybeRenderData` in [samples/client/lit/shell/app.ts](https://github.com/a2ui-project/a2ui/tree/main/samples/client/lit/shell/app.ts) for an example of handling button clicks and form submissions.
 
-## Error Handling[¶](#error-handling "Permanent link")
+## Error Handling
 
 Common errors to handle:
 
@@ -162,10 +162,10 @@ Common errors to handle:
 
 See `try...catch` blocks in `#sendMessage` in [samples/client/lit/shell/app.ts](https://github.com/a2ui-project/a2ui/tree/main/samples/client/lit/shell/app.ts) for examples of handling communication errors.
 
-## Next Steps[¶](#next-steps "Permanent link")
+## Next Steps
 
-* **[Quickstart](../../quickstart/)**: Try the demo application
-* **[Theming & Styling](../theming/)**: Customize the look and feel
-* **[Defining Your Own Catalog](../defining-your-own-catalog/)**: Extend the component catalog
-* **[Agent Development](../agent-development/)**: Build agents that generate A2UI
-* **[Reference Documentation](../../reference/messages/)**: Deep dive into the protocol
+* **[Quickstart](./guide_quickstart.md)**: Try the demo application
+* **[Theming & Styling](./guide_theming.md)**: Customize the look and feel
+* **[Defining Your Own Catalog](./guide_defining_own_catalog.md)**: Extend the component catalog
+* **[Agent Development](./guide_agent_development.md)**: Build agents that generate A2UI
+* **[Reference Documentation](./ref_messages.md)**: Deep dive into the protocol

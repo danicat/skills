@@ -1,6 +1,22 @@
 ---
 name: search-analytics
-description: Ingest raw Google Search Console property totals and granular keyword performance data (clicks, impressions, CTR, position), properties, and XML sitemaps into a local SQLite database without data loss, run mature 16-month backfills and incremental syncs, and execute deep SQL analytics over organic search traffic. Activate whenever analyzing Google Search performance, auditing historical keyword rankings, diagnosing search CTR decay, running SQL queries over search traffic archives, or detecting keyword cannibalization.
+description: >
+  Ingest raw Google Search Console property totals and granular keyword
+  performance data (clicks, impressions, CTR, position), properties, and XML
+  sitemaps into a local SQLite database without data loss, run mature 16-month
+  backfills and incremental syncs, and execute deep SQL analytics over organic
+  search traffic. Activate whenever analyzing Google Search performance,
+  auditing historical keyword rankings, diagnosing search CTR decay, running SQL
+  queries over search traffic archives, or detecting keyword cannibalization.
+license: Apache-2.0
+metadata:
+  category: writing
+  tags: "writing, search-console, seo-analytics, sqlite, keywords, gsc, rankings"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/search-analytics/
+  canonical: https://skills.danicat.dev/writing/search-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/search-analytics
 ---
 
 # Google Search Console SQLite Ingestion & SQL Analytics

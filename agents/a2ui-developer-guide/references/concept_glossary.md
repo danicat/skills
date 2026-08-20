@@ -1,13 +1,13 @@
 # concept_glossary
 Source: https://a2ui.org/concepts/glossary/
 
-# Glossary[¶](#glossary "Permanent link")
+# Glossary
 
-## A2UI protocol terms[¶](#a2ui-protocol-terms "Permanent link")
+## A2UI protocol terms
 
 Terms, required by A2UI protocol.
 
-### A2UI agent and A2UI renderer[¶](#a2ui-agent-and-a2ui-renderer "Permanent link")
+### A2UI agent and A2UI renderer
 
 The A2UI protocol enables conversation between **agent** and **renderer**:
 
@@ -36,11 +36,11 @@ In case the agent is stateless or does not guarantee to preserve the catalog, th
 
 And, sometimes, an agent is using a predefined catalog, thus forcing the renderers to either support this catalog or use an adapter.
 
-### GenUI Component[¶](#genui-component "Permanent link")
+### GenUI Component
 
 UI component, allowed for use by agent. Examples: date picker, carousel, button, hotel selector.
 
-### Catalog[¶](#catalog "Permanent link")
+### Catalog
 
 1. Itemized renderer capabilities:
    * List of components that the agent can use to generate UI
@@ -57,18 +57,18 @@ It is observed that depending on use case, catalog components may be more or les
 
   Components like HotelCheckout or FlightSelector.
 
-### Basic Catalog[¶](#basic-catalog "Permanent link")
+### Basic Catalog
 
 A catalog maintained by the A2UI team to get up and running quickly with A2UI.
 
-See the [basic catalog](../../specification/v1_0/catalogs/basic/catalog.json).
+See the [basic catalog](./spec_v0.9.1_basic_catalog.md).
 
-### Surface[¶](#surface "Permanent link")
+### Surface
 
 An area of UI, constructed by A2UI agent and managed by the A2UI renderer,
 which consists of a number of components. Surfaces cannot nest.
 
-### Agent architecture[¶](#agent-architecture "Permanent link")
+### Agent architecture
 
 There are options for A2UI agent:
 
@@ -93,7 +93,7 @@ There are options for A2UI agent:
 
   In addition to the above options, there is possibility for any custom variation.
 
-### Renderer stack[¶](#renderer-stack "Permanent link")
+### Renderer stack
 
 Functionality of A2UI renderer consists of layers that can be developed separately and reused:
 
@@ -106,7 +106,7 @@ Functionality of A2UI renderer consists of layers that can be developed separate
 
   Definition of catalog in the form of JSON.
 
-  For example, see the [basic catalog schema](../../specification/v1_0/catalogs/basic/catalog.json).
+  For example, see the [basic catalog schema](./spec_v0.9.1_basic_catalog.md).
 * **Framework adapter**:
 
   Code that implements the execution of the agent’s instructions in a concrete framework. For example:
@@ -129,19 +129,19 @@ cimpl-->fadapter("Framework<br>Adapter");
 fadapter-->core;
 ```
 
-### A2UI message[¶](#a2ui-message "Permanent link")
+### A2UI message
 
 A message between agent and renderer.
 
 As the protocol allows streaming, any message can be finished (completely delivered) or not finished (partially delivered). A finished message may be completed (successfully delivered) or interrupted (delivery stopped because of some technical issues).
 
-See the [data flow guide](../data-flow/).
+See the [data flow guide](./concept_data_flow.md).
 
-### Agent turn[¶](#agent-turn "Permanent link")
+### Agent turn
 
 Set of messages sent by agent, before it starts waiting for user input.
 
-### Data model[¶](#data-model "Permanent link")
+### Data model
 
 Observable, hierarchical, JSON-like object, shared between renderer and agent and updatable by both. Each Surface has a separate Data Model.
 
@@ -149,15 +149,15 @@ Components can be bound to nodes of the data model, in order to auto-update when
 
 Data model allows bidirectional synchronization by capturing user interactions into a state object for transmission to the agent, while also allowing agent to push data updates back to the UI.
 
-See the [data binding guide](../data-binding/).
+See the [data binding guide](./concept_data_binding.md).
 
-### Data reference[¶](#data-reference "Permanent link")
+### Data reference
 
 In component definition, a reference to a data element, resolvable either by path in the data model or by value.
 
-See the [example in the basic catalog](../../specification/v1_0/catalogs/basic/catalog.json#L18).
+See the [example in the basic catalog](./spec_v0.9.1_basic_catalog.md#L18).
 
-### Client function[¶](#client-function "Permanent link")
+### Client function
 
 A function provided for agent to invoke when needed.
 
@@ -171,22 +171,22 @@ Do not confuse with LLM tool:
 | Definition | Registered in client side function registry and advertised in catalog | Defined in ToolDefinition (passed to LLM) |
 | State Access | Access to DataContext and Input values. | No access to trigger requests to AI. Access to external APIs, databases, and services |
 
-See the [example in common types](../../specification/v0_9/json/common_types.json#L200).
+See the [example in common types](./schema_v0.9_common_types.json#L200).
 
-### Action[¶](#action "Permanent link")
+### Action
 
 A container for an interaction triggered by the user in the UI. Actions come in two types:
 
 * **Event**: Dispatched to the agent for processing (e.g., clicking "Submit").
 * **Function**: Executed locally on the renderer (e.g., opening a URL).
 
-See the [detailed guide on actions](../actions/).
+See the [detailed guide on actions](./concept_actions.md).
 
-## Generative UI terms[¶](#generative-ui-terms "Permanent link")
+## Generative UI terms
 
 Terms, not required by A2UI protocol, but commonly used in the context of generative UI.
 
-### Known patterns of GenUI[¶](#known-patterns-of-genui "Permanent link")
+### Known patterns of GenUI
 
 * **Chat**:
 
@@ -201,7 +201,7 @@ Terms, not required by A2UI protocol, but commonly used in the context of genera
 
   Pieces of generated UI are shown one by one, with the goal to collect necessary information for a certain task.
 
-### NoAI information[¶](#noai-information "Permanent link")
+### NoAI information
 
 Information, categorized as **not accessible by AI** (for example, credit card information).
 

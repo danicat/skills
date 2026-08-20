@@ -1,7 +1,7 @@
 # ecosystem_renderers
 Source: https://a2ui.org/ecosystem/renderers/
 
-# Ecosystem Renderers[¶](#ecosystem-renderers "Permanent link")
+# Ecosystem Renderers
 
 Community and third-party A2UI renderer implementations.
 
@@ -11,7 +11,7 @@ Community and third-party A2UI renderer implementations.
 > TIP
 > Looking for the **official** A2UI React renderer? See [`@a2ui/react`](https://www.npmjs.com/package/@a2ui/react) — the core A2UI React renderer maintained by the A2UI team.
 
-## Community Renderers[¶](#community-renderers "Permanent link")
+## Community Renderers
 
 | Renderer | Platform | v0.8 | v0.9 | Activity | Links |
 | --- | --- | --- | --- | --- | --- |
@@ -26,7 +26,7 @@ Community and third-party A2UI renderer implementations.
 | **AGenUI/AGenUI** | iOS, Android, HarmonyOS | ❌ | ✅ | Stars Last commit | [GitHub](https://github.com/AGenUI/AGenUI) · [Official Website](https://genui.amap.com/) |
 | **lynx-family/lynx-stack** (`@lynx-js/genui/a2ui`) | Lynx (Mobile, Web, Desktop) | ❌ | ✅ | Stars Last commit | [GitHub](https://github.com/lynx-family/lynx-stack/tree/main/packages/genui/a2ui) · [npm](https://www.npmjs.com/package/@lynx-js/genui) · [Docs](https://lynxjs.org/next/react/genui/a2ui.html) |
 
-### Notable Mentions[¶](#notable-mentions "Permanent link")
+### Notable Mentions
 
 These projects are early-stage or experimental:
 
@@ -34,7 +34,7 @@ These projects are early-stage or experimental:
 * **[josh-english-2k18/a2ui-3d-renderer](https://github.com/josh-english-2k18/a2ui-3d-renderer)** — Experimental Three.js/WebGL 3D renderer for A2UI (~2 stars).
 * **[AINative-Studio/ai-kit-a2ui](https://github.com/AINative-Studio/ai-kit-a2ui)** — React + ShadCN renderer for the AIKit framework (~2 stars).
 
-### Related Projects[¶](#related-projects "Permanent link")
+### Related Projects
 
 These projects are not directly A2UI renderers but are closely related and do support A2UI:
 
@@ -42,11 +42,11 @@ These projects are not directly A2UI renderers but are closely related and do su
 | --- | --- | --- | --- |
 | **vercel-labs/json-render** (`@json-render/*`) | React, Vue, Svelte, Solid, React Native | Generative UI framework by Vercel — uses its own JSON schema (not A2UI protocol) with Zod-based component catalogs. Supports streaming, 36 pre-built shadcn/ui components, and cross-platform rendering. | [GitHub](https://github.com/vercel-labs/json-render) · [npm](https://www.npmjs.com/package/@json-render/core) · [Docs](https://json-render.dev/) |
 
-### Ecosystem Utilities[¶](#ecosystem-utilities "Permanent link")
+### Ecosystem Utilities
 
 * **[@a2ui/markdown-it](https://www.npmjs.com/package/@a2ui/markdown-it)** — Enables markdown rendering in the Text widgets of all renderers.
 
-### Highlights[¶](#highlights "Permanent link")
+### Highlights
 
 **easyops-cn/a2ui-sdk** (`@a2ui-sdk/react`) is the most fully-featured community React renderer, with 11 published versions, Radix UI primitives, Tailwind CSS styling, and a dedicated docs site. It was [announced on the A2UI discussions](https://github.com/a2ui-project/a2ui/discussions/489). For the official A2UI React renderer, see [`@a2ui/react`](https://www.npmjs.com/package/@a2ui/react).
 
@@ -62,11 +62,11 @@ These projects are not directly A2UI renderers but are closely related and do su
 
 **lynx-family/lynx-stack** (`@lynx-js/genui/a2ui`) provides the ReactLynx renderer for A2UI v0.9. It consumes validated server-to-client A2UI messages through a `MessageStore`, renders approved ReactLynx components from caller-supplied catalogs, and forwards generated UI actions through `onAction`. The published `@lynx-js/genui` package exposes the A2UI renderer via the `a2ui` subpath, while the GenUI CLI supports build-time catalog artifact and A2UI system prompt generation.
 
-## Submitting a Renderer[¶](#submitting-a-renderer "Permanent link")
+## Submitting a Renderer
 
 If you have built an A2UI renderer, submit it to be listed here.
 
-### How to submit[¶](#how-to-submit "Permanent link")
+### How to submit
 
 To submit a renderer, follow these steps:
 
@@ -77,7 +77,7 @@ To submit a renderer, follow these steps:
 
 Need inspiration? Browse the **[community samples](https://github.com/a2ui-project/a2ui/tree/main/samples)** in the repo — these cover Angular, Lit, and ADK-based agents and are a good starting point.
 
-### What makes a good community renderer?[¶](#what-makes-a-good-community-renderer "Permanent link")
+### What makes a good community renderer?
 
 A listing is more likely to be accepted and used if it meets the following criteria:
 

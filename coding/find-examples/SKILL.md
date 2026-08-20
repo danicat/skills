@@ -1,11 +1,21 @@
 ---
 name: find-examples
 description: >
-  Use this skill when you need to find real-world code examples, learn how an unfamiliar third-party library, API, SDK, or framework is used, or translate code patterns from other languages. Trigger when implementing integrations, resolving SDK setup/usage issues, or bootstrapping features where the user asks "how do I use X?", "show me an example of Y", or "integrate Y into my project".
+  Use this skill when you need to find real-world code examples, learn how an
+  unfamiliar third-party library, API, SDK, or framework is used, or translate
+  code patterns from other languages. Trigger when implementing integrations,
+  resolving SDK setup/usage issues, or bootstrapping features where the user
+  asks "how do I use X?", "show me an example of Y", or "integrate Y into my
+  project".
 license: Apache-2.0
 metadata:
+  category: coding
+  tags: "coding, examples, apis, sdk, references, patterns, integrations"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/coding/find-examples/
+  canonical: https://skills.danicat.dev/coding/find-examples/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/coding/find-examples
 ---
 
 # Find Examples

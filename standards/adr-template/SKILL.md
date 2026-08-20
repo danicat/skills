@@ -1,7 +1,21 @@
 ---
 name: adr-template
 description: >
-  Activate this skill when proposing significant architectural changes, documenting codebase refactorings, or resolving design/technical debates. Use this skill to author, update, and maintain lightweight Architecture Decision Records (ADRs) to preserve engineering context. This skill must be triggered when the system needs to capture the why behind high-impact, hard-to-change structural choices.
+  Activate this skill when proposing significant architectural changes,
+  documenting codebase refactorings, or resolving design/technical debates. Use
+  this skill to author, update, and maintain lightweight Architecture Decision
+  Records (ADRs) to preserve engineering context. This skill must be triggered
+  when the system needs to capture the why behind high-impact, hard-to-change
+  structural choices.
+license: Apache-2.0
+metadata:
+  category: standards
+  tags: "standards, adr, architecture, decision-records, documentation, design"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "0.1.0"
+  homepage: https://skills.danicat.dev/standards/adr-template/
+  canonical: https://skills.danicat.dev/standards/adr-template/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/standards/adr-template
 ---
 
 # Architecture Decision Records (ADRs)

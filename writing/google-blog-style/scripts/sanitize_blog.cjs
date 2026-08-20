@@ -29,7 +29,8 @@ try {
   const patterns = [
     // Security & Secrets
     { name: 'Google API Key', regex: /AIza[0-9A-Za-z-_]{35}/, suggestion: 'Replace with a placeholder (e.g., "YOUR_API_KEY")' },
-    { name: 'Hardcoded Home Directory', regex: /\/Users\/[a-zA-Z0-9._-]+/, suggestion: 'Use relative paths or placeholders' },
+    { name: 'Hardcoded Home Directory', regex: /(\/Users\/|\/home\/|[a-zA-Z]:[\\\/](Users|Documents|Projects))[a-zA-Z0-9._-]+/, suggestion: 'Use relative paths or placeholders' },
+    { name: 'Internal Corporate Tooling/Teams', regex: /\b(corp\.google\.com|google3|xid\/|critique\/|googleplex|buganizer|DSS|DevRel\s+Influencers)\b/i, suggestion: 'Remove internal infrastructure or team references.' },
     { name: 'Potential Private Project ID', regex: /[a-z0-9]+-(sandbox|dev|test)-[a-z0-9]+/, suggestion: 'Check if this is a personal project ID. Use a generic placeholder like "my-project-id".' },
 
     // Legal & Editorial

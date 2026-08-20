@@ -319,5 +319,5 @@ def cmd_cancel(args):
 - How should multi-agent systems coordinate conflicts in single-file repositories without locked checkout controls?
 
 ## 7. References
-- [Turtle VCS Implementation (v0.1.0)](../../swarm-coding/scripts/turtle.py)
+- [Turtle VCS Implementation Prototype](#5-prototype-code-listing)
 - RFC Template Framework (rfc-template skill)

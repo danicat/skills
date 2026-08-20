@@ -1,11 +1,21 @@
 ---
 name: deslopify
 description: >
-  Re-write, edit, and purge text of common AI tropes, clichés, formulaic filler, and recognizable large language model structural patterns (AI slop) using strict editorial guidelines. Activate this skill whenever the user asks to "deslopify" text, remove AI tells, polish text to sound authentically human, eliminate formulaic transitions (e.g. "delve", "testament", "tapestry", "seamlessly"), fix negative parallelism, or audit prose for AI idioms.
+  Re-write, edit, and purge text of common AI tropes, clichés, formulaic filler,
+  and recognizable large language model structural patterns (AI slop) using
+  strict editorial guidelines. Activate this skill whenever the user asks to
+  "deslopify" text, remove AI tells, polish text to sound authentically human,
+  eliminate formulaic transitions (e.g. "delve", "testament", "tapestry",
+  "seamlessly"), fix negative parallelism, or audit prose for AI idioms.
 license: Apache-2.0
 metadata:
+  category: writing
+  tags: "writing, deslopify, editorial, tropes, ai-cleanup, style, prose"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
+  homepage: https://skills.danicat.dev/writing/deslopify/
+  canonical: https://skills.danicat.dev/writing/deslopify/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/writing/deslopify
 ---
 
 # Deslopify: AI Slop & Trope Removal

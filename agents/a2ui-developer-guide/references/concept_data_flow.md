@@ -1,11 +1,11 @@
 # concept_data_flow
 Source: https://a2ui.org/concepts/data-flow/
 
-# Data Flow[¶](#data-flow "Permanent link")
+# Data Flow
 
 How messages flow from agents to UI.
 
-## Architecture[¶](#architecture "Permanent link")
+## Architecture
 
 ```
 Agent (LLM) → A2UI Generator → Transport (SSE/WS/A2A)
@@ -13,9 +13,9 @@ Agent (LLM) → A2UI Generator → Transport (SSE/WS/A2A)
 Client (Stream Reader) → Message Parser → Renderer → Native UI
 ```
 
-![end-to-end-data-flow](../../assets/end-to-end-data-flow.png)
+![end-to-end-data-flow](https://a2ui.org/assets/end-to-end-data-flow.png)
 
-## Message Format[¶](#message-format "Permanent link")
+## Message Format
 
 A2UI defines a sequence of JSON messages that describe the UI. When streamed, these messages are often formatted as **JSON Lines (JSONL)**, where each line is a complete JSON object.
 
@@ -78,7 +78,7 @@ v0.8v0.9
 
 A sequence of self-contained JSON objects is streaming-friendly, easy for LLMs to generate incrementally, and resilient to errors.
 
-## Lifecycle Example: Restaurant Booking[¶](#lifecycle-example-restaurant-booking "Permanent link")
+## Lifecycle Example: Restaurant Booking
 
 **User:** "Book a table for 2 tomorrow at 7pm"
 
@@ -290,7 +290,7 @@ v0.8v0.9
 }
 ```
 
-## Transport Options[¶](#transport-options "Permanent link")
+## Transport Options
 
 A2UI is transport-agnostic — any mechanism that can deliver JSON messages works:
 
@@ -300,22 +300,22 @@ A2UI is transport-agnostic — any mechanism that can deliver JSON messages work
 * **WebSocket**: Persistent bidirectional connection, ideal for real-time updates and user actions
 * **Any other transport**: gRPC, message queues, custom protocols — if it can carry JSON, it works
 
-See [transports](../transports/) for implementation details.
+See [transports](./concept_transports.md) for implementation details.
 
-## Progressive Rendering[¶](#progressive-rendering "Permanent link")
+## Progressive Rendering
 
 Instead of waiting for the entire response to be generated before showing anything to the user, chunks of the response can be streamed to the client as they are generated and progressively rendered.
 
 Users see UI building in real-time instead of staring at a spinner.
 
-## Error Handling[¶](#error-handling "Permanent link")
+## Error Handling
 
 The system handles errors as follows:
 
 * **Malformed messages:** Skip and continue, or send error back to agent for correction.
 * **Network interruptions:** Display error state, reconnect, agent resends or resumes.
 
-## Performance[¶](#performance "Permanent link")
+## Performance
 
 To optimize performance:
 

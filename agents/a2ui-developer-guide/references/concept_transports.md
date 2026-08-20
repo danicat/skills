@@ -1,15 +1,15 @@
 # concept_transports
 Source: https://a2ui.org/concepts/transports/
 
-# Transports (Message Passing)[¶](#transports-message-passing "Permanent link")
+# Transports (Message Passing)
 
 Transports deliver A2UI messages from agents to clients. A2UI is transport-agnostic: use any method that can send JSON.
 
-The actual component rendering is done by the [renderer](../../reference/renderers/),
-and the [agents](../../reference/agents/) are responsible for generating the A2UI messages.
+The actual component rendering is done by the [renderer](./ecosystem_renderers.md),
+and the [agents](./ref_sdks.md) are responsible for generating the A2UI messages.
 Getting the messages from the agent to the client is the job of the transport.
 
-## How It Works[¶](#how-it-works "Permanent link")
+## How It Works
 
 ```
 Agent → Transport → Client Renderer
@@ -17,7 +17,7 @@ Agent → Transport → Client Renderer
 
 A2UI defines a sequence of JSON messages. The transport layer is responsible for delivering this sequence from the agent to the client. A common transport mechanism is a stream using a format like JSON Lines (JSONL), where each line is a single A2UI message.
 
-## Available Transports[¶](#available-transports "Permanent link")
+## Available Transports
 
 | Transport | Status | Use Case |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ A2UI defines a sequence of JSON messages. The transport layer is responsible for
 | **WebSockets** | 💡 Proposed | Real-time bidirectional |
 | **SSE (Server-Sent Events)** | 💡 Proposed | Web streaming |
 
-## A2A Protocol[¶](#a2a-protocol "Permanent link")
+## A2A Protocol
 
 The [Agent2Agent (A2A) protocol](https://a2a-protocol.org) provides secure,
 standardized agent communication. An A2A extension provides easy integration with A2UI.
@@ -42,15 +42,15 @@ If you are using A2A, this should be nearly automatic.
 
 TODO: Add a detailed guide.
 
-**See:** [A2A Extension Specification](../../specification/v0.8-a2a-extension/)
+**See:** [A2A Extension Specification](./spec_v0.9.1_extension.md)
 
-## AG-UI[¶](#ag-ui "Permanent link")
+## AG-UI
 
 [AG-UI](https://ag-ui.com/) translates A2UI messages to AG-UI events and handles transport and state sync automatically. It is commonly used for full stack React, Vue, and Angular applications. CopilotKit is AG-UI's creator and primary consumer.
 
-**See:** [Use A2UI with Any Agent Framework (Using AG-UI)](../../guides/a2ui-with-any-agent-framework/): Set up CopilotKit with your agent framework of choice and enable A2UI rendering.
+**See:** [Use A2UI with Any Agent Framework (Using AG-UI)](./guide_a2ui_with_any_agent_framework.md): Set up CopilotKit with your agent framework of choice and enable A2UI rendering.
 
-## Custom Transports[¶](#custom-transports "Permanent link")
+## Custom Transports
 
 You can use any transport that sends JSON:
 
@@ -72,7 +72,7 @@ You can use any transport that sends JSON:
 // TODO: Add an example
 ```
 
-## Next Steps[¶](#next-steps "Permanent link")
+## Next Steps
 
 * **[A2A Protocol Docs](https://a2a-protocol.org)**: Learn about A2A
-* **[A2A Extension Spec](../../specification/v0.8-a2a-extension/)**: A2UI + A2A details
+* **[A2A Extension Spec](./spec_v0.9.1_extension.md)**: A2UI + A2A details

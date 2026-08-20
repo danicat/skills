@@ -12,8 +12,13 @@ description: >
   Activate whenever the user aims to accomplish these workflows, even if they do not explicitly request a specific skill or tool.
 license: Apache-2.0
 metadata:
+  category: gateway
+  tags: "gateway, discovery, search, catalog, agent-skills"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.0"
+  homepage: https://skills.danicat.dev/
+  canonical: https://skills.danicat.dev/SKILL.md
+  repository: https://github.com/danicat/skills
 ---
 
 # Agent Skills Catalog Gateway
@@ -52,5 +57,5 @@ Follow the instructions to complete the user's task.
 ### Step 4: Optional Workspace Installation
 If the user requests permanently installing a skill into the current project workspace, run:
 ```bash
-npx skills install github.com/danicat/skills/<category>/<skill-name>
+npx skills add danicat/skills --skill <skill-name> -y
 ```

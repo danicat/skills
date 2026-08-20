@@ -1,7 +1,21 @@
 ---
 name: procedural-composer
-description: >-
-  Use this skill when designing, implementing, or optimizing pure-code procedural audio synthesis engines, sound effects (SFX), or polyphonic background music (BGM) without external assets. Activate for any questions or tasks involving audio DSP math, FM synthesis, ADSR envelopes, sound chip emulation (YM2612, SPC700, PS1 SPU), chiptunes, multi-track audio mixing, or game sound system code.
+description: >
+  Use this skill when designing, implementing, or optimizing pure-code
+  procedural audio synthesis engines, sound effects (SFX), or polyphonic
+  background music (BGM) without external assets. Activate for any questions or
+  tasks involving audio DSP math, FM synthesis, ADSR envelopes, sound chip
+  emulation (YM2612, SPC700, PS1 SPU), chiptunes, multi-track audio mixing, or
+  game sound system code.
+license: Apache-2.0
+metadata:
+  category: game-dev
+  tags: "game-dev, music, chiptune, synth, procedural-audio, sfx, bytebeat"
+  author: Daniela Petruzalek (daniela@danicat.dev)
+  version: "1.0.0"
+  homepage: https://skills.danicat.dev/game-dev/procedural-composer/
+  canonical: https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/game-dev/procedural-composer
 ---
 
 # Procedural Composer: Pure-Code Audio Synthesis & Chiptune/Game Sound Engine Guide
@@ -10,7 +24,7 @@ This skill provides complete mathematical, musical, and software architecture pa
 
 > [!TIP]
 > **Example Sound Driver & CLI Tool Suite**:
-> All driver, test, and player components reside together in [`scripts/`](./scripts/):
+> All driver, test, and player components reside together in the `scripts/` directory:
 > * **Sound Engine Driver & JSON Parser**: [`scripts/sound.go`](./scripts/sound.go)
 > * **Masterclass BGM/SFX Examples (`ExampleXxx`)**: [`scripts/sound_test.go`](./scripts/sound_test.go)
 > * **Lean CLI Audio Player**: [`scripts/play.go`](./scripts/play.go)
@@ -54,7 +68,7 @@ A music track should feature **at least 6 distinct polyphonic channels/instrumen
 ### 2.2 Dual Music Playback Architecture: One-Off vs. Looped Playback
 
 The audio playback subsystem (`SoundSystem` in [`scripts/sound.go`](./scripts/sound.go)) explicitly supports two distinct playback modes:
-* **Looped Playback (`Play(pcm, true)`)**: For stage themes, boss battles, title screens, and menus where music must loop seamlessly without gaps using an infinite reader wrapper (`audio.NewInfiniteLoop`).
+* **Looped Playback (`Play(pcm, true)`)**: For stage themes, boss battles, title screens, and menus where music must loop continuously without audible gaps using an infinite reader wrapper (`audio.NewInfiniteLoop`).
 * **One-Off / Single Play (`Play(pcm, false)`)**: Default mode for game over music, stage clear fanfares, calamity alerts, and victory stingers that play once to completion and then stop without looping.
 
 ---
