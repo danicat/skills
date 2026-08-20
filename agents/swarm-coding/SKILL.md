@@ -90,7 +90,7 @@ graph TD
     LEAD1 <-->|Parent-Child Message| SPEC1[Specialist - API Dev]
     LEAD1 <-->|Parent-Child Message| SPEC2[Specialist - QA Engineer]
     LEAD2 <-->|Parent-Child Message| SPEC3[Specialist - UI Dev]
-    
+
     LEAD1 -.-x|FORBIDDEN: Sibling Message| LEAD2
     SPEC1 -.-x|FORBIDDEN: Sibling Message| SPEC2
     SPEC1 -.-x|FORBIDDEN: Direct Escalation| ROOT

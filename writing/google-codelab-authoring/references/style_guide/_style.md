@@ -3,11 +3,11 @@ Source: https://developers.google.com/style
 # About this guide
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.
 
 - Home
@@ -55,7 +55,7 @@ Use the following references, including this guide, in this order:
     guidance, then follow this guide.
 - Third-party references. If the preceding references don't provide explicit guidance,
     then see these third-party references, depending on the nature of your question:
-    
+
 
 Type of question
 Third-party reference

@@ -103,33 +103,33 @@ Selene records mutation evaluations and test effectiveness metrics in `testquery
 
 ### 1. Surviving Mutants (Assertion Gaps)
 ```sql
-SELECT id, mutator, file, line, col 
-FROM selene_survived 
+SELECT id, mutator, file, line, col
+FROM selene_survived
 ORDER BY file, line;
 ```
 
 ### 2. Breakdown by Mutator
 ```sql
-SELECT mutator, 
-       COUNT(*) AS total, 
+SELECT mutator,
+       COUNT(*) AS total,
        SUM(CASE WHEN status = 'killed' THEN 1 ELSE 0 END) AS killed,
        SUM(CASE WHEN status = 'survived' THEN 1 ELSE 0 END) AS survived,
        SUM(CASE WHEN status = 'uncovered' THEN 1 ELSE 0 END) AS uncovered,
        SUM(CASE WHEN status = 'timeout' THEN 1 ELSE 0 END) AS timeouts
-FROM selene 
-GROUP BY mutator 
+FROM selene
+GROUP BY mutator
 ORDER BY total DESC;
 ```
 
 ### 3. Zero-Kill Tests (Tests That Caught Zero Mutants)
 ```sql
-SELECT test_name, package 
+SELECT test_name, package
 FROM selene_zero_kill_tests;
 ```
 
 ### 4. Safety-Excluded Mutations
 ```sql
-SELECT id, mutator, file, line, col, reason 
+SELECT id, mutator, file, line, col, reason
 FROM selene_excluded;
 ```
 
@@ -140,10 +140,10 @@ SELECT * FROM selene_summary;
 
 ### 6. Top 10 Most Effective Tests
 ```sql
-SELECT test_name, package, mutations_killed, killed_mutant_ids 
-FROM selene_tests 
-WHERE mutations_killed > 0 
-ORDER BY mutations_killed DESC 
+SELECT test_name, package, mutations_killed, killed_mutant_ids
+FROM selene_tests
+WHERE mutations_killed > 0
+ORDER BY mutations_killed DESC
 LIMIT 10;
 ```
 

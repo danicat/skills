@@ -11,16 +11,16 @@ HTTP status codes are the primary signal Googlebot uses to determine whether a U
 ```mermaid
 graph TD
     Request[Googlebot HTTP Request] --> Code{HTTP Response Code}
-    
+
     Code -->|200 OK| Serving[Standard Serving & Indexing Pipeline]
-    
+
     Code -->|301 Moved Permanently| MovePerm[Permanent Move: Forward Canonical Signals, PageRank & Index Target]
     Code -->|302 Found / 307 Temp| MoveTemp[Temporary Move: Keep Source in Index & Follow Target for Crawl Only]
-    
+
     Code -->|404 Not Found| NotFound[URL Missing: Drop from Index after Verification]
     Code -->|410 Gone| PermGone[Explicit Deletion: Fast-track Removal from Index]
     Code -->|200 with Empty / Error UI| Soft404[Soft 404 Penalty: De-indexed & Crawl Budget Wasted]
-    
+
     Code -->|429 / 503| ServerStress[Throttle Crawl Rate & Exponential Backoff via Retry-After]
 ```
 
@@ -98,13 +98,13 @@ graph TD
         M1[Inventory All Live URLs] --> M2[Build 1-to-1 Redirect Mapping Matrix]
         M2 --> M3[Verify Staging Site & Canonical Parity]
     end
-    
+
     subgraph Phase 2: Launch & Cutover
         L1[Deploy 301 Redirect Rules] --> L2[Keep Old XML Sitemap Active on Old Host]
         L2 --> L3[Submit New XML Sitemap to GSC on New Host]
         L3 --> L4[Execute Google Search Console Change of Address Tool]
     end
-    
+
     subgraph Phase 3: Post-Migration Monitoring
         P1[Monitor GSC Page Indexing & Crawl Stats] --> P2[Verify 301 Logs & 404 Spikes]
         P2 --> P3[Maintain 301 Redirects for Minimum 12 Months]
@@ -232,7 +232,7 @@ graph LR
         L1["<a href='/posts/guide/'>Valid Anchor</a>"]
         L2["<a href='https://example.com/posts/'>Absolute URL</a>"]
     end
-    
+
     subgraph Non-Crawlable
         N1["<span onclick='navigate()'>JS Click</span>"]
         N2["<a href='javascript:void(0)'>Void Anchor</a>"]

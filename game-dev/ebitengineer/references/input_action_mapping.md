@@ -66,7 +66,7 @@ func (im *InputManager) IsActionPressed(action Action) bool {
 	for _, m := range binding.Mouses {
 		if ebiten.IsMouseButtonPressed(m) { return true }
 	}
-	
+
 	// Gamepad support
 	gamepads := ebiten.AppendGamepadIDs(nil)
 	for _, id := range gamepads {

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/whats-new\n\n# What's new
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- The style guide is actively maintained and updated frequently with new terms, guidance, and best practices.\n- Significant emphasis is placed on clarity, consistency, accessibility, and inclusivity in technical documentation.\n- The "word list" is a core element, regularly updated with preferred and discouraged terms for writers to follow.\n- Updates address a broad range of topics: code formatting, UI elements, grammar, headings, links, images, and more.\n- The style guide aims to improve the overall quality and effectiveness of technical documentation for a global audience.\n\nThe style guide is actively maintained and updated frequently with new terms, guidance, and best practices.\n\nSignificant emphasis is placed on clarity, consistency, accessibility, and inclusivity in technical documentation.\n\nThe "word list" is a core element, regularly updated with preferred and discouraged terms for writers to follow.\n\nUpdates address a broad range of topics: code formatting, UI elements, grammar, headings, links, images, and more.\n\nThe style guide aims to improve the overall quality and effectiveness of technical documentation for a global audience.\n\nThis page provides a summary of significant changes to the style guide.\n\n\n## May 8, 2025\n\n\nNew guidance or change | Page\nRemoved outdated language that indicated that a list of options is treated differently
         than other unordered lists. | Lists\nAdded a page about writing prescriptive documentation. | Prescriptive documentation,
 Word list\nRemoved guidance that said to include empty parentheses after method names. | Code in text\nChanged footnotes guidance to recommend using numbers instead of symbols. | Footnotes\nSimplified contractions guidance, removing excess explanations and examples. | Contractions\nAdded examples to guidance about introducing sections of a document. | Headings and titles\nAdded an example service account ID. | Example domains and names\nSimplified and clarified guidance about articles, including using articles before
@@ -371,7 +371,7 @@ minor changes that have no effect on guidance.\n\n\n## July 13, 2020\n\n- Rename
 "What's new," and moved it to near the top of the left nav.\n- In the Pronouns page, slightly updated the
 guidance about using gender-neutral they.\n\n\n## June 29, 2020\n\n- On several pages, reorganized guidance about formatting code and
 command lines. In particular:
-      
+
 Moved the guidance that was in a page about command-line terminology
 to the Documenting command-line syntax page,
 and deleted the separate command-line terminology page.
@@ -449,7 +449,7 @@ page, changed guidance for formatting input for text boxes to recommend using
 the HTML code element instead of the
 kbd element.\n\n\n## March 23, 2020\n\n- On the Capitalization page, made the
 following changes:
-    
+
 Removed outdated guidance about capitalization after a run-in heading.
 For the current guidance, see "Description lists that use run-in headings" on
 the Lists page.
@@ -463,7 +463,7 @@ the Lists page.\n- Clarified guidance about avoiding all-uppercase and camel cas
 sentence.\n- Clarified guidance about capitalization when referring to documents by
 title in various contexts.\n- Expanded and reorganized the Code in
 text page. In particular:
-    
+
 Expanded the guidance about documenting placeholders.
 Expanded the list of items to put in code font.\n- Expanded the guidance about documenting placeholders.\n- Expanded the list of items to put in code font.\n- On the Commas page, added guidance about
 using a comma with because.\n- On the Dashes page, added guidance about not
@@ -563,7 +563,7 @@ Writing inclusive documentation
 page.\n- Added guidance about passive voice on the Active voice page.\n- Added more guidance about links on the Linking to other sites page.\n- Added terms to the word list:
 guru, spin up. Also revised the guidance for Container
 Engine.\n\n\n## February 25, 2019\n\n- Added extensive new material to the inclusive documentation page.\n- Updated the word list:
-      
+
 Clarified guidance for argument and flag.
 Added terms: allows you to, desire, drop-down,
 wish.
@@ -574,7 +574,7 @@ disable, and clarified guidance for those terms.\n\n- Clarified guidance for arg
 wish.\n- Removed the recommendations against using enable and
 disable, and clarified guidance for those terms.\n\n\n## February 4, 2019\n\n- Added terms to the word list:
 add-in, add-on.\n- Added guidelines about avoiding repetitive procedures.\n\n\n## January 28, 2019\n\n- Updated the word list:
-      
+
 Changed guidance for above and below.
 Added terms: gcloud, ML.
 Updated guidance for &.

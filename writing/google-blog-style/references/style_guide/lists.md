@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/lists\n\n# Lists
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Tables are ideal for presenting structured data with multiple properties, while lists are better for sequential information or a simple collection of items.\n- Choose from numbered, bulleted, or description lists depending on the content's purpose, using proper capitalization and punctuation for clarity.\n- Introduce lists with a complete sentence for context and maintain parallel structure (syntax/grammar) across all list items.\n- When crafting descriptions, format run-in headings consistently and punctuate accordingly to ensure readability and clarity.\n- For sub-steps in procedures and unusual numbering, refer to specific sections within the documentation for guidance.\n\nTables are ideal for presenting structured data with multiple properties, while lists are better for sequential information or a simple collection of items.\n\nChoose from numbered, bulleted, or description lists depending on the content's purpose, using proper capitalization and punctuation for clarity.\n\nIntroduce lists with a complete sentence for context and maintain parallel structure (syntax/grammar) across all list items.\n\nWhen crafting descriptions, format run-in headings consistently and punctuate accordingly to ensure readability and clarity.\n\nFor sub-steps in procedures and unusual numbering, refer to specific sections within the documentation for guidance.\n\n\n## List or table?\n\nTables and lists are both ways to present a set of similarly structured
 items. Sometimes it's not obvious when to choose one presentation over the
 other. To decide which presentation to use, see
@@ -26,9 +26,9 @@ Nested sequential lists are labeled with lowercase letters or lowercase Roman
 Here's a list of things to do after breakfast, in order:
 
 Go shopping.
-            
+
 Buy groceries:
-                
+
 Flour
 Eggs
 Sugar
@@ -36,7 +36,7 @@ Butter
 
 
 Go to mall:
-                
+
 Buy dress.
 Buy shoes.
 
@@ -87,9 +87,9 @@ Feed the bobcat.\n\nHere's a sequence of steps to follow:\n\n- Open the box.\n- 
         numerals. The following is an example of a nested sequential list:\n\n> Here's a list of things to do after breakfast, in order:
 
 Go shopping.
-            
+
 Buy groceries:
-                
+
 Flour
 Eggs
 Sugar
@@ -97,7 +97,7 @@ Butter
 
 
 Go to mall:
-                
+
 Buy dress.
 Buy shoes.
 
@@ -107,9 +107,9 @@ Buy shoes.
 Make cake.
 Build birthday present out of spare parts.
 Clean house.\n\nHere's a list of things to do after breakfast, in order:\n\n- Go shopping.
-            
+
 Buy groceries:
-                
+
 Flour
 Eggs
 Sugar
@@ -117,23 +117,23 @@ Butter
 
 
 Go to mall:
-                
+
 Buy dress.
 Buy shoes.\n- Buy groceries:
-                
+
 Flour
 Eggs
 Sugar
 Butter\n- Flour\n- Eggs\n- Sugar\n- Butter\n- Go to mall:
-                
+
 Buy dress.
 Buy shoes.\n- Buy dress.\n- Buy shoes.\n- Make cake.\n- Build birthday present out of spare parts.\n- Clean house.\n\n- Buy groceries:
-                
+
 Flour
 Eggs
 Sugar
 Butter\n- Flour\n- Eggs\n- Sugar\n- Butter\n- Go to mall:
-                
+
 Buy dress.
 Buy shoes.\n- Buy dress.\n- Buy shoes.\n\n- Flour\n- Eggs\n- Sugar\n- Butter\n\n- Buy dress.\n- Buy shoes.\n\nSee also Sub-steps in numbered procedures.\n\nA set of items that's not a sequence, such as a set of nonsequential options or examples.
       Make sure it's clear whether or not every item is required. The following is an example of a
@@ -202,7 +202,7 @@ Snapshot an instance
 Delete an instance | Objectives
 
           In the following tutorial, you will complete the following tasks:
-        
+
 
 Create an instance
 Snapshot an instance

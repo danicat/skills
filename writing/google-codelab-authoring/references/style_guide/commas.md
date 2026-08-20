@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/commas\n\n# Commas
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Use the serial (or Oxford) comma in a list of three or more items to avoid ambiguity.\n- Place a comma after introductory words and phrases, and between independent clauses joined by a coordinating conjunction.\n- Use a comma before which in nonrestrictive clauses and after conjunctive adverbs like however or therefore.\n- Generally avoid a comma before because unless it starts a nonrestrictive clause.\n- Refer to specific sections for guidance on punctuating numbers and examples.\n\nUse the serial (or Oxford) comma in a list of three or more items to avoid ambiguity.\n\nPlace a comma after introductory words and phrases, and between independent clauses joined by a coordinating conjunction.\n\nUse a comma before which in nonrestrictive clauses and after conjunctive adverbs like however or therefore.\n\nGenerally avoid a comma before because unless it starts a nonrestrictive clause.\n\nRefer to specific sections for guidance on punctuating numbers and examples.\n\nUse commas to separate items in a series, and use commas to separate certain kinds of
   clauses.
 

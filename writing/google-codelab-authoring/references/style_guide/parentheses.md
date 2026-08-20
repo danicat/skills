@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/parentheses\n\n# Parentheses
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nSome of us love to use parentheses. Unfortunately, some readers ignore
 anything that appears in parentheses, so don't put important information in
 parentheses if you can help it.\n\nEven for less important information, whenever you're inclined to use

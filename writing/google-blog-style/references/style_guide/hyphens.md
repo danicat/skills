@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/hyphens\n\n# Hyphens
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Hyphens are used to avoid misreading, combine terms, and separate parts of words for clarity.\n- Hyphenate prefixes like self- and cross-, before capitalized nouns or numbers, and in cases of ambiguity.\n- Generally, write compound nouns in closed form, but consult the word list for exceptions or established conventions.\n- Hyphenate compound modifiers before a noun for clarity but avoid those with more than two words.\n- Don't use spaces around hyphens except in suspended hyphens where a space can follow but not precede the hyphen.\n\nHyphens are used to avoid misreading, combine terms, and separate parts of words for clarity.\n\nHyphenate prefixes like self- and cross-, before capitalized nouns or numbers, and in cases of ambiguity.\n\nGenerally, write compound nouns in closed form, but consult the word list for exceptions or established conventions.\n\nHyphenate compound modifiers before a noun for clarity but avoid those with more than two words.\n\nDon't use spaces around hyphens except in suspended hyphens where a space can follow but not precede the hyphen.\n\nUse a hyphen (-) when needed for clarity. A hyphen can separate parts of words to avoid
     misreadings, and it can combine terms when they should be read as a unit.\n\n\n## General guidelines\n\nGuidance for hyphenation isn't always straightforward because it depends on
   the following circumstances:\n\n- Location. For example, does a term precede a noun, or does it follow a

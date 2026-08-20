@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/procedures\n\n# Procedures
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Procedures should be written as numbered steps with clear and concise language, focusing on the action to be performed.\n- Sub-steps and multi-action steps have specific formatting guidelines to ensure clarity and readability, such as using letters and roman numerals for sub-steps and the > symbol for sequential actions within a single step.\n- Multiple procedures for the same task should be organized thoughtfully, prioritizing accessibility and clarity by using separate sections or tabs and favoring the shortest and simplest method.\n- Steps should provide context, clearly state the goal or purpose, and include any necessary justifications or results while avoiding redundancy and unnecessary information.\n- Optional steps are indicated with "Optional:", and repetitive procedures are referenced rather than repeated to maintain conciseness and avoid redundancy.\n\nProcedures should be written as numbered steps with clear and concise language, focusing on the action to be performed.\n\nSub-steps and multi-action steps have specific formatting guidelines to ensure clarity and readability, such as using letters and roman numerals for sub-steps and the > symbol for sequential actions within a single step.\n\nMultiple procedures for the same task should be organized thoughtfully, prioritizing accessibility and clarity by using separate sections or tabs and favoring the shortest and simplest method.\n\nSteps should provide context, clearly state the goal or purpose, and include any necessary justifications or results while avoiding redundancy and unnecessary information.\n\nOptional steps are indicated with "Optional:", and repetitive procedures are referenced rather than repeated to maintain conciseness and avoid redundancy.\n\nA procedure is a sequence of numbered steps for accomplishing a task. For information about
   lists of items that aren't part of a procedure, see the
   Lists page.\n\n\n## Introductory sentences\n\nIn most cases, introduce a procedure with an introductory sentence. This
@@ -21,19 +21,19 @@ buttons:\n\nFor more information about introducing lists, see  Lists.\n\n\n## Si
   bulleted list.\n\nRecommended:\n\n- To clear (flush) the entire log, click Clear logcat.\n\nNot recommended:\n\nTo clear (flush) the entire log, follow this step:\n\n- Click Clear logcat.\n\nAlso not recommended:\n\nTo clear (flush) the entire log, follow this step:\n\n- Click Clear logcat.\n\n\n## Sub-steps in numbered procedures\n\nIn a numbered procedure, sub-steps are labeled with lowercase letters, and
 sub-sub-steps get lowercase Roman numerals.\n\nWhen a step has sub-steps, treat the step like an introductory sentence: put a colon or a
 period at the end of the step, as appropriate.\n\nFor more information about lists, see  Lists.\n\nRecommended:\n\n- To add a VM instance, do the following:
-      
+
 Click Create instance.
 For Name, enter a name for the VM instance, and then do the following:
-          
+
 For Region, specify where you want to deploy the VM instance.
 For Machine type, select an option.
 
 
 Click Create.\n- Click Create instance.\n- For Name, enter a name for the VM instance, and then do the following:
-          
+
 For Region, specify where you want to deploy the VM instance.
 For Machine type, select an option.\n- For Region, specify where you want to deploy the VM instance.\n- For Machine type, select an option.\n- Click Create.\n- To connect to the VM instance by using SSH, click SSH.\n\n- Click Create instance.\n- For Name, enter a name for the VM instance, and then do the following:
-          
+
 For Region, specify where you want to deploy the VM instance.
 For Machine type, select an option.\n- For Region, specify where you want to deploy the VM instance.\n- For Machine type, select an option.\n- Click Create.\n\n- For Region, specify where you want to deploy the VM instance.\n- For Machine type, select an option.\n\n\n## Order of multiple components in a step\n\nTo document a complex procedural step, use the following order:\n\n- Describe the action to take.\n- List a command, if necessary.\n- Explain any placeholders that are used in the command.
 For more information, see

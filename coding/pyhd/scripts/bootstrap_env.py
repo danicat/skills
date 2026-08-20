@@ -11,16 +11,16 @@ def run_cmd(args):
 
 def main():
     print("🚀 Initializing Python Project Environment using uv...")
-    
+
     # 1. Initialize venv
     if not os.path.exists(".venv"):
         run_cmd(["uv", "venv"])
     else:
         print("ℹ️  .venv already exists. Skipping creation.")
-        
+
     # 2. Add dependencies
     run_cmd(["uv", "add", "--dev", "ruff", "pytest"])
-    
+
     # 3. Create a default pyproject.toml if missing
     if not os.path.exists("pyproject.toml"):
         print("Creating default pyproject.toml with strict Ruff rules...")
@@ -57,7 +57,7 @@ pythonpath = ["."]
         print("✅ pyproject.toml created successfully.")
     else:
         print("ℹ️  pyproject.toml already exists. Skipping creation.")
-        
+
     # 4. Create dummy test structure
     os.makedirs("tests", exist_ok=True)
     test_file = os.path.join("tests", "test_sanity.py")
@@ -67,7 +67,7 @@ pythonpath = ["."]
     assert True
 """)
         print("✅ Created tests/test_sanity.py sanity test.")
-        
+
     print("\n🎉 Environment bootstrapping completed successfully!")
     print("Run `uv run ruff check` and `uv run pytest` to verify.")
 

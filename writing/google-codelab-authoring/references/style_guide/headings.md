@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/headings\n\n# Headings and titles
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Use sentence case for all headings and titles to improve readability and navigation.\n- Structure content with descriptive headings that reflect the type of content (task-based or conceptual) using bare infinitives for tasks and noun phrases for concepts.\n- Organize content hierarchically with heading tags (h1, h2, h3, etc.) and ensure each page has a unique h1 heading; avoid skipping heading levels or using empty headings.\n- Avoid using "-ing" verbs, numbers, and excessive punctuation in headings; if an abbreviation is used, define it in the first paragraph following the heading.\n- When summarizing subheadings, use the phrase "in the following sections" to clearly connect the content.\n\nUse sentence case for all headings and titles to improve readability and navigation.\n\nStructure content with descriptive headings that reflect the type of content (task-based or conceptual) using bare infinitives for tasks and noun phrases for concepts.\n\nOrganize content hierarchically with heading tags (h1, h2, h3, etc.) and ensure each page has a unique h1 heading; avoid skipping heading levels or using empty headings.\n\nAvoid using "-ing" verbs, numbers, and excessive punctuation in headings; if an abbreviation is used, define it in the first paragraph following the heading.\n\nWhen summarizing subheadings, use the phrase "in the following sections" to clearly connect the content.\n\nUse sentence case for headings and titles. Use descriptive headings and titles because they help
   a reader navigate their browser and the page. It's easier to jump between pages and sections of a
   page if the headings and titles are unique.\n\n\n## Heading and title text\n\nWrite document titles based on the primary purpose of the document. If a

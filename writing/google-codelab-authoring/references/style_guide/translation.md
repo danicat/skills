@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/translation\n\n# Write for a global audience
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Write developer documentation in US English with localization, translation, and internationalization in mind, favoring clear and concise language for easier translation.\n- Structure content with short, unambiguous sentences, active voice, and direct address (using "you") for better comprehension across languages.\n- Maintain consistency in terminology, phrasing, formatting, and capitalization to minimize ambiguity and translation costs.\n- Prioritize inclusivity by avoiding culturally specific references, using diverse example names, and omitting colloquialisms, idioms, humor, and seasonal references.\n- Adhere to specific guidelines on grammar, word choice, and sentence structure to ensure clarity and accuracy for a global audience, referring to provided resources for detailed explanations and examples.\n\nWrite developer documentation in US English with localization, translation, and internationalization in mind, favoring clear and concise language for easier translation.\n\nStructure content with short, unambiguous sentences, active voice, and direct address (using "you") for better comprehension across languages.\n\nMaintain consistency in terminology, phrasing, formatting, and capitalization to minimize ambiguity and translation costs.\n\nPrioritize inclusivity by avoiding culturally specific references, using diverse example names, and omitting colloquialisms, idioms, humor, and seasonal references.\n\nAdhere to specific guidelines on grammar, word choice, and sentence structure to ensure clarity and accuracy for a global audience, referring to provided resources for detailed explanations and examples.\n\nWe write our developer documentation in US English, but some of it is
 translated into languages other than English or is read by developers for whom
 English is not their primary language.\n\nWrite with localization, translation, and

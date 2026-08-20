@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/highlights\n\n# Highlights
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This style guide outlines important standards for tone, content, language, grammar, formatting, punctuation, organization, and image use in documentation.\n- Key recommendations include using conversational language, writing for accessibility and a global audience, employing active voice and second person, and following specific formatting rules for lists, code, and UI elements.\n- For clarity, the guide promotes descriptive link text, unambiguous date formats, the use of alt text for images, and the preference for high-resolution images whenever possible.\n- This guide aims to ensure consistent, clear, and user-friendly documentation.\n\nThis style guide outlines important standards for tone, content, language, grammar, formatting, punctuation, organization, and image use in documentation.\n\nKey recommendations include using conversational language, writing for accessibility and a global audience, employing active voice and second person, and following specific formatting rules for lists, code, and UI elements.\n\nFor clarity, the guide promotes descriptive link text, unambiguous date formats, the use of alt text for images, and the preference for high-resolution images whenever possible.\n\nThis guide aims to ensure consistent, clear, and user-friendly documentation.\n\nThe style guide covers a lot of material, so the following page provides an overview of its most
   important points. For more information about topics on the page, follow the links.\n\n\n## Tone and content\n\n- Be conversational and friendly without being
 frivolous.\n- Don't pre-announce anything in

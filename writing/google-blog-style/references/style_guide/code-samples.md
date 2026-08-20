@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/code-samples\n\n# Code samples
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Code samples should follow indentation guidelines, typically using spaces instead of tabs and two spaces per indentation level.\n- Wrap code lines at 80 characters for better readability, especially in narrow browser windows or when printed.\n- Use <pre> element in HTML or four-space indentation in Markdown to format code blocks as preformatted text and indicate omissions with comments specific to the code's language.\n- Introduce code samples with a sentence or paragraph, ending with a colon if directly preceding the sample, or a period if there's intervening material.\n- Refer to the relevant code style guides, such as Google's or project-specific ones, for language-specific formatting conventions.\n\nCode samples should follow indentation guidelines, typically using spaces instead of tabs and two spaces per indentation level.\n\nWrap code lines at 80 characters for better readability, especially in narrow browser windows or when printed.\n\nUse <pre> element in HTML or four-space indentation in Markdown to format code blocks as preformatted text and indicate omissions with comments specific to the code's language.\n\nIntroduce code samples with a sentence or paragraph, ending with a colon if directly preceding the sample, or a period if there's intervening material.\n\nRefer to the relevant code style guides, such as Google's or project-specific ones, for language-specific formatting conventions.\n\nThis page explains how to format code samples. For more information about formatting and
   explaining code that appears in text, command-line syntax, and placeholders, see the following
   resources:\n\n- Code in text\n- Documenting command-line syntax\n- Formatting placeholders\n\n\n## Basic guidelines\n\nFollow these guidelines when formatting code samples:\n\n- Follow the indentation guidelines in the relevant

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/timeless-documentation\n\n# Timeless documentation
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Timeless documentation avoids time-sensitive language to ensure accuracy and longevity, focusing on the current state of the product.\n- It's crucial for technical documents as words like "now" or "new" can quickly become outdated, hindering comprehension.\n- While acceptable in time-sensitive content like blog posts, these terms should be avoided in product documentation to reduce maintenance and prevent assumptions about prior product knowledge.\n- Timeless documentation benefits users by providing clear and current information without relying on past or future context.\n- To achieve timelessness, avoid phrases like "currently," "new," or "latest" when describing product features and capabilities, instead focusing on factual and enduring descriptions.\n\nTimeless documentation avoids time-sensitive language to ensure accuracy and longevity, focusing on the current state of the product.\n\nIt's crucial for technical documents as words like "now" or "new" can quickly become outdated, hindering comprehension.\n\nWhile acceptable in time-sensitive content like blog posts, these terms should be avoided in product documentation to reduce maintenance and prevent assumptions about prior product knowledge.\n\nTimeless documentation benefits users by providing clear and current information without relying on past or future context.\n\nTo achieve timelessness, avoid phrases like "currently," "new," or "latest" when describing product features and capabilities, instead focusing on factual and enduring descriptions.\n\nTimeless documentation is documentation that avoids words and phrases that anchor the
 documentation to a point in time or assume knowledge of prior or future products and features. In
 general, document the current version of a product or feature.\n\nTimeless documentation is especially important for technical documents that might be read a long

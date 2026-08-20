@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/trademarks\n\n# Trademarks
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nFollow any usage guidelines that trademark owners provide.
 
 Label trademarked terms

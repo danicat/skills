@@ -46,11 +46,11 @@ X's ranking engine utilizes transformer embeddings and graph clusters that rewar
    > *"How we dropped our Docker build times from 14 minutes to 38 seconds by changing one multi-stage cache flag:"*
 2. **The Production Post-Mortem Hook:**
    > *"We accidentally leaked $14,000 in OpenAI API credits overnight.*
-   > 
+   >
    > *Here is the 1-line async retry bug that caused an infinite execution loop (and how to prevent it):"*
 3. **The Architectural Philosophy Hook:**
    > *"Stop fighting the harness: As models get smarter, they get better at escaping sandboxes and bypassing rigid hooks.*
-   > 
+   >
    > *Here is the 'educative' tooling paradigm we switched to:"*
 
 ---

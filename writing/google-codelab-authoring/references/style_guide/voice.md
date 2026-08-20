@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/voice\n\n# Active voice
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Prioritize using active voice to ensure clarity and directness in your writing, making it clear who is performing the action.\n- While active voice is generally preferred, passive voice can be acceptable in specific situations, such as when emphasizing the object, de-emphasizing the subject, or when the actor is irrelevant.\n- Passive voice can make it difficult for readers to understand who is responsible for an action, leading to confusion and ambiguity.\n- When using passive voice, ensure the context provides enough information for readers to understand the meaning, even without explicitly stating the actor.\n- Refer to Google's Technical Writing One guide for a deeper understanding of active and passive voice and their appropriate usage.\n\nPrioritize using active voice to ensure clarity and directness in your writing, making it clear who is performing the action.\n\nWhile active voice is generally preferred, passive voice can be acceptable in specific situations, such as when emphasizing the object, de-emphasizing the subject, or when the actor is irrelevant.\n\nPassive voice can make it difficult for readers to understand who is responsible for an action, leading to confusion and ambiguity.\n\nWhen using passive voice, ensure the context provides enough information for readers to understand the meaning, even without explicitly stating the actor.\n\nRefer to Google's Technical Writing One guide for a deeper understanding of active and passive voice and their appropriate usage.\n\nIn general, use active voice (in which the grammatical subject of the
 sentence is the person or thing performing the action) instead of passive voice
 (in which the grammatical subject of the sentence is the person or thing being

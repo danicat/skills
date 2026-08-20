@@ -14,17 +14,17 @@ A comprehensive technical reference for HTML `<meta>` tags, robots indexing and 
 <head>
   <!-- Character Encoding: UTF-8 recommended, must be within the first 1024 bytes -->
   <meta charset="utf-8">
-  
+
   <!-- Responsive Viewport: Required for mobile friendliness & mobile-first indexing -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <!-- Search Engine Verification (Exact case required) -->
   <meta name="google-site-verification" content="+nxGUDJ4QpAZ5l9Bsjdi102tLVC21AIh5d1Nl23908vVuFHs34=">
-  
+
   <!-- Document Title & Meta Description -->
   <title>Building Scalable Agent Skills | Example Engineering</title>
   <meta name="description" content="Technical guide on authoring, evaluating, and deploying high-performance agent skills with strict progressive disclosure.">
-  
+
   <!-- Robots Directives: Open indexing with rich visual & textual snippet controls -->
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 </head>
@@ -135,7 +135,7 @@ Google supports two primary user-agent tokens within the HTML robots meta tag:
 
 ## 5. The `robots.txt` Crawlability Prerequisite (The Critical Trap)
 
-Robots meta tags and HTTP `X-Robots-Tag` headers are discovered **during crawl execution**. 
+Robots meta tags and HTTP `X-Robots-Tag` headers are discovered **during crawl execution**.
 
 > [!CAUTION]
 > **The `robots.txt` Block Trap**:

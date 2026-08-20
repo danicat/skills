@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/inclusive-documentation\n\n# Write inclusive documentation
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This documentation provides guidelines for writing inclusive developer documentation, focusing on avoiding ableist, gendered, and violent language.\n- It emphasizes using diverse and inclusive examples by incorporating a variety of names, genders, ages, and locations while respecting cultural differences.\n- The guide recommends replacing or writing around non-inclusive terms, offering strategies for established industry terms and code-embedded keywords.\n- It highlights the importance of avoiding bias and harm when discussing disability and accessibility, advising on respectful terminology and person-first language.\n- Developers are encouraged to educate themselves on preferred terminology and prioritize inclusive language to reflect the real-world diversity of the audience.\n\nThis documentation provides guidelines for writing inclusive developer documentation, focusing on avoiding ableist, gendered, and violent language.\n\nIt emphasizes using diverse and inclusive examples by incorporating a variety of names, genders, ages, and locations while respecting cultural differences.\n\nThe guide recommends replacing or writing around non-inclusive terms, offering strategies for established industry terms and code-embedded keywords.\n\nIt highlights the importance of avoiding bias and harm when discussing disability and accessibility, advising on respectful terminology and person-first language.\n\nDevelopers are encouraged to educate themselves on preferred terminology and prioritize inclusive language to reflect the real-world diversity of the audience.\n\nWe write our developer documentation with inclusivity and diversity in mind.
 This page is not an exhaustive reference, but provides some general guidelines
 and examples that illustrate some best practices for writing inclusive documentation.\n\nFor other writing best practices, see the following resources:\n\n- Write for a global audience\n- Write accessible documentation\n- Voice and tone\n\n\n## Avoid ableist language\n\nWhen trying to achieve a friendly and conversational

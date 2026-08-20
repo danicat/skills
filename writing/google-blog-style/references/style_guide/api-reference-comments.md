@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/api-reference-comments\n\n# API reference code comments
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- API documentation must include descriptions for every class, constant, method, and parameter, with detailed explanations of their purpose, usage, and potential exceptions.\n- Descriptions should be concise and informative, prioritizing clarity and avoiding redundancy, using present tense and specific verbs for actions.\n- Parameter descriptions should clearly define their purpose and expected values, including behavior for booleans and defaults, while return values focus on the information provided.\n- Class descriptions should begin with a concise purpose statement and offer guidance on usage, features, and best practices, while member descriptions should link to relevant methods.\n- Deprecation notices must specify replacements and provide guidance for updating existing code to ensure compatibility.\n\nAPI documentation must include descriptions for every class, constant, method, and parameter, with detailed explanations of their purpose, usage, and potential exceptions.\n\nDescriptions should be concise and informative, prioritizing clarity and avoiding redundancy, using present tense and specific verbs for actions.\n\nParameter descriptions should clearly define their purpose and expected values, including behavior for booleans and defaults, while return values focus on the information provided.\n\nClass descriptions should begin with a concise purpose statement and offer guidance on usage, features, and best practices, while member descriptions should link to relevant methods.\n\nDeprecation notices must specify replacements and provide guidance for updating existing code to ensure compatibility.\n\n\n\nWhen you're documenting an API, provide a complete API reference, typically
 generated from source code using document comments that describe all public
 classes, methods, constants, and other members.\n\nUse the basic guidelines in this document as appropriate for a given programming

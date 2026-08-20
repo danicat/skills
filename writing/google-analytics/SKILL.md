@@ -11,7 +11,7 @@ The `google-analytics` skill ingests Google Analytics 4 (GA4) traffic, reading d
 
 ## ⚡ Quick Start & Primary Actions
 
-All operations are driven via the bundled Python CLI script (runnable with `python3` or `uv run`):
+All operations are driven via the bundled Python CLI script:
 
 ```bash
 # 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
@@ -22,89 +22,113 @@ uv run <skill_dir>/scripts/google_analytics.py properties
 
 # 3. Create Deployment / Milestone Annotation (Cloud API + Local SQLite)
 uv run <skill_dir>/scripts/google_analytics.py annotate \
-  --title "Site Redesign & Architecture Overhaul" \
+  --title "Major Release / Architecture Overhaul" \
   --date 2026-08-18 \
   --commit abc1234 \
-  --description "Comprehensive site architecture and performance release."
+  --description "Milestone description and release context."
 
 # 4. Incremental Sync (Updates newest days + 3-day latency lookback overlap)
-uv run <skill_dir>/scripts/google_analytics.py sync
+uv run <skill_dir>/scripts/google_analytics.py sync --db path/to/database.db
 
 # 5. Full Historical Backfill (Ingests up to 14 months of daily granular data)
-uv run <skill_dir>/scripts/google_analytics.py sync --full
+uv run <skill_dir>/scripts/google_analytics.py sync --full --db path/to/database.db
 
-# 6. Custom Date Range Sync
-uv run <skill_dir>/scripts/google_analytics.py sync \
-  --start-date 2026-06-01 \
-  --end-date 2026-08-15
+# 6. Run Pre-Built Reports
+uv run <skill_dir>/scripts/google_analytics.py report overview --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report top-pages --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report channels --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report geo --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report events --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report outbound --db path/to/database.db
+uv run <skill_dir>/scripts/google_analytics.py report milestone-impact --db path/to/database.db
+
+# 7. Execute Ad-Hoc SQL Query
+uv run <skill_dir>/scripts/google_analytics.py query "SELECT page_path, total_views, total_users, avg_dwell_sec, avg_bounce_pct FROM v_page_performance LIMIT 10" --db path/to/database.db
 ```
+
+If `--db` is omitted, the script defaults to `google_analytics.db` in the current working directory.
 
 ---
 
-## 📊 Pre-Built Analytical Reports
+## 🗄️ Database Schema & Relational Structure
 
-```bash
-# 1. Overall site health, sessions, users, dwell time, and 7-day trend
-uv run <skill_dir>/scripts/google_analytics.py report overview
+The database maintains 7 relational tables and 7 analytical views. Detailed DDL and schema definitions are in [`references/schema.md`](references/schema.md).
 
-# 2. Top pages ranked by views, active dwell time, and bounce rate
-uv run <skill_dir>/scripts/google_analytics.py report top-pages
+### Tables
 
-# 3. Traffic sources, channels, and conversion engagement rates
-uv run <skill_dir>/scripts/google_analytics.py report channels
-
-# 4. Geographical breakdown & country dwell times
-uv run <skill_dir>/scripts/google_analytics.py report geo
-
-# 5. User interaction events (scroll, click, first_visit, form_submit)
-uv run <skill_dir>/scripts/google_analytics.py report events
-
-# 6. Outbound link click destinations
-uv run <skill_dir>/scripts/google_analytics.py report outbound
-
-# 7. Release / Milestone cohort impact comparison
-uv run <skill_dir>/scripts/google_analytics.py report milestone-impact
-```
+1. **`daily_pages`**: Granular daily page metrics by URL, country, device, and traffic source.
+   - Key columns: `id` (PK), `property_id`, `date`, `page_path`, `page_title`, `country`, `device_category`, `source_medium`, `screen_page_views`, `active_users`, `sessions`, `user_engagement_duration`, `bounce_rate`, `raw_json`, `synced_at`.
+2. **`daily_traffic`**: Acquisition channels and source/medium pairs.
+   - Key columns: `id` (PK), `property_id`, `date`, `session_source_medium`, `session_default_channel_group`, `country`, `device_category`, `sessions`, `active_users`, `new_users`, `engaged_sessions`, `user_engagement_duration`, `bounce_rate`, `raw_json`, `synced_at`.
+3. **`daily_events`**: User interaction event stream (`scroll`, `click`, `first_visit`, `user_engagement`, `page_view`).
+   - Key columns: `id` (PK), `property_id`, `date`, `event_name`, `page_path`, `country`, `device_category`, `event_count`, `total_users`, `raw_json`, `synced_at`.
+4. **`outbound_clicks`**: External link exit destinations and click counts.
+   - Key columns: `id` (PK), `property_id`, `date`, `link_url`, `page_path`, `country`, `event_count`, `total_users`, `raw_json`, `synced_at`.
+5. **`properties`**: Verified GA4 property metadata, timezone, and settings.
+   - Key columns: `property_id` (PK), `name`, `account_id`, `display_name`, `industry_category`, `time_zone`, `currency_code`, `service_level`, `raw_json`, `last_synced_at`.
+6. **`site_milestones`**: Release milestones and publication events.
+   - Key columns: `commit_hash` (PK), `event_date`, `title`, `description`, `category`, `scope`, `author`, `created_at`.
+7. **`sync_history`**: Audit log of sync executions and row counts.
+   - Key columns: `id` (PK), `property_id`, `sync_type`, `start_date`, `end_date`, `pages_synced`, `traffic_synced`, `events_synced`, `outbound_synced`, `status`, `error_message`, `started_at`, `finished_at`.
 
 ---
 
-## 🔍 Execute Ad-Hoc SQL Queries
+## 📊 Analytical SQL Views
 
-Execute arbitrary SQL queries against the local database with formatted ASCII tables, `--json`, or `--csv`:
+| View Name | Description | Key Columns |
+| :--- | :--- | :--- |
+| `v_daily_summary` | Daily aggregated traffic metrics | `date`, `total_sessions`, `total_active_users`, `total_page_views`, `total_engagement_min`, `avg_bounce_pct` |
+| `v_page_performance` | Page rollup with views, active users, dwell time, and bounce rate | `page_path`, `page_title`, `total_views`, `total_users`, `total_sessions`, `avg_dwell_sec`, `total_dwell_min`, `avg_bounce_pct` |
+| `v_channel_performance` | Acquisition channel breakdown | `channel_group`, `source_medium`, `total_sessions`, `total_users`, `total_new_users`, `total_engaged_sessions`, `engagement_rate_pct`, `total_dwell_min`, `avg_bounce_pct` |
+| `v_geo_breakdown` | Country traffic and dwell time | `country`, `total_sessions`, `total_users`, `total_page_views`, `avg_dwell_sec`, `avg_bounce_pct` |
+| `v_events_summary` | Aggregate event counts | `event_name`, `total_events`, `total_users` |
+| `v_outbound_links` | Outbound destination rankings | `link_url`, `total_clicks`, `total_users`, `referring_pages_count` |
+| `v_milestone_impact` | Pre vs. Post milestone comparison | `milestone_title`, `milestone_date`, `cohort`, `days_tracked`, `total_views`, `total_users`, `total_sessions`, `avg_engagement_sec`, `avg_bounce_pct` |
 
-```bash
-# Top 10 landing pages by total dwell time and engagement
-python3 scripts/google_analytics.py query "
-SELECT 
+---
+
+## 🔍 SQL Analytics Recipes
+
+Pre-tested SQL query recipes are documented in [`references/queries.md`](references/queries.md).
+
+### 1. Top Landing Pages by Active Dwell Time
+```sql
+SELECT
     page_path,
+    page_title,
     total_views,
     total_users,
-    total_sessions,
-    avg_dwell_sec || 's' AS dwell,
-    avg_bounce_pct || '%' AS bounce
+    avg_dwell_sec || 's' AS avg_dwell,
+    total_dwell_min || 'm' AS total_dwell,
+    avg_bounce_pct || '%' AS bounce_pct
 FROM v_page_performance
-ORDER BY total_views DESC
-LIMIT 10;
-"
+ORDER BY total_dwell_min DESC
+LIMIT 15;
 ```
 
----
-
-## 🗄️ Relational Schema & Analytical Views
-
-- **`daily_pages`**: Granular daily performance records by `date`, `page_path`, `page_title`, `country`, `device_category`, `source_medium`, `screen_page_views`, `active_users`, `sessions`, `user_engagement_duration`, `bounce_rate`, and `raw_json`.
-- **`daily_traffic`**: Acquisition channels and sources (`session_source_medium`, `session_default_channel_group`, `sessions`, `new_users`, `engaged_sessions`, `bounce_rate`).
-- **`daily_events`**: Event stream logs (`scroll`, `click`, `first_visit`, `user_engagement`, `page_view`).
-- **`outbound_clicks`**: Destination link URLs, referring pages, and user clicks.
-- **`properties`**: GA4 metadata, time zone, currency, and property names.
-- **`sync_history`**: Audit log of backfills and sync operations.
-- **Analytical Views**: `v_daily_summary`, `v_page_performance`, `v_channel_performance`, `v_geo_breakdown`, `v_events_summary`, `v_outbound_links`.
+### 2. Category / Subdirectory Rollup
+```sql
+SELECT
+    CASE
+        WHEN page_path LIKE '/docs/%' THEN 'Docs'
+        WHEN page_path LIKE '/blog/%' THEN 'Blog'
+        WHEN page_path = '/' THEN 'Homepage'
+        ELSE 'Other'
+    END AS category,
+    COUNT(DISTINCT page_path) AS page_count,
+    SUM(total_views) AS total_views,
+    SUM(total_users) AS total_users,
+    ROUND(SUM(total_dwell_min), 1) AS total_dwell_min
+FROM v_page_performance
+GROUP BY category
+ORDER BY total_views DESC;
+```
 
 ---
 
 ## 📚 Progressive Disclosure & References
 
-- **Database Schema DDL**: [`references/schema.md`](references/schema.md) — Full table definitions, constraints, indexes, and view schemas.
-- **SQL Query Cookbook**: [`references/queries.md`](references/queries.md) — Pre-tested SQL recipes for reading depth, multi-lingual performance, and traffic channels.
+- **Full DDL Schema Reference**: [`references/schema.md`](references/schema.md) — Complete SQL table definitions, column types, constraints, and views.
+- **SQL Query Cookbook**: [`references/queries.md`](references/queries.md) — Tested SQL recipes for reading depth, acquisition channels, and exit destinations.
 - **Authentication Guide**: [`references/setup_auth.md`](references/setup_auth.md) — Google Cloud ADC login, API enablement, and GA4 property permissions.
 - **Evaluation Suite**: [`evals/evals.json`](evals/evals.json) — Test benchmarks for validating skill triggers and query execution.

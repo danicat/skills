@@ -31,7 +31,7 @@ try {
     { name: 'Google API Key', regex: /AIza[0-9A-Za-z-_]{35}/, suggestion: 'Replace with a placeholder (e.g., "YOUR_API_KEY")' },
     { name: 'Hardcoded Home Directory', regex: /\/Users\/[a-zA-Z0-9._-]+/, suggestion: 'Use relative paths or placeholders' },
     { name: 'Potential Private Project ID', regex: /[a-z0-9]+-(sandbox|dev|test)-[a-z0-9]+/, suggestion: 'Check if this is a personal project ID. Use a generic placeholder like "my-project-id".' },
-    
+
     // Legal & Editorial
     { name: 'Superlative ("Best")', regex: /\b(best|simplest|easiest|unmatched)\b/i, suggestion: 'Avoid superlatives unless substantiated. Use precise language.' },
     { name: 'Absolute Guarantee', regex: /\b(guaranteed|100%|always|never|zero latency)\b/i, suggestion: 'Avoid absolutes. Use "designed for" or "helps ensure".' },
@@ -53,7 +53,7 @@ try {
     console.log('⚠️  Sanitization/Legal Warnings Found:');
     warnings.forEach(w => console.log(`  - ${w}`));
     console.log('\nPlease review these lines manually. If they are false positives, you can ignore them.');
-    process.exit(1); 
+    process.exit(1);
   } else {
     console.log('✅ Sanitization & Legal Check Passed: No obvious issues found.');
   }

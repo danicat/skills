@@ -46,7 +46,7 @@ try {
     const line = lines[i].trim();
     if (line.startsWith('## ')) {
       h2Matches.push({ title: line.substring(3), lineNum: i + 1 });
-      
+
       // Step durations check: look at the next lines (allow up to 2 lines down for blank space)
       let foundDuration = false;
       for (let j = 1; j <= 2; j++) {
@@ -63,7 +63,7 @@ try {
       }
     }
   }
-  
+
   if (h2Matches.length === 0) {
     errors.push('STRUCTURE: No steps found (Heading 2). A codelab must have at least one step.');
   }

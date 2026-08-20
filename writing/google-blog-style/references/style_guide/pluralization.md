@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/pluralization\n\n# Pluralization
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nIn general, follow the standard rules for pluralization in US English and use the regular
   plural form of a word in most cases. Avoid using 's to form a plural to avoid confusing
   a plural with a possessive or contraction.\n\nFor more information, see Contractions and Possessives.\n\n\n## Singular and plural\n\nFor sentences with long or complex subjects, make sure to use either a plural or singular

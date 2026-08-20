@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/spelling\n\n# Word list
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This style guide promotes clear, concise, and inclusive language in technical documentation.\n- It provides specific word choices and formatting guidelines for Google Cloud and other technical content.\n- The guide discourages jargon, ambiguous language, and potentially offensive terms, prioritizing user understanding.\n- It offers preferred alternatives for various technical and general terms to ensure accuracy and consistency.\n- The guidelines aim to enhance clarity, accessibility, and inclusivity for a global audience.\n\nThis style guide promotes clear, concise, and inclusive language in technical documentation.\n\nIt provides specific word choices and formatting guidelines for Google Cloud and other technical content.\n\nThe guide discourages jargon, ambiguous language, and potentially offensive terms, prioritizing user understanding.\n\nIt offers preferred alternatives for various technical and general terms to ensure accuracy and consistency.\n\nThe guidelines aim to enhance clarity, accessibility, and inclusivity for a global audience.\n\nThis word list covers style and usage guidelines that are specific to developer documentation.\n\nIf the term that you're looking for isn't on this list, check our other
   editorial resources, including our preferred
   dictionary,
@@ -31,7 +31,7 @@ Source: https://developers.google.com/style/spelling\n\n# Word list
     term might be particularly ambiguous or it might have an offensive or
     non-inclusive association. If such a term appears in code, we recommend that
     you
-    
+
     replace or write around the term.\n- Android. Applies only to Android documentation.\n- Google Cloud. Applies only to Google Cloud documentation.\n- Google Workspace. Applies only to Google Workspace documentation.\n\n\n### Numbers and Symbols\n\n\n### A\n\nIn general, use the word authenticated only to refer to users,
         and use authorized only to refer to requests that are sent by a
         client app on behalf of an authenticated user.\n\nA user authenticates their identity by entering their password

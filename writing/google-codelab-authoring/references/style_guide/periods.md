@@ -1,12 +1,12 @@
 Source: https://developers.google.com/style/periods\n\n# Periods and other end punctuation
 
 
-      
-      Stay organized with collections
-    
 
-      
-      Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Always end complete sentences with a period, except in lists or headings.\n- When including URLs, avoid placing them at the end of a sentence to prevent confusion with the period.\n- For quotations, place the period inside the quotation marks, even if it's not part of the quoted material.\n- In parentheses, if it encloses a full sentence, the period goes inside; if it's part of a larger sentence, the period goes outside.\n- Use periods for decimal points and abbreviations but not for acronyms, headings, or generally in captions.\n\nAlways end complete sentences with a period, except in lists or headings.\n\nWhen including URLs, avoid placing them at the end of a sentence to prevent confusion with the period.\n\nFor quotations, place the period inside the quotation marks, even if it's not part of the quoted material.\n\nIn parentheses, if it encloses a full sentence, the period goes inside; if it's part of a larger sentence, the period goes outside.\n\nUse periods for decimal points and abbreviations but not for acronyms, headings, or generally in captions.\n\nEnd a complete sentence with a period, unless it's a question. There are 
+      Stay organized with collections
+
+
+
+      Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Always end complete sentences with a period, except in lists or headings.\n- When including URLs, avoid placing them at the end of a sentence to prevent confusion with the period.\n- For quotations, place the period inside the quotation marks, even if it's not part of the quoted material.\n- In parentheses, if it encloses a full sentence, the period goes inside; if it's part of a larger sentence, the period goes outside.\n- Use periods for decimal points and abbreviations but not for acronyms, headings, or generally in captions.\n\nAlways end complete sentences with a period, except in lists or headings.\n\nWhen including URLs, avoid placing them at the end of a sentence to prevent confusion with the period.\n\nFor quotations, place the period inside the quotation marks, even if it's not part of the quoted material.\n\nIn parentheses, if it encloses a full sentence, the period goes inside; if it's part of a larger sentence, the period goes outside.\n\nUse periods for decimal points and abbreviations but not for acronyms, headings, or generally in captions.\n\nEnd a complete sentence with a period, unless it's a question. There are
     exceptions for working in lists.\n\n\n## Periods with lists\n\nWhether to end a list item with a period depends on several factors, including
 the kind of list that the item appears in.\n\nFor details about how to use periods in lists, see the
   Capitalization and end punctuation

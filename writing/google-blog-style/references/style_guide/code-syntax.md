@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/code-syntax\n\n# Document command-line syntax
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This document provides best practices for documenting command-line commands, focusing on clarity and user experience.\n- It emphasizes clear formatting, including code blocks, line breaks, placeholders, and punctuation, for easy readability.\n- It outlines how to handle optional, mutually exclusive, and repeating arguments, recommending simplification for click-to-copy examples.\n- The guide details how to present command prompts, input/output, and command-line terminology for consistency.\n- It offers specific recommendations for handling output from commands, including selective inclusion and introductory phrases.\n\nThis document provides best practices for documenting command-line commands, focusing on clarity and user experience.\n\nIt emphasizes clear formatting, including code blocks, line breaks, placeholders, and punctuation, for easy readability.\n\nIt outlines how to handle optional, mutually exclusive, and repeating arguments, recommending simplification for click-to-copy examples.\n\nThe guide details how to present command prompts, input/output, and command-line terminology for consistency.\n\nIt offers specific recommendations for handling output from commands, including selective inclusion and introductory phrases.\n\nThis page shows how to document command-line commands and their arguments. For more
 information about formatting code that appears in text, placeholders, and code samples, see the
 following links:\n\n- Code in text\n- Formatting placeholders\n- Code samples\n\n\n## Best practices\n\nWhen you write procedural or conceptual documentation for a command-line command, apply the
@@ -14,7 +14,7 @@ following links:\n\n- Code in text\n- Formatting placeholders\n- Code samples\n\
 
 Recommended:
 To connect to the instance, use the
-    
+
 gcloud compute ssh command:
 gcloud compute ssh\n- Determine which arguments are needed to complete each task in the recommended way.
     To minimize the number of options that you need to document in non-reference content, use as
@@ -34,7 +34,7 @@ For more information, see the
       Optional arguments in click-to-copy commands
       section of this document.\n\nProvide an inline link to the command reference. A good place for that link is in
     the text that introduces the command or a series of steps.\n\nRecommended:\n\nTo connect to the instance, use the
-    
+
 gcloud compute ssh command:\n\n```\ngcloud compute ssh\n```\n\nProvide a click-to-copy command example that the reader doesn't need to edit after they
     copy it. If possible, include only runnable code and placeholder variables in the
     click-to-copy example.\n\nSome command examples contain
@@ -95,12 +95,12 @@ lines, we recommend using separate code blocks for input and output.\n\nRecommen
   Best practices and
   Optional arguments in click-to-copy commands
   sections of this document.\n\nIn the following example, choose either FILE_1 or FILE_2:\n\n```\n{FILE_1|FILE_2}\n```\n\nIn the following example, there are also two options:
-    
+
 Left side of pipe: If the source code is deployed from a cloud
         repository, the following is required:
 --source=CLOUD_SOURCE --source-url=SOURCE_URL
 Right side of pipe: If the source code is in a local directory:
-        
+
 --bucket=BUCKET is required.
 --source=LOCAL_SOURCE is optional, as specified by the square
             brackets.
@@ -141,7 +141,7 @@ Remove the optional arguments. As a best practice,
 Recommended:
 To get an aggregate list of all virtual machine (VM) instances in all zones for a project,
       use the
-      
+
 gcloud compute instances list command:
 gcloud compute instances list
 If you want to narrow the list of VMs to a specific zone, use the previous command with the
@@ -153,7 +153,7 @@ Use separate code blocks for each option. In some cases, it might be ideal to
 
 Recommended:
 To create a bootable Compute Engine image, use the
-      
+
 gcloud compute images import command:
 gcloud compute images import IMAGE_NAME \
     --source-file=SOURCE_FILE
@@ -195,7 +195,7 @@ To create a VM with a custom name and attach one or more existing stateful disks
       with one or multiple --stateful-disk flags. In the following example, you
       optionally specify the auto-delete subflag to keep or discard each disk when the
       VM is permanently deleted:
-    
+
 gcloud compute instance-groups managed create-instance NAME \
     --instance=VM_NAME \
     --stateful-disk=device-name=DEVICE_NAME,source=DISK[,auto-delete=DELETE_RULE]
@@ -404,7 +404,7 @@ cancel, end, exit, interrupt, quit, or
 terminate.\n\n- Left side of pipe: If the source code is deployed from a cloud
         repository, the following is required:
 --source=CLOUD_SOURCE --source-url=SOURCE_URL\n- Right side of pipe: If the source code is in a local directory:
-        
+
 --bucket=BUCKET is required.
 --source=LOCAL_SOURCE is optional, as specified by the square
             brackets.\n- --bucket=BUCKET is required.\n- --source=LOCAL_SOURCE is optional, as specified by the square
@@ -430,7 +430,7 @@ parameter GLOBAL_FLAG:\n\n```\ngcloud dns GROUP [GLOBAL_FLAG ...]\n```\n\n\n## O
 Recommended:
 To get an aggregate list of all virtual machine (VM) instances in all zones for a project,
       use the
-      
+
 gcloud compute instances list command:
 gcloud compute instances list
 If you want to narrow the list of VMs to a specific zone, use the previous command with the
@@ -439,7 +439,7 @@ If you want to narrow the list of VMs to a specific zone, use the previous comma
 
 Recommended:
 To create a bootable Compute Engine image, use the
-      
+
 gcloud compute images import command:
 gcloud compute images import IMAGE_NAME \
     --source-file=SOURCE_FILE
@@ -475,7 +475,7 @@ To create a VM with a custom name and attach one or more existing stateful disks
       with one or multiple --stateful-disk flags. In the following example, you
       optionally specify the auto-delete subflag to keep or discard each disk when the
       VM is permanently deleted:
-    
+
 gcloud compute instance-groups managed create-instance NAME \
     --instance=VM_NAME \
     --stateful-disk=device-name=DEVICE_NAME,source=DISK[,auto-delete=DELETE_RULE]
@@ -491,11 +491,11 @@ gcloud compute instance-groups managed create-instance example-database-mig \
     find the full list of options. For more information, check with product management or a
     technical support specialist for the most relevant arguments.\n\nRecommended:\n\nTo get an aggregate list of all virtual machine (VM) instances in all zones for a project,
       use the
-      
+
 gcloud compute instances list command:\n\n```\ngcloud compute instances list\n```\n\nIf you want to narrow the list of VMs to a specific zone, use the previous command with the
       --zones flag.\n\nUse separate code blocks for each option. In some cases, it might be ideal to
     provide more than one click-to-copy code block within the same section.\n\nRecommended:\n\nTo create a bootable Compute Engine image, use the
-      
+
 gcloud compute images import command:\n\n```\ngcloud compute images import IMAGE_NAME \
     --source-file=SOURCE_FILE\n```\n\nIf you're importing an image with an existing license, specify the
       --byol flag:\n\n```\ngcloud compute images import IMAGE_NAME \

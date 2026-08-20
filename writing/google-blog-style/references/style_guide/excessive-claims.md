@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/excessive-claims\n\n# Avoid excessive claims
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Avoid excessive claims in documentation, which are statements about performance, cost, or security that aren't easily verifiable or could be invalidated by future events.\n- Refrain from using superlatives and subjective language when describing products and features, instead focusing on factual and objective information.\n- When making specific performance or security claims, ensure they are backed by verifiable data and consider potential future scenarios that could impact their validity.\n- Emphasize the intended benefits and design of features rather than making absolute guarantees, especially regarding security.\n- Prioritize writing factually and objectively, providing verifiable information that will remain true throughout the documentation's lifespan, even when comparing products.\n\nAvoid excessive claims in documentation, which are statements about performance, cost, or security that aren't easily verifiable or could be invalidated by future events.\n\nRefrain from using superlatives and subjective language when describing products and features, instead focusing on factual and objective information.\n\nWhen making specific performance or security claims, ensure they are backed by verifiable data and consider potential future scenarios that could impact their validity.\n\nEmphasize the intended benefits and design of features rather than making absolute guarantees, especially regarding security.\n\nPrioritize writing factually and objectively, providing verifiable information that will remain true throughout the documentation's lifespan, even when comparing products.\n\nIn documentation, don't make excessive claims. An excessive claim is an assertion
    in the documentation that does any of the following:\n\n- Makes a statement about performance or cost that isn't easily verifiable with data
     that's available to the reader.\n- Makes a statement about security that would be invalidated by a security incident.\n- Makes a statement that might be interpreted as subjective or even disparaging,

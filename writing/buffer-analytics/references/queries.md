@@ -7,7 +7,7 @@ Execute any of these queries using `uv run scripts/buffer_analytics.py query "<S
 ## 1. Top Performing Posts by Reach & Impressions
 
 ```sql
-SELECT 
+SELECT
     service,
     sent_date,
     CAST(impressions AS INTEGER) AS impressions,
@@ -26,7 +26,7 @@ LIMIT 15;
 ## 2. Best Days of the Week to Post (by Social Network)
 
 ```sql
-SELECT 
+SELECT
     service,
     day_of_week,
     COUNT(*) AS total_posts,
@@ -45,7 +45,7 @@ ORDER BY service, avg_impressions DESC;
 ## 3. Best Hours of the Day (UTC)
 
 ```sql
-SELECT 
+SELECT
     service,
     hour_of_day || ':00 UTC' AS posting_hour,
     COUNT(*) AS total_posts,
@@ -66,7 +66,7 @@ ORDER BY avg_impressions DESC;
 Compare posts with links in the body vs. posts without links (e.g. first comment strategy):
 
 ```sql
-SELECT 
+SELECT
     service,
     CASE WHEN has_link = 1 THEN 'Link in Body' ELSE 'No Link / Link in Comment' END AS link_placement,
     COUNT(*) AS post_count,
@@ -84,9 +84,9 @@ GROUP BY service, has_link;
 ## 5. Post Length vs Performance (Short vs Medium vs Long-Form)
 
 ```sql
-SELECT 
+SELECT
     service,
-    CASE 
+    CASE
         WHEN char_count < 280 THEN 'Short (<280 chars)'
         WHEN char_count BETWEEN 280 AND 800 THEN 'Medium (280-800 chars)'
         ELSE 'Long-form (>800 chars)'
@@ -106,25 +106,23 @@ ORDER BY service, avg_impressions DESC;
 
 ## 6. Topic Cohort Performance
 
-Analyze performance across specific technical topics:
+Analyze engagement across specific topic keywords or hashtag clusters:
 
 ```sql
-SELECT 
-    CASE 
-        WHEN LOWER(text) LIKE '%golang%' OR LOWER(text) LIKE '%#golang%' OR LOWER(text) LIKE '%go develop%' THEN 'Go / Golang'
-        WHEN LOWER(text) LIKE '%subagent%' OR LOWER(text) LIKE '%swarm%' OR LOWER(text) LIKE '%agent%' THEN 'AI Agents / Antigravity'
-        WHEN LOWER(text) LIKE '%game%' OR LOWER(text) LIKE '%atari%' OR LOWER(text) LIKE '%ebitengine%' THEN 'Gaming / GameDev'
-        WHEN LOWER(text) LIKE '%pricing%' OR LOWER(text) LIKE '%cheaper%' OR LOWER(text) LIKE '%cost%' THEN 'Cost & Benchmarks'
+SELECT
+    CASE
+        WHEN LOWER(text) LIKE '%#topic1%' OR LOWER(text) LIKE '%keyword1%' THEN 'Topic 1'
+        WHEN LOWER(text) LIKE '%#topic2%' OR LOWER(text) LIKE '%keyword2%' THEN 'Topic 2'
         ELSE 'General / Other'
-    END AS topic,
+    END AS topic_cohort,
     COUNT(*) AS total_posts,
     ROUND(AVG(impressions), 0) AS avg_impressions,
     ROUND(AVG(reactions), 1) AS avg_reactions,
     ROUND(AVG(comments), 1) AS avg_comments,
     ROUND(AVG(engagement_rate), 2) AS avg_eng_rate
 FROM v_posts_summary
-WHERE status = 'sent' AND service = 'linkedin'
-GROUP BY topic
+WHERE status = 'sent'
+GROUP BY topic_cohort
 ORDER BY avg_impressions DESC;
 ```
 
@@ -133,7 +131,7 @@ ORDER BY avg_impressions DESC;
 ## 7. Monthly Performance & Growth Trajectory
 
 ```sql
-SELECT 
+SELECT
     year_month,
     service,
     COUNT(*) AS total_posts,

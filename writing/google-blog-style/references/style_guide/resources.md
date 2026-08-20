@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/resources\n\n# About this guide
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This style guide helps you write clear and consistent technical documentation for software developers and other technical practitioners.\n- Refer to project-specific guidelines first, then this guide, and finally third-party references like Merriam-Webster or the Chicago Manual of Style for questions.\n- While this guide offers recommendations, prioritize clarity and consistency for your specific domain and readers, even if it means deviating from the guidelines.\n- For Android or Google Cloud specific guidelines, look for the respective platform logos within the documentation.\n\nThis style guide helps you write clear and consistent technical documentation for software developers and other technical practitioners.\n\nRefer to project-specific guidelines first, then this guide, and finally third-party references like Merriam-Webster or the Chicago Manual of Style for questions.\n\nWhile this guide offers recommendations, prioritize clarity and consistency for your specific domain and readers, even if it means deviating from the guidelines.\n\nFor Android or Google Cloud specific guidelines, look for the respective platform logos within the documentation.\n\nThis style guide provides editorial guidelines for writing clear and consistent technical
   documentation for an audience of software developers and other technical practitioners.\n\nIf you're new to the guide and looking for introductory topics about our style, then start with
   Highlights, Voice and tone, and
@@ -15,7 +15,7 @@ Source: https://developers.google.com/style/resources\n\n# About this guide
     as necessary exceptions to this guide or terms that are relevant only to your product.\n- This style guide. If project-specific style guidelines don't provide explicit
     guidance, then follow this guide.\n- Third-party references. If the preceding references don't provide explicit guidance,
     then see these third-party references, depending on the nature of your question:
-    
+
 
 Type of question
 Third-party reference

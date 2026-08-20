@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/img-elements\n\n# Cross-references and linking
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Prioritize providing context and help within the document itself instead of relying heavily on external links for supplementary information.\n- When linking to other documents or sections, use clear and descriptive link text that accurately reflects the content being linked.\n- Ensure links open in the same window unless absolutely necessary, and in such cases, explicitly inform the reader that the link will open in a new tab.\n- Maintain consistency by using site-root-relative URLs for internal links and avoid unnecessary link repetition.\n- When linking externally, use HTTPS if supported and clearly indicate when a link leads to a different domain or server within the link text if deemed important.\n\nPrioritize providing context and help within the document itself instead of relying heavily on external links for supplementary information.\n\nWhen linking to other documents or sections, use clear and descriptive link text that accurately reflects the content being linked.\n\nEnsure links open in the same window unless absolutely necessary, and in such cases, explicitly inform the reader that the link will open in a new tab.\n\nMaintain consistency by using site-root-relative URLs for internal links and avoid unnecessary link repetition.\n\nWhen linking externally, use HTTPS if supported and clearly indicate when a link leads to a different domain or server within the link text if deemed important.\n\nIn general, cross-references link to nonessential information that adds to
 the reader's understanding.\n\nWhen used well, cross-references help readers navigate and understand
 documentation. But cross-references can easily become disruptive. The guidelines

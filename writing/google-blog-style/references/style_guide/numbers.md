@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/numbers\n\n# Numbers
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Spell out numbers zero through nine and use numerals for numbers 10 and greater, with exceptions for technical quantities and specific contexts like version numbers.\n- Use numerals for dimensions, percentages, currency, and measurements, ensuring proper formatting and units.\n- Express fractions as decimals when possible, and format ranges of numbers with hyphens.\n- For clarity, provide real-world examples and visuals to support comprehension of numerical concepts.\n- Write out ordinal numbers (first, second, third) instead of using numerals (1st, 2nd, 3rd).\n\nSpell out numbers zero through nine and use numerals for numbers 10 and greater, with exceptions for technical quantities and specific contexts like version numbers.\n\nUse numerals for dimensions, percentages, currency, and measurements, ensuring proper formatting and units.\n\nExpress fractions as decimals when possible, and format ranges of numbers with hyphens.\n\nFor clarity, provide real-world examples and visuals to support comprehension of numerical concepts.\n\nWrite out ordinal numbers (first, second, third) instead of using numerals (1st, 2nd, 3rd).\n\n\n## Ordinal numbers\n\nSpell out all ordinal numbers in text.\n\nRecommended: first, fifth, twelfth,
 forty-third\n\nNot recommended: 1st, 5th, 12th, 43rd\n\n\n## Numbers as words\n\nThis section covers when to spell out numbers as words.\n\nIf it's important to have the number and associated noun together on the same line, use
 a nonbreaking space between the number and the noun.\n\nIn general, spell out the following:\n\n- Numbers from zero through nine, except as noted in
@@ -92,7 +92,7 @@ expressions.\n- Numbers less than 10 when they appear in the same sentence with
           numbers greater than 9.
 Recommended: The
           menu contains 15 options but 6 of them are deselected.\n- Negative numbers.\n- Most fractions.\n- Percentages.\n- Dimensions.\n- Numbers containing decimal points.
-    
+
 Treat decimal numbers as plural even when less than or equal to 1.0.
 Recommended: 1.0 inches
 For decimal numbers less than one, place a zero in front of the decimal point.

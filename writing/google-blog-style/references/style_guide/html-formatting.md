@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/html-formatting\n\n# HTML formatting
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Adhere to Google's HTML/CSS Style Guide, ensuring optional elements are included and utilizing spaces for indentation instead of tabs.\n- Maintain consistent indentation with two spaces per level, employ lowercase for elements and attributes, and avoid trailing spaces unless necessary for Markdown.\n- Observe an 80-character line length limit, with exceptions for meta elements, long URLs, and specific legacy file formatting.\n- Break code snippets within <pre> blocks at 80 characters while ensuring the code's meaning remains intact and considering exceptions for existing file consistency.\n\nAdhere to Google's HTML/CSS Style Guide, ensuring optional elements are included and utilizing spaces for indentation instead of tabs.\n\nMaintain consistent indentation with two spaces per level, employ lowercase for elements and attributes, and avoid trailing spaces unless necessary for Markdown.\n\nObserve an 80-character line length limit, with exceptions for meta elements, long URLs, and specific legacy file formatting.\n\nBreak code snippets within <pre> blocks at 80 characters while ensuring the code's meaning remains intact and considering exceptions for existing file consistency.\n\nFollow Google's HTML/CSS
 Style Guide. Exception: don't leave out optional elements.\n\nIn particular, following are some basic guidelines from that style guide,
 which generally apply to other documentation source files, too (such as YAML and Markdown):\n\n- Don't use tabs to indent text; use spaces only. Different text

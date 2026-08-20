@@ -111,7 +111,7 @@ Google displays a favicon next to the site name and URL in mobile and desktop SE
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-  
+
   <!-- Apple Touch Icon fallback -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
@@ -128,7 +128,7 @@ graph TD
     QUERY[User Query: What / How / Why / Comparison]
     H2[Target Heading: H2 / H3 with Exact Question]
     ANSWER[Direct Answer Lead Block: 40-60 Words / List / Table]
-    
+
     QUERY --> H2
     H2 --> ANSWER
     ANSWER --> SERP_P0[Position 0 Featured Snippet Extraction]

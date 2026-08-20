@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/jargon\n\n# Jargon
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Jargon, while common in specific groups, can hinder clear communication, especially for global or diverse audiences.\n- When possible, avoid or replace jargon with plain language for better clarity and inclusivity.\n- If jargon is necessary (e.g., for SEO), define it clearly on first use or link to a trusted definition.\n- Prioritize clear communication over using specialized terminology that may not be widely understood.\n\nJargon, while common in specific groups, can hinder clear communication, especially for global or diverse audiences.\n\nWhen possible, avoid or replace jargon with plain language for better clarity and inclusivity.\n\nIf jargon is necessary (e.g., for SEO), define it clearly on first use or link to a trusted definition.\n\nPrioritize clear communication over using specialized terminology that may not be widely understood.\n\nJargon is the specialized and often figurative terminology of a specific group to represent a
 larger concept—for example, camel case, swim lane,
 break-glass procedure, or out-of-the-box. Jargon can also include
@@ -44,12 +44,12 @@ Recommended: A better approach is to use
     dead letter queue.\n- Is the term used in a command or code sample? If so, use the words only in direct reference to the code items
     (formatted as code), and make it clear
     what you're referring to.
-  
+
 
 Recommended: Add a user to the
     allowlist (whitelist) by entering the following:
     whitelist adduser EMAIL_ADDRESS.
-  
+
 
 Not recommended: Add a user to the
     whitelist by entering the following: whitelist adduser

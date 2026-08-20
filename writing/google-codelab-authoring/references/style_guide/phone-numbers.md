@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/phone-numbers\n\n# Format phone numbers in text
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This guide provides formatting instructions for phone numbers in technical documentation, using HTML or Markdown.\n- Use non-breaking spaces and hyphens (&nbsp;, &#8209;) to ensure phone numbers are displayed on a single line.\n- For example phone numbers, utilize the reserved range (800) 555‑0100 through (800) 555‑0199 and avoid real numbers.\n- Adhere to specific formatting guidelines for North American and international phone numbers, including country and area codes when applicable.\n- When including extensions, follow the phone number with the word "extension" and the corresponding number.\n\nThis guide provides formatting instructions for phone numbers in technical documentation, using HTML or Markdown.\n\nUse non-breaking spaces and hyphens (&nbsp;, &#8209;) to ensure phone numbers are displayed on a single line.\n\nFor example phone numbers, utilize the reserved range (800) 555‑0100 through (800) 555‑0199 and avoid real numbers.\n\nAdhere to specific formatting guidelines for North American and international phone numbers, including country and area codes when applicable.\n\nWhen including extensions, follow the phone number with the word "extension" and the corresponding number.\n\nThis page describes how to use and format phone numbers in technical documentation. This page
 doesn't provide guidance on how to enter or use phone numbers in Google or third-party products.
 If you need information about entering phone numbers in a specific product, consult the

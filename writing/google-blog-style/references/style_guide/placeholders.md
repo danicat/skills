@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/placeholders\n\n# Format placeholders
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This page provides guidance on formatting placeholders within commands, code samples, and text strings for Google developer documentation.\n- Placeholders represent values that readers need to replace when using code samples or indicate variable values in example output.\n- Specific formatting rules are outlined for placeholders in inline text, code blocks, and general text, emphasizing clear and descriptive naming conventions.\n- The document also details how to effectively explain placeholders to readers, including providing context and descriptions for each placeholder used.\n- Guidelines for handling placeholders in output examples are provided, ensuring clarity and understanding of the presented information.\n\nThis page provides guidance on formatting placeholders within commands, code samples, and text strings for Google developer documentation.\n\nPlaceholders represent values that readers need to replace when using code samples or indicate variable values in example output.\n\nSpecific formatting rules are outlined for placeholders in inline text, code blocks, and general text, emphasizing clear and descriptive naming conventions.\n\nThe document also details how to effectively explain placeholders to readers, including providing context and descriptions for each placeholder used.\n\nGuidelines for handling placeholders in output examples are provided, ensuring clarity and understanding of the presented information.\n\nThis page explains how to format placeholders in commands, code samples, and text
 strings. This page doesn't explain how to implement visual styling for placeholders, but it does
 show examples of how Google developer documentation style renders placeholders as visually
@@ -38,7 +38,7 @@ asterisk (*) before the first backtick and after the second one
           ...
       </pre>\n- In Markdown, wrap the code block in a code fence (```). Inside a
 code fence, you can't apply formatting like bold or italic.
-      
+
 ```
 PLACEHOLDER_NAME
 ```\n\nIn HTML, wrap the code block in a pre element,
@@ -51,7 +51,7 @@ PLACEHOLDER_NAME
       </pre>\n```\n\n```\n```
 PLACEHOLDER_NAME
 ```\n```\n\n\n### Placeholder text\n\nUse uppercase characters with underscore delimiters.\n\nFor example, in HTML:\n\nRecommended:\n\n- .../<var>API_NAME</var>\n- .../<var>METHOD_NAME</var>\n\nNot recommended:\n\n- .../<var>API-name</var>\n- .../<var>API_name</var>\n- .../<var>API name</var>\n- .../<var>api_name</var>\n- .../<var>api-name</var>\n- .../<var>apiName</var>\n\nIn Markdown:\n\nRecommended:
-    
+
 .../*API_NAME*
 .../*METHOD_NAME*\n\n- .../*API_NAME*\n- .../*METHOD_NAME*\n\nIf the context in which your placeholders appear makes using
 uppercase characters with underscore delimiters a bad idea, use something else

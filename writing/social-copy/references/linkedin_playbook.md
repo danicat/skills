@@ -138,10 +138,10 @@ When publishing via automated tooling or the Buffer CLI:
      ```bash
      cat << 'EOF' | pbcopy
      Links to everything mentioned in the post:
-     
+
      📖 Technical Deep Dive:
      https://example.com/posts/deep-dive
-     
+
      🛠️ Project Repository:
      https://github.com/example/project
      EOF
@@ -154,4 +154,3 @@ When publishing via automated tooling or the Buffer CLI:
 - **Zero Cost ($0/year)**: Bypasses expensive subscription gates.
 - **Zero Forgotten Comments**: The author is already at their keyboard when the post is dispatched live.
 - **Boosts Golden-Hour Velocity**: Triggers an active author session and native interaction on LinkedIn immediately after publishing, which signals active conversation to LinkedIn's algorithm.
-

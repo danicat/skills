@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/semicolons\n\n# Semicolons
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nIf possible, avoid using semicolons. In a few cases, a semicolon is preferred:\n\n- When joining two closely related independent clauses where a period or a comma is not as
       effective.
 Recommended: You can easily test

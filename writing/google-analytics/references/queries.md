@@ -1,13 +1,13 @@
 # Google Analytics 4 SQL Query Cookbook
 
-Pre-tested SQL query recipes for analyzing website traffic, content engagement, retention, and localization performance in SQLite.
+Execute these queries using `uv run scripts/google_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
 
 ---
 
 ## 1. Top Articles by Reading Depth & Active Dwell Time
 
 ```sql
-SELECT 
+SELECT
     page_path,
     page_title,
     total_views,
@@ -16,44 +16,51 @@ SELECT
     total_dwell_min || 'm' AS total_dwell,
     avg_bounce_pct || '%' AS bounce_pct
 FROM v_page_performance
-WHERE page_path LIKE '/posts/%'
 ORDER BY total_dwell_min DESC
 LIMIT 15;
 ```
 
 ---
 
-## 2. Localization Performance Comparison (`/` vs `/ja/` vs `/pt-br/`)
+## 2. Path & Subdirectory Performance Comparison (e.g. `/docs/`, `/blog/`, `/tutorials/`)
 
 ```sql
-SELECT 
-    localization,
-    COUNT(DISTINCT page_path) AS article_count,
+SELECT
+    CASE
+        WHEN page_path LIKE '/docs/%' THEN 'Documentation'
+        WHEN page_path LIKE '/blog/%' OR page_path LIKE '/posts/%' THEN 'Articles / Blog'
+        WHEN page_path LIKE '/tutorials/%' THEN 'Tutorials'
+        WHEN page_path = '/' THEN 'Homepage'
+        ELSE 'Other'
+    END AS content_category,
+    COUNT(DISTINCT page_path) AS page_count,
     SUM(total_views) AS total_page_views,
     SUM(total_users) AS unique_readers,
     ROUND(SUM(total_dwell_min), 1) AS total_dwell_minutes,
     ROUND(SUM(total_dwell_min) * 60.0 / MAX(SUM(total_users), 1), 1) AS avg_dwell_per_user_sec,
     ROUND(AVG(avg_bounce_pct), 1) AS avg_bounce_pct
 FROM v_page_performance
-GROUP BY localization
+GROUP BY content_category
 ORDER BY total_page_views DESC;
 ```
 
 ---
 
-## 3. Country-Specific Preference for Japanese vs English
+## 3. Geographic Audience Distribution (Top Countries by Engagement)
 
 ```sql
-SELECT 
+SELECT
     country,
-    SUM(CASE WHEN page_path LIKE '/ja/%' THEN screen_page_views ELSE 0 END) AS ja_views,
-    SUM(CASE WHEN page_path NOT LIKE '/ja/%' AND page_path NOT LIKE '/pt-br/%' THEN screen_page_views ELSE 0 END) AS en_views,
-    SUM(screen_page_views) AS total_views,
-    ROUND(SUM(CASE WHEN page_path LIKE '/ja/%' THEN screen_page_views ELSE 0 END) * 100.0 / MAX(SUM(screen_page_views), 1), 1) AS ja_share_pct
+    SUM(sessions) AS total_sessions,
+    SUM(active_users) AS total_users,
+    SUM(screen_page_views) AS total_page_views,
+    ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) AS avg_dwell_sec,
+    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
 FROM daily_pages
-WHERE country IN ('Japan', 'United States', 'Brazil', 'United Kingdom', 'Germany')
+WHERE country IS NOT NULL AND country != '' AND country != '(not set)'
 GROUP BY country
-ORDER BY total_views DESC;
+ORDER BY total_sessions DESC
+LIMIT 10;
 ```
 
 ---
@@ -61,7 +68,7 @@ ORDER BY total_views DESC;
 ## 4. Top Traffic Channels & Conversion Engagement Rate
 
 ```sql
-SELECT 
+SELECT
     channel_group,
     source_medium,
     SUM(total_sessions) AS sessions,
@@ -80,7 +87,7 @@ ORDER BY sessions DESC;
 ## 5. Day-of-the-Week Traffic Trends
 
 ```sql
-SELECT 
+SELECT
     CASE CAST(strftime('%w', date) AS INTEGER)
         WHEN 0 THEN 'Sunday'
         WHEN 1 THEN 'Monday'
@@ -102,10 +109,26 @@ ORDER BY avg_sessions DESC;
 
 ---
 
-## 6. Outbound Exit Clicks to Developer Resources
+## 6. Month-over-Month Growth Trajectory
 
 ```sql
-SELECT 
+SELECT
+    strftime('%Y-%m', date) AS month,
+    SUM(screen_page_views) AS views,
+    SUM(sessions) AS sessions,
+    SUM(active_users) AS users,
+    ROUND(SUM(user_engagement_duration) / 60.0, 1) AS total_dwell_min
+FROM daily_pages
+GROUP BY month
+ORDER BY month DESC;
+```
+
+---
+
+## 7. Outbound Exit Clicks to Developer & External Resources
+
+```sql
+SELECT
     link_url,
     total_clicks,
     total_users,

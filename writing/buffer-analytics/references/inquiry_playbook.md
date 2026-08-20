@@ -14,7 +14,7 @@ When evaluating day-of-week, topic, or channel performance, always compare the *
 
 ### SQL / Python Template
 ```sql
-SELECT 
+SELECT
     day_of_week,
     COUNT(*) AS post_count,
     ROUND(AVG(impressions), 0) AS mean_impressions,
@@ -37,7 +37,7 @@ Determine whether reach, engagement rate, and audience response are compounding 
 
 ### SQL Template
 ```sql
-SELECT 
+SELECT
     service,
     strftime('%Y-%m', sent_at) AS year_month,
     COUNT(*) AS posts_published,

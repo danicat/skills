@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/headings-targets\n\n# Make headings into link targets
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Turn a heading into a link target by adding an id attribute within a <section> element or directly to the heading tag in HTML.\n- When creating custom anchors, use lowercase letters, hyphens between words, and ensure they are descriptive yet concise.\n- Consider adding custom anchors for frequently linked content or when revising headings to prevent broken links.\n- If revising a heading with an existing anchor, create a new custom anchor using the older ID to maintain link functionality, or update existing links if changing the anchor.\n\nTurn a heading into a link target by adding an id attribute within a <section> element or directly to the heading tag in HTML.\n\nWhen creating custom anchors, use lowercase letters, hyphens between words, and ensure they are descriptive yet concise.\n\nConsider adding custom anchors for frequently linked content or when revising headings to prevent broken links.\n\nIf revising a heading with an existing anchor, create a new custom anchor using the older ID to maintain link functionality, or update existing links if changing the anchor.\n\nThis page discusses how to turn a heading into a link target by using an
     id attribute. For more information about how to format headings, see
     Headings and titles.\n\nIn some content management systems, anchors are automatically created for headings. However, you
@@ -24,7 +24,7 @@ To add an anchor to a heading in HTML, add a section element
     introduction-to-everything.
 
     <section id="ID_OF_ANCHOR"></section>
-  
+
 
 Recommended:
 
@@ -32,20 +32,20 @@ Recommended:
   <h2>Introduction to everything</h2>
   ...
   </section>
-  
+
 Acceptable:
 
   <h2 id="introduction-to-everything">Introduction to everything</h2>
-  
+
 Not recommended:
 
   <h2><a name="Introduction_To_Everything">Introduction to everything</a></h2>
-  
+
 Not recommended:
 
   <a name="Introduction_To_Everything"></a>
   <h2>Introduction to everything</h2>
-  
+
 
 
 

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/code-in-text\n\n# Code in text
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Code font is used for verbatim text entry, boundary demarcation, and entity separation in technical documentation for clarity and readability.\n- Specific items to use code font for include attribute names, class names, command output, data types, database elements, filenames, and more, as detailed in the provided table.\n- Items to avoid using code font for are domain names, IP addresses, product or service names, and URLs for browser navigation.\n- Conditional code font usage applies to Boolean values, command-line utility names, and email addresses depending on context and usage.\n- Specific formatting and grammatical considerations exist for code font usage in technical documentation, including method names, HTTP status codes, and UI elements, to ensure consistency and clarity.\n\nCode font is used for verbatim text entry, boundary demarcation, and entity separation in technical documentation for clarity and readability.\n\nSpecific items to use code font for include attribute names, class names, command output, data types, database elements, filenames, and more, as detailed in the provided table.\n\nItems to avoid using code font for are domain names, IP addresses, product or service names, and URLs for browser navigation.\n\nConditional code font usage applies to Boolean values, command-line utility names, and email addresses depending on context and usage.\n\nSpecific formatting and grammatical considerations exist for code font usage in technical documentation, including method names, HTTP status codes, and UI elements, to ensure consistency and clarity.\n\nIn ordinary text sentences (as opposed to, say, code samples),
   use code font to mark up most things that have anything to do with code. Code
   font helps to clarify for your reader which text refers to an entity in these
@@ -98,7 +98,7 @@ then use both code font and bold for that element.\n\nRecommended: In the Networ
     false, then refer to the evaluation in non-code font.
 
 Recommended:
-        
+
 If the update succeeds, returns true.
 enableCertificateValidation: If true, validates the SSL certificate
             before proceeding. If false, trusts the certificate without validating it.\n- If the update succeeds, returns true.\n- enableCertificateValidation: If true, validates the SSL certificate
@@ -124,7 +124,7 @@ The apt program includes commands from the apt-get
     address.
 
 Recommended:
-        
+
 Enter the username, not the full email address. For example, enter alex,
             not alex@example.com.
 For help, contact support@example.com.\n- Enter the username, not the full email address. For example, enter alex,
@@ -132,7 +132,7 @@ For help, contact support@example.com.\n- Enter the username, not the full email
     as true or false, or 1 or 0), then format
     the value as code. If you refer to the evaluation of a Boolean condition as true or
     false, then refer to the evaluation in non-code font.\n\nRecommended:
-        
+
 If the update succeeds, returns true.
 enableCertificateValidation: If true, validates the SSL certificate
             before proceeding. If false, trusts the certificate without validating it.\n\n- If the update succeeds, returns true.\n- enableCertificateValidation: If true, validates the SSL certificate
@@ -146,7 +146,7 @@ enableCertificateValidation: If true, validates the SSL certificate
     as computer input or output, use code font. If you want the reader to treat the email address as
     a way to contact someone or a reference to someone, use non-code font and hyperlink the email
     address.\n\nRecommended:
-        
+
 Enter the username, not the full email address. For example, enter alex,
             not alex@example.com.
 For help, contact support@example.com.\n\n- Enter the username, not the full email address. For example, enter alex,

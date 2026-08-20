@@ -1,10 +1,10 @@
 # Game Design Document (GDD) Template
 
-> **Game Title**: [Insert Title]  
-> **Target Genre**: [e.g., Arcade, Puzzle, Platformer, Shmup, Strategy, Rhythm, Action]  
-> **Target Platform**: Desktop (Windows/macOS/Linux) & WebAssembly (Google Cloud Run)  
-> **Target Aspect Ratio & Resolution**: 16:9 Widescreen (`320x180` or `640x360` Virtual Pixel Canvas)  
-> **Author / Lead Designer**: [User Name / Agent]  
+> **Game Title**: [Insert Title]
+> **Target Genre**: [e.g., Arcade, Puzzle, Platformer, Shmup, Strategy, Rhythm, Action]
+> **Target Platform**: Desktop (Windows/macOS/Linux) & WebAssembly (Google Cloud Run)
+> **Target Aspect Ratio & Resolution**: 16:9 Widescreen (`320x180` or `640x360` Virtual Pixel Canvas)
+> **Author / Lead Designer**: [User Name / Agent]
 
 ---
 

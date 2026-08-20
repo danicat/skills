@@ -46,4 +46,3 @@
 
 - [adr-template](https://skills.danicat.dev/standards/adr-template/SKILL.md): Activate this skill when proposing significant architectural changes, documenting codebase refactorings, or resolving design/technical debates. Use this skill to author, update, and maintain lightweight Architecture Decision Records (ADRs) to preserve engineering context. This skill must be triggered when the system needs to capture the why behind high-impact, hard-to-change structural choices.
 - [rfc-template](https://skills.danicat.dev/standards/rfc-template/SKILL.md): Activate this skill when proposing major features, exploring complex design alternatives under high ambiguity, or gathering technical consensus. Use this skill to draft, review, and progress collaborative Request for Comments (RFC) documents. Trigger this skill whenever a systematic design proposal is needed before drafting immutable Architecture Decision Records.
-

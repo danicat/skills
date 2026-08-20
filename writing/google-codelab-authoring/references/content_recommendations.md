@@ -1,7 +1,7 @@
 # Codelab Content Guidelines
 
 ## Core Goals
-We want our codelabs to have a conversational tone that feels helpful and peer-to-peer. They should focus on hands-on steps rather than passive reading. 
+We want our codelabs to have a conversational tone that feels helpful and peer-to-peer. They should focus on hands-on steps rather than passive reading.
 
 Keep the scope narrow. It is always better to split big tasks into multiple short codelabs. Always start simple and build up complexity over time.
 

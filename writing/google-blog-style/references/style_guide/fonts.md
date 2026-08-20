@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/fonts\n\n# HTML and semantic tagging
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Utilize HTML elements for their intended semantic purposes, such as using the cite element for titles of standalone works and referring to MDN's Semantics in HTML for further guidance.\n- When specific visual effects are desired and no semantically appropriate HTML elements exist, leverage CSS or HTML elements with inherent visual styling but without semantic implications.\n- Structure content with CSS for layout purposes, employ heading elements (like h1, h2) exclusively for hierarchical headings and use CSS for visual styling, and utilize semantic elements like em, strong, i, b, and br according to their intended meanings, using CSS for spacing adjustments.\n\nUtilize HTML elements for their intended semantic purposes, such as using the cite element for titles of standalone works and referring to MDN's Semantics in HTML for further guidance.\n\nWhen specific visual effects are desired and no semantically appropriate HTML elements exist, leverage CSS or HTML elements with inherent visual styling but without semantic implications.\n\nStructure content with CSS for layout purposes, employ heading elements (like h1, h2) exclusively for hierarchical headings and use CSS for visual styling, and utilize semantic elements like em, strong, i, b, and br according to their intended meanings, using CSS for spacing adjustments.\n\nUse HTML elements for the purposes that they were designed for. For example, when
 you give the title of a standalone work (such as a book or a movie), mark it
 with a cite

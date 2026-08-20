@@ -115,7 +115,7 @@ def generate_llms_txt(
     for md_file in path.glob("**/index.md"):
         content = md_file.read_text(encoding="utf-8")
         fm, body = parse_frontmatter(content)
-        
+
         # Skip drafts
         if fm.get("draft") is True:
             continue

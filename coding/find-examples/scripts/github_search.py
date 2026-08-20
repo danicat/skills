@@ -21,7 +21,7 @@ def search_github(dependency, languages, limit=5):
         'rust': 'Cargo.toml',
         'java': 'pom.xml'
     }
-    
+
     all_results = []
     repos = {}
 
@@ -36,14 +36,14 @@ def search_github(dependency, languages, limit=5):
             query = f"{dependency} language:{lang}"
         else:
             query = f'"{dependency}" filename:{filename} language:{lang}'
-        
+
         url = f"https://api.github.com/search/code?q={query}"
-        
+
         try:
             response = requests.get(url, headers=headers)
             response.raise_for_status()
             items = response.json().get('items', [])
-            
+
             for item in items:
                 repo_data = item['repository']
                 repo_full_name = repo_data['full_name']
@@ -60,7 +60,7 @@ def search_github(dependency, languages, limit=5):
             repo_resp = requests.get(repo_url, headers=headers)
             repo_resp.raise_for_status()
             repo_info = repo_resp.json()
-            
+
             enriched_repos.append({
                 'full_name': repo_info['full_name'],
                 'html_url': repo_info['html_url'],
@@ -81,11 +81,11 @@ if __name__ == "__main__":
     parser.add_argument('dependency', help='The dependency string')
     parser.add_argument('--lang', default='go', help='Target languages (comma-separated, e.g. "go,typescript")')
     parser.add_argument('--limit', type=int, default=5, help='Limit results')
-    
+
     args = parser.parse_args()
     results = search_github(args.dependency, args.lang, args.limit)
 
-    
+
     if not results:
         print("No examples found.")
     else:

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/articles\n\n# Articles (a, an, the)
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nFor ease of comprehension and translation, include definite and indefinite
   articles (a, an, and the) in your writing. Don't skip
   articles for brevity, including in headings and titles.\n\nRecommended: Create a VM instance\n\nNot recommended: Create VM instance\n\nFor more information about using standard English word order and about writing

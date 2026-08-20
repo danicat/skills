@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/images\n\n# Diagrams, figures, and other images
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Images should only be used for visual UI elements or diagrams when necessary, and avoid using images for code, text or terminal output.\n- Prioritize accessibility by providing concise and descriptive alt text for all images, with longer descriptions in surrounding text for complex images; use empty alt text (alt="") for purely decorative images.\n- Introduce images with complete sentences ending with a colon or period for clarity and context.\n- Maintain image quality by using high-resolution images with the srcset attribute for high-DPI displays, and ensure images are appropriately sized for layout.\n- When creating images, use drawing tools for diagrams (SVG or PNG) and screen capture tools for screenshots, ensuring consistency and cropping to show relevant information only; use resource-efficient formats like MP4 for animations and videos.\n\nImages should only be used for visual UI elements or diagrams when necessary, and avoid using images for code, text or terminal output.\n\nPrioritize accessibility by providing concise and descriptive alt text for all images, with longer descriptions in surrounding text for complex images; use empty alt text (alt="") for purely decorative images.\n\nIntroduce images with complete sentences ending with a colon or period for clarity and context.\n\nMaintain image quality by using high-resolution images with the srcset attribute for high-DPI displays, and ensure images are appropriately sized for layout.\n\nWhen creating images, use drawing tools for diagrams (SVG or PNG) and screen capture tools for screenshots, ensuring consistency and cropping to show relevant information only; use resource-efficient formats like MP4 for animations and videos.\n\nUse images only when they provide useful visual explanations of information
 that is otherwise difficult to express with words. For screenshots, be discreet. Only capture UIs
 that are important to the discussion.\n\n\n## Create and save images\n\nConsider the following guidelines for images:\n\n- To create a diagram, use any drawing tool.\n- To take a screenshot, use any screen capture tool.\n- Don't use images of text, code samples, or terminal output. Use actual
@@ -74,13 +74,13 @@ screenshots that immediately follow procedural text that describes a UI.\n\n\n##
       ecommerce application:\n\nIn figure 1, the ecommerce application's capabilities are separated into
   bounded contexts and migrated to services as follows:\n\n- Order management and fulfillment capabilities are bound into the
     following categories:
-  
+
 The order management capability migrates to the order service.
 The logistics delivery management capability migrates to the
         delivery service.
 The inventory capability migrates to the inventory service.\n- The order management capability migrates to the order service.\n- The logistics delivery management capability migrates to the
         delivery service.\n- The inventory capability migrates to the inventory service.\n- Accounting capabilities are bound into a single category:
-  
+
 The consumer, sellers, and third-party capabilities are bound
         together and migrate to the account service.\n- The consumer, sellers, and third-party capabilities are bound
         together and migrate to the account service.\n\n- The order management capability migrates to the order service.\n- The logistics delivery management capability migrates to the

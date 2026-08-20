@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/prescriptive-documentation\n\n# Prescriptive documentation
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Prescriptive documentation provides direct guidance by recommending specific actions and paths to achieve goals, rather than presenting multiple options.\n- The structure, examples, and procedures in prescriptive documents are tailored to the most relevant use cases and reader needs.\n- When writing prescriptive documentation, the words "must," "can," and "might" are used to indicate required, optional, or possible actions/outcomes respectively, whereas "should" is generally avoided due to its ambiguity.\n- To make actions clear, writers should use imperatives for required steps, or employ phrases like "We recommend" for suggested actions.\n- When describing a state or outcome, prescriptive documentation should use precise language that conveys whether the state is actual or required and the outcome is expected or possible.\n\nPrescriptive documentation provides direct guidance by recommending specific actions and paths to achieve goals, rather than presenting multiple options.\n\nThe structure, examples, and procedures in prescriptive documents are tailored to the most relevant use cases and reader needs.\n\nWhen writing prescriptive documentation, the words "must," "can," and "might" are used to indicate required, optional, or possible actions/outcomes respectively, whereas "should" is generally avoided due to its ambiguity.\n\nTo make actions clear, writers should use imperatives for required steps, or employ phrases like "We recommend" for suggested actions.\n\nWhen describing a state or outcome, prescriptive documentation should use precise language that conveys whether the state is actual or required and the outcome is expected or possible.\n\nWrite prescriptive documentation.\n\nPrescriptive (or opinionated) documentation recommends a way to achieve tasks
 and accomplish goals. It tells the reader what to do instead of giving them a list of options to
 choose from. When a goal or task is complex and involves multiple approaches or products,
@@ -34,7 +34,7 @@ recommended.\n\n- If an action is required: use must, or rephrase
     For example, "The process can take about 30 minutes."\n- If a state is actual: when you're describing the state of
     something, such as the value of a variable, avoid writing "The value
     should be true." Instead, clarify which of the following you mean:
-    
+
 "You must set the value to true."
 "The server sets the value to true."
 "If the value is false, follow these steps to change it to true."

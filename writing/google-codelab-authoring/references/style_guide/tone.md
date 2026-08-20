@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/tone\n\n# Voice and tone
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Write in a conversational, friendly, and respectful tone that is approachable and easy to understand, avoiding slang and overly casual language.\n- Prioritize clear and straightforward language, using simple and consistent writing to cater to a global audience with varying levels of English proficiency.\n- Avoid jargon, clichés, and culturally specific references, focusing on delivering information concisely and directly to the reader.\n- Strive for a natural and engaging tone, letting your personality shine through while keeping the primary focus on providing clear and useful information efficiently.\n- Ensure politeness without overusing "please" in instructions, and focus on delivering information in a direct and helpful manner.\n\nWrite in a conversational, friendly, and respectful tone that is approachable and easy to understand, avoiding slang and overly casual language.\n\nPrioritize clear and straightforward language, using simple and consistent writing to cater to a global audience with varying levels of English proficiency.\n\nAvoid jargon, clichés, and culturally specific references, focusing on delivering information concisely and directly to the reader.\n\nStrive for a natural and engaging tone, letting your personality shine through while keeping the primary focus on providing clear and useful information efficiently.\n\nEnsure politeness without overusing "please" in instructions, and focus on delivering information in a direct and helpful manner.\n\nIn your documents, aim for a voice and tone that's conversational, friendly,
 and respectful without using slang or being overly colloquial or frivolous; a voice that's
 casual and natural and approachable, not pedantic or pushy. Try to sound like a

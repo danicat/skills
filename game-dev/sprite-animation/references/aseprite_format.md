@@ -1,6 +1,6 @@
 # Aseprite File Format (.ase/.aseprite) & GIMP Palette (.gpl) Specifications
 
-Official Aseprite Specifications: [aseprite/aseprite](https://github.com/aseprite/aseprite)  
+Official Aseprite Specifications: [aseprite/aseprite](https://github.com/aseprite/aseprite)
 Recommended Ebitengine Integration Library: [SolarLune/goaseprite](https://github.com/SolarLune/goaseprite)
 
 ---

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/philosophy\n\n# Philosophy of this style guide
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This style guide documents the preferred writing style for this organization's content, focusing on internal consistency rather than setting industry standards.\n- It does not aim to be a comprehensive writing guide or replace existing style guides, primarily focusing on stylistic choices rather than basic writing principles.\n- While it prioritizes conciseness over detailed explanations, the guide occasionally provides rationale for specific choices, particularly concerning accessibility and localization.\n- Users are expected to act ethically and legally regarding documentation, regardless of whether they have read the guidelines.\n- This guide is subject to change and doesn't limit the organization's ability to modify its documentation.\n\nThis style guide documents the preferred writing style for this organization's content, focusing on internal consistency rather than setting industry standards.\n\nIt does not aim to be a comprehensive writing guide or replace existing style guides, primarily focusing on stylistic choices rather than basic writing principles.\n\nWhile it prioritizes conciseness over detailed explanations, the guide occasionally provides rationale for specific choices, particularly concerning accessibility and localization.\n\nUsers are expected to act ethically and legally regarding documentation, regardless of whether they have read the guidelines.\n\nThis guide is subject to change and doesn't limit the organization's ability to modify its documentation.\n\nThis document discusses some of the principles and philosophy behind this
 style guide.\n\n\n## Intended purpose\n\nThis style guide codifies and records our style decisions and describes our
 house style. The guide doesn't claim to be objectively correct.\n\nThis guide is not intended to do the following:\n\n- Provide an industry documentation standard.\n- Compete with other well-known style guides.\n- Replace another style guide that you already follow.\n- Provide a complete set of basic writing guidelines.\n- Provide legal advice. For legal advice, consult a lawyer.\n\nNote: Two disclaimers:\n\n- The guidance in this style guide doesn't limit the changes that Google can

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/accessibility\n\n# Write accessible documentation
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- This guide provides best practices for writing accessible developer documentation, benefiting all readers, including those with disabilities.\n- Key areas covered include language, formatting, headings, links, lists, images, videos, tables, and interactive elements with a focus on clear, concise, and navigable content.\n- Specific recommendations are provided for using semantic HTML, keyboard navigation, screen reader compatibility, and alternative text for multimedia to enhance the user experience.\n- The guidelines aim to ensure inclusivity by prioritizing descriptive content, avoiding visual-only cues, and accommodating diverse user needs and preferences.\n- Resources from Google, WCAG, and WAI are linked for further information on web accessibility standards and best practices.\n\nThis guide provides best practices for writing accessible developer documentation, benefiting all readers, including those with disabilities.\n\nKey areas covered include language, formatting, headings, links, lists, images, videos, tables, and interactive elements with a focus on clear, concise, and navigable content.\n\nSpecific recommendations are provided for using semantic HTML, keyboard navigation, screen reader compatibility, and alternative text for multimedia to enhance the user experience.\n\nThe guidelines aim to ensure inclusivity by prioritizing descriptive content, avoiding visual-only cues, and accommodating diverse user needs and preferences.\n\nResources from Google, WCAG, and WAI are linked for further information on web accessibility standards and best practices.\n\nWe write our developer documentation with accessibility in mind. This page is not an exhaustive
   reference, but describes some general guidelines and examples that illustrate best practices to
   follow. The

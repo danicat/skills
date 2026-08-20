@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/tense\n\n# Present tense
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nUse present tense for statements that describe general behavior that's not associated with
   a particular time.\n\nRecommended: Send a query to the service.
   The server sends an acknowledgment.\n\nNot recommended: Send a query to the

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/mathematical-notation\n\n# Mathematical notation
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nThis page describes how to format common mathematical notation such as
 exponents, expressions, equations, operators, and variables in
 documentation. Formatting best practices can help ensure that your

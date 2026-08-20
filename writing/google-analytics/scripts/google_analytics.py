@@ -70,23 +70,36 @@ try:
 except ImportError:
     HAS_TABULATE = False
 
-# Google Analytics & Auth Libraries
-import google.auth
-from google.auth import default
-from google.auth.exceptions import DefaultCredentialsError
-import google.oauth2.credentials
-import google.oauth2.service_account
-from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import (
-    RunReportRequest,
-    DateRange,
-    Dimension,
-    Metric,
-    OrderBy,
-    FilterExpression,
-    Filter
-)
-from google.analytics.admin_v1beta import AnalyticsAdminServiceClient
+# Google Analytics & Auth Libraries (lazy / optional for offline SQL queries)
+try:
+    import google.auth
+    from google.auth import default
+    from google.auth.exceptions import DefaultCredentialsError
+    import google.oauth2.credentials
+    import google.oauth2.service_account
+    from google.analytics.data_v1beta import BetaAnalyticsDataClient
+    from google.analytics.data_v1beta.types import (
+        RunReportRequest,
+        DateRange,
+        Dimension,
+        Metric,
+        OrderBy,
+        FilterExpression,
+        Filter,
+    )
+    from google.analytics.admin_v1beta import AnalyticsAdminServiceClient
+    HAS_GOOGLE_API = True
+except ImportError:
+    HAS_GOOGLE_API = False
+    BetaAnalyticsDataClient = Any  # type: ignore
+    AnalyticsAdminServiceClient = Any  # type: ignore
+    RunReportRequest = Any  # type: ignore
+    DateRange = Any  # type: ignore
+    Dimension = Any  # type: ignore
+    Metric = Any  # type: ignore
+    OrderBy = Any  # type: ignore
+    FilterExpression = Any  # type: ignore
+    Filter = Any  # type: ignore
 
 DEFAULT_DB_FILE = "google_analytics.db"
 DEFAULT_PROPERTY_ID = os.environ.get("GA4_PROPERTY_ID", "")
@@ -258,7 +271,7 @@ CREATE INDEX IF NOT EXISTS idx_outbound_url ON outbound_clicks(link_url);
 -- Analytical Views
 DROP VIEW IF EXISTS v_daily_summary;
 CREATE VIEW v_daily_summary AS
-SELECT 
+SELECT
     date,
     SUM(sessions) AS total_sessions,
     SUM(active_users) AS total_active_users,
@@ -271,14 +284,9 @@ ORDER BY date DESC;
 
 DROP VIEW IF EXISTS v_page_performance;
 CREATE VIEW v_page_performance AS
-SELECT 
+SELECT
     page_path,
     MAX(page_title) AS page_title,
-    CASE 
-        WHEN page_path LIKE '/ja/%' THEN 'Japanese'
-        WHEN page_path LIKE '/pt-br/%' THEN 'Portuguese'
-        ELSE 'English'
-    END AS localization,
     SUM(screen_page_views) AS total_views,
     SUM(active_users) AS total_users,
     SUM(sessions) AS total_sessions,
@@ -291,7 +299,7 @@ ORDER BY total_views DESC;
 
 DROP VIEW IF EXISTS v_channel_performance;
 CREATE VIEW v_channel_performance AS
-SELECT 
+SELECT
     session_default_channel_group AS channel_group,
     session_source_medium AS source_medium,
     SUM(sessions) AS total_sessions,
@@ -307,7 +315,7 @@ ORDER BY total_sessions DESC;
 
 DROP VIEW IF EXISTS v_geo_breakdown;
 CREATE VIEW v_geo_breakdown AS
-SELECT 
+SELECT
     country,
     SUM(sessions) AS total_sessions,
     SUM(active_users) AS total_users,
@@ -321,7 +329,7 @@ ORDER BY total_sessions DESC;
 
 DROP VIEW IF EXISTS v_events_summary;
 CREATE VIEW v_events_summary AS
-SELECT 
+SELECT
     event_name,
     SUM(event_count) AS total_events,
     SUM(total_users) AS total_users
@@ -331,7 +339,7 @@ ORDER BY total_events DESC;
 
 DROP VIEW IF EXISTS v_outbound_links;
 CREATE VIEW v_outbound_links AS
-SELECT 
+SELECT
     link_url,
     SUM(event_count) AS total_clicks,
     SUM(total_users) AS total_users,
@@ -343,7 +351,7 @@ ORDER BY total_clicks DESC;
 
 DROP VIEW IF EXISTS v_milestone_impact;
 CREATE VIEW v_milestone_impact AS
-SELECT 
+SELECT
     m.commit_hash,
     m.title AS milestone_title,
     m.event_date AS milestone_date,
@@ -433,7 +441,7 @@ def get_clients(credentials_file: str = DEFAULT_CREDENTIALS_FILE) -> Tuple[BetaA
         print("❌ Error: No valid Google Credentials found.", file=sys.stderr)
         print("💡 Run 'python3 scripts/google_analytics.py auth' to log in via OAuth 2.0, or use ADC.", file=sys.stderr)
         sys.exit(1)
-        
+
     data_client = BetaAnalyticsDataClient(credentials=creds)
     admin_client = AnalyticsAdminServiceClient(credentials=creds)
     return data_client, admin_client
@@ -494,15 +502,15 @@ def create_annotation(
 ):
     """Creates an annotation both in the GA4 Cloud Property and in the local SQLite database."""
     conn = init_db(db_path)
-    
+
     parts = date_str.split("-")
     if len(parts) != 3:
         print(f"❌ Invalid date format '{date_str}'. Expected YYYY-MM-DD.", file=sys.stderr)
         sys.exit(1)
-        
+
     year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
     c_hash = commit_hash or f"milestone-{date_str}"
-    
+
     # 1. Local SQLite Milestone Record
     conn.execute("""
         INSERT OR REPLACE INTO site_milestones (
@@ -533,7 +541,7 @@ def create_annotation(
     try:
         req = google.auth.transport.requests.Request()
         creds.refresh(req)
-        
+
         url = f"https://analyticsadmin.googleapis.com/v1alpha/properties/{property_id}/reportingDataAnnotations"
         headers = {
             "Authorization": f"Bearer {creds.token}",
@@ -549,7 +557,7 @@ def create_annotation(
                 "day": day
             }
         }
-        
+
         res = requests.post(url, headers=headers, json=payload)
         if res.status_code in (200, 201):
             ann_data = res.json()
@@ -569,7 +577,7 @@ def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DE
     """Lists all accessible GA4 accounts and properties."""
     print("🔍 Fetching accessible Google Analytics 4 accounts and properties...\n")
     conn = init_db(db_path)
-    
+
     try:
         accounts = admin_client.list_account_summaries()
         rows = []
@@ -580,7 +588,7 @@ def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DE
                 p_id = prop.property.split('/')[-1]
                 p_name = prop.display_name
                 rows.append([p_id, p_name, acc_id, acc_name])
-                
+
                 conn.execute("""
                     INSERT INTO properties (property_id, name, account_id, display_name, raw_json)
                     VALUES (?, ?, ?, ?, ?)
@@ -596,7 +604,7 @@ def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DE
                     "account_display_name": acc_name
                 })))
         conn.commit()
-        
+
         if HAS_TABULATE:
             print(tabulate(rows, headers=["Property ID", "Property Name", "Account ID", "Account Name"], tablefmt="grid"))
         else:
@@ -680,29 +688,29 @@ def ingest_daily_pages(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conne
         ],
         limit=100000
     )
-    
+
     resp = data_client.run_report(req)
     count = 0
-    
+
     for r in resp.rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         else:
             date_fmt = date_str
-            
+
         page_path = r.dimension_values[1].value
         page_title = r.dimension_values[2].value
         country = r.dimension_values[3].value
         device = r.dimension_values[4].value
         source_med = r.dimension_values[5].value
-        
+
         views = int(float(r.metric_values[0].value))
         users = int(float(r.metric_values[1].value))
         sess = int(float(r.metric_values[2].value))
         dur = float(r.metric_values[3].value)
         bounce = float(r.metric_values[4].value)
-        
+
         raw = {
             "date": date_fmt,
             "page_path": page_path,
@@ -716,7 +724,7 @@ def ingest_daily_pages(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conne
             "engagement_duration": dur,
             "bounce_rate": bounce
         }
-        
+
         conn.execute("""
             INSERT INTO daily_pages (
                 property_id, date, page_path, page_title, country, device_category,
@@ -737,7 +745,7 @@ def ingest_daily_pages(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conne
             source_med, views, users, sess, dur, bounce, json.dumps(raw)
         ))
         count += 1
-        
+
     conn.commit()
     return count
 
@@ -765,29 +773,29 @@ def ingest_daily_traffic(data_client: BetaAnalyticsDataClient, conn: sqlite3.Con
         ],
         limit=100000
     )
-    
+
     resp = data_client.run_report(req)
     count = 0
-    
+
     for r in resp.rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         else:
             date_fmt = date_str
-            
+
         source_med = r.dimension_values[1].value
         channel = r.dimension_values[2].value
         country = r.dimension_values[3].value
         device = r.dimension_values[4].value
-        
+
         sess = int(float(r.metric_values[0].value))
         users = int(float(r.metric_values[1].value))
         new_users = int(float(r.metric_values[2].value))
         engaged_sess = int(float(r.metric_values[3].value))
         dur = float(r.metric_values[4].value)
         bounce = float(r.metric_values[5].value)
-        
+
         raw = {
             "date": date_fmt,
             "source_medium": source_med,
@@ -801,7 +809,7 @@ def ingest_daily_traffic(data_client: BetaAnalyticsDataClient, conn: sqlite3.Con
             "engagement_duration": dur,
             "bounce_rate": bounce
         }
-        
+
         conn.execute("""
             INSERT INTO daily_traffic (
                 property_id, date, session_source_medium, session_default_channel_group,
@@ -822,7 +830,7 @@ def ingest_daily_traffic(data_client: BetaAnalyticsDataClient, conn: sqlite3.Con
             sess, users, new_users, engaged_sess, dur, bounce, json.dumps(raw)
         ))
         count += 1
-        
+
     conn.commit()
     return count
 
@@ -846,25 +854,25 @@ def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conn
         ],
         limit=100000
     )
-    
+
     resp = data_client.run_report(req)
     count = 0
-    
+
     for r in resp.rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         else:
             date_fmt = date_str
-            
+
         event_name = r.dimension_values[1].value
         page_path = r.dimension_values[2].value
         country = r.dimension_values[3].value
         device = r.dimension_values[4].value
-        
+
         event_count = int(float(r.metric_values[0].value))
         users = int(float(r.metric_values[1].value))
-        
+
         raw = {
             "date": date_fmt,
             "event_name": event_name,
@@ -874,7 +882,7 @@ def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conn
             "event_count": event_count,
             "total_users": users
         }
-        
+
         conn.execute("""
             INSERT INTO daily_events (
                 property_id, date, event_name, page_path, country, device_category,
@@ -890,7 +898,7 @@ def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conn
             event_count, users, json.dumps(raw)
         ))
         count += 1
-        
+
     conn.commit()
     return count
 
@@ -919,27 +927,27 @@ def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.C
         ),
         limit=100000
     )
-    
+
     resp = data_client.run_report(req)
     count = 0
-    
+
     for r in resp.rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
         else:
             date_fmt = date_str
-            
+
         link_url = r.dimension_values[1].value
         if not link_url:
             continue
-            
+
         page_path = r.dimension_values[2].value
         country = r.dimension_values[3].value
-        
+
         event_count = int(float(r.metric_values[0].value))
         users = int(float(r.metric_values[1].value))
-        
+
         raw = {
             "date": date_fmt,
             "link_url": link_url,
@@ -948,7 +956,7 @@ def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.C
             "event_count": event_count,
             "total_users": users
         }
-        
+
         conn.execute("""
             INSERT INTO outbound_clicks (
                 property_id, date, link_url, page_path, country,
@@ -964,7 +972,7 @@ def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.C
             event_count, users, json.dumps(raw)
         ))
         count += 1
-        
+
     conn.commit()
     return count
 
@@ -982,7 +990,7 @@ def run_sync(
     data_client, admin_client = get_clients(credentials_file)
     conn = init_db(db_path)
     started_at = datetime.datetime.now().isoformat()
-    
+
     if not property_id:
         cur = conn.cursor()
         cur.execute("SELECT property_id FROM properties ORDER BY last_synced_at DESC LIMIT 1;")
@@ -996,13 +1004,13 @@ def run_sync(
                 if acc.property_summaries:
                     property_id = acc.property_summaries[0].property.split('/')[-1]
                     break
-                    
+
     if not property_id:
         print("❌ Error: No GA4 property found or specified. Run 'properties' command first.", file=sys.stderr)
         sys.exit(1)
-        
+
     sync_property_metadata(admin_client, conn, property_id)
-    
+
     # Determine date ranges
     today = datetime.date.today()
     if full:
@@ -1031,13 +1039,13 @@ def run_sync(
         sync_type = "INCREMENTAL"
 
     print(f"🚀 Starting GA4 Sync ({sync_type}) for Property {property_id} [{s_date} -> {e_date}]...")
-    
+
     try:
         p_count = ingest_daily_pages(data_client, conn, property_id, s_date, e_date)
         t_count = ingest_daily_traffic(data_client, conn, property_id, s_date, e_date)
         e_count = ingest_daily_events(data_client, conn, property_id, s_date, e_date)
         o_count = ingest_outbound_clicks(data_client, conn, property_id, s_date, e_date)
-        
+
         conn.execute("""
             INSERT INTO sync_history (
                 property_id, sync_type, start_date, end_date,
@@ -1046,14 +1054,14 @@ def run_sync(
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SUCCESS', ?)
         """, (property_id, sync_type, s_date, e_date, p_count, t_count, e_count, o_count, started_at))
         conn.commit()
-        
+
         print("\n✅ Sync Complete Summary:")
         print(f"  • Daily Page Breakdowns: {p_count} records")
         print(f"  • Traffic Sources:        {t_count} records")
         print(f"  • Interaction Events:     {e_count} records")
         print(f"  • Outbound Link Clicks:   {o_count} records")
         print(f"  • SQLite Database:        {db_path}")
-        
+
     except Exception as e:
         conn.execute("""
             INSERT INTO sync_history (
@@ -1076,10 +1084,10 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
     """Executes pre-packaged analytical queries."""
     conn = init_db(db_path)
     cur = conn.cursor()
-    
+
     reports = {
         "overview": ("Site Overview (30-Day Aggregates)", """
-            SELECT 
+            SELECT
                 COUNT(DISTINCT date) AS active_days,
                 SUM(total_sessions) AS total_sessions,
                 SUM(total_active_users) AS total_active_users,
@@ -1090,7 +1098,7 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 30;
         """),
         "top-pages": ("Top 15 Pages by Total Views & Engagement", """
-            SELECT 
+            SELECT
                 page_path,
                 page_title,
                 total_views,
@@ -1102,7 +1110,7 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """),
         "channels": ("Acquisition Channels Performance", """
-            SELECT 
+            SELECT
                 channel_group,
                 source_medium,
                 total_sessions,
@@ -1116,7 +1124,7 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """),
         "geo": ("Top 10 Countries by Visitor Volume & Dwell Time", """
-            SELECT 
+            SELECT
                 country,
                 total_sessions,
                 total_users,
@@ -1128,14 +1136,14 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 10;
         """),
         "events": ("User Interaction Events Summary", """
-            SELECT 
+            SELECT
                 event_name,
                 total_events,
                 total_users
             FROM v_events_summary;
         """),
         "outbound": ("Top 15 Outbound Link Click Destinations", """
-            SELECT 
+            SELECT
                 link_url,
                 total_clicks,
                 total_users,
@@ -1145,7 +1153,7 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """),
         "milestone-impact": ("Milestone / Release Cohort Comparison", """
-            SELECT 
+            SELECT
                 commit_hash,
                 milestone_title,
                 milestone_date,
@@ -1158,18 +1166,18 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_milestone_impact;
         """)
     }
-    
+
     if name not in reports:
         print(f"❌ Unknown report '{name}'. Choices: {list(reports.keys())}", file=sys.stderr)
         return
-        
+
     title, sql = reports[name]
     print(f"\n📊 {title}\n" + "=" * len(title))
-    
+
     cur.execute(sql)
     cols = [desc[0] for desc in cur.description]
     rows = cur.fetchall()
-    
+
     if HAS_TABULATE:
         print(tabulate(rows, headers=cols, tablefmt="grid"))
     else:
@@ -1185,12 +1193,12 @@ def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_format: str = "ma
     """Executes arbitrary SQL query against the analytics database."""
     conn = init_db(db_path)
     cur = conn.cursor()
-    
+
     try:
         cur.execute(sql)
         cols = [desc[0] for desc in cur.description] if cur.description else []
         rows = cur.fetchall()
-        
+
         if output_json or output_format == "json":
             result = [dict(zip(cols, row)) for row in rows]
             print(json.dumps(result, indent=2))
@@ -1233,14 +1241,14 @@ def main():
         epilog=__doc__,
         parents=[base_parser],
     )
-    
+
     subparsers = parser.add_subparsers(dest="command", required=True)
-    
+
     # Subcommand: auth
     auth_p = subparsers.add_parser("auth", parents=[base_parser], help="Authenticate via OAuth 2.0 Web Flow")
     auth_p.add_argument("--client-secrets", "--client-secret", dest="client_secret", default=DEFAULT_CLIENT_SECRETS_FILE, help="Path to client secret JSON")
     auth_p.add_argument("--port", type=int, default=8080, help="Port for OAuth callback server")
-    
+
     # Subcommand: annotate
     ann_p = subparsers.add_parser("annotate", parents=[base_parser], help="Create a deployment/milestone annotation in GA4 and SQLite")
     ann_p.add_argument("--title", required=True, help="Annotation / Milestone Title")
@@ -1251,30 +1259,30 @@ def main():
     ann_p.add_argument("--category", default="Release", help="Milestone category")
     ann_p.add_argument("--scope", default="sitewide", help="Scope of changes")
     ann_p.add_argument("--author", default=os.environ.get("USER", ""), help="Author of release")
-    
+
     # Subcommand: properties
     subparsers.add_parser("properties", parents=[base_parser], help="List all accessible GA4 accounts and properties")
-    
+
     # Subcommand: sync
     sync_p = subparsers.add_parser("sync", parents=[base_parser], help="Ingest raw GA4 data into SQLite database")
     sync_p.add_argument("--days", type=int, help="Number of trailing days to sync")
     sync_p.add_argument("--full", action="store_true", help="Perform full historical backfill (up to 14 months)")
     sync_p.add_argument("--start-date", help="Custom start date (YYYY-MM-DD)")
     sync_p.add_argument("--end-date", help="Custom end date (YYYY-MM-DD)")
-    
+
     # Subcommand: report
     report_p = subparsers.add_parser("report", parents=[base_parser], help="Run pre-built analytical reports")
     report_p.add_argument("name", choices=["overview", "top-pages", "channels", "geo", "events", "outbound", "milestone-impact"], help="Report name")
-    
+
     # Subcommand: query
     query_p = subparsers.add_parser("query", parents=[base_parser], help="Execute arbitrary SQL against the database")
     query_p.add_argument("sql", help="SQL query to execute")
     query_p.add_argument("--format", default="markdown", choices=["markdown", "table", "json", "csv"], help="Output format (default: markdown)")
     query_p.add_argument("--json", action="store_true", help="Output results in JSON format")
     query_p.add_argument("--csv", action="store_true", help="Output results in CSV format")
-    
+
     args = parser.parse_args()
-    
+
     if args.command == "auth":
         cmd_auth(
             client_secrets_file=args.client_secret,

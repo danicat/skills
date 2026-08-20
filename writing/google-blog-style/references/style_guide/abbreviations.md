@@ -1,27 +1,27 @@
 Source: https://developers.google.com/style/abbreviations\n\n# Abbreviations
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Abbreviations encompass acronyms, initialisms, shortened words, and contractions, and are used to save time and space.\n- When introducing an abbreviation, spell it out on first reference, italicizing both the full term and the abbreviation, then use the abbreviation alone in subsequent mentions.\n- Avoid using abbreviations that are unfamiliar to your audience, overly specialized, or internet slang, opting for clear and concise language.\n- Generally, omit periods in acronyms and initialisms, but include them with shortened words (except for date/time) and country/state abbreviations.\n- Treat abbreviations as regular words for pluralization, adding 'es' to those ending in 's', 'sh', 'ch', or 'x', and refrain from using them as verbs.\n\nAbbreviations encompass acronyms, initialisms, shortened words, and contractions, and are used to save time and space.\n\nWhen introducing an abbreviation, spell it out on first reference, italicizing both the full term and the abbreviation, then use the abbreviation alone in subsequent mentions.\n\nAvoid using abbreviations that are unfamiliar to your audience, overly specialized, or internet slang, opting for clear and concise language.\n\nGenerally, omit periods in acronyms and initialisms, but include them with shortened words (except for date/time) and country/state abbreviations.\n\nTreat abbreviations as regular words for pluralization, adding 'es' to those ending in 's', 'sh', 'ch', or 'x', and refrain from using them as verbs.\n\nAbbreviations include acronyms, initialisms, shortened words, and
 contractions.\n\nIn most contexts, the technical distinction between acronyms and initialisms
 isn't relevant; it's fine to use the word acronym to refer to both.\n\n- An acronym is formed from the first letters of words in a phrase, but is
 pronounced as if it were a word itself:
-    
+
 NATO for North Atlantic Treaty Organization
 scuba for self-contained underwater breathing
 apparatus\n- NATO for North Atlantic Treaty Organization\n- scuba for self-contained underwater breathing
 apparatus\n- An initialism is also formed from the first letters of words in a phrase,
 but each letter is pronounced separately:
-    
+
 CIA for Central Intelligence Agency
 FYI for For Your Information
 PR for Public Relations\n- CIA for Central Intelligence Agency\n- FYI for For Your Information\n- PR for Public Relations\n- A shortened word is just part of a word or phrase, sometimes with a
 period at the end:
-    
+
 Dr. for doctor
 etc. for et cetera
 min for minutes

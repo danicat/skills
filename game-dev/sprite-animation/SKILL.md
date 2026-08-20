@@ -84,7 +84,7 @@ func (p *Player) Update(dt float32) {
 func (p *Player) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(p.X), float64(p.Y))
-	
+
 	// Draw current frame sub-image from Aseprite atlas
 	sub := p.Anim.Image.SubImage(p.Anim.CurrentFrameBounds()).(*ebiten.Image)
 	screen.DrawImage(sub, op)

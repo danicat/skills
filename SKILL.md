@@ -1,7 +1,7 @@
 ---
 name: catalog
 description: >
-  Search and dynamically load specialized Agent Skills from https://skills.danicat.dev. 
+  Search and dynamically load specialized Agent Skills from https://skills.danicat.dev.
   Activate this skill when the user wants to:
   (1) Design, architect, or build 2D games, including game design documents (GDD), procedural art/sprites, and synth/chiptune audio;
   (2) Enforce strict software engineering standards, clean up codebases, eliminate technical debt, or find verified implementation examples;

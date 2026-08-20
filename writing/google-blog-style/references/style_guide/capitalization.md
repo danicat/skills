@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/capitalization\n\n# Capitalization
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Follow standard American English capitalization rules and avoid unnecessary capitalization for clarity.\n- Capitalize product names as they officially appear, but use sentence case for titles, headings, and references to them within the document.\n- Begin text following a colon with lowercase unless it's a proper noun, heading, quote, or follows specific labels like "Caution".\n- Use sentence case for captions, labels within images, glossary terms and definitions, list items, and table elements.\n- When describing casing styles, provide clear requirements and examples instead of using style names like "camel case".\n\nFollow standard American English capitalization rules and avoid unnecessary capitalization for clarity.\n\nCapitalize product names as they officially appear, but use sentence case for titles, headings, and references to them within the document.\n\nBegin text following a colon with lowercase unless it's a proper noun, heading, quote, or follows specific labels like "Caution".\n\nUse sentence case for captions, labels within images, glossary terms and definitions, list items, and table elements.\n\nWhen describing casing styles, provide clear requirements and examples instead of using style names like "camel case".\n\nFollow the standard capitalization rules for American English. Additionally,
   do the following:\n\n- Don't use unnecessary capitalization; before you capitalize a word, think
     about why (and whether) it should be capitalized.\n- Don't rely on a difference in capitalization to convey meaning. For example,

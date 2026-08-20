@@ -8,3 +8,4 @@ venv/
 skills-lock.json
 _site/
 .DS_Store
+GEMINI.md

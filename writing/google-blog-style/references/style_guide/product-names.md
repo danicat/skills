@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/product-names\n\n# Product names
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Capitalize Google product names in title case, except when matching UI labels or if the official name starts with a lowercase letter.\n- Feature names are generally lowercase, unless officially capitalized or matching a UI label; follow existing documentation for precedents.\n- Use the full trademarked product name, avoiding abbreviations unless matching a UI label and ensuring clarity in its reference.\n- Use "the" before tool and API names, but not before product names unless qualifying something else; use "service" to refer to multiple products to avoid ambiguity.\n- Avoid using product or feature names as verbs, maintaining clear and grammatically correct language.\n\nCapitalize Google product names in title case, except when matching UI labels or if the official name starts with a lowercase letter.\n\nFeature names are generally lowercase, unless officially capitalized or matching a UI label; follow existing documentation for precedents.\n\nUse the full trademarked product name, avoiding abbreviations unless matching a UI label and ensuring clarity in its reference.\n\nUse "the" before tool and API names, but not before product names unless qualifying something else; use "service" to refer to multiple products to avoid ambiguity.\n\nAvoid using product or feature names as verbs, maintaining clear and grammatically correct language.\n\nThis page describes how to use product names.\n\n\n## Capitalize product names\n\nIn general, Google product names are in title case, sometimes called
     init-capped, which means that every word is capitalized except for
     prepositions like of or on and articles like a or
@@ -17,22 +17,22 @@ Source: https://developers.google.com/style/product-names\n\n# Product names
     terms defined by companies and open source communities.\n\n- For example, if you're using Kubernetes-related terms, then follow
           the capitalization that's shown in the Kubernetes Concepts
           documentation.
-        
+
 
 Recommended in a Kubernetes
           context: A Job creates one or more Pods.
-        
+
 
 Recommended: The Cloud Scheduler
           job publishes a message to a Pub/Sub topic at one-minute intervals.\n- If an official name begins with a lowercase letter, then put it in
           lowercase even at the start of a sentence. But it's better to revise
           the sentence to avoid putting a lowercase word at the start, if
           possible.
-        
+
 
 Recommended: You can use macOS to
           run the app.
-        
+
 
 Not recommended: macOS can run the
           app.\n\nFor example, if you're using Kubernetes-related terms, then follow

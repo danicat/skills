@@ -145,8 +145,8 @@ async function build() {
     }
     llmsTxt += `\n`;
   }
-  fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt);
-  fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt);
+  fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
+  fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
   // 4. llms-full.txt
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n\n`;
@@ -155,7 +155,7 @@ async function build() {
     llmsFullTxt += `**Source**: ${s.url}\n**Install**: \`${s.installCommand}\`\n\n`;
     llmsFullTxt += `## Instructions\n\n${s.body}\n\n---\n\n`;
   }
-  fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt);
+  fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
 
   // 5. catalog.json
   const catalog = {
@@ -244,7 +244,7 @@ async function build() {
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      
+
       /* Blowfish Light Palette */
       --bg: #ffffff;
       --bg-alt: #f8fafc;
@@ -295,7 +295,7 @@ async function build() {
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
       font-family: var(--font-sans);
       background-color: var(--bg);

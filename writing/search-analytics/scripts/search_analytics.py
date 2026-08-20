@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS sync_history (
 
 -- 1. Main Search Performance View with Date Dimensions
 CREATE VIEW IF NOT EXISTS v_search_performance AS
-SELECT 
+SELECT
     site_url,
     date,
     strftime('%Y-%m', date) AS year_month,
@@ -193,7 +193,7 @@ FROM search_performance;
 
 -- 2. Daily Summary Aggregate View
 CREATE VIEW IF NOT EXISTS v_daily_summary AS
-SELECT 
+SELECT
     site_url,
     date,
     strftime('%Y-%m', date) AS year_month,
@@ -217,7 +217,7 @@ GROUP BY site_url, date;
 
 -- 3. Top Search Queries Aggregate View
 CREATE VIEW IF NOT EXISTS v_top_queries AS
-SELECT 
+SELECT
     site_url,
     query,
     COUNT(DISTINCT date) AS active_days,
@@ -231,7 +231,7 @@ GROUP BY site_url, query;
 
 -- 4. Top Landing Pages Aggregate View
 CREATE VIEW IF NOT EXISTS v_top_pages AS
-SELECT 
+SELECT
     site_url,
     page,
     COUNT(DISTINCT query) AS ranking_queries,
@@ -246,7 +246,7 @@ GROUP BY site_url, page;
 
 -- 5. Country Breakdown View
 CREATE VIEW IF NOT EXISTS v_country_breakdown AS
-SELECT 
+SELECT
     site_url,
     country,
     ROUND(SUM(clicks), 0) AS total_clicks,
@@ -259,7 +259,7 @@ GROUP BY site_url, country;
 
 -- 6. Device Breakdown View
 CREATE VIEW IF NOT EXISTS v_device_breakdown AS
-SELECT 
+SELECT
     site_url,
     device,
     ROUND(SUM(clicks), 0) AS total_clicks,
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS site_milestones (
 -- 8. Milestone Impact Cohort Comparison View
 DROP VIEW IF EXISTS v_milestone_impact;
 CREATE VIEW v_milestone_impact AS
-SELECT 
+SELECT
     m.commit_hash,
     m.title AS milestone_title,
     m.event_date AS milestone_date,
@@ -414,7 +414,7 @@ def sync_properties_and_sitemaps(service, conn: sqlite3.Connection) -> List[str]
 
                 conn.execute(
                     """
-                    INSERT OR REPLACE INTO sitemaps 
+                    INSERT OR REPLACE INTO sitemaps
                     (site_url, path, type, last_downloaded, last_submitted, errors, warnings, indexed_count, raw_json, synced_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
@@ -504,7 +504,7 @@ def ingest_search_performance(
 
                 conn.execute(
                     """
-                    INSERT OR REPLACE INTO search_performance 
+                    INSERT OR REPLACE INTO search_performance
                     (site_url, date, query, page, country, device, search_appearance, search_type, clicks, impressions, ctr, position, raw_json, synced_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
@@ -556,7 +556,7 @@ def run_sync_pipeline(
 
     for site in sites_to_sync:
         started_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        
+
         if custom_start and custom_end:
             start_date = custom_start
             end_date = custom_end
@@ -682,7 +682,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
     """Runs pre-canned SQL analytical reports."""
     reports = {
         "overview": """
-            SELECT 
+            SELECT
                 site_url,
                 MIN(date) AS earliest_date,
                 MAX(date) AS latest_date,
@@ -697,7 +697,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             GROUP BY site_url;
         """,
         "top-queries": """
-            SELECT 
+            SELECT
                 query,
                 active_days,
                 total_clicks,
@@ -709,7 +709,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """,
         "top-pages": """
-            SELECT 
+            SELECT
                 page,
                 ranking_queries,
                 total_clicks,
@@ -721,7 +721,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """,
         "countries": """
-            SELECT 
+            SELECT
                 country,
                 total_clicks,
                 total_impressions,
@@ -732,7 +732,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             LIMIT 15;
         """,
         "devices": """
-            SELECT 
+            SELECT
                 device,
                 total_clicks,
                 total_impressions,
@@ -742,7 +742,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             ORDER BY total_clicks DESC;
         """,
         "timing": """
-            SELECT 
+            SELECT
                 day_of_week,
                 COUNT(*) AS days_recorded,
                 ROUND(AVG(total_clicks), 1) AS avg_daily_clicks,
@@ -753,7 +753,7 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             ORDER BY avg_daily_clicks DESC;
         """,
         "milestone-impact": """
-            SELECT 
+            SELECT
                 commit_hash,
                 milestone_title,
                 milestone_date,

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/dates\n\n# Dates and times
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Express dates with the full month name, day, and four-digit year, for example, January 19, 2017.\n- Express time using the 12-hour clock with AM or PM, omitting minutes for round hours, for example, 3 PM.\n- Avoid using time zones unless necessary; if needed, use the full region name and UTC offset, such as US and Canadian Pacific Standard Time (UTC-8).\n- For numeric-only dates, adhere to the ISO 8601 standard (YYYY-MM-DD), like 2017-04-15.\n- Avoid using seasons; instead, specify months or quarters for clarity in global content.\n\nExpress dates with the full month name, day, and four-digit year, for example, January 19, 2017.\n\nExpress time using the 12-hour clock with AM or PM, omitting minutes for round hours, for example, 3 PM.\n\nAvoid using time zones unless necessary; if needed, use the full region name and UTC offset, such as US and Canadian Pacific Standard Time (UTC-8).\n\nFor numeric-only dates, adhere to the ISO 8601 standard (YYYY-MM-DD), like 2017-04-15.\n\nAvoid using seasons; instead, specify months or quarters for clarity in global content.\n\nExpressing dates and times in a clear and unambiguous way helps support
 writing for a global audience and reduces
 confusion.\n\n\n## Express times\n\nIn general, use the following guidelines to format expressions of time:\n\n- Use the 12-hour clock, except if required to use a 24-hour time, such as
@@ -19,7 +19,7 @@ time.\n- If a time zone is necessary, use the timestamp format as seen in the us
 available).\n- If using a specific time zone, spell out the region and include the
 UTC or GMT label
 as a parenthetical. For example:
-  
+
 US and Canadian Pacific Standard Time (UTC-8)
 US and Canadian Pacific Daylight Time (UTC-7)\n- US and Canadian Pacific Standard Time (UTC-8)\n- US and Canadian Pacific Daylight Time (UTC-7)\n- Don't abbreviate the name of the time zone.\n- In the rare event where the time of an event doesn't change for daylight saving time, use the
 specific time zone, without reference to UTC.\n\n- US and Canadian Pacific Standard Time (UTC-8)\n- US and Canadian Pacific Daylight Time (UTC-7)\n\n\n## Express dates\n\nIn general, spell out the names of months and days of the week in full. Give

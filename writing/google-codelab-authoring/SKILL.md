@@ -74,7 +74,7 @@ graph TD
 
 ## Files
 - **Template**: `assets/template.lab.md`
-- **Checkers**: 
+- **Checkers**:
   - `scripts/validate_codelab.cjs` (Structure)
   - `scripts/fog.cjs` (Readability)
 - **Guides**:

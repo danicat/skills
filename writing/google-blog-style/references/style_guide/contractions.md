@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/contractions\n\n# Contractions
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nIn general, we write our documentation in an informal tone, so we
   recommend using common two-word contractions such as you're, don't, and
   there's.\n\n\n## Negation contractions\n\nIn particular, we recommend using negation contractions such as isn't, don't, and

@@ -96,7 +96,7 @@ def main():
 
         if hasattr(client, "interactions"):
             interaction = client.interactions.create(**kwargs)
-            
+
             # Check convenience properties
             gen_audio = getattr(interaction, "output_audio", None)
             if gen_audio and hasattr(gen_audio, "data"):

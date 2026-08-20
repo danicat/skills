@@ -26,7 +26,7 @@ try {
     console.log("Alternatively, use the speedgrapher MCP server if available.");
     process.exit(0);
   }
-  
+
   console.log(`Running Vale on ${resolvedPath}...`);
   const output = execSync(`vale --output=line "${resolvedPath}"`, { encoding: 'utf-8' });
   console.log(output);
@@ -45,4 +45,3 @@ try {
   console.error("Linting found style violations. Please review.");
   process.exit(1);
 }
-

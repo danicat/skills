@@ -1,8 +1,8 @@
 # [Project / Feature Name] Technical Specification
 
-**Date:** YYYY-MM-DD  
-**Status:** [Draft | Under Review | Approved]  
-**Coordinator:** Double-Diamond Coordinator  
+**Date:** YYYY-MM-DD
+**Status:** [Draft | Under Review | Approved]
+**Coordinator:** Double-Diamond Coordinator
 **DOP / Agent Budget:** Research: [N], Development: [M]
 
 ---

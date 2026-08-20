@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/units-of-measure\n\n# Units of measurement
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Use a nonbreaking space (&nbsp;) between numbers and most units of measurement (e.g., 64&nbsp;GB), except for currency, percent, or degrees of an angle.\n- For temperature, use °&nbsp;C or °&nbsp;F, and for Kelvin, use &nbsp;K (e.g., 50°&nbsp;C, 300&nbsp;K).\n- In ranges, repeat the unit for each number and use "to" instead of a hyphen (e.g., -40° C to 85° C).\n- When documenting technology, ensure you use the correct system for bytes, distinguishing between decimal (kB, MB, GB) and binary (KiB, MiB, GiB) units.\n- Use visuals like diagrams or charts to enhance comprehension of math concepts and accompany numerical concepts with real-world implications whenever possible.\n\nUse a nonbreaking space (&nbsp;) between numbers and most units of measurement (e.g., 64&nbsp;GB), except for currency, percent, or degrees of an angle.\n\nFor temperature, use °&nbsp;C or °&nbsp;F, and for Kelvin, use &nbsp;K (e.g., 50°&nbsp;C, 300&nbsp;K).\n\nIn ranges, repeat the unit for each number and use "to" instead of a hyphen (e.g., -40° C to 85° C).\n\nWhen documenting technology, ensure you use the correct system for bytes, distinguishing between decimal (kB, MB, GB) and binary (KiB, MiB, GiB) units.\n\nUse visuals like diagrams or charts to enhance comprehension of math concepts and accompany numerical concepts with real-world implications whenever possible.\n\nPut a nonbreaking space between the number and the unit.\n\n\n## Spaces in units of measurement\n\nFor most units of measurement, when you specify a number with the unit, use a
 nonbreaking space between the number and the unit. This guidance applies in both
 HTML and Markdown.\n\nFor guidance about when to spell out units, see the

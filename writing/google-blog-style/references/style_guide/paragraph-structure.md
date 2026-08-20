@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/paragraph-structure\n\n# Paragraph structure
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nBreak up your paragraphs to aid in the scannability of the page and to avoid
 walls of text. Readers scan for information and read on different devices with
 different screen sizes. Each paragraph should address a single idea in the

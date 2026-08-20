@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/italics-terms\n\n# Use italics to discuss terms
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n\nThis page describes two circumstances when we italicize terms that we're
 introducing or discussing.\n\nFor more information about italics and other formatting, including HTML and
 Markdown formatting for italics, see

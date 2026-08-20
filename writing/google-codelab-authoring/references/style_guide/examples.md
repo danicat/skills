@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/examples\n\n# Example domains and names
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Avoid using real or personally identifiable information (PII) in examples, including domain names, email addresses, and phone numbers.\n- Utilize the provided list of example data, such as reserved domain names (e.g., example.com), generic email addresses (e.g., dana@example.com), and fictional person names, for creating realistic but anonymized examples.\n- When depicting people in examples, prioritize inclusivity by using gender-neutral pronouns, diverse names, and avoiding stereotypes.\n- For company, project, street address, phone number, and IP address examples, refer to the specific guidelines and fictitious options provided to maintain user privacy.\n- Refer to the style guide for detailed instructions on placeholder usage, formatting specifics (e.g., phone numbers), and writing inclusive documentation.\n\nAvoid using real or personally identifiable information (PII) in examples, including domain names, email addresses, and phone numbers.\n\nUtilize the provided list of example data, such as reserved domain names (e.g., example.com), generic email addresses (e.g., dana@example.com), and fictional person names, for creating realistic but anonymized examples.\n\nWhen depicting people in examples, prioritize inclusivity by using gender-neutral pronouns, diverse names, and avoiding stereotypes.\n\nFor company, project, street address, phone number, and IP address examples, refer to the specific guidelines and fictitious options provided to maintain user privacy.\n\nRefer to the style guide for detailed instructions on placeholder usage, formatting specifics (e.g., phone numbers), and writing inclusive documentation.\n\nDon't use real domain names, email addresses, or people's names in your examples. Don't reveal
   personally identifiable information (PII), such as domain names, email addresses,
   phone numbers, people's names, project names, or credit card numbers. You can

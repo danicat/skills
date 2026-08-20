@@ -2,10 +2,10 @@
 
 /**
  * latest-version/scripts/latest.js
- * 
+ *
  * Fetches the latest stable version of a package from official registries.
  * Usage: node latest.js <ecosystem> <package_name1> [package_name2]... [--json]
- * 
+ *
  * Ecosystems: npm, pypi, go, cargo, gem, gemini
  */
 
@@ -63,7 +63,7 @@ async function resolvePackage(ecosystem, pkg) {
         const npmData = await fetchJSON(`https://registry.npmjs.org/${pkg}`);
         const npmLatest = npmData['dist-tags']?.latest;
         if (!npmLatest) throw new Error("No latest tag found");
-        
+
         const result = { version: npmLatest, warnings: [], notes: [] };
         const npmVerData = npmData.versions[npmLatest];
         if (npmVerData && npmVerData.deprecated) {
@@ -76,7 +76,7 @@ async function resolvePackage(ecosystem, pkg) {
         const pypiData = await fetchJSON(`https://pypi.org/pypi/${pkg}/json`);
         const pypiLatest = pypiData.info.version;
         const result = { version: pypiLatest, warnings: [], notes: [] };
-        
+
         if (pypiData.info.yanked) {
           result.warnings.push(`This release was YANKED. Reason: "${pypiData.info.yanked_reason}"`);
         }
@@ -95,7 +95,7 @@ async function resolvePackage(ecosystem, pkg) {
         if (goData.Retracted) {
           result.warnings.push(`This version (${goData.Version}) is RETRACTED!`);
         }
-        
+
         if (pkg.startsWith("github.com/")) {
           const repoPath = pkg.replace("github.com/", "");
           try {
@@ -127,7 +127,7 @@ async function resolvePackage(ecosystem, pkg) {
         const cargoData = await fetchJSON(`https://crates.io/api/v1/crates/${pkg}`);
         return { version: cargoData.crate.max_stable_version, warnings: [], notes: [] };
       }
-      
+
       case 'gem': {
         const gemData = await fetchJSON(`https://rubygems.org/api/v1/versions/${pkg}/latest.json`);
         return { version: gemData.version, warnings: [], notes: [] };
@@ -138,13 +138,13 @@ async function resolvePackage(ecosystem, pkg) {
           'https://ai.google.dev/gemini-api/docs/models.md.txt',
           'https://ai.google.dev/gemini-api/docs/image-generation.md.txt'
         ];
-        
+
         let allModels = [];
         let brandNames = {};
 
         for (const url of sources) {
           const text = await fetchJSON(url, false);
-          
+
           const regex1 = /\[###\s+([^\]\n]+)[\s\S]*?\]\(https:\/\/ai\.google\.dev\/gemini-api\/docs\/models\/([^)]+)\)/g;
           for (const match of text.matchAll(regex1)) {
             const brand = match[1].trim();
@@ -168,8 +168,8 @@ async function resolvePackage(ecosystem, pkg) {
 
           const brandMatches = text.matchAll(/-\s+\*\*(.*?)\*\*\s+:\s+.*?`([^`]+)`/g);
           for (const match of brandMatches) {
-            const brand = match[1].trim(); 
-            const modelId = match[2].trim(); 
+            const brand = match[1].trim();
+            const modelId = match[2].trim();
             brandNames[brand] = modelId;
           }
         }
@@ -181,10 +181,10 @@ async function resolvePackage(ecosystem, pkg) {
         });
 
         const target = pkg.toLowerCase().replace(/\s+/g, '');
-        const matchingBrands = Object.keys(brandNames).filter(b => 
+        const matchingBrands = Object.keys(brandNames).filter(b =>
           b.toLowerCase().replace(/\s+/g, '').includes(target)
         );
-        
+
         if (matchingBrands.length > 0) {
           const primaryBrand = matchingBrands[0];
           const primaryModel = brandNames[primaryBrand];
@@ -204,9 +204,9 @@ async function resolvePackage(ecosystem, pkg) {
           }
           return { version: results[0], warnings: [], notes };
         } else {
-          return { 
-            version: null, 
-            warnings: [], 
+          return {
+            version: null,
+            warnings: [],
             notes: [
               `Known brands: ${Object.keys(brandNames).join(', ')}`,
               `Latest codes: ${uniqueModels.slice(0, 3).join(', ')}`
@@ -255,7 +255,7 @@ async function main() {
       }
     }
   }
-  
+
   const allFailed = results.length > 0 && results.every(r => r.error !== null);
   if (allFailed) {
     process.exit(1);

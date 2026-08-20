@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/ui-elements\n\n# UI elements and interaction
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Instructions should focus on user goals and avoid UI specifics unless crucial for clarity.\n- UI elements like buttons and menus should be referred to by their labels in bold (e.g., File menu, Open command).\n- Prioritize feature functionality over UI element type, using specific terminology for clarity (e.g., "field" instead of "text box" in Google Cloud/Workspace).\n- Accessibility is important; ensure tooltips are present for icons and avoid directional language.\n- Keyboard keys should be formatted using <kbd> tags, with uppercase letters for letter keys and spelled-out modifier keys.\n\nInstructions should focus on user goals and avoid UI specifics unless crucial for clarity.\n\nUI elements like buttons and menus should be referred to by their labels in bold (e.g., File menu, Open command).\n\nPrioritize feature functionality over UI element type, using specific terminology for clarity (e.g., "field" instead of "text box" in Google Cloud/Workspace).\n\nAccessibility is important; ensure tooltips are present for icons and avoid directional language.\n\nKeyboard keys should be formatted using <kbd> tags, with uppercase letters for letter keys and spelled-out modifier keys.\n\n\n## Focus on the task\n\nWhen practical, state instructions in terms of what the reader
 should accomplish, rather than focusing on the widgets and gestures.
 By avoiding reference to UI elements, you help the reader understand
@@ -121,11 +121,11 @@ screenshot.\n\nRecommended: Click menu Menu.\n\nNot recommended: In the left-sid
   as an alternative to using directional language, which can be problematic for
   accessibility and localization reasons.\n\n- Use the button icon along with its name as shown in the button tooltip.
 
-      
+
 Recommended: Click
           refresh Refresh.\n- Add context to help the user find the element.
 
-      
+
 Recommended: On the Cloud Run toolbar, click
           refresh Refresh.\n- Use a screenshot.
 

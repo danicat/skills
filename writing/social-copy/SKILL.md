@@ -43,9 +43,22 @@ Every post should provide actionable insight directly in the timeline. Readers s
 
 ---
 
-## 5-Stage Social Campaign Workflow
+## Campaign Lifecycle States
 
-Follow this procedure when creating or auditing social posts:
+Every social campaign follows a strict 4-state lifecycle tracked explicitly in its `CANONICAL.md` header (`- **Status**: <state>`):
+
+| State | Definition & Trigger | Required Artifacts |
+| :--- | :--- | :--- |
+| `Draft` | Initial research, deep git inspection, `/grill-me` extraction, and `CANONICAL.md` authoring. Channel derivatives are being drafted. | `CANONICAL.md` |
+| `Ready` | Copy audited against anti-patterns, character budgets verified, and derivatives finalized. Awaiting author publishing gate. | `CANONICAL.md`, channel files (`linkedin.md`, `twitter.md`, etc.) |
+| `Scheduled` | Dispatched to a queue or scheduled for a specific timestamp (via Buffer CLI or native scheduler). | `CANONICAL.md`, scheduled date/time, optional `.ics` reminder |
+| `Published / Live` | Dispatched live (`shareNow`) or confirmed live on external channels. | Live post URLs recorded, workspace backlog updated |
+
+---
+
+## 7-Stage Social Campaign Workflow
+
+Follow this procedure when creating, publishing, or auditing social campaigns:
 
 ### Stage 1: Evidence Discovery & Grounding
 Never hallucinate features, metrics, or claims.
@@ -54,7 +67,7 @@ Never hallucinate features, metrics, or claims.
    - Always run full `git log` with commit bodies, inspect diff statistics (`git show --stat`), check architecture decision records (ADRs), and inspect source documentation directly across all referenced repositories.
 2. **Interview via `/grill-me`**: If the source is an open-ended topic or raw idea, recommend `/grill-me` or conduct an interactive interview to extract the author's real friction points, unexpected discoveries, and authentic engineering voice.
 3. **Draft & Continuously Sync the Canonical Foundation Narrative (`CANONICAL.md`)**:
-   Author a comprehensive, unconstrained master document covering:
+   Author a comprehensive, unconstrained master document with `- **Status**: Draft` covering:
    - Core premise & real motivation.
    - Exact repositories and what was specifically built/refactored in each.
    - Concrete performance observations (time-to-first-token, reasoning depth, compile times).
@@ -92,12 +105,25 @@ Review all drafts against [references/anti_patterns.md](references/anti_patterns
 - [ ] Links positioned according to platform rules (1st comment for LinkedIn, direct in-body for X/Bluesky/Threads/Reddit).
 - [ ] Hashtags strictly match platform limits (0 for X, 1 for Threads, 0-1 for Bluesky, 1-3 for LinkedIn, 3-5 for Instagram).
 - [ ] Technical claims, metrics, and commands verified against reality.
+- Once verified, update header: `- **Status**: Ready`.
 
 ### Stage 6: Dispatch & Frictionless Clipboard Pipeline
 When executing or automating campaign publication (e.g. via Buffer CLI):
-1. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
-2. **First-Comment Clipboard Pipeline (Free Tier Strategy)**:
+1. **Publishing Mode Confirmation Gate**:
+   - Always ask the author whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule for a Specific Time** (`customScheduled`) before dispatching, unless explicitly commanded in the initial prompt.
+2. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
+3. **First-Comment Clipboard Pipeline (Free Tier Strategy)**:
    - For platforms where outbound links are placed in the first comment (such as LinkedIn) and the scheduler's automated comment API is restricted behind paid plans, dispatch the post with `mode: shareNow`.
    - **Immediately pipe the pre-formatted First Comment to the user's OS clipboard** (`pbcopy` on macOS, `xclip`/`wl-copy` on Linux).
    - Return the live post URL directly so the author can click the link and press `Cmd+V` / `Ctrl+V` immediately, avoiding forgotten comments and boosting the post's golden-hour engagement signal.
 
+### Stage 7: Post-Dispatch Lifecycle Synchronization & Status Marking
+As soon as posts are published or confirmed live:
+1. **Mark Campaign as `Published / Live`**:
+   - Update `CANONICAL.md` header to `- **Status**: Published / Live` (or `- **Status**: Scheduled` if scheduled for a future milestone).
+   - Record publication timestamp.
+2. **Record Live URLs**:
+   - Append the live post URLs (LinkedIn, Twitter/X, Bluesky, Medium, etc.) directly to `CANONICAL.md` or a `## Live Links` section.
+3. **Synchronize Workspace Backlog / Task Trackers**:
+   - In repositories tracking active tasks (such as `TODOs.md`), move the campaign to the **`## ✅ Completed Tasks`** section tagged `[DONE - PUBLISHED]`.
+   - Remove or resolve the corresponding item from the active backlog.

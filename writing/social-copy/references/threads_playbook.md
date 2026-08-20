@@ -41,7 +41,7 @@ Here is why that causes [issue, e.g., memory bloat / connection exhaustion] at s
 A cleaner approach:
 [Attach 1:1 Ray.so/Carbon Code Image]
 
-This reduced our [metric] by [X%]. 
+This reduced our [metric] by [X%].
 
 How is your team handling this in production?
 
@@ -77,7 +77,7 @@ What's new:
 🛠️ Zero-config support for [Framework/DB]
 📦 40% smaller bundle size
 
-Demo screencast attached below. 
+Demo screencast attached below.
 
 GitHub repo + documentation: [Link]
 

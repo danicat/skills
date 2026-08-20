@@ -107,7 +107,7 @@ ORDER BY time DESC;
 
 ### 2. Identify Packages with Lowest Statement Coverage
 ```sql
-SELECT 
+SELECT
     package,
     SUM(CASE WHEN count > 0 THEN stmt_num ELSE 0 END) AS covered_stmts,
     SUM(stmt_num) AS total_stmts,
@@ -129,8 +129,8 @@ ORDER BY file, start_line;
 ```sql
 SELECT c.file, c.line_number, c.content
 FROM all_code c
-JOIN all_coverage cov 
-  ON c.file = cov.file 
+JOIN all_coverage cov
+  ON c.file = cov.file
  AND c.line_number BETWEEN cov.start_line AND cov.end_line
 WHERE cov.count = 0
 ORDER BY c.file, c.line_number;

@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/pronouns\n\n# Pronouns
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Always ensure pronouns have clear and unambiguous connections to the nouns they replace, avoiding vague references.\n- Use singular "they" as the gender-neutral pronoun instead of gender-specific pronouns or alternatives like "he/she".\n- Utilize optional pronouns such as "that" and "which" to enhance clarity and avoid ambiguity in sentences.\n- Primarily use second-person pronouns ("you") while reserving first-person pronouns ("I", "we") for specific contexts like FAQs or organizational statements.\n- Understand the distinctions between relative pronouns like "that" and "which", using "that" for restrictive clauses and "which" for nonrestrictive clauses.\n\nAlways ensure pronouns have clear and unambiguous connections to the nouns they replace, avoiding vague references.\n\nUse singular "they" as the gender-neutral pronoun instead of gender-specific pronouns or alternatives like "he/she".\n\nUtilize optional pronouns such as "that" and "which" to enhance clarity and avoid ambiguity in sentences.\n\nPrimarily use second-person pronouns ("you") while reserving first-person pronouns ("I", "we") for specific contexts like FAQs or organizational statements.\n\nUnderstand the distinctions between relative pronouns like "that" and "which", using "that" for restrictive clauses and "which" for nonrestrictive clauses.\n\nEnsure that a pronoun clearly refers
 to its antecedent (the noun that it's replacing).\n\n\n## Ambiguous pronoun references\n\nAvoid vague and confusing references between a pronoun and its antecedent.\n\nRecommended: If you type text in the
 field, the text doesn't change.\n\nNot recommended: If you type text in the

@@ -33,15 +33,15 @@ def main():
     parser.add_argument("-r", "--resolution", choices=["1K", "2K", "4K"], default="1K", help="Output resolution")
     parser.add_argument("--project", help="GCP Project ID for Vertex AI")
     parser.add_argument("--location", default="global", help="GCP Location for Vertex AI (default: global)")
-    
+
     args = parser.parse_args()
-    
+
     if len(args.input_image) > 14:
         print("Error: Maximum of 14 input images allowed.", file=sys.stderr)
         sys.exit(1)
-        
+
     model_id = MODEL_MAP[args.model]
-    
+
     # Always use ADC via google.auth.default() for Vertex AI
     try:
         credentials, default_project = google.auth.default()
@@ -62,11 +62,11 @@ def main():
         sys.exit(1)
 
     client = genai.Client(vertexai=True, project=project, location=location, credentials=credentials)
-        
+
     print(f"Model: {model_id}")
     print(f"Output: {args.filename}")
     print(f"Inputs: {args.input_image}")
-    
+
     inputs = []
     for img_path in args.input_image:
         inputs.append(Image.open(img_path))
@@ -88,7 +88,7 @@ def main():
 
         with open(args.filename, "wb") as f:
             f.write(img_bytes)
-            
+
         print(f"Success! Image saved to {args.filename}")
     except APIError as e:
         print(f"API Error generating image with {model_id}: {e}", file=sys.stderr)

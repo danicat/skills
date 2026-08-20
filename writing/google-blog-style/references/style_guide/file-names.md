@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/file-names\n\n# Filenames and file types
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Use lowercase, hyphens, and standard ASCII characters for file and directory names for better search engine optimization and compatibility across operating systems.\n- Prioritize consistency with existing naming conventions within a directory when adding new files, even if it means deviating from the general guidelines.\n- When referencing files, use code font, include the word "file", and maintain the exact spelling of the filename.\n- When discussing file types, use their formal names instead of filename extensions (e.g., "PNG file" instead of ".png file").\n\nUse lowercase, hyphens, and standard ASCII characters for file and directory names for better search engine optimization and compatibility across operating systems.\n\nPrioritize consistency with existing naming conventions within a directory when adding new files, even if it means deviating from the general guidelines.\n\nWhen referencing files, use code font, include the word "file", and maintain the exact spelling of the filename.\n\nWhen discussing file types, use their formal names instead of filename extensions (e.g., "PNG file" instead of ".png file").\n\n\n## Guidelines for names\n\nMake file and directory names lowercase, with the occasional exception for consistency, to make file searches easier and search results more useful. For example, because most Unix-style operating systems are case sensitive, they can't find a file named Impersonate-Service-Accounts.html if you search for impersonate-service-accounts.html. Linux and macOS interpret these as two distinct files.\n\nUse hyphens, not underscores, to separate words—for example,
 query-data.html. Search engines interpret hyphens in file and directory names as spaces between words. Underscores are generally not recognized, meaning that their presence can negatively affect SEO.\n\nUse only standard ASCII
   alphanumeric characters in file and directory names.\n\nDon't use generic page names such as document1.html.\n\n\n### Exceptions for consistency\n\nIf you're adding to a directory where everything else already uses

@@ -147,7 +147,7 @@ CREATE INDEX IF NOT EXISTS idx_post_metrics_lookup ON post_metrics(post_id, metr
 -- Flattened Analytical View for Posts & Metrics
 DROP VIEW IF EXISTS v_posts_summary;
 CREATE VIEW v_posts_summary AS
-SELECT 
+SELECT
     p.id AS post_id,
     p.channel_service AS service,
     c.name AS channel_name,
@@ -178,14 +178,14 @@ SELECT
     COALESCE(MAX(CASE WHEN m.metric_type = 'comments' THEN m.value END), 0) AS comments,
     COALESCE(MAX(CASE WHEN m.metric_type = 'reposts' THEN m.value END), 0) AS reposts,
     COALESCE(MAX(CASE WHEN m.metric_type = 'clicks' THEN m.value END), 0) AS clicks,
-    COALESCE(MAX(CASE WHEN m.metric_type = 'engagementRate' THEN m.value END), 
-        CASE 
-            WHEN COALESCE(MAX(CASE WHEN m.metric_type = 'impressions' THEN m.value END), 0) > 0 
-            THEN ROUND((COALESCE(MAX(CASE WHEN m.metric_type = 'reactions' THEN m.value END), 0) + 
-                        COALESCE(MAX(CASE WHEN m.metric_type = 'comments' THEN m.value END), 0) + 
-                        COALESCE(MAX(CASE WHEN m.metric_type = 'reposts' THEN m.value END), 0)) * 100.0 / 
+    COALESCE(MAX(CASE WHEN m.metric_type = 'engagementRate' THEN m.value END),
+        CASE
+            WHEN COALESCE(MAX(CASE WHEN m.metric_type = 'impressions' THEN m.value END), 0) > 0
+            THEN ROUND((COALESCE(MAX(CASE WHEN m.metric_type = 'reactions' THEN m.value END), 0) +
+                        COALESCE(MAX(CASE WHEN m.metric_type = 'comments' THEN m.value END), 0) +
+                        COALESCE(MAX(CASE WHEN m.metric_type = 'reposts' THEN m.value END), 0)) * 100.0 /
                        MAX(CASE WHEN m.metric_type = 'impressions' THEN m.value END), 2)
-            ELSE 0.0 
+            ELSE 0.0
         END
     ) AS engagement_rate
 FROM posts p
@@ -307,7 +307,7 @@ def backfill_posts(
     """
     sync_mode = "full" if full_sync else "incremental"
     started_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    
+
     # Check latest synced post if incremental
     if not full_sync and not start_date:
         cursor = conn.cursor()
@@ -605,7 +605,7 @@ def execute_sql(conn: sqlite3.Connection, sql: str, output_format: str = "table"
     cursor = conn.cursor()
     cursor.execute(sql)
     rows = cursor.fetchall()
-    
+
     if not rows:
         return "No results returned."
 
@@ -629,7 +629,7 @@ def execute_sql(conn: sqlite3.Connection, sql: str, output_format: str = "table"
         # Format markdown table
         headers = columns
         col_widths = [len(h) for h in headers]
-        
+
         str_rows = []
         for r in rows:
             row_vals = []
@@ -653,7 +653,7 @@ def execute_sql(conn: sqlite3.Connection, sql: str, output_format: str = "table"
 
 REPORTS = {
     "overview": """
-        SELECT 
+        SELECT
             service,
             COUNT(*) AS total_posts,
             SUM(impressions) AS total_impressions,
@@ -667,7 +667,7 @@ REPORTS = {
         ORDER BY total_impressions DESC;
     """,
     "top-posts": """
-        SELECT 
+        SELECT
             service,
             sent_date,
             reactions,
@@ -682,7 +682,7 @@ REPORTS = {
         LIMIT 10;
     """,
     "timing": """
-        SELECT 
+        SELECT
             day_of_week,
             COUNT(*) AS post_count,
             ROUND(AVG(impressions), 0) AS avg_impressions,
@@ -695,7 +695,7 @@ REPORTS = {
         ORDER BY avg_impressions DESC;
     """,
     "hooks": """
-        SELECT 
+        SELECT
             service,
             sent_date,
             char_count,
@@ -785,7 +785,7 @@ def main():
         print(f"Connecting to Buffer CLI and initializing DB at: {db_path}")
         org_id = get_organization_id()
         print(f"Discovered Organization ID: {org_id}")
-        
+
         channels = sync_channels(conn, org_id)
         print(f"Synced {len(channels)} channels.")
 

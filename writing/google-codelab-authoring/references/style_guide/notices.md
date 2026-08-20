@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/notices\n\n# Notes, cautions, warnings, and other notices
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Notices highlight useful information outside the main text flow, but readers may overlook them.\n- Minimize notice usage, as overuse diminishes their effectiveness and consider alternative ways to convey the information.\n- Choose from four notice types: Note, Caution, Warning, and Success, each serving a distinct purpose.\n- Notes provide relevant but non-critical information, while Cautions advise careful proceeding, and Warnings highlight potential risks or irreversible actions.\n- Success notices indicate positive outcomes but are restricted to interactive content.\n\nNotices highlight useful information outside the main text flow, but readers may overlook them.\n\nMinimize notice usage, as overuse diminishes their effectiveness and consider alternative ways to convey the information.\n\nChoose from four notice types: Note, Caution, Warning, and Success, each serving a distinct purpose.\n\nNotes provide relevant but non-critical information, while Cautions advise careful proceeding, and Warnings highlight potential risks or irreversible actions.\n\nSuccess notices indicate positive outcomes but are restricted to interactive content.\n\nTo give the reader important or useful information that isn't part of the flow of the text, you
   can offset the information with a notice. However, there's
   evidence

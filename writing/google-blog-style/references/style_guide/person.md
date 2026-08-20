@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/person\n\n# Second person and first person
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- In your writing, address the reader directly using "you" or "your" instead of "we," "our," or "us" to maintain a conversational tone and clarity.\n- When providing instructions, use the imperative mood to guide the reader effectively (e.g., "Click Submit").\n- While generally using second-person pronouns, reserve third-person for actions performed by software or end-users, ensuring clarity and accuracy in technical documentation.\n- While first-person plural pronouns like "we" or "our" are acceptable when referencing the organization, ensure clear and unambiguous context to avoid confusion.\n- Maintain consistent audience identification throughout your document, clarifying the intended reader (e.g., developer, system administrator) for better comprehension and engagement.\n\nIn your writing, address the reader directly using "you" or "your" instead of "we," "our," or "us" to maintain a conversational tone and clarity.\n\nWhen providing instructions, use the imperative mood to guide the reader effectively (e.g., "Click Submit").\n\nWhile generally using second-person pronouns, reserve third-person for actions performed by software or end-users, ensuring clarity and accuracy in technical documentation.\n\nWhile first-person plural pronouns like "we" or "our" are acceptable when referencing the organization, ensure clear and unambiguous context to avoid confusion.\n\nMaintain consistent audience identification throughout your document, clarifying the intended reader (e.g., developer, system administrator) for better comprehension and engagement.\n\n\n## Address the reader as you\n\nIn general, address the reader of your documents
 using the second person instead of the first person: use you or your
 instead of we, our, or us.

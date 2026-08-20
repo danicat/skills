@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/tables\n\n# Tables
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Tables are ideal for presenting data with three or more related pieces of information per item, while lists are better for simpler data structures.\n- When using tables, introduce them with a complete sentence, use clear and concise column headings, and avoid unnecessary styling or formatting.\n- Ensure table accessibility by using proper HTML elements like caption, th, and scope, and provide descriptive alternative text for any images or symbols.\n- For single-unit items, use bulleted, lettered, or numbered lists; for paired data, consider description lists or tables depending on the context.\n- Avoid using tables for page layout, code snippets, long one-dimensional lists, or within numbered procedures, and ensure responsiveness for various viewport sizes.\n\nTables are ideal for presenting data with three or more related pieces of information per item, while lists are better for simpler data structures.\n\nWhen using tables, introduce them with a complete sentence, use clear and concise column headings, and avoid unnecessary styling or formatting.\n\nEnsure table accessibility by using proper HTML elements like caption, th, and scope, and provide descriptive alternative text for any images or symbols.\n\nFor single-unit items, use bulleted, lettered, or numbered lists; for paired data, consider description lists or tables depending on the context.\n\nAvoid using tables for page layout, code snippets, long one-dimensional lists, or within numbered procedures, and ensure responsiveness for various viewport sizes.\n\nIn many contexts, tables are the best way to represent sets of related pieces of data. However,
 in some contexts, other approaches are better choices.\n\n\n## List or table?\n\nTables and lists are both ways to present a set of similarly structured
 items; sometimes it's not obvious when to choose one presentation over the
@@ -49,5 +49,5 @@ period at the end.\n\nWhen referring to the table from text, refer to it by its 
 splitting it into multiple tables.\n- Don't present new information in tables through images or symbols alone; always provide a
 descriptive alt attribute for the image or symbol. For more information, see
 Alt text.\n\n\n## Table column heads\n\n- Use sentence case.\n- Write concise headings.\n- Don't end with punctuation, including a period, an ellipsis, or a colon.\n- Use table headings for the first column and the first row only. Use the
-    th element.\n- Include the 
+    th element.\n- Include the
 scope attribute as appropriate for accessibility.\n\n\n## Responsive tables\n\nWhere possible, use table CSS that adapts to different viewport sizes.\n\n\n## Link to tables\n\nWhere possible, avoid linking to tables; instead, refer to them by table number.\n

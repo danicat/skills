@@ -96,11 +96,11 @@ Google's [Search Quality Evaluator Guidelines (QRG)](https://static.googleuserco
 graph TD
     GenAI[Generative AI Use] --> Endorsed[Endorsed Workflows]
     GenAI --> Violation[Policy Violations]
-    
+
     Endorsed --> W1["Topic research & ideation"]
     Endorsed --> W2["Structuring & outlining original thought"]
     Endorsed --> W3["Drafting assistance with rigorous human oversight"]
-    
+
     Violation --> V1["Scaled Content Abuse (Mass automated page generation)"]
     Violation --> V2["Targeting every fan-out query variant with thin doorway pages"]
     Violation --> V3["Unverified automated publishing without human review"]

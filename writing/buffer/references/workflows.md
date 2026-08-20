@@ -85,4 +85,3 @@ EOF
 # 3. Output the live URL so the user can paste immediately (Cmd+V)
 echo "$result" | jq -r '.post.externalLink'
 ```
-

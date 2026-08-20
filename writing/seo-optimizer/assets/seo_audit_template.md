@@ -1,9 +1,9 @@
 # Technical SEO & Generative Engine Optimization (GEO) Audit Report
 
-**Article:** `{{ ARTICLE_TITLE }}`  
-**File Path:** `{{ FILE_PATH }}`  
-**Auditor:** `seo-optimizer` Agent Skill  
-**Date:** `{{ AUDIT_DATE }}`  
+**Article:** `{{ ARTICLE_TITLE }}`
+**File Path:** `{{ FILE_PATH }}`
+**Auditor:** `seo-optimizer` Agent Skill
+**Date:** `{{ AUDIT_DATE }}`
 
 ---
 
@@ -39,7 +39,7 @@ tags: {{ OPTIMIZED_TAGS }}
 ```
 
 - **Title Analysis:** Length: `{{ TITLE_LEN }}` chars. Front-loaded with primary entity.
-- **Description vs Summary Analysis:** 
+- **Description vs Summary Analysis:**
   - `summary` provides an engaging editorial hook for on-site cards.
   - `description` provides a dense, keyword-rich direct answer snippet for Google and LLMs.
 

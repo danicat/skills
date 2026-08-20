@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/sentence-structure\n\n# Sentence structure
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nIf you want to tell the reader to do something, try to mention the circumstance, conditions, or
   goal before you provide the instruction. Mentioning the circumstance first lets the reader skip
   the instruction if it doesn't apply. For information about how to apply this guideline to

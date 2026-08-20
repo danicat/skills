@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/slashes\n\n# Slashes
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\n\n## Page Summary\n\n- Avoid using slashes to denote alternatives, instead use "or" or "and" to ensure clarity.\n- Do not use slashes in date formats, abbreviations (such as c/o or w/), or fractions; opt for clearer alternatives like dedicated date formats, spelled-out words, and decimals/percentages respectively.\n- Use forward slashes appropriately in computer file paths and URLs (backslashes for Windows paths), and break long URLs after a forward slash.\n- Generally, replace slashes with "and" or "or" for better readability and to avoid ambiguity, except for code, file paths, and URLs where they have specific functions.\n\nAvoid using slashes to denote alternatives, instead use "or" or "and" to ensure clarity.\n\nDo not use slashes in date formats, abbreviations (such as c/o or w/), or fractions; opt for clearer alternatives like dedicated date formats, spelled-out words, and decimals/percentages respectively.\n\nUse forward slashes appropriately in computer file paths and URLs (backslashes for Windows paths), and break long URLs after a forward slash.\n\nGenerally, replace slashes with "and" or "or" for better readability and to avoid ambiguity, except for code, file paths, and URLs where they have specific functions.\n\nAvoid using slashes, except in code.\n\n\n## Slashes with dates\n\nDon't use date formats that rely on slashes.\n\nFor information about how to write dates, see
   Dates and times.\n\n\n## Slashes with alternatives\n\nDon't use slashes to separate alternatives.\n\nRecommended: For example, a disaster
 relief map is not subject to the usage limits even if it has been developed and

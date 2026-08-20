@@ -38,7 +38,7 @@ A comprehensive technical reference for designing, implementing, and auditing in
 > - Google **does not** use code-level HTML attributes (such as `<html lang="en">`).
 > - Google **does not** use URL paths (such as `/es/` or `/en/`) to determine language.
 > - Google **does not** use `hreflang` attributes to identify the language of the page content.
-> 
+>
 > The `hreflang` annotation is purely an association mechanism: it informs Google that a cluster of URLs represents localized variations of the same content so Google can serve the matching URL in localized search results.
 
 ### Content Translation Rules
@@ -174,7 +174,7 @@ In `layouts/partials/head.html`:
 <head>
   <title>Building Go MCP Servers | Engineering Blog</title>
   <link rel="canonical" href="https://example.com/posts/go-mcp/" />
-  
+
   <!-- Bidirectional hreflang cluster -->
   <link rel="alternate" hreflang="en" href="https://example.com/posts/go-mcp/" />
   <link rel="alternate" hreflang="ja" href="https://example.com/ja/posts/go-mcp/" />
@@ -229,7 +229,7 @@ Declare localized variations in an XML sitemap. This is ideal for large enterpri
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
+
   <!-- English Global URL -->
   <url>
     <loc>https://example.com/posts/go-mcp/</loc>

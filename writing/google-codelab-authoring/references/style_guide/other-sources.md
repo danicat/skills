@@ -1,11 +1,11 @@
 Source: https://developers.google.com/style/other-sources\n\n# Third-party content
 
 
-      
-      Stay organized with collections
-    
 
-      
+      Stay organized with collections
+
+
+
       Save and categorize content based on your preferences.\n\n- Home\n- Products\n- Style\n\nDon't copy content from another source because it might violate copyright. Instead, paraphrase
   and link to their content.\n\nContent includes the following types: text, images, code, logos, and speech.\n\nRecommended: A
 recovery point objective (RPO),
