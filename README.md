@@ -79,7 +79,15 @@ Editorial guidelines, analytics data warehousing, social copy engineering, and d
 ---
 
 ### 📐 Engineering Standards (`standards/`)
-Decision records and design consensus frameworks.
+Decision records, design consensus frameworks, and open-source compliance.
 
 * **[`adr-template`](standards/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
+* **[`google-oss`](standards/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
 * **[`rfc-template`](standards/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
+
+---
+
+## Disclaimer
+
+This is not an officially supported Google product.
+
