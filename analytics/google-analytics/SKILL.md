@@ -10,13 +10,13 @@ description: >
   querying GA4 data via SQL, or tracking user journeys and outbound link exits.
 license: Apache-2.0
 metadata:
-  category: writing
-  tags: "writing, analytics, ga4, google-analytics, sqlite, metrics, dwell-time"
+  category: analytics
+  tags: "analytics, ga4, google-analytics, sqlite, metrics, dwell-time"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
-  homepage: https://skills.danicat.dev/writing/google-analytics/
-  canonical: https://skills.danicat.dev/writing/google-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/writing/google-analytics
+  homepage: https://skills.danicat.dev/analytics/google-analytics/
+  canonical: https://skills.danicat.dev/analytics/google-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/analytics/google-analytics
 ---
 
 # Google Analytics 4 SQLite Ingestion & SQL Analytics

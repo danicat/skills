@@ -43,6 +43,7 @@ const VALID_CATEGORIES = new Set([
   'coding',
   'agents',
   'writing',
+  'analytics',
   'standards',
   'gateway'
 ]);

@@ -9,13 +9,13 @@ description: >
   queries over social archives, or evaluating campaign engagement.
 license: Apache-2.0
 metadata:
-  category: writing
-  tags: "writing, analytics, buffer, social-metrics, sqlite, engagement, sql"
+  category: analytics
+  tags: "analytics, buffer, social-metrics, sqlite, engagement, sql"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
-  homepage: https://skills.danicat.dev/writing/buffer-analytics/
-  canonical: https://skills.danicat.dev/writing/buffer-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/writing/buffer-analytics
+  homepage: https://skills.danicat.dev/analytics/buffer-analytics/
+  canonical: https://skills.danicat.dev/analytics/buffer-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/analytics/buffer-analytics
 ---
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine

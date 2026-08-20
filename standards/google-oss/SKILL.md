@@ -10,7 +10,7 @@ description: >
 license: Apache-2.0
 metadata:
   category: standards
-  tags: "standards, google, open-source, license, addlicense, disclaimer, compliance, copyright, apache, spdx"
+  tags: "standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
   homepage: https://skills.danicat.dev/standards/google-oss/

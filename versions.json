@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-20T23:34:19.712Z",
-  "totalSkills": 27,
+  "updatedAt": "2026-08-20T23:47:50.539Z",
+  "totalSkills": 30,
   "skills": {
     "ebitengineer": {
       "v": "1.2.0",
@@ -82,7 +82,7 @@
     },
     "a2ui-developer-guide": {
       "v": "0.1.0",
-      "h": "b19f26564742",
+      "h": "7984a31e4ee0",
       "c": "agents",
       "u": "https://skills.danicat.dev/agents/a2ui-developer-guide/SKILL.md"
     },
@@ -110,23 +110,11 @@
       "c": "writing",
       "u": "https://skills.danicat.dev/writing/buffer/SKILL.md"
     },
-    "buffer-analytics": {
-      "v": "0.1.0",
-      "h": "92aa45a29d28",
-      "c": "writing",
-      "u": "https://skills.danicat.dev/writing/buffer-analytics/SKILL.md"
-    },
     "deslopify": {
       "v": "0.1.0",
       "h": "01c25a89ba04",
       "c": "writing",
       "u": "https://skills.danicat.dev/writing/deslopify/SKILL.md"
-    },
-    "google-analytics": {
-      "v": "0.1.0",
-      "h": "5f1e3f26da15",
-      "c": "writing",
-      "u": "https://skills.danicat.dev/writing/google-analytics/SKILL.md"
     },
     "google-blog-style": {
       "v": "0.2.0",
@@ -146,12 +134,6 @@
       "c": "writing",
       "u": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md"
     },
-    "search-analytics": {
-      "v": "0.1.0",
-      "h": "38714feef3c4",
-      "c": "writing",
-      "u": "https://skills.danicat.dev/writing/search-analytics/SKILL.md"
-    },
     "seo-optimizer": {
       "v": "0.1.0",
       "h": "2aecd39c2036",
@@ -163,6 +145,42 @@
       "h": "5734ffbc304f",
       "c": "writing",
       "u": "https://skills.danicat.dev/writing/social-copy/SKILL.md"
+    },
+    "buffer-analytics": {
+      "v": "0.1.0",
+      "h": "1f4fe773332f",
+      "c": "analytics",
+      "u": "https://skills.danicat.dev/analytics/buffer-analytics/SKILL.md"
+    },
+    "google-analytics": {
+      "v": "0.1.0",
+      "h": "527699f5526f",
+      "c": "analytics",
+      "u": "https://skills.danicat.dev/analytics/google-analytics/SKILL.md"
+    },
+    "search-analytics": {
+      "v": "0.1.0",
+      "h": "9f4d03e1281d",
+      "c": "analytics",
+      "u": "https://skills.danicat.dev/analytics/search-analytics/SKILL.md"
+    },
+    "adr-template": {
+      "v": "0.1.0",
+      "h": "396e24d6cb08",
+      "c": "standards",
+      "u": "https://skills.danicat.dev/standards/adr-template/SKILL.md"
+    },
+    "google-oss": {
+      "v": "0.1.0",
+      "h": "27954c6a2f1d",
+      "c": "standards",
+      "u": "https://skills.danicat.dev/standards/google-oss/SKILL.md"
+    },
+    "rfc-template": {
+      "v": "0.1.0",
+      "h": "bbd3a83d401d",
+      "c": "standards",
+      "u": "https://skills.danicat.dev/standards/rfc-template/SKILL.md"
     }
   }
 }

@@ -40,12 +40,13 @@ https://skills.danicat.dev/llms.txt
 
 ### Step 2: Match User Intent to a Domain Skill
 Locate the specific skill matching the user's goal:
-- **2D Game Development**: `game-dev/ebitengineer`, `game-dev/game-design`, `game-dev/procedural-art`, `game-dev/procedural-composer`, `game-dev/sprite-animation`, `game-dev/vibe-game-developer`.
-- **Engineering Standards & Hygiene**: `coding/engineering-flow`, `standards/adr-template`, `standards/rfc-template`.
-- **Coding & Language Workflows**: `coding/godoctor` (Go), `coding/pyhd` (Python), `coding/find-examples`, `coding/latest-version`.
-- **Technical Writing & Analytics**: `writing/buffer`, `writing/buffer-analytics`, `writing/google-analytics`, `writing/google-blog-style`, `writing/google-codelab-authoring`, `writing/search-analytics`, `writing/seo-optimizer`, `writing/social-copy`.
-- **Generative Media**: `media/lyria` (Music), `media/nano-banana` (Images).
-- **Agent Workflows**: `agents/a2ui-developer-guide`, `agents/double-diamond`, `agents/skill-optimizer`, `agents/swarm-coding`.
+- **Game Development**: `game-dev/ebitengineer`, `game-dev/game-design`, `game-dev/procedural-art`, `game-dev/procedural-composer`, `game-dev/sprite-animation`, `game-dev/vibe-game-developer`.
+- **Generative Media**: `media/lyria`, `media/nano-banana`.
+- **Software Engineering**: `coding/engineering-flow`, `coding/find-examples`, `coding/godoctor`, `coding/latest-version`, `coding/pyhd`.
+- **AI Agents**: `agents/a2ui-developer-guide`, `agents/double-diamond`, `agents/skill-optimizer`, `agents/swarm-coding`.
+- **Technical Writing**: `writing/buffer`, `writing/deslopify`, `writing/google-blog-style`, `writing/google-codelab-authoring`, `writing/inverted-pyramid`, `writing/seo-optimizer`, `writing/social-copy`.
+- **Data Analytics**: `analytics/buffer-analytics`, `analytics/google-analytics`, `analytics/search-analytics`.
+- **Engineering Standards**: `standards/adr-template`, `standards/google-oss`, `standards/rfc-template`.
 
 ### Step 3: Load Instructions into Working Context
 Fetch the full skill instructions directly into your active context:

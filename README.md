@@ -43,7 +43,7 @@ Audio and visual generation using Google AI models with ADC authentication.
 
 ---
 
-### 💻 Coding & Development (`coding/`)
+### 💻 Software Engineering (`coding/`)
 Engineering workflow standards, compiler gates, package resolvers, and language-specific tools.
 
 * **[`engineering-flow`](coding/engineering-flow/SKILL.md)**: Engineering workflow standards detailing semantic versioning (with 0.x zero-debt rules), broken window hygiene, RFC/ADR planning, and the 7-tier Evidence Hierarchy.
@@ -54,7 +54,7 @@ Engineering workflow standards, compiler gates, package resolvers, and language-
 
 ---
 
-### 🤖 Agents & Meta-Tooling (`agents/`)
+### 🤖 AI Agents (`agents/`)
 Frameworks, UI streaming protocols, swarm orchestration, and skill authoring tools.
 
 * **[`a2ui-developer-guide`](agents/a2ui-developer-guide/SKILL.md)**: Comprehensive guide for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, and component catalog validations.
@@ -64,17 +64,25 @@ Frameworks, UI streaming protocols, swarm orchestration, and skill authoring too
 
 ---
 
-### ✍️ Technical Writing & Publishing (`writing/`)
-Editorial guidelines, analytics data warehousing, social copy engineering, and developer tutorial authoring.
+### ✍️ Technical Writing (`writing/`)
+Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, and developer tutorial authoring.
 
 * **[`buffer`](writing/buffer/SKILL.md)**: Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI.
-* **[`buffer-analytics`](writing/buffer-analytics/SKILL.md)**: Ingest raw Buffer social post and channel data into a local SQLite analytics database and run SQL queries across LinkedIn, Twitter/X, and Bluesky.
-* **[`google-analytics`](writing/google-analytics/SKILL.md)**: Ingest raw Google Analytics 4 (GA4) traffic, dwell time, localization performance, and outbound clicks into a local SQLite analytics database and run pre-built or ad-hoc SQL reports.
+* **[`deslopify`](writing/deslopify/SKILL.md)**: Re-write, edit, and purge text of common AI tropes, clichés, and formulaic filler using strict editorial guidelines.
 * **[`google-blog-style`](writing/google-blog-style/SKILL.md)**: Official style guide and compliance rules for the Google Developers Blog, including Gunning Fog readability and Vale style checks.
 * **[`google-codelab-authoring`](writing/google-codelab-authoring/SKILL.md)**: Step-by-step developer tutorial authoring in Google Codelabs format (`.lab.md`) with Claat metadata and aside block validation.
-* **[`search-analytics`](writing/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
+* **[`inverted-pyramid`](writing/inverted-pyramid/SKILL.md)**: Action-first, summary-first information hierarchy for technical documentation and developer guides.
 * **[`seo-optimizer`](writing/seo-optimizer/SKILL.md)**: Technical SEO and Generative Engine Optimization (GEO) for developer blogs and documentation, including metadata split (summary vs. description), heading hierarchies, and `llms.txt` generation.
 * **[`social-copy`](writing/social-copy/SKILL.md)**: Draft, audit, and optimize high-performing technical and developer social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads.
+
+---
+
+### 📊 Data Analytics (`analytics/`)
+Raw metrics ingestion and SQLite data warehousing for search performance, web traffic, and social distribution.
+
+* **[`buffer-analytics`](analytics/buffer-analytics/SKILL.md)**: Ingest raw Buffer social post and channel data into a local SQLite analytics database and run SQL queries across LinkedIn, Twitter/X, and Bluesky.
+* **[`google-analytics`](analytics/google-analytics/SKILL.md)**: Ingest raw Google Analytics 4 (GA4) traffic, dwell time, localization performance, and outbound clicks into a local SQLite analytics database and run pre-built or ad-hoc SQL reports.
+* **[`search-analytics`](analytics/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
 
 ---
 

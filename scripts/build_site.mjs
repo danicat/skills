@@ -33,11 +33,13 @@ const GA_MEASUREMENT_ID = 'G-8RHDQGEGZ2';
 const ENABLE_KUNGFU = process.env.ENABLE_KUNGFU === 'true' || false;
 
 const CATEGORIES = [
-  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: 'Build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD design.' },
-  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Synthesize 44.1 kHz stereo music with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models.' },
-  { id: 'coding', name: 'Coding & Tooling', emoji: '💻', description: 'Enforce semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv workflows, polyglot GitHub search, and zero-debt hygiene.' },
-  { id: 'agents', name: 'Agents & Meta-Tooling', emoji: '🤖', description: 'Orchestrate multi-agent swarms, implement Double-Diamond workflows, build A2UI streaming interfaces, and author verified Agent Skills.' },
-  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Author publication-grade engineering blogs, codelabs, Inverted Pyramid documentation, anti-slop copy, SEO metadata, and social analytics.' },
+  { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: 'Design and build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD specifications.' },
+  { id: 'media', name: 'Generative Media', emoji: '🎨', description: 'Synthesize high-fidelity stereo audio with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models.' },
+  { id: 'coding', name: 'Software Engineering', emoji: '💻', description: 'Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows.' },
+  { id: 'agents', name: 'AI Agents', emoji: '🤖', description: 'Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, build A2UI streaming interfaces, and author verified Agent Skills.' },
+  { id: 'writing', name: 'Technical Writing', emoji: '✍️', description: 'Author publication-grade engineering blogs, Google Codelabs tutorials, Inverted Pyramid documentation, anti-slop copy, and developer social copy.' },
+  { id: 'analytics', name: 'Data Analytics', emoji: '📊', description: 'Ingest Google Analytics 4, Google Search Console, and Buffer metrics into local SQLite warehouses for deep SQL querying.' },
+  { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Author immutable Architectural Decision Records (ADRs), collaborative Request for Comments (RFCs), and enforce Google open-source compliance.' },
 ];
 
 const SCHEMA_AUTHOR = {
@@ -2574,7 +2576,7 @@ async function build() {
     llmsTxt += `\n`;
   }
   llmsTxt += `## Optional\n\n`;
-  llmsTxt += `- [Full Instructions Catalog](${DOMAIN}/llms-full.txt): Complete bundle of all 29 skill instructions in a single file for large-context models.\n`;
+  llmsTxt += `- [Full Instructions Catalog](${DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
   llmsTxt += `- [Skills Catalog JSON](${DOMAIN}/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.\n`;
   llmsTxt += `- [Fast Versions JSON](${DOMAIN}/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');

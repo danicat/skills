@@ -45,9 +45,9 @@ def run_all_analytics_tests() -> int:
     print(f"Repository Root: {REPO_ROOT}\n")
 
     test_targets = [
-        ("Buffer Analytics", os.path.join(REPO_ROOT, "writing", "buffer-analytics", "scripts"), "test_buffer_analytics.py"),
-        ("Google Analytics 4", os.path.join(REPO_ROOT, "writing", "google-analytics", "scripts"), "test_google_analytics.py"),
-        ("Search Analytics (GSC)", os.path.join(REPO_ROOT, "writing", "search-analytics", "scripts"), "test_search_analytics.py"),
+        ("Buffer Analytics", os.path.join(REPO_ROOT, "analytics", "buffer-analytics", "scripts"), "test_buffer_analytics.py"),
+        ("Google Analytics 4", os.path.join(REPO_ROOT, "analytics", "google-analytics", "scripts"), "test_google_analytics.py"),
+        ("Search Analytics (GSC)", os.path.join(REPO_ROOT, "analytics", "search-analytics", "scripts"), "test_search_analytics.py"),
     ]
 
     total_suites = 0

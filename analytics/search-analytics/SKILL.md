@@ -10,13 +10,13 @@ description: >
   queries over search traffic archives, or detecting keyword cannibalization.
 license: Apache-2.0
 metadata:
-  category: writing
-  tags: "writing, search-console, seo-analytics, sqlite, keywords, gsc, rankings"
+  category: analytics
+  tags: "analytics, search-console, seo-analytics, sqlite, keywords, gsc, rankings"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
-  homepage: https://skills.danicat.dev/writing/search-analytics/
-  canonical: https://skills.danicat.dev/writing/search-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/writing/search-analytics
+  homepage: https://skills.danicat.dev/analytics/search-analytics/
+  canonical: https://skills.danicat.dev/analytics/search-analytics/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/analytics/search-analytics
 ---
 
 # Google Search Console SQLite Ingestion & SQL Analytics

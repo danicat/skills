@@ -144,12 +144,38 @@ const SKILL_CONFIGS = [
   },
   {
     category: 'standards',
+    skill: 'google-oss',
+    version: '0.1.0',
+    tags: 'standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer'
+  },
+  {
+    category: 'standards',
     skill: 'rfc-template',
     version: '0.1.0',
     tags: 'standards, rfc, technical-proposals, consensus, architecture, design-docs'
   },
 
-  // Technical Writing & Content
+  // Data Analytics
+  {
+    category: 'analytics',
+    skill: 'buffer-analytics',
+    version: '0.1.0',
+    tags: 'analytics, buffer, social-metrics, sqlite, engagement, sql'
+  },
+  {
+    category: 'analytics',
+    skill: 'google-analytics',
+    version: '0.1.0',
+    tags: 'analytics, ga4, google-analytics, sqlite, metrics, dwell-time'
+  },
+  {
+    category: 'analytics',
+    skill: 'search-analytics',
+    version: '0.1.0',
+    tags: 'analytics, search-console, seo-analytics, sqlite, keywords, gsc, rankings'
+  },
+
+  // Technical Writing
   {
     category: 'writing',
     skill: 'buffer',
@@ -158,21 +184,9 @@ const SKILL_CONFIGS = [
   },
   {
     category: 'writing',
-    skill: 'buffer-analytics',
-    version: '0.1.0',
-    tags: 'writing, analytics, buffer, social-metrics, sqlite, engagement, sql'
-  },
-  {
-    category: 'writing',
     skill: 'deslopify',
     version: '0.1.0',
     tags: 'writing, deslopify, editorial, tropes, ai-cleanup, style, prose'
-  },
-  {
-    category: 'writing',
-    skill: 'google-analytics',
-    version: '0.1.0',
-    tags: 'writing, analytics, ga4, google-analytics, sqlite, metrics, dwell-time'
   },
   {
     category: 'writing',
@@ -191,12 +205,6 @@ const SKILL_CONFIGS = [
     skill: 'inverted-pyramid',
     version: '0.1.0',
     tags: 'writing, inverted-pyramid, information-hierarchy, scannable-docs, lead'
-  },
-  {
-    category: 'writing',
-    skill: 'search-analytics',
-    version: '0.1.0',
-    tags: 'writing, search-console, seo-analytics, sqlite, keywords, gsc, rankings'
   },
   {
     category: 'writing',
