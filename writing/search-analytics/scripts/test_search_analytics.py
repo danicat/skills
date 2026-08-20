@@ -49,6 +49,7 @@ class TestSearchAnalyticsSchema(unittest.TestCase):
             "search_performance",
             "site_milestones",
             "sync_history",
+            "daily_site_performance",
             "v_search_performance",
             "v_daily_summary",
             "v_top_queries",
@@ -135,7 +136,22 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 row,
             )
 
-        # 4. Site Milestones (Pre and Post)
+        # 4. Daily Site Performance (Property-level unfiltered totals)
+        site_perf_data = [
+            ('https://example.com/', '2026-08-01', 'web', 150, 4500, 0.0333, 3.5),
+            ('https://example.com/', '2026-08-02', 'web', 180, 5200, 0.0346, 3.2),
+            ('https://example.com/', '2026-08-03', 'web', 90, 2500, 0.036, 4.1),
+            ('https://example.com/', '2026-08-15', 'web', 350, 8900, 0.0393, 2.8),
+        ]
+        for row in site_perf_data:
+            conn.execute(
+                """INSERT INTO daily_site_performance (
+                    site_url, date, search_type, clicks, impressions, ctr, position, raw_json, synced_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, '{}', '2026-08-20T00:00:00Z')""",
+                row,
+            )
+
+        # 5. Site Milestones (Pre and Post)
         conn.execute(
             """INSERT INTO site_milestones (
                 commit_hash, event_date, title, description, category, scope, author, created_at
@@ -392,6 +408,51 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 rows = cursor.fetchall()
                 self.assertIsNotNone(rows)
                 self.assertGreater(len(rows), 0, f"Report '{name}' returned empty result.")
+
+    def test_daily_summary_zero_loss_reconciliation(self):
+        """Validates that v_daily_summary correctly prioritizes unfiltered property totals over privacy-truncated query sums."""
+        # Query 2026-08-01 where daily_site_performance has clicks=150, but search_performance sum is 110
+        row = self.conn.execute(
+            "SELECT total_clicks, total_impressions, distinct_queries FROM v_daily_summary WHERE date = '2026-08-01'"
+        ).fetchone()
+        self.assertIsNotNone(row)
+        self.assertEqual(row["total_clicks"], 150)
+        self.assertEqual(row["total_impressions"], 4500)
+        self.assertGreater(row["distinct_queries"], 0)
+
+        # Query 2026-08-03 where search_performance has 0 rows (100% anonymized query day)
+        row_anon = self.conn.execute(
+            "SELECT total_clicks, total_impressions, distinct_queries, distinct_pages FROM v_daily_summary WHERE date = '2026-08-03'"
+        ).fetchone()
+        self.assertIsNotNone(row_anon)
+        self.assertEqual(row_anon["total_clicks"], 90)
+        self.assertEqual(row_anon["total_impressions"], 2500)
+        self.assertEqual(row_anon["distinct_queries"], 0)
+        self.assertEqual(row_anon["distinct_pages"], 0)
+
+    def test_schema_migration_view_replacement(self):
+        """Verifies that executing SCHEMA_DDL on an existing DB replaces legacy views."""
+        conn = sqlite3.connect(":memory:")
+        # Create full legacy tables with an obsolete view definition
+        conn.execute("""
+            CREATE TABLE search_performance (
+                id INTEGER PRIMARY KEY, site_url TEXT, date TEXT, query TEXT DEFAULT '',
+                page TEXT DEFAULT '', country TEXT DEFAULT '', device TEXT DEFAULT '',
+                search_appearance TEXT DEFAULT '', search_type TEXT DEFAULT 'web',
+                clicks REAL DEFAULT 0, impressions REAL DEFAULT 0, ctr REAL DEFAULT 0,
+                position REAL DEFAULT 0, raw_json TEXT DEFAULT '{}', synced_at TEXT DEFAULT ''
+            )
+        """)
+        conn.execute("CREATE VIEW v_daily_summary AS SELECT site_url, date, SUM(clicks) AS total_clicks FROM search_performance GROUP BY site_url, date")
+        # Apply updated SCHEMA_DDL (which includes DROP VIEW IF EXISTS)
+        conn.executescript(search_analytics.SCHEMA_DDL)
+        # Verify view was replaced with new schema columns
+        cursor = conn.execute("PRAGMA table_info(v_daily_summary)")
+        cols = {r[1] for r in cursor.fetchall()}
+        self.assertIn("distinct_queries", cols)
+        self.assertIn("distinct_pages", cols)
+        self.assertIn("avg_ctr_pct", cols)
+        conn.close()
 
     def test_markdown_query_extraction(self):
         """Extracts and executes every ```sql block found across all markdown docs in skill."""

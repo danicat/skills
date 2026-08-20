@@ -140,12 +140,28 @@ CREATE TABLE IF NOT EXISTS search_performance (
     UNIQUE(site_url, date, query, page, country, device, search_appearance, search_type)
 );
 
+-- Unfiltered Property-Level Daily Totals (Zero data loss, no anonymized query filtering)
+CREATE TABLE IF NOT EXISTS daily_site_performance (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    site_url TEXT NOT NULL,
+    date TEXT NOT NULL,
+    search_type TEXT NOT NULL DEFAULT 'web',
+    clicks REAL NOT NULL DEFAULT 0,
+    impressions REAL NOT NULL DEFAULT 0,
+    ctr REAL NOT NULL DEFAULT 0,
+    position REAL NOT NULL DEFAULT 0,
+    raw_json TEXT NOT NULL,
+    synced_at TEXT NOT NULL,
+    UNIQUE(site_url, date, search_type)
+);
+
 -- Indexes for lightning fast analytical aggregation
 CREATE INDEX IF NOT EXISTS idx_search_perf_date ON search_performance(site_url, date);
 CREATE INDEX IF NOT EXISTS idx_search_perf_query ON search_performance(site_url, query);
 CREATE INDEX IF NOT EXISTS idx_search_perf_page ON search_performance(site_url, page);
 CREATE INDEX IF NOT EXISTS idx_search_perf_country ON search_performance(site_url, country);
 CREATE INDEX IF NOT EXISTS idx_search_perf_device ON search_performance(site_url, device);
+CREATE INDEX IF NOT EXISTS idx_daily_site_date ON daily_site_performance(site_url, date);
 
 -- Sync History Audit Log
 CREATE TABLE IF NOT EXISTS sync_history (
@@ -166,7 +182,8 @@ CREATE TABLE IF NOT EXISTS sync_history (
 -- ===========================================================================
 
 -- 1. Main Search Performance View with Date Dimensions
-CREATE VIEW IF NOT EXISTS v_search_performance AS
+DROP VIEW IF EXISTS v_search_performance;
+CREATE VIEW v_search_performance AS
 SELECT
     site_url,
     date,
@@ -191,13 +208,43 @@ SELECT
     ROUND(position, 1) AS avg_position
 FROM search_performance;
 
--- 2. Daily Summary Aggregate View
-CREATE VIEW IF NOT EXISTS v_daily_summary AS
+-- 2. Daily Summary Aggregate View (Powered by unfiltered site performance with fallback)
+DROP VIEW IF EXISTS v_daily_summary;
+CREATE VIEW v_daily_summary AS
+WITH s_daily AS (
+    SELECT
+        site_url,
+        date,
+        SUM(clicks) AS clicks,
+        SUM(impressions) AS impressions,
+        CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END AS ctr_pct,
+        ROUND(AVG(position), 1) AS avg_position
+    FROM daily_site_performance
+    GROUP BY site_url, date
+),
+p_daily AS (
+    SELECT
+        site_url,
+        date,
+        COUNT(DISTINCT query) AS distinct_queries,
+        COUNT(DISTINCT page) AS distinct_pages,
+        SUM(clicks) AS clicks,
+        SUM(impressions) AS impressions,
+        CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END AS ctr_pct,
+        ROUND(AVG(position), 1) AS avg_position
+    FROM search_performance
+    GROUP BY site_url, date
+),
+dates AS (
+    SELECT DISTINCT site_url, date FROM daily_site_performance
+    UNION
+    SELECT DISTINCT site_url, date FROM search_performance
+)
 SELECT
-    site_url,
-    date,
-    strftime('%Y-%m', date) AS year_month,
-    CASE strftime('%w', date)
+    d.site_url,
+    d.date,
+    strftime('%Y-%m', d.date) AS year_month,
+    CASE strftime('%w', d.date)
         WHEN '0' THEN 'Sunday'
         WHEN '1' THEN 'Monday'
         WHEN '2' THEN 'Tuesday'
@@ -206,17 +253,19 @@ SELECT
         WHEN '5' THEN 'Friday'
         WHEN '6' THEN 'Saturday'
     END AS day_of_week,
-    COUNT(DISTINCT query) AS distinct_queries,
-    COUNT(DISTINCT page) AS distinct_pages,
-    ROUND(SUM(clicks), 0) AS total_clicks,
-    ROUND(SUM(impressions), 0) AS total_impressions,
-    ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
-FROM search_performance
-GROUP BY site_url, date;
+    COALESCE(p.distinct_queries, 0) AS distinct_queries,
+    COALESCE(p.distinct_pages, 0) AS distinct_pages,
+    ROUND(COALESCE(s.clicks, p.clicks, 0), 0) AS total_clicks,
+    ROUND(COALESCE(s.impressions, p.impressions, 0), 0) AS total_impressions,
+    ROUND(COALESCE(s.ctr_pct, p.ctr_pct, 0), 2) AS avg_ctr_pct,
+    ROUND(COALESCE(s.avg_position, p.avg_position, 0), 1) AS avg_position
+FROM dates d
+LEFT JOIN s_daily s ON d.site_url = s.site_url AND d.date = s.date
+LEFT JOIN p_daily p ON d.site_url = p.site_url AND d.date = p.date;
 
 -- 3. Top Search Queries Aggregate View
-CREATE VIEW IF NOT EXISTS v_top_queries AS
+DROP VIEW IF EXISTS v_top_queries;
+CREATE VIEW v_top_queries AS
 SELECT
     site_url,
     query,
@@ -230,7 +279,8 @@ WHERE query != ''
 GROUP BY site_url, query;
 
 -- 4. Top Landing Pages Aggregate View
-CREATE VIEW IF NOT EXISTS v_top_pages AS
+DROP VIEW IF EXISTS v_top_pages;
+CREATE VIEW v_top_pages AS
 SELECT
     site_url,
     page,
@@ -245,7 +295,8 @@ WHERE page != ''
 GROUP BY site_url, page;
 
 -- 5. Country Breakdown View
-CREATE VIEW IF NOT EXISTS v_country_breakdown AS
+DROP VIEW IF EXISTS v_country_breakdown;
+CREATE VIEW v_country_breakdown AS
 SELECT
     site_url,
     country,
@@ -258,7 +309,8 @@ WHERE country != ''
 GROUP BY site_url, country;
 
 -- 6. Device Breakdown View
-CREATE VIEW IF NOT EXISTS v_device_breakdown AS
+DROP VIEW IF EXISTS v_device_breakdown;
+CREATE VIEW v_device_breakdown AS
 SELECT
     site_url,
     device,
@@ -521,6 +573,49 @@ def ingest_search_performance(
     return total_inserted
 
 
+def ingest_daily_site_performance(
+    service,
+    conn: sqlite3.Connection,
+    site_url: str,
+    start_date: str,
+    end_date: str,
+    search_type: str = "web",
+) -> int:
+    """Fetches unfiltered property-level daily totals (dimensions=['date']) without anonymized query loss."""
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    req = {
+        "startDate": start_date,
+        "endDate": end_date,
+        "dimensions": ["date"],
+        "type": search_type,
+        "aggregationType": "byProperty",
+        "rowLimit": 25000,
+    }
+    try:
+        resp = service.searchanalytics().query(siteUrl=site_url, body=req).execute()
+        rows = resp.get("rows", [])
+        for r in rows:
+            d_str = r["keys"][0]
+            clicks = r.get("clicks", 0)
+            impressions = r.get("impressions", 0)
+            ctr = r.get("ctr", 0)
+            position = r.get("position", 0)
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO daily_site_performance
+                (site_url, date, search_type, clicks, impressions, ctr, position, raw_json, synced_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (site_url, d_str, search_type, clicks, impressions, ctr, position, json.dumps(r), now),
+            )
+        conn.commit()
+        print(f"  ✓ Ingested {len(rows)} property-level daily totals ({start_date} to {end_date})")
+        return len(rows)
+    except Exception as e:
+        print(f"Error fetching property-level daily performance for {site_url}: {e}")
+        return 0
+
+
 def run_sync_pipeline(
     credentials_file: str,
     db_file: str,
@@ -596,17 +691,19 @@ def run_sync_pipeline(
         print(f"=======================================================")
 
         try:
+            site_rows = ingest_daily_site_performance(service, conn, site, start_date, end_date)
             rows_synced = ingest_search_performance(service, conn, site, start_date, end_date, dimensions)
+            total_synced = site_rows + rows_synced
             completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
             conn.execute(
                 """
                 INSERT INTO sync_history (site_url, sync_type, start_date, end_date, rows_synced, status, started_at, completed_at)
                 VALUES (?, ?, ?, ?, ?, 'SUCCESS', ?, ?)
                 """,
-                (site, sync_type, start_date, end_date, rows_synced, started_at, completed_at),
+                (site, sync_type, start_date, end_date, total_synced, started_at, completed_at),
             )
             conn.commit()
-            print(f"\n✅ Sync completed successfully for {site}: {rows_synced:,} rows recorded.")
+            print(f"\n✅ Sync completed successfully for {site}: {rows_synced:,} keyword rows, {site_rows:,} daily property totals recorded ({total_synced:,} total).")
 
         except Exception as ex:
             completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()

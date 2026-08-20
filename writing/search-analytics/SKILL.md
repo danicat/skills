@@ -1,6 +1,6 @@
 ---
 name: search-analytics
-description: Ingest raw Google Search Console performance data (clicks, impressions, CTR, average position), properties, and XML sitemaps into a local SQLite database without data loss, run mature 16-month backfills and incremental syncs, and execute deep SQL analytics over organic search traffic. Activate whenever analyzing Google Search performance, auditing historical keyword rankings, diagnosing search CTR decay, running SQL queries over search traffic archives, or detecting keyword cannibalization.
+description: Ingest raw Google Search Console property totals and granular keyword performance data (clicks, impressions, CTR, position), properties, and XML sitemaps into a local SQLite database without data loss, run mature 16-month backfills and incremental syncs, and execute deep SQL analytics over organic search traffic. Activate whenever analyzing Google Search performance, auditing historical keyword rankings, diagnosing search CTR decay, running SQL queries over search traffic archives, or detecting keyword cannibalization.
 ---
 
 # Google Search Console SQLite Ingestion & SQL Analytics
@@ -42,19 +42,21 @@ If `--db` is omitted, the script defaults to `search_analytics.db` in the curren
 
 ## 🗄️ Database Schema & Relational Structure
 
-The database maintains 5 relational tables and 7 high-performance analytical views. Detailed DDL and schema definitions are in [`references/schema.md`](references/schema.md).
+The database maintains 6 relational tables and 7 high-performance analytical views. Detailed DDL and schema definitions are in [`references/schema.md`](references/schema.md).
 
 ### Tables
 
-1. **`search_performance`**: Daily granular search metrics by keyword, page, country, and device.
+1. **`daily_site_performance`**: Unfiltered property-level daily totals (`dimensions: ['date']`). Matches 100% of property clicks/impressions in the Search Console web interface and 28-day Achievement badges.
+   - Key columns: `id` (PK), `site_url`, `date`, `search_type`, `clicks`, `impressions`, `ctr`, `position`, `raw_json`, `synced_at`.
+2. **`search_performance`**: Granular keyword-level performance partitioned by query, page, country, and device.
    - Key columns: `id` (PK), `site_url`, `date`, `query`, `page`, `country`, `device`, `search_appearance`, `search_type`, `clicks`, `impressions`, `ctr`, `position`, `raw_json`, `synced_at`.
-2. **`properties`**: Verified Search Console web properties.
+3. **`properties`**: Verified Search Console web properties.
    - Key columns: `site_url` (PK), `permission_level`, `raw_json`, `synced_at`.
-3. **`sitemaps`**: Submitted XML sitemaps, error counts, and indexed URL counts.
+4. **`sitemaps`**: Submitted XML sitemaps, error counts, and indexed URL counts.
    - Key columns: `site_url`, `path` (PK), `type`, `last_downloaded`, `last_submitted`, `errors`, `warnings`, `indexed_count`, `raw_json`, `synced_at`.
-4. **`site_milestones`**: Release milestones and publication launches for cohort impact analysis.
+5. **`site_milestones`**: Release milestones and publication launches for cohort impact analysis.
    - Key columns: `commit_hash` (PK), `event_date`, `title`, `description`, `category`, `scope`, `author`, `created_at`.
-5. **`sync_history`**: Audit log of backfill and incremental sync operations.
+6. **`sync_history`**: Audit log of backfill and incremental sync operations.
    - Key columns: `id` (PK), `site_url`, `sync_type`, `start_date`, `end_date`, `rows_synced`, `status`, `error_message`, `started_at`, `completed_at`.
 
 ---
@@ -109,6 +111,22 @@ HAVING COUNT(DISTINCT page) > 1
 ORDER BY total_impressions DESC
 LIMIT 10;
 ```
+
+---
+
+## ⚠️ Critical Architecture: Property-Level Totals vs. Keyword-Level Breakdown
+
+When querying and analyzing Search Console data, note the two distinct API behaviors and database tables:
+
+1. **Unfiltered Property-Level Totals (`daily_site_performance`):**
+   - Querying the GSC API with `dimensions: ['date']` (and `aggregationType: 'byProperty'`) returns **100% of property search traffic**, including all rare and long-tail queries.
+   - This data is ingested into `daily_site_performance` and powers `v_daily_summary`. It directly matches the Search Console Web UI Performance graphs, Total Clicks cards, and 28-day Achievement badges (e.g. *700 clicks in 28 days*).
+2. **Granular Keyword-Level Breakdown (`search_performance`):**
+   - When querying the GSC API with `dimensions: ['query', 'page', 'country', 'device']`, Google automatically applies **anonymized query filtering** to protect searcher privacy, stripping out rare/unique queries.
+   - On technical and developer blogs, long-tail anonymized queries often represent 50%–70% of total search traffic. Therefore, `search_performance` should be used for keyword rankings and page distributions, while `daily_site_performance` (or `v_daily_summary`) must be used for aggregate traffic totals.
+3. **Cross-Engine Reconciliation with Google Analytics 4:**
+   - GA4 records landing sessions under `session_default_channel_group = 'Organic Search'` across all search engines (Google, Bing, DuckDuckGo, etc.) without privacy filtering.
+   - GA4 Organic Search traffic naturally aligns with Search Console property-level totals (`daily_site_performance`), rather than the query-filtered `search_performance` table.
 
 ---
 

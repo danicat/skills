@@ -6,6 +6,26 @@ The Search Analytics database is created and maintained automatically by `script
 
 ## 1. Relational Tables
 
+### `daily_site_performance`
+Stores unfiltered property-level daily totals (`dimensions: ['date']`) without anonymized query filtering. Matches 100% of property clicks and impressions in the Search Console web interface and Achievement badges.
+
+| Column | Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | PRIMARY KEY AUTOINCREMENT | Unique record ID |
+| `site_url` | `TEXT` | NOT NULL | Search Console property URL |
+| `date` | `TEXT` | NOT NULL | Date of search activity (`YYYY-MM-DD`) |
+| `search_type` | `TEXT` | NOT NULL, DEFAULT 'web' | Search channel (`web`, `image`, `video`, `news`) |
+| `clicks` | `REAL` | NOT NULL, DEFAULT 0 | Total unfiltered property clicks |
+| `impressions` | `REAL` | NOT NULL, DEFAULT 0 | Total unfiltered property impressions |
+| `ctr` | `REAL` | NOT NULL, DEFAULT 0 | Property click-through rate (`clicks / impressions`) |
+| `position` | `REAL` | NOT NULL, DEFAULT 0 | Average property ranking position |
+| `raw_json` | `TEXT` | NOT NULL | Complete raw API row JSON payload |
+| `synced_at` | `TEXT` | NOT NULL | Local sync timestamp |
+
+*Unique Constraint:* `(site_url, date, search_type)`
+
+---
+
 ### `search_performance`
 Stores daily granular search performance partitioned by query, page, country, and device.
 
@@ -28,6 +48,9 @@ Stores daily granular search performance partitioned by query, page, country, an
 | `synced_at` | `TEXT` | NOT NULL | Local sync timestamp |
 
 *Unique Constraint:* `(site_url, date, query, page, country, device, search_appearance, search_type)`
+
+> [!NOTE]
+> **Keyword-Level Privacy Truncation:** When data is queried with `query` in dimensions, the Search Console API omits rare long-tail "anonymized queries" to protect searcher privacy. Granular keyword rows in `search_performance` represent the non-anonymized query subset, while true property-level totals are preserved in `daily_site_performance`. The `v_daily_summary` analytical view automatically leverages `daily_site_performance` to guarantee zero data loss.
 
 ---
 

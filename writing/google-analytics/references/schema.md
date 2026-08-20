@@ -54,6 +54,9 @@ Stores daily acquisition channels, source/medium pairs, new users, engaged sessi
 
 *Unique Constraint:* `(property_id, date, session_source_medium, session_default_channel_group, country, device_category)`
 
+> [!NOTE]
+> **Organic Search Tracking:** GA4 records 100% of landing sessions originating from organic search across all search engines (`Google`, `Bing`, `DuckDuckGo`, `Ecosia`, AI search engines) without query-level privacy stripping. This represents actual on-site visitor arrivals and naturally aligns with Search Console property-level totals (`daily_site_performance` in `search-analytics` and GSC Web UI Performance cards).
+
 ---
 
 ### `daily_events`
