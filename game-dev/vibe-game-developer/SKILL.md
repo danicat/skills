@@ -1,16 +1,18 @@
 ---
 name: vibe-game-developer
 description: >
-  Master orchestrator and request router for 2D game development in Go using
-  Ebitengine and Gemini AI models. Activate when handling user requests for game
-  creation, game architecture, asset generation (procedural code vs. generative
-  AI audio/images), Go code quality, or WebAssembly deployment.
+  Master orchestrator and workflow router for building 2D games in Go with
+  Ebitengine. Coordinates the full game development lifecycle across concept
+  design (GDD creation), engine architecture, asset pipelines (pure-code
+  procedural vs. AI-generated media), animation controllers, and WebAssembly
+  deployment. Activate when building a 2D game from scratch, planning game
+  workflows, routing game asset requests, or managing end-to-end game projects.
 license: Apache-2.0
 metadata:
   category: game-dev
-  tags: "game-dev, ebitengine, gemini, game-developer, orchestrator, 2d"
+  tags: "game-dev, ebitengine, orchestrator, workflow, architecture, 2d"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.0"
+  version: "1.0.1"
   homepage: https://skills.danicat.dev/game-dev/vibe-game-developer/
   canonical: https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/game-dev/vibe-game-developer

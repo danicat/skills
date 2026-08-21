@@ -1,16 +1,18 @@
 ---
 name: sprite-animation
 description: >
-  Use this skill when developing, validating, slicing, or managing 2D sprite
-  sheets, animation sequences, frame durations, tag loops, and Aseprite files
-  (.ase/.aseprite) for Ebitengine games. Serves as the specialized Animator
-  Agent role for game development teams.
+  2D sprite sheet management, frame animation sequencing, and Aseprite
+  integration guide for games. Covers sprite grid slicing, animation state
+  machines (idle, walk, attack, death), frame duration timing, tag loops, and Go
+  animation controllers in Ebitengine. Activate when slicing sprite sheets,
+  configuring character animations, integrating Aseprite files (.ase/.aseprite),
+  or writing game animation controllers.
 license: Apache-2.0
 metadata:
   category: game-dev
-  tags: "game-dev, spritesheet, animation, keyframes, timing, ebitengine"
+  tags: "spritesheet, animation, keyframes, aseprite, game-dev, ebitengine"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.0"
+  version: "1.0.1"
   homepage: https://skills.danicat.dev/game-dev/sprite-animation/
   canonical: https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/game-dev/sprite-animation

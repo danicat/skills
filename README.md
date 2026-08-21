@@ -47,7 +47,6 @@ Audio and visual generation using Google AI models with ADC authentication.
 Engineering workflow standards, compiler gates, package resolvers, and language-specific tools.
 
 * **[`engineering-flow`](coding/engineering-flow/SKILL.md)**: Engineering workflow standards detailing semantic versioning (with 0.x zero-debt rules), broken window hygiene, RFC/ADR planning, and the 7-tier Evidence Hierarchy.
-* **[`find-examples`](coding/find-examples/SKILL.md)**: Real-world code search and GitHub example extraction with strict workspace isolation and sandbox rules.
 * **[`godoctor`](coding/godoctor/SKILL.md)**: AST-aware Go developer tooling with automatic compiler rollback gates, Selene mutation testing, and multi-tier test runners.
 * **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
 * **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
@@ -55,9 +54,8 @@ Engineering workflow standards, compiler gates, package resolvers, and language-
 ---
 
 ### 🤖 AI Agents (`agents/`)
-Frameworks, UI streaming protocols, swarm orchestration, and skill authoring tools.
+Frameworks, multi-agent swarm orchestration, and skill authoring tools.
 
-* **[`a2ui-developer-guide`](agents/a2ui-developer-guide/SKILL.md)**: Comprehensive guide for the Agent-Driven User Interface (A2UI) streaming protocol, specifications, and component catalog validations.
 * **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
@@ -65,12 +63,11 @@ Frameworks, UI streaming protocols, swarm orchestration, and skill authoring too
 ---
 
 ### ✍️ Technical Writing (`writing/`)
-Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, and developer tutorial authoring.
+Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, and developer documentation.
 
 * **[`buffer`](writing/buffer/SKILL.md)**: Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI.
 * **[`deslopify`](writing/deslopify/SKILL.md)**: Re-write, edit, and purge text of common AI tropes, clichés, and formulaic filler using strict editorial guidelines.
 * **[`google-blog-style`](writing/google-blog-style/SKILL.md)**: Official style guide and compliance rules for the Google Developers Blog, including Gunning Fog readability and Vale style checks.
-* **[`google-codelab-authoring`](writing/google-codelab-authoring/SKILL.md)**: Step-by-step developer tutorial authoring in Google Codelabs format (`.lab.md`) with Claat metadata and aside block validation.
 * **[`inverted-pyramid`](writing/inverted-pyramid/SKILL.md)**: Action-first, summary-first information hierarchy for technical documentation and developer guides.
 * **[`seo-optimizer`](writing/seo-optimizer/SKILL.md)**: Technical SEO and Generative Engine Optimization (GEO) for developer blogs and documentation, including metadata split (summary vs. description), heading hierarchies, and `llms.txt` generation.
 * **[`social-copy`](writing/social-copy/SKILL.md)**: Draft, audit, and optimize high-performing technical and developer social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads.

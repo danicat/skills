@@ -1,21 +1,19 @@
 ---
 name: engineering-flow
 description: >
-  MANDATORY for professional software development, production codebases, and
-  open source maintenance. Activate this skill whenever designing features,
-  refactoring code, maintaining repository hygiene, planning releases, reviewing
-  breaking changes, or resolving technical ambiguity. Enforces semantic
-  versioning (with zero-debt 0.x evolution), broken window code hygiene (dead
-  code/comment cleanup, no lint ignores, strict error handling), RFC/ADR
-  decision pipelines, 2x2 task prioritization, grounded 7-tier evidence
-  research, and pre-release quality gates. Activate even when the user asks
-  simple engineering questions or requests codebase maintenance.
+  Engineering standards, decision pipelines, and code hygiene guidelines for
+  software development. Covers architectural decision workflows (RFCs and ADRs),
+  task prioritization, grounded technical research, semantic versioning, and
+  clean code practices like explicit error handling and dead code removal.
+  Activate when designing system architecture, planning releases, refactoring
+  codebases, establishing project standards, or resolving technical
+  uncertainty.
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "coding, git, hygiene, conventional-commits, changelog, workflow, quality"
+  tags: "engineering, standards, architecture, workflow, quality, hygiene"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/coding/engineering-flow/
   canonical: https://skills.danicat.dev/coding/engineering-flow/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/coding/engineering-flow

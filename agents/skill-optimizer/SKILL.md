@@ -206,15 +206,18 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
 #### Tag Taxonomy Strategy
 - Choose **3 to 6 high-level domain anchors** that classify the skill in search and discovery indices.
 - Prioritize **primary domain concepts, standards, and user intent** (e.g., `skills, agent-skills, optimization, standards` or `analytics, traffic, metrics, optimization`).
+- **Do NOT repeat the skill name as a tag**: The skill `name` is already indexed and searchable by default. Repeating the exact slug as the first tag consumes tag budget without adding categorical value.
+- **Avoid overly generic tags**: Single words like `cli` or `hierarchy` convey minimal domain signal on their own. Prefer actionable domain anchors like `management` (e.g., social media management) or `structure`.
 - **Omit internal implementation details** from tags if they are already in the description (e.g., omit `sqlite` when `sql` and `analytics` are present) to keep search signals clean.
+- **Include brand/ecosystem anchors** when scoped specifically (e.g., `google` for Google-specific standards).
 
 ---
 
-#### Case Studies: Before & After Optimization
+#### Case Studies: 10 Before & After Optimizations
 
 ##### Case Study 1: `double-diamond` (Architecture & Process)
 
-* **Anti-Pattern (AI Slop / Procedural Choreography ❌)**:
+* **Anti-Pattern (AI Slop & Procedural Choreography ❌)**:
   ```yaml
   description: >
     Orchestrate complex engineering initiatives using the Double Diamond framework
@@ -239,6 +242,8 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
   tags: "inception, delivery, agile, planning, research, subagents"
   ```
 * **Why it works**: Replaces artificial procedural narration with a direct definition, highlights the real architectural superpower (**context isolation**), anchors triggers to human problem traits, and reduces 12 redundant tags to 6 high-signal anchors.
+
+---
 
 ##### Case Study 2: `skill-optimizer` (Standards & Meta-Skill)
 
@@ -265,6 +270,8 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
   tags: "skills, agent-skills, optimization, standards"
   ```
 * **Why it works**: Replaces heavy abstract nouns with a concrete enumeration of covered topics (formatting, naming, descriptions, triggers, evals, open-sourcing) and replaces a wordy sub-scenario laundry list with a crisp, universal activation trigger.
+
+---
 
 ##### Case Study 3: `swarm-coding` (Divide to Conquer & Orthogonal Subproblems)
 
@@ -296,7 +303,9 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
   ```
 * **Why it works**: Leads with the universal mental model ("Divide to Conquer"), provides a relatable scenario ("orthogonal problems like backend and frontend"), explains the architectural benefit ("guarantee context isolation"), and captures natural user phrasing ("to employ multiple agents").
 
-##### Case Study 4: `buffer-analytics` & `google-analytics` (Open Examples & Simple English)
+---
+
+##### Case Study 4: `buffer-analytics` (Open Examples & Goal-Oriented Tags)
 
 * **Anti-Pattern (Inflated Modifiers & Rigid Lists ❌)**:
   ```yaml
@@ -309,7 +318,7 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     queries over social archives, or evaluating campaign engagement.
   tags: "analytics, buffer, social-metrics, sqlite, engagement, sql"
   ```
-* **Best Practice (Open Examples & Goal-Oriented Tags ✅)**:
+* **Best Practice (Open Examples & Clean Intent Tags ✅)**:
   ```yaml
   description: >
     Collect and analyze social media data from Buffer in a local SQLite database.
@@ -321,6 +330,181 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
   tags: "buffer, social-media, analytics, sql, metrics, optimization"
   ```
 * **Why it works**: Replaces inflated adjectives ("without loss", "deep performance crunching") with simple, direct verbs, uses open illustrative phrasing for channels, drops redundant implementation tags (`sqlite`), and adds user-intent tags (`optimization`).
+
+---
+
+##### Case Study 5: `godoctor` (Developer Tooling & Safety Gates)
+
+* **Anti-Pattern (Generic Linter Jargon & Internal Method Stacking ❌)**:
+  ```yaml
+  description: >
+    Developer tooling for Go that enforces language style, idioms, code formatting,
+    testing standards, and complexity limits. Includes automated AST validation,
+    rollback guards for broken changes, Selene mutation testing to expose blind spots,
+    and multi-tiered testing loops. Activate when authoring or refactoring Go code,
+    debugging compilation issues, auditing test suite strength, reducing cyclomatic
+    complexity, or ensuring strict adherence to idiomatic Go conventions.
+  tags: "godoctor, go, golang, ast, selene, mutation-testing, testing, refactoring, quality"
+  ```
+* **Best Practice (Architectural Safety & Concrete Tooling ✅)**:
+  ```yaml
+  description: >
+    Developer tooling and architectural safety rules for Go. Automatically
+    validates AST integrity, guards against regressions with compiler rollback
+    gates, eliminates blind spots via Selene mutation testing, and isolates
+    test databases with TestQuery SQL transactions. Activate when writing or
+    refactoring Go code, fixing compilation or test failures, auditing test
+    thoroughness with mutation testing, or enforcing idiomatic Go standards.
+  tags: "go, golang, testing, refactoring, quality, mutation-testing"
+  ```
+* **Why it works**: Highlights the architectural safety mechanism (**compiler rollback gates** and **isolated SQL transactions**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
+
+---
+
+##### Case Study 6: `procedural-composer` (Flexible Qualifiers vs Rigid Numerical Caps)
+
+* **Anti-Pattern (Arbitrary Numerical Caps & File Lists ❌)**:
+  ```yaml
+  description: >
+    Procedural 6-channel polyphonic audio generation and sound engine for 2D games
+    (Ebitengine / WebAudio / WAV). Synthesizes chiptune instruments (square, triangle,
+    saw, noise, pulse-width modulation) and math-driven sound effects (jumps, explosions,
+    powerups, laser blasts) entirely in pure code without external audio files.
+    Activate when composing background music (BGM), synthesizing procedural sound
+    effects (SFX), building dynamic game audio managers, exporting WAVs, or tuning
+    audio synthesis DSP parameters.
+  tags: "game-dev, procedural-composer, procedural-audio, chiptune, synth, sfx, bgm, ebitengine"
+  ```
+* **Best Practice (Flexible Polyphony & Pure-Code Synthesis ✅)**:
+  ```yaml
+  description: >
+    Procedural multi-channel polyphonic audio engine and sound synthesis for 2D
+    games (Ebitengine, WebAudio, WAV). Synthesizes chiptune instruments (square,
+    triangle, saw, noise, PWM) and math-driven sound effects (explosions, jumps,
+    lasers) entirely in pure code without external assets. Activate when
+    composing procedural background music (BGM), synthesizing sound effects
+    (SFX), building dynamic audio managers, or exporting WAV files from code.
+  tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
+  ```
+* **Why it works**: Replaces an arbitrary numerical restriction ("6-channel") with qualitative depth ("multi-channel polyphony") allowing the model to adapt channel count dynamically, simplifies acronyms, and drops the self-referential tag.
+
+---
+
+##### Case Study 7: `google-oss` (Ecosystem & Organizational Scoping)
+
+* **Anti-Pattern (Vague General Purpose Framing ❌)**:
+  ```yaml
+  description: >
+    Standards, compliance verification, and licensing automation for Google
+    open-source software and personal projects by Googlers. Ensures proper
+    application of the Apache 2.0 license, license headers using addlicense,
+    copyright attributions, repository disclaimers, and open-source release
+    readiness. Activate when preparing a repository for public open-source
+    release, auditing license headers, checking copyright statements, or ensuring
+    compliance with open-source policies.
+  tags: "standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer"
+  ```
+* **Best Practice (Explicit Organizational Scope & Brand Tag ✅)**:
+  ```yaml
+  description: >
+    Compliance guide and licensing automation strictly for Google Open Source
+    projects and personal projects created by Googlers. Applies Apache 2.0
+    license headers via addlicense, verifies copyright attributions, and
+    configures mandatory repository disclaimers. Activate when preparing Google
+    open-source or Googler personal repositories for public release, auditing
+    license headers, or verifying open-source policy compliance.
+  tags: "google, open-source, licensing, compliance, standards, copyright"
+  ```
+* **Why it works**: Explicitly states the organizational boundary ("strictly for Google Open Source projects and personal projects created by Googlers") to prevent misuse on generic third-party open-source, and adds the essential `google` ecosystem tag.
+
+---
+
+##### Case Study 8: `buffer` (Actionable Domain Anchors vs Generic Tags)
+
+* **Anti-Pattern (Generic Tags & Rigid Command Narratives ❌)**:
+  ```yaml
+  description: >
+    Manage, draft, schedule, and publish social media content across connected
+    channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing
+    connected Buffer social channels, inspecting accounts, creating ideas,
+    scheduling posts to queues, validating payloads via --dry-run, querying post
+    statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer
+    authentication and environment issues. Activate whenever interacting with
+    Buffer or automating cross-platform social publishing from the terminal.
+  tags: "writing, social-media, buffer, publishing, automation, cli"
+  ```
+* **Best Practice (Domain-Anchored Tags & Safety Gates ✅)**:
+  ```yaml
+  description: >
+    Manage, draft, schedule, and publish social media content across connected
+    channels (such as LinkedIn, X/Twitter, Bluesky, and others) using the Buffer
+    CLI (@bufferapp/cli). Covers account and channel inspection, queue scheduling
+    with dry-run safety validation, draft ideas management, and GraphQL schema
+    introspection. Activate when scheduling social media posts, inspecting Buffer
+    channels, automating social publishing, or managing social queues.
+  tags: "social-media, publishing, automation, management"
+  ```
+* **Why it works**: Replaces vague tags like `cli` (which convey no domain context) with `management` (online presence & social media management), incorporates open channel phrasing, and strips redundant slug/category tags.
+
+---
+
+##### Case Study 9: `deslopify` (Concrete Tells & Human Rhythm)
+
+* **Anti-Pattern (Overloaded Jargon & Cluttered Triggers ❌)**:
+  ```yaml
+  description: >
+    Re-write, edit, and purge text of common AI tropes, clichés, formulaic filler,
+    and recognizable large language model structural patterns (AI slop) using
+    strict editorial guidelines. Activate this skill whenever the user asks to
+    "deslopify" text, remove AI tells, polish text to sound authentically human,
+    eliminate formulaic transitions (e.g. "delve", "testament", "tapestry",
+    "seamlessly"), fix negative parallelism, or audit prose for AI idioms.
+  tags: "writing, deslopify, editorial, tropes, ai-cleanup, style, prose"
+  ```
+* **Best Practice (Clear Superpower & Human Cadence ✅)**:
+  ```yaml
+  description: >
+    Editorial guidelines and rewriting workflow for purging text of AI clichés,
+    tropes, and formulaic filler. Identifies and removes overused AI vocabulary
+    (such as delve, tapestry, seamlessly), negative parallelism, dramatic
+    countdowns, and repetitive summaries to restore natural human cadence.
+    Activate when rewriting text to remove AI tells, polishing drafts to sound
+    authentically human, eliminating filler tropes, or auditing prose style.
+  tags: "writing, style, editing, quality"
+  ```
+* **Why it works**: Replaces wordy phrasing with an active breakdown of anti-patterns (negative parallelism, dramatic countdowns, repetitive summaries), frames the goal as restoring natural human cadence, and cleans up tag clutter.
+
+---
+
+##### Case Study 10: `seo-optimizer` (Dual-Purpose Metadata Split & GEO)
+
+* **Anti-Pattern (Dense Laundry List & Flat Objectives ❌)**:
+  ```yaml
+  description: >
+    Audit, optimize, and enhance technical articles, developer documentation, and
+    engineering blogs for traditional search engines and AI-driven answer engines
+    (Google AI Overviews, Gemini Grounding, ChatGPT Search, Perplexity, Claude).
+    Use when auditing technical SEO, structuring metadata (distinguishing
+    human-facing 'summary' vs search-facing 'description'), implementing
+    Generative Engine Optimization (GEO), enforcing Inverted Pyramid direct-answer
+    density, verifying JSON-LD structured data (TechArticle, BreadcrumbList),
+    generating or maintaining llms.txt, performing keyword gap analysis, or fixing
+    heading and content hierarchies.
+  tags: "writing, seo, geo, json-ld, llms-txt, keywords, search-engines"
+  ```
+* **Best Practice (Core Architectural Differentiator & Actionable Triggers ✅)**:
+  ```yaml
+  description: >
+    Technical SEO and Generative Engine Optimization (GEO) guide for developer
+    docs and engineering blogs. Optimizes content for search engines and AI answer
+    engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from
+    search description metadata, verifies JSON-LD structured data (TechArticle),
+    and maintains llms.txt. Activate when auditing technical SEO, optimizing
+    articles for AI answer engines (GEO), generating llms.txt, or structuring
+    search metadata.
+  tags: "seo, geo, optimization, search-engines, blog, website, metadata"
+  ```
+* **Why it works**: Synthesizes the core architectural differentiators (GEO for AI answer engines, the human `summary` vs search `description` split, and `llms.txt`), cleans up keyword stuffing, and incorporates `website` and `metadata` discovery tags.
 
 ---
 

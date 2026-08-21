@@ -1,17 +1,18 @@
 ---
 name: godoctor
 description: >
-  Activate this skill whenever developing, building, editing, testing,
-  documenting, or verifying Go (golang) code, or managing GoDoctor CLI and MCP
-  surfaces. Enforces strict Google Go Style, flat package architecture,
-  zero-fallback execution, multi-tier testing, AST-aware edits with compiler
-  rollback gates, Selene mutation testing, and TestQuery SQL analytics.
+  Developer tooling and code quality guide for Go (Golang). Enforces idiomatic
+  Go style, flat package architecture, AST-safe code editing with compiler
+  rollback gates, multi-tier test execution, mutation testing with Selene, and
+  SQL test coverage analytics via TestQuery. Activate when writing, testing,
+  refactoring, building, or reviewing Go code, running mutation testing, or
+  analyzing test coverage.
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "coding, golang, ast, refactoring, testing, mutation, selene, testquery"
+  tags: "go, golang, testing, refactoring, quality, mutation-testing"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.34.0"
+  version: "0.34.1"
   homepage: https://skills.danicat.dev/coding/godoctor/
   canonical: https://skills.danicat.dev/coding/godoctor/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/coding/godoctor

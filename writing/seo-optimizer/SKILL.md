@@ -1,21 +1,19 @@
 ---
 name: seo-optimizer
 description: >
-  Audit, optimize, and enhance technical articles, developer documentation, and
-  engineering blogs for traditional search engines and AI-driven answer engines
-  (Google AI Overviews, Gemini Grounding, ChatGPT Search, Perplexity, Claude).
-  Use when auditing technical SEO, structuring metadata (distinguishing
-  human-facing 'summary' vs search-facing 'description'), implementing
-  Generative Engine Optimization (GEO), enforcing Inverted Pyramid direct-answer
-  density, verifying JSON-LD structured data (TechArticle, BreadcrumbList),
-  generating or maintaining llms.txt, performing keyword gap analysis, or fixing
-  heading and content hierarchies.
+  Technical SEO and Generative Engine Optimization (GEO) guide for developer
+  docs and engineering blogs. Optimizes content for search engines and AI answer
+  engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from
+  search description metadata, verifies JSON-LD structured data (TechArticle),
+  and maintains llms.txt. Activate when auditing technical SEO, optimizing
+  articles for AI answer engines (GEO), generating llms.txt, or structuring
+  search metadata.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "writing, seo, geo, json-ld, llms-txt, keywords, search-engines"
+  tags: "seo, geo, optimization, search-engines, blog, website, metadata"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/writing/seo-optimizer/
   canonical: https://skills.danicat.dev/writing/seo-optimizer/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/writing/seo-optimizer

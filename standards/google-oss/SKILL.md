@@ -1,18 +1,19 @@
 ---
 name: google-oss
 description: >
-  Apply and verify Google open-source compliance, Apache-2.0/MIT/BSD license
-  headers via addlicense, copyright attributions, and non-official product
-  disclaimers on READMEs and repositories. Activate this skill whenever
-  preparing, releasing, auditing, or sanitizing a project for open-source
-  distribution under Google OSS guidelines, adding copyright headers to source
-  files, or inserting required non-official product disclaimers.
+  Compliance and licensing guide for Google Open Source repositories and
+  personal open-source projects published by Googlers. Enforces source file
+  license headers (such as Apache-2.0) using addlicense, verifies license files,
+  inserts required non-official product disclaimers, and audits pre-release
+  compliance. Activate when preparing Google Open Source or Googler personal
+  projects for release, applying copyright headers, or adding required
+  disclaimers.
 license: Apache-2.0
 metadata:
   category: standards
-  tags: "standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer"
+  tags: "google, open-source, licensing, compliance, standards, copyright"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/standards/google-oss/
   canonical: https://skills.danicat.dev/standards/google-oss/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/standards/google-oss

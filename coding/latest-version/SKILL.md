@@ -1,22 +1,18 @@
 ---
 name: latest-version
 description: >
-  Use this skill to fetch, verify, and resolve the latest stable versions of
-  software packages, dependencies, and Gemini models. Activate this skill
-  whenever the user asks to add or upgrade dependencies, initialize a new
-  project, edit dependency files (such as package.json, requirements.txt,
-  go.mod, Cargo.toml, Gemfile), or configure Gemini models in application code.
-  Do not guess version numbers or rely on outdated training weights; use this
-  skill to check official registries for the current stable release.
-  Emphatically activate this skill when encountering dependency resolution
-  errors, package installation failures, or security audits requiring package
-  upgrades.
+  Query and verify latest stable package versions from official registries (npm,
+  PyPI, Go proxy, Cargo, RubyGems) and Gemini models. Resolves accurate version
+  constraints, checks for deprecated or yanked packages, and prevents version
+  guessing. Activate when adding or updating dependencies, initializing new
+  projects, editing package manifests (such as package.json, go.mod,
+  pyproject.toml, Cargo.toml), or selecting Gemini models.
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "coding, package-managers, dependencies, npm, pypi, cargo, go-proxy"
+  tags: "dependencies, packages, versions, registry, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/coding/latest-version/
   canonical: https://skills.danicat.dev/coding/latest-version/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/coding/latest-version

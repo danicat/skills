@@ -1,16 +1,18 @@
 ---
 name: google-blog-style
 description: >
-  Official style guide and compliance rules for the Google Developers Blog.
-  Activate to draft, edit, review, and validate technical blog posts, articles,
-  and reviews to ensure they meet legal standards, the correct professional
-  tone, and readability targets.
+  Style guide, legal compliance standards, and validation workflow for the
+  Google Developers Blog. Enforces technical readability targets (Fog Index
+  12–15), professional tone, inclusive language, legal compliance, and style
+  linting via Vale and Speedgrapher. Activate when drafting, editing, reviewing,
+  or validating technical blog posts and articles for the Google Developers
+  Blog.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "writing, style-guide, google-developers-blog, editorial, compliance"
+  tags: "google, blog, style-guide, writing, editorial, compliance"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   homepage: https://skills.danicat.dev/writing/google-blog-style/
   canonical: https://skills.danicat.dev/writing/google-blog-style/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/writing/google-blog-style

@@ -1,18 +1,18 @@
 ---
 name: inverted-pyramid
 description: >
-  Structure and prioritize technical articles, developer documentation,
-  engineering READMEs, and guides using the Inverted Pyramid model
-  (highest-value summaries and prescribed actions first, cascading down to
-  usage, architecture, and legal details). Activate this skill whenever
-  auditing, authoring, or refactoring documentation, README files, or technical
-  guides to ensure action-first, scannable information hierarchy.
+  Structural guide and editorial model for organizing technical articles,
+  developer documentation, and READMEs. Applies the Inverted Pyramid model to
+  place high-value summaries and actionable quickstarts first, cascading down to
+  usage workflows, architectural details, and compliance. Activate when
+  structuring technical articles, writing or refactoring README files,
+  organizing documentation hierarchy, or making technical guides scannable.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "writing, inverted-pyramid, information-hierarchy, scannable-docs, lead"
+  tags: "documentation, writing, structure, editorial, blog, style-guide"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/writing/inverted-pyramid/
   canonical: https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/writing/inverted-pyramid

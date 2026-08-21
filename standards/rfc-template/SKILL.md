@@ -1,17 +1,18 @@
 ---
 name: rfc-template
 description: >
-  Activate this skill when proposing major features, exploring complex design
-  alternatives under high ambiguity, or gathering technical consensus. Use this
-  skill to draft, review, and progress collaborative Request for Comments (RFC)
-  documents. Trigger this skill whenever a systematic design proposal is needed
-  before drafting immutable Architecture Decision Records.
+  Collaborative design proposal framework and template for Request for Comments
+  (RFC) documents. Structures technical design proposals, explores alternative
+  solutions, documents spikes and open questions, and tracks proposal lifecycle
+  states before formalizing decisions into ADRs. Activate when proposing major
+  features, exploring technical solutions under uncertainty, drafting design
+  documents, or gathering engineering consensus.
 license: Apache-2.0
 metadata:
   category: standards
-  tags: "standards, rfc, technical-proposals, consensus, architecture, design-docs"
+  tags: "rfc, design-docs, architecture, standards, proposals"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/standards/rfc-template/
   canonical: https://skills.danicat.dev/standards/rfc-template/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/standards/rfc-template

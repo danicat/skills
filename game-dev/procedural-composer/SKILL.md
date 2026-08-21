@@ -1,18 +1,19 @@
 ---
 name: procedural-composer
 description: >
-  Use this skill when designing, implementing, or optimizing pure-code
-  procedural audio synthesis engines, sound effects (SFX), or polyphonic
-  background music (BGM) without external assets. Activate for any questions or
-  tasks involving audio DSP math, FM synthesis, ADSR envelopes, sound chip
-  emulation (YM2612, SPC700, PS1 SPU), chiptunes, multi-track audio mixing, or
-  game sound system code.
+  Pure-code procedural audio synthesis guide for sound effects (SFX) and
+  polyphonic background music (BGM) in games. Generates 16-bit stereo PCM audio
+  in memory without external audio files, featuring multi-channel polyphonic
+  composition, ADSR envelopes, frequency modulation, and declarative JSON sound
+  definitions with a CLI player and WAV exporter. Activate when synthesizing
+  sound effects, composing chiptune background music, building zero-asset audio
+  engines, or exporting procedural sounds to WAV.
 license: Apache-2.0
 metadata:
   category: game-dev
-  tags: "game-dev, music, chiptune, synth, procedural-audio, sfx, bytebeat"
+  tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.0"
+  version: "1.0.1"
   homepage: https://skills.danicat.dev/game-dev/procedural-composer/
   canonical: https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/game-dev/procedural-composer

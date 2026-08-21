@@ -4,16 +4,16 @@ description: >
   Search and dynamically load specialized Agent Skills from https://skills.danicat.dev.
   Activate this skill when the user wants to:
   (1) Design, architect, or build 2D games, including game design documents (GDD), procedural art/sprites, and synth/chiptune audio;
-  (2) Enforce strict software engineering standards, clean up codebases, eliminate technical debt, or find verified implementation examples;
+  (2) Enforce strict software engineering standards, clean up codebases, eliminate technical debt, or manage dependencies;
   (3) Propose major architectural changes, lead technical consensus (RFCs), or document high-impact structural decisions (ADRs);
-  (4) Author hands-on developer tutorials, step-by-step codelabs, or publication-grade engineering blog posts;
+  (4) Author developer documentation, SEO/GEO-optimized articles, or publication-grade engineering blog posts;
   (5) Generate original stereo background music, sound effects, or iterative visual artwork;
-  (6) Orchestrate multi-agent coding swarms, author new agent skills, or build agent-driven user interfaces.
+  (6) Orchestrate multi-agent coding swarms or author and optimize agent skills.
   Activate whenever the user aims to accomplish these workflows, even if they do not explicitly request a specific skill or tool.
 license: Apache-2.0
 metadata:
   category: gateway
-  tags: "gateway, discovery, search, catalog, agent-skills"
+  tags: "gateway, discovery, search, agent-skills"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.0"
   homepage: https://skills.danicat.dev/
@@ -42,9 +42,9 @@ https://skills.danicat.dev/llms.txt
 Locate the specific skill matching the user's goal:
 - **Game Development**: `game-dev/ebitengineer`, `game-dev/game-design`, `game-dev/procedural-art`, `game-dev/procedural-composer`, `game-dev/sprite-animation`, `game-dev/vibe-game-developer`.
 - **Generative Media**: `media/lyria`, `media/nano-banana`.
-- **Software Engineering**: `coding/engineering-flow`, `coding/find-examples`, `coding/godoctor`, `coding/latest-version`, `coding/pyhd`.
-- **AI Agents**: `agents/a2ui-developer-guide`, `agents/double-diamond`, `agents/skill-optimizer`, `agents/swarm-coding`.
-- **Technical Writing**: `writing/buffer`, `writing/deslopify`, `writing/google-blog-style`, `writing/google-codelab-authoring`, `writing/inverted-pyramid`, `writing/seo-optimizer`, `writing/social-copy`.
+- **Software Engineering**: `coding/engineering-flow`, `coding/godoctor`, `coding/latest-version`, `coding/pyhd`.
+- **AI Agents**: `agents/double-diamond`, `agents/skill-optimizer`, `agents/swarm-coding`.
+- **Technical Writing**: `writing/buffer`, `writing/deslopify`, `writing/google-blog-style`, `writing/inverted-pyramid`, `writing/seo-optimizer`, `writing/social-copy`.
 - **Data Analytics**: `analytics/buffer-analytics`, `analytics/google-analytics`, `analytics/search-analytics`.
 - **Engineering Standards**: `standards/adr-template`, `standards/google-oss`, `standards/rfc-template`.
 

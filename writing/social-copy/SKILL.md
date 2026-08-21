@@ -1,22 +1,19 @@
 ---
 name: social-copy
 description: >
-  Draft, audit, and optimize high-performing technical, developer, and
-  open-source social media copy across LinkedIn, Twitter/X, Bluesky, Instagram,
-  Reddit, and Threads. When working on campaigns without an existing blog post
-  source, first inspects deep git logs and commit bodies, uses /grill-me style
-  interactive interview to uncover real technical nuance, and authors a
-  comprehensive canonical narrative foundation before cutting platform-specific
-  derivatives. Automatically synchronizes the campaign master source whenever
-  new evidence is discovered. Activate whenever drafting social posts,
-  cross-platform release announcements, or engineering field notes, even if not
-  explicitly requested.
+  Editorial workflow and platform playbooks for drafting developer-native
+  social media copy and campaigns. Extracts technical evidence via git log
+  inspections or /grill-me interviews, establishes a canonical foundation
+  narrative (CANONICAL.md), tailors derivatives for connected platforms (such as
+  LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines.
+  Activate when drafting social media posts, writing release announcements,
+  authoring technical threads, or running developer campaigns.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "writing, social-copy, developer-marketing, linkedin, twitter, bluesky"
+  tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/writing/social-copy/
   canonical: https://skills.danicat.dev/writing/social-copy/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/writing/social-copy
