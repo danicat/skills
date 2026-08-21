@@ -1,13 +1,17 @@
 ---
 name: skill-optimizer
 description: >
-  Use this skill to author, audit, evaluate, and optimize Agent Skills for maximum reliability, accurate triggering, and high-quality task execution. Activate whenever creating new skills, refining existing instructions, tuning activation descriptions, designing evaluation suites, or auditing skill structures for progressive disclosure. Trigger even if the user does not explicitly mention skill-optimizer.
+  Comprehensive guide to develop and improve Agent Skill performance. Contains
+  best practices for skill formatting (frontmatter and metadata), naming,
+  descriptions, fine-tuning activation triggers, evaluations,
+  production-readiness and open sourcing. Activate when developing new skills
+  or refining existing ones.
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "agents, skill-optimizer, evals, benchmarks, testing, authoring, specification"
+  tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.3"
+  version: "0.4.0"
   homepage: https://skills.danicat.dev/agents/skill-optimizer/
   canonical: https://skills.danicat.dev/agents/skill-optimizer/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/agents/skill-optimizer
@@ -90,11 +94,13 @@ Every skill must provide valid YAML frontmatter containing complete provenance, 
 ---
 name: my-skill
 description: >
-  Use this skill when...
+  Concise definition of the skill and tangible topics covered. Mentions key
+  architecture or superpower. Activate when encountering primary use case or
+  problem conditions.
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "coding, golang, refactoring, quality"
+  tags: "coding, go, quality, refactoring"
   author: Author Name (email@example.com)
   version: "1.0.0"
   homepage: https://skills.danicat.dev/coding/my-skill/
@@ -109,14 +115,14 @@ allowed-tools: Bash(go:*) Read
 
 #### 1. Core Top-Level Fields
 - `name` (required): 1-64 characters, lowercase alphanumeric and single hyphens (`a-z`, `0-9`, `-`). No consecutive hyphens (`--`), no leading/trailing hyphens. Must match directory name exactly.
-- `description` (required): 1-1024 characters. Non-empty. Must define what capabilities the skill unlocks and under what specific conditions to activate. Do NOT include internal algorithms or implementation plumbing.
+- `description` (required): 1-1024 characters. Non-empty. Follows the 3-Part Skill Description Formula (Definition & Scope + Superpower + Human Triggers). Do NOT include internal algorithms or implementation plumbing.
 - `license` (required): Short SPDX license identifier (e.g., `Apache-2.0`, `MIT`) or path to a bundled license.
 - `compatibility` (optional): Max 500 characters. Environment or tool requirements. Omit if standard.
 - `allowed-tools` (optional): Space-separated list of pre-approved tools (experimental).
 
 #### 2. Full Provenance & Version Control (`metadata` Block)
 - `category` (required): Functional taxonomy domain (`agents`, `coding`, `game-dev`, `media`, `writing`, `analytics`, `standards`, `gateway`). Must match the parent category folder name.
-- `tags` (required): Comma-separated keyword list for search, discovery, and boolean tag filtering.
+- `tags` (required): 3 to 6 high-level domain anchors for search and categorization. Avoid redundant synonym stuffing.
 - `author` (required): Provenance attribution string (e.g., `Author Name (email@domain.com)` or organization name).
 - `version` (required): Strict Semantic Versioning SemVer 2.0.0 (`MAJOR.MINOR.PATCH`, e.g., `1.0.0`, `0.3.3`).
   - **Patch (`0.0.X`)**: Clarifications, wording improvements, typo fixes, or internal doc tweaks.
@@ -173,26 +179,154 @@ Follow this procedure when reviewing or refining skills:
 - **Intra-Skill Links**: Verify all intra-skill file links use paths relative to the skill root (e.g., `references/guide.md`, `scripts/run.py`).
 - **Conditional Triggers**: Ensure instructions clearly tell the agent *when* to load each reference file.
 
-### Stage 2: Description & Trigger Optimization
+### Stage 2: Description, Trigger & Tag Optimization
 
-The frontmatter `description` is the **only** piece of text loaded by the orchestrator at startup to determine whether to activate the skill. Review and craft the `description` against these core principles:
+The frontmatter `description` is the **only** piece of text loaded by the orchestrator at startup to determine whether to activate the skill. Craft every `description` and `metadata.tags` against this core blueprint:
 
-- **Benefits & Capabilities Over Implementation Details**:
-  - Focus strictly on *what capability, superpowers, or problem-solving outcomes* the skill provides.
-  - **NEVER** waste description tokens explaining internal code mechanics, algorithms, underlying libraries, or data structures (e.g., do *not* mention "uses BM25 ranking", "implements AST tree walking", "executes regex matching", or "queries SQLite underneath").
-  - The orchestrator and user do not care *how* the skill works internally; they care *what user goals it accomplishes* (e.g., "dynamically loads specialized knowledge on demand", "refactors and eliminates Go code smells", "generates procedural chiptune audio").
-- **Concrete Activation Criteria & Use Cases**:
-  - State specific triggering conditions: user tasks, explicit slash commands (e.g., `/<command>`), implicit intents, and domain scenarios.
-- **Pushy Boundary Definition**:
-  - Explicitly capture implied intent so the skill triggers whenever relevant (e.g., "Activate this skill whenever the user asks to..., even if they do not explicitly mention <skill-name>").
-- **Imperative / Action-Oriented Framing**:
-  - Begin directly with "Use this skill when..." or "Activate this skill whenever...".
-- **Concise Token Budget**:
-  - Pack high-signal keywords and trigger phrases within the 1024-character budget.
+#### The 3-Part Skill Description Blueprint
 
-#### Contrastive Examples
+```
+[1. Concrete Definition & Scope] + [2. Architectural Superpower / Key Topics] + [3. Natural, Decisive Trigger]
+```
 
-| Anti-Pattern (Implementation-Heavy ❌) | Best Practice (Outcome & Trigger Focused ✅) |
+1. **Concrete Definition & Scope (Simple English, No Jargon, No Play-by-Play Choreography)**:
+   - State **what the skill is** in one clear sentence using plain English.
+   - Enumerate the **tangible artifacts, formats, and topics** covered (e.g., *"formatting (frontmatter and metadata), naming, descriptions, evaluations..."*) instead of abstract process fluff (*"enforces quantitative optimization gates..."*).
+   - Use **universal mental models** (e.g., *"Divide to Conquer approach"*) rather than internal mechanical org-charts or role labels.
+   - Do NOT narrate an internal step-by-step checklist disguised as a paragraph.
+2. **Key Architecture / Superpower (Why Use It)**:
+   - State the technical mechanism or value proposition plainly and directly (e.g., *"uses parallel subagents to ensure context isolation"*, *"follows the process: Inception -> Discovery -> Definition -> Development and Delivery"*).
+   - Explain **why** the architecture is chosen (e.g., *"guarantees context isolation for orthogonal subproblems like concurrent frontend and backend development"*).
+   - Use **illustrative examples rather than closed lists** when referencing supported services or formats (e.g., *"connected channels (such as LinkedIn, X/Twitter, Bluesky, and others)"*).
+   - NEVER waste description tokens explaining internal code plumbing, algorithms, or private data structures (e.g., do *not* mention BM25, AST parsing, regex, SQLite).
+3. **Decisive, Human Triggers**:
+   - **Explicit terms**: When the user requests the skill by name, methodology, or key domain terms.
+   - **Problem-state traits & natural phrasing**: A concise, universal trigger tied to what the user is trying to achieve (e.g., *"when tackling problems that require out of the box thinking"*, *"when developing new skills or refining existing ones"*, *"or to employ multiple agents to perform a task"*), avoiding cluttered laundry lists of minor edge cases.
+
+#### Tag Taxonomy Strategy
+- Choose **3 to 6 high-level domain anchors** that classify the skill in search and discovery indices.
+- Prioritize **primary domain concepts, standards, and user intent** (e.g., `skills, agent-skills, optimization, standards` or `analytics, traffic, metrics, optimization`).
+- **Omit internal implementation details** from tags if they are already in the description (e.g., omit `sqlite` when `sql` and `analytics` are present) to keep search signals clean.
+
+---
+
+#### Case Studies: Before & After Optimization
+
+##### Case Study 1: `double-diamond` (Architecture & Process)
+
+* **Anti-Pattern (AI Slop / Procedural Choreography ❌)**:
+  ```yaml
+  description: >
+    Orchestrate complex engineering initiatives using the Double Diamond framework
+    (Inception -> Discover -> Define -> Develop -> Deliver). Researches codebase constraints
+    before writing code to resolve ambiguity, establish scope, and prevent architectural mistakes.
+    Produces a technical specification for user review, then parallelizes development across
+    independent subagents with automated compiler and test quality gates. Activate for high-ambiguity
+    spikes, major refactors, multi-agent coding swarms, or explicit research-then-implement
+    workflows. Do not use for single-file edits or simple bug fixes.
+  tags: "agents, double-diamond, agile, swarm, orchestration, architecture, planning, research, problem-framing, parallel-coding, subagents, quality-gates"
+  ```
+* **Best Practice (Clean, Human, Context-Isolated ✅)**:
+  ```yaml
+  description: >
+    Development methodology to perform tasks using the Double Diamond framework,
+    following the process: Inception -> Discovery -> Definition -> Development and
+    Delivery. Uses parallel subagents to perform the tasks ensuring context
+    isolation for optimal results. Activate when the user requests to use the
+    Double Diamond methodology, when they mention terms like inception and
+    discovery, or when tackling problems that require out of the box thinking,
+    reducing ambiguity and/or enterprise grade quality levels.
+  tags: "inception, delivery, agile, planning, research, subagents"
+  ```
+* **Why it works**: Replaces artificial procedural narration with a direct definition, highlights the real architectural superpower (**context isolation**), anchors triggers to human problem traits, and reduces 12 redundant tags to 6 high-signal anchors.
+
+##### Case Study 2: `skill-optimizer` (Standards & Meta-Skill)
+
+* **Anti-Pattern (Abstract Jargon & Laundry List ❌)**:
+  ```yaml
+  description: >
+    Standards, validation procedures, and evaluation workflows for authoring and
+    optimizing Agent Skills. Enforces progressive disclosure, metadata schema
+    compliance, and zero-contamination security gates, using quantitative trigger
+    tuning and eval benchmarks to ensure high activation reliability and task
+    execution quality. Activate when authoring new skills, refining existing
+    instructions, diagnosing skill activation misfires, writing evaluation suites
+    in evals.json, or auditing skills for public open-source distribution.
+  tags: "agent-skills, meta-skill, authoring, evals, benchmarks, optimization, quality-gates"
+  ```
+* **Best Practice (Concrete Scope & Universal Trigger ✅)**:
+  ```yaml
+  description: >
+    Comprehensive guide to develop and improve Agent Skill performance. Contains
+    best practices for skill formatting (frontmatter and metadata), naming,
+    descriptions, fine-tuning activation triggers, evaluations,
+    production-readiness and open sourcing. Activate when developing new skills
+    or refining existing ones.
+  tags: "skills, agent-skills, optimization, standards"
+  ```
+* **Why it works**: Replaces heavy abstract nouns with a concrete enumeration of covered topics (formatting, naming, descriptions, triggers, evals, open-sourcing) and replaces a wordy sub-scenario laundry list with a crisp, universal activation trigger.
+
+##### Case Study 3: `swarm-coding` (Divide to Conquer & Orthogonal Subproblems)
+
+* **Anti-Pattern (Mechanical Hierarchy & Jargon ❌)**:
+  ```yaml
+  description: >
+    Hierarchical multi-agent coordination framework for executing large-scale,
+    multi-component engineering projects. Structures subagents into a three-tier
+    team (Coordinator -> Domain Leads -> Specialists) with strict vertical
+    communication, disjoint file allocations to prevent write collisions, and
+    persistent agent reuse to preserve context. Activate when the user requests
+    swarm coding or mentions "swarm", or when executing complex full-stack
+    initiatives, multi-service migrations, or large refactorings across parallel
+    agents.
+  tags: "swarm, multi-agent, parallel-coding, coordination, architecture"
+  ```
+* **Best Practice (Divide to Conquer & Orthogonal Problems ✅)**:
+  ```yaml
+  description: >
+    Orchestration strategy based on a Divide to Conquer approach. Breaks down
+    complex problems into subproblems and assigns each subproblem to a specialised
+    team. Contains instructions for efficient coordination of the swarm so that
+    each agent performs at its top capacity. Activate when the user requests swarm
+    coding or to employ multiple agents to perform a task. You should also
+    activate it when dealing with orthogonal problems in the same task, like for
+    example implementing backend and frontend at the same time, as the swarm will
+    guarantee context isolation and optimal results.
+  tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
+  ```
+* **Why it works**: Leads with the universal mental model ("Divide to Conquer"), provides a relatable scenario ("orthogonal problems like backend and frontend"), explains the architectural benefit ("guarantee context isolation"), and captures natural user phrasing ("to employ multiple agents").
+
+##### Case Study 4: `buffer-analytics` & `google-analytics` (Open Examples & Simple English)
+
+* **Anti-Pattern (Inflated Modifiers & Rigid Lists ❌)**:
+  ```yaml
+  description: >
+    Ingest raw Buffer social post and channel data into a local SQLite analytics
+    database (without loss), run backfills and incremental syncs, execute ad-hoc
+    SQL queries, and perform deep performance crunching across LinkedIn,
+    Twitter/X, and Bluesky. Activate whenever analyzing social post performance,
+    auditing historical metrics, finding best days/hours to post, running SQL
+    queries over social archives, or evaluating campaign engagement.
+  tags: "analytics, buffer, social-metrics, sqlite, engagement, sql"
+  ```
+* **Best Practice (Open Examples & Goal-Oriented Tags ✅)**:
+  ```yaml
+  description: >
+    Collect and analyze social media data from Buffer in a local SQLite database.
+    Stores your full post history and metrics across connected channels (such as
+    LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view
+    reports on engagement, clicks, and views. Activate when you need to analyze
+    social media performance, find the best days or times to post, identify
+    top-performing content, or query Buffer data with SQL.
+  tags: "buffer, social-media, analytics, sql, metrics, optimization"
+  ```
+* **Why it works**: Replaces inflated adjectives ("without loss", "deep performance crunching") with simple, direct verbs, uses open illustrative phrasing for channels, drops redundant implementation tags (`sqlite`), and adds user-intent tags (`optimization`).
+
+---
+
+#### Contrastive Anti-Patterns vs Best Practices
+
+| Anti-Pattern (Implementation-Heavy or Procedural Slop ❌) | Best Practice (Outcome, Superpower & Clean Trigger ✅) |
 |---|---|
 | *"A CLI tool that uses pure Go BM25 and TF-IDF search algorithms to parse JSON manifests and index markdown files in memory."* | *"Activate this skill to acquire knowledge about anything immediately. Use when the user asks to perform tasks using unknown skills, executes unmapped slash commands, or needs up-to-date domain instructions."* |
 | *"Uses AST parser to walk syntax trees, calculate cyclomatic complexity metrics, and run mutation testing."* | *"Use this skill when auditing Go code quality, refactoring complex code, eliminating technical debt, or verifying test suite thoroughness with mutation testing."* |

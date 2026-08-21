@@ -1,19 +1,18 @@
 ---
 name: google-analytics
 description: >
-  Ingest raw Google Analytics 4 (GA4) performance data (sessions, active users,
-  pageviews, dwell time, engagement events, acquisition channels, and outbound
-  clicks) into a local SQLite database without data loss, run full historical
-  backfills and incremental syncs, and execute deep SQL analytics over website
-  traffic and release milestones. Activate whenever analyzing Google Analytics 4
-  performance, auditing reader dwell time, evaluating release cohort impact,
-  querying GA4 data via SQL, or tracking user journeys and outbound link exits.
+  Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite
+  database. Stores pageviews, active users, reading dwell time, traffic sources,
+  and outbound clicks so you can run SQL queries or view reports on site
+  performance. Activate when analyzing website traffic, measuring reader
+  engagement and dwell time, evaluating the impact of site updates or
+  milestones, or querying Google Analytics with SQL.
 license: Apache-2.0
 metadata:
   category: analytics
-  tags: "analytics, ga4, google-analytics, sqlite, metrics, dwell-time"
+  tags: "google-analytics, ga4, analytics, traffic, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/analytics/google-analytics/
   canonical: https://skills.danicat.dev/analytics/google-analytics/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/analytics/google-analytics

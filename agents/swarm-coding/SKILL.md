@@ -1,22 +1,20 @@
 ---
 name: swarm-coding
 description: >
-  Use this skill when executing complex, multi-component engineering tasks,
-  large-scale refactorings, or full-stack features that can be decomposed into
-  parallelizable work. MANDATORY: Trigger immediately upon any mention of the
-  word "swarm" (case-insensitive) in relation to planning or executing a task.
-  Trigger immediately for: full-stack development (frontend + backend),
-  multi-service integrations, complex database migrations, API contract designs,
-  or high-ambiguity technical challenges requiring dedicated research (SPIKEs).
-  Do NOT use for simple, isolated single-file edits, minor bug fixes, or basic
-  script modifications where spawning subagents would introduce unnecessary
-  communication overhead.
+  Orchestration strategy based on a Divide to Conquer approach. Breaks down
+  complex problems into subproblems and assigns each subproblem to a specialised
+  team. Contains instructions for efficient coordination of the swarm so that
+  each agent performs at its top capacity. Activate when the user requests swarm
+  coding or to employ multiple agents to perform a task. You should also
+  activate it when dealing with orthogonal problems in the same task, like for
+  example implementing backend and frontend at the same time, as the swarm will
+  guarantee context isolation and optimal results.
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "agents, swarm-coding, multi-agent, coordinator, parallelism, worktrees"
+  tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/agents/swarm-coding/
   canonical: https://skills.danicat.dev/agents/swarm-coding/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/agents/swarm-coding

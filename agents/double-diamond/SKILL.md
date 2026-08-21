@@ -1,26 +1,19 @@
 ---
 name: double-diamond
 description: >
-  Use this skill when executing complex engineering initiatives, architectural
-  overhauls, high-ambiguity technical spikes, or full-stack features using the
-  Agile Double-Diamond methodology (Inception -> Discover -> Define -> Develop
-  -> Deliver). Orchestrates three distinct stages: Pre-Diamond Inception
-  (rigorous user grilling via /grill-me to align on scope and tech constraints),
-  Diamond 1 (Problem Space: parallel research subagents discover constraints,
-  coordinator converges on a formal Technical Specification, followed by an
-  interactive User Steering Gate), and Diamond 2 (Solution Space: parallel
-  developer subagents implement disjoint work packages, coordinator converges
-  via end-to-end compiler verification and delivery quality gates). Configurable
-  Degree of Parallelism (DOP) and agent budget. Trigger on any mention of
-  "double-diamond", "double diamond", "two-phase swarm", or when the user
-  requests an explicit research-then-implement workflow. Do NOT use for simple
-  single-file edits or isolated bug fixes.
+  Development methodology to perform tasks using the Double Diamond framework,
+  following the process: Inception -> Discovery -> Definition -> Development and
+  Delivery. Uses parallel subagents to perform the tasks ensuring context
+  isolation for optimal results. Activate when the user requests to use the
+  Double Diamond methodology, when they mention terms like inception and
+  discovery, or when tackling problems that require out of the box thinking,
+  reducing ambiguity and/or enterprise grade quality levels.
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "agents, double-diamond, agile, swarm, orchestration, architecture, planning"
+  tags: "inception, delivery, agile, planning, research, subagents"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/agents/double-diamond/
   canonical: https://skills.danicat.dev/agents/double-diamond/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/agents/double-diamond

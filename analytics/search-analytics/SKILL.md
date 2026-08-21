@@ -1,19 +1,18 @@
 ---
 name: search-analytics
 description: >
-  Ingest raw Google Search Console property totals and granular keyword
-  performance data (clicks, impressions, CTR, position), properties, and XML
-  sitemaps into a local SQLite database without data loss, run mature 16-month
-  backfills and incremental syncs, and execute deep SQL analytics over organic
-  search traffic. Activate whenever analyzing Google Search performance,
-  auditing historical keyword rankings, diagnosing search CTR decay, running SQL
-  queries over search traffic archives, or detecting keyword cannibalization.
+  Collect and analyze Google Search Console organic search data in a local
+  SQLite database. Stores clicks, impressions, click-through rates (CTR),
+  average ranking positions, and landing pages so you can run SQL queries or
+  view performance reports. Activate when analyzing Google Search traffic,
+  tracking keyword rankings, finding SEO content optimization opportunities, or
+  querying Search Console data with SQL.
 license: Apache-2.0
 metadata:
   category: analytics
-  tags: "analytics, search-console, seo-analytics, sqlite, keywords, gsc, rankings"
+  tags: "google-search, analytics, seo, geo, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://skills.danicat.dev/analytics/search-analytics/
   canonical: https://skills.danicat.dev/analytics/search-analytics/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/analytics/search-analytics
