@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T02:52:50.659Z",
+  "updatedAt": "2026-08-21T04:23:35.137Z",
   "totalSkills": 30,
   "skills": {
     "ebitengineer": {
@@ -93,8 +93,8 @@
       "u": "https://skills.danicat.dev/agents/double-diamond/SKILL.md"
     },
     "skill-optimizer": {
-      "v": "0.3.2",
-      "h": "b28625fef57e",
+      "v": "0.3.3",
+      "h": "f252d17c79cc",
       "c": "agents",
       "u": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md"
     },

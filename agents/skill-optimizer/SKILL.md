@@ -1,21 +1,13 @@
 ---
 name: skill-optimizer
 description: >
-  Analyze, author, evaluate, and optimize Agent Skills according to the official
-  Agent Skills specification. Activate when creating new skills, auditing
-  existing skills, installing reference tools like skill-creator via npx skills
-  add, optimizing trigger descriptions with train/validation splits, designing
-  eval suites (evals.json), setting up blind comparisons, bundling
-  self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP
-  server (https://agentskills.io/mcp), or organizing progressive disclosure
-  structures (scripts/, references/, assets/, evals/). Use whenever reviewing,
-  refactoring, or grading skills.
+  Use this skill to author, audit, evaluate, and optimize Agent Skills for maximum reliability, accurate triggering, and high-quality task execution. Activate whenever creating new skills, refining existing instructions, tuning activation descriptions, designing evaluation suites, or auditing skill structures for progressive disclosure. Trigger even if the user does not explicitly mention skill-optimizer.
 license: Apache-2.0
 metadata:
   category: agents
   tags: "agents, skill-optimizer, evals, benchmarks, testing, authoring, specification"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.2"
+  version: "0.3.3"
   homepage: https://skills.danicat.dev/agents/skill-optimizer/
   canonical: https://skills.danicat.dev/agents/skill-optimizer/SKILL.md
   repository: https://github.com/danicat/skills/tree/main/agents/skill-optimizer
@@ -90,9 +82,9 @@ npx skills add anthropics/skills --skill skill-creator -y
 
 ---
 
-## Frontmatter Specification & Hard Constraints
+## Frontmatter Specification, Provenance & Version Control
 
-Every skill requires valid YAML frontmatter:
+Every skill must provide valid YAML frontmatter containing complete provenance, versioning, and catalog metadata:
 
 ```yaml
 ---
@@ -100,21 +92,45 @@ name: my-skill
 description: >
   Use this skill when...
 license: Apache-2.0
-compatibility: Requires Node.js 20+ and git
 metadata:
-  author: organization-or-name
+  category: coding
+  tags: "coding, golang, refactoring, quality"
+  author: Author Name (email@example.com)
   version: "1.0.0"
-allowed-tools: Bash(git:*) Read
+  homepage: https://skills.danicat.dev/coding/my-skill/
+  canonical: https://skills.danicat.dev/coding/my-skill/SKILL.md
+  repository: https://github.com/danicat/skills/tree/main/coding/my-skill
+compatibility: Requires Go 1.22+
+allowed-tools: Bash(go:*) Read
 ---
 ```
 
-### Validation Rules
+### Validation & Provenance Rules
+
+#### 1. Core Top-Level Fields
 - `name` (required): 1-64 characters, lowercase alphanumeric and single hyphens (`a-z`, `0-9`, `-`). No consecutive hyphens (`--`), no leading/trailing hyphens. Must match directory name exactly.
-- `description` (required): 1-1024 characters. Non-empty. Must define what the skill does and under what specific conditions to activate.
-- `license` (optional): Short license identifier (e.g., `Apache-2.0`, `MIT`) or path to a bundled license.
+- `description` (required): 1-1024 characters. Non-empty. Must define what capabilities the skill unlocks and under what specific conditions to activate. Do NOT include internal algorithms or implementation plumbing.
+- `license` (required): Short SPDX license identifier (e.g., `Apache-2.0`, `MIT`) or path to a bundled license.
 - `compatibility` (optional): Max 500 characters. Environment or tool requirements. Omit if standard.
-- `metadata` (optional): Key-value string map for custom metadata.
 - `allowed-tools` (optional): Space-separated list of pre-approved tools (experimental).
+
+#### 2. Full Provenance & Version Control (`metadata` Block)
+- `category` (required): Functional taxonomy domain (`agents`, `coding`, `game-dev`, `media`, `writing`, `analytics`, `standards`, `gateway`). Must match the parent category folder name.
+- `tags` (required): Comma-separated keyword list for search, discovery, and boolean tag filtering.
+- `author` (required): Provenance attribution string (e.g., `Author Name (email@domain.com)` or organization name).
+- `version` (required): Strict Semantic Versioning SemVer 2.0.0 (`MAJOR.MINOR.PATCH`, e.g., `1.0.0`, `0.3.3`).
+  - **Patch (`0.0.X`)**: Clarifications, wording improvements, typo fixes, or internal doc tweaks.
+  - **Minor (`0.X.0`)**: Added reference guides, new companion scripts, expanded evals, or new activation triggers.
+  - **Major (`X.0.0`)**: Breaking restructuring, incompatible workflow shifts, or major tool replacements.
+- `homepage` (required): Canonical web landing page (`https://skills.danicat.dev/<category>/<name>/`).
+- `canonical` (required): Authoritative direct URL to the source `SKILL.md` (`https://skills.danicat.dev/<category>/<name>/SKILL.md` or git repository path).
+- `repository` (required): Direct link to the source directory in the git repository (`https://github.com/danicat/skills/tree/main/<category>/<name>`).
+
+#### 3. Zero Contamination Gate (Mandatory)
+All public skills must be strictly generic, open-source clean, and platform-agnostic:
+- **No local machine specifics**: Never include personal machine paths (e.g., hardcoded user directories or home folders).
+- **No internal corporate knowledge**: Never include internal project names, internal team/chat references, or proprietary infrastructure URLs.
+- **No credentials or tokens**: Never leak API keys, personal access tokens, or private secrets.
 
 ---
 
@@ -148,19 +164,41 @@ Add the server to your agent's MCP configuration file (e.g., `~/.gemini/config/m
 
 Follow this procedure when reviewing or refining skills:
 
-### Stage 1: Specification & Structure Audit
-- Confirm `name` matches folder name and adheres to naming rules.
-- Verify `SKILL.md` line count is under 500 lines and under 5,000 tokens.
-- Ensure large documentation (> 100 lines) or static data is moved to `references/` or `assets/`.
-- Verify all intra-skill file links use paths relative to the skill root (e.g., `references/guide.md`, `scripts/run.py`).
-- Ensure conditional triggers tell the agent *when* to load each reference file (e.g., "Read `references/api-errors.md` if the API returns a non-200 status code").
+### Stage 1: Specification, Provenance & Structure Audit
+- **Name & Category Alignment**: Confirm `name` matches the folder name and `metadata.category` matches the parent category directory.
+- **Provenance Integrity**: Verify `version` adheres to SemVer, and URLs (`homepage`, `canonical`, `repository`) are consistent and accessible.
+- **Zero Contamination**: Scan for hardcoded local user paths, internal infrastructure names, or private credentials.
+- **Size Constraints**: Verify `SKILL.md` line count is under 500 lines and under 5,000 tokens.
+- **Progressive Disclosure**: Ensure large documentation (> 100 lines) or static data is moved to `references/` or `assets/`.
+- **Intra-Skill Links**: Verify all intra-skill file links use paths relative to the skill root (e.g., `references/guide.md`, `scripts/run.py`).
+- **Conditional Triggers**: Ensure instructions clearly tell the agent *when* to load each reference file.
 
 ### Stage 2: Description & Trigger Optimization
-Review the frontmatter `description` against these principles:
-- **Imperative framing**: Start with "Use this skill when..." or "Activate this skill whenever...".
-- **Intent-focused**: Describe user objectives rather than internal code mechanics.
-- **Pushy boundary definition**: Explicitly capture implied intent (e.g., "even if the user does not explicitly mention...").
-- **Concise**: Pack high-signal keywords and triggers within the 1024-character budget.
+
+The frontmatter `description` is the **only** piece of text loaded by the orchestrator at startup to determine whether to activate the skill. Review and craft the `description` against these core principles:
+
+- **Benefits & Capabilities Over Implementation Details**:
+  - Focus strictly on *what capability, superpowers, or problem-solving outcomes* the skill provides.
+  - **NEVER** waste description tokens explaining internal code mechanics, algorithms, underlying libraries, or data structures (e.g., do *not* mention "uses BM25 ranking", "implements AST tree walking", "executes regex matching", or "queries SQLite underneath").
+  - The orchestrator and user do not care *how* the skill works internally; they care *what user goals it accomplishes* (e.g., "dynamically loads specialized knowledge on demand", "refactors and eliminates Go code smells", "generates procedural chiptune audio").
+- **Concrete Activation Criteria & Use Cases**:
+  - State specific triggering conditions: user tasks, explicit slash commands (e.g., `/<command>`), implicit intents, and domain scenarios.
+- **Pushy Boundary Definition**:
+  - Explicitly capture implied intent so the skill triggers whenever relevant (e.g., "Activate this skill whenever the user asks to..., even if they do not explicitly mention <skill-name>").
+- **Imperative / Action-Oriented Framing**:
+  - Begin directly with "Use this skill when..." or "Activate this skill whenever...".
+- **Concise Token Budget**:
+  - Pack high-signal keywords and trigger phrases within the 1024-character budget.
+
+#### Contrastive Examples
+
+| Anti-Pattern (Implementation-Heavy ❌) | Best Practice (Outcome & Trigger Focused ✅) |
+|---|---|
+| *"A CLI tool that uses pure Go BM25 and TF-IDF search algorithms to parse JSON manifests and index markdown files in memory."* | *"Activate this skill to acquire knowledge about anything immediately. Use when the user asks to perform tasks using unknown skills, executes unmapped slash commands, or needs up-to-date domain instructions."* |
+| *"Uses AST parser to walk syntax trees, calculate cyclomatic complexity metrics, and run mutation testing."* | *"Use this skill when auditing Go code quality, refactoring complex code, eliminating technical debt, or verifying test suite thoroughness with mutation testing."* |
+| *"Runs python-docx and regex to parse docx files into XML AST nodes and data frames."* | *"Use this skill whenever working with Word (.docx) documents, including extracting text and tables, summarizing report contents, or converting documents into clean markdown."* |
+| *"Integrates game loops, OpenGL shaders, and linear algebra matrices for physics calculation."* | *"Use this skill when designing or building 2D games, implementing character movement, creating collision physics, or tuning gameplay mechanics."* |
+| *"Scrapes DOM trees, queries JSON-LD objects, and computes readability formulas."* | *"Use this skill to audit webpage SEO, validate search engine snippets, diagnose ranking drops, and improve article readability."* |
 
 ### Stage 3: Instruction Density & Context Calibration
 - **Omit baseline knowledge**: Cut explanations of standard technologies (HTTP, JSON, Git, basic language syntax).

@@ -6,7 +6,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 30,
-  "updatedAt": "2026-08-21T02:52:50.659Z",
+  "updatedAt": "2026-08-21T04:23:35.136Z",
   "categories": [
     {
       "id": "game-dev",
@@ -662,14 +662,14 @@
       "category": "agents",
       "categoryName": "AI Agents",
       "categoryEmoji": "🤖",
-      "description": "Analyze, author, evaluate, and optimize Agent Skills according to the official Agent Skills specification. Activate when creating new skills, auditing existing skills, installing reference tools like skill-creator via npx skills add, optimizing trigger descriptions with train/validation splits, designing eval suites (evals.json), setting up blind comparisons, bundling self-contained scripts (PEP 723 / Deno / Bun), configuring the agentskills MCP server (https://agentskills.io/mcp), or organizing progressive disclosure structures (scripts/, references/, assets/, evals/). Use whenever reviewing, refactoring, or grading skills.",
+      "description": "Use this skill to author, audit, evaluate, and optimize Agent Skills for maximum reliability, accurate triggering, and high-quality task execution. Activate whenever creating new skills, refining existing instructions, tuning activation descriptions, designing evaluation suites, or auditing skill structures for progressive disclosure. Trigger even if the user does not explicitly mention skill-optimizer.",
       "license": "Apache-2.0",
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.3.2",
-      "digest": "sha256:b28625fef57e60ffbe78a7a7bf800ad4b166c3b52ad1ddc2d5306064889e5f42",
-      "sha256": "b28625fef57e60ffbe78a7a7bf800ad4b166c3b52ad1ddc2d5306064889e5f42",
-      "byteSize": 12358,
-      "tokenEstimate": 3090,
+      "version": "0.3.3",
+      "digest": "sha256:f252d17c79cc08c3f90a144dfade256d1c6a7869cec015199b95b4f811f0527e",
+      "sha256": "f252d17c79cc08c3f90a144dfade256d1c6a7869cec015199b95b4f811f0527e",
+      "byteSize": 17265,
+      "tokenEstimate": 4317,
       "tags": [
         "agents",
         "skill-optimizer",
@@ -683,7 +683,7 @@
         "category": "agents",
         "tags": "agents, skill-optimizer, evals, benchmarks, testing, authoring, specification",
         "author": "Daniela Petruzalek (daniela@danicat.dev)",
-        "version": "0.3.2",
+        "version": "0.3.3",
         "homepage": "https://skills.danicat.dev/agents/skill-optimizer/",
         "canonical": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
         "repository": "https://github.com/danicat/skills/tree/main/agents/skill-optimizer"
