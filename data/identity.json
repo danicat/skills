@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "author": {
+    "@type": "Person",
+    "@id": "https://danicat.dev/#person",
+    "name": "Daniela Petruzalek",
+    "alternateName": ["danicat"],
+    "jobTitle": "Senior Developer Relations Engineer",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Google",
+      "url": "https://about.google/"
+    },
+    "image": "https://danicat.dev/images/chibi-dani.png",
+    "sameAs": [
+      "https://github.com/danicat",
+      "https://linkedin.com/in/petruzalek",
+      "https://bsky.app/profile/danicat83.bsky.social",
+      "https://x.com/danicat83",
+      "https://instagram.com/danicat83",
+      "https://medium.com/@daniela.petruzalek",
+      "https://sessionize.com/daniela"
+    ],
+    "knowsAbout": [
+      "Go (Golang)",
+      "AI Agents & Multi-Agent Swarms",
+      "Agent Skills",
+      "2D Game Development (Ebitengine)",
+      "Distributed Systems & Cloud Architecture",
+      "Technical Writing & Developer Documentation"
+    ]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://danicat.dev/#organization",
+    "name": "danicat.dev",
+    "url": "https://danicat.dev",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://danicat.dev/apple-touch-icon.png",
+      "width": 180,
+      "height": 180
+    }
+  },
+  "website": {
+    "@type": "WebSite",
+    "@id": "https://danicat.dev/#website",
+    "name": "danicat.dev",
+    "alternateName": [
+      "danicat.dev",
+      "Daniela Petruzalek"
+    ],
+    "url": "https://danicat.dev"
+  },
+  "assets": {
+    "avatar": "https://danicat.dev/images/chibi-dani.png",
+    "logo": "https://danicat.dev/apple-touch-icon.png",
+    "favicon16": "https://danicat.dev/favicon-16x16.png",
+    "favicon32": "https://danicat.dev/favicon-32x32.png",
+    "defaultSocial": "https://danicat.dev/images/default-social.png"
+  },
+  "social": {
+    "github": "danicat",
+    "linkedin": "petruzalek",
+    "bluesky": "danicat83.bsky.social",
+    "twitter": "@danicat83",
+    "instagram": "danicat83",
+    "medium": "@daniela.petruzalek",
+    "sessionize": "daniela"
+  }
+}

@@ -21,7 +21,7 @@ Structured data using **JSON-LD (JavaScript Object Notation for Linked Data)** b
 | Content Type | Primary Schema Type | Key Properties |
 | :--- | :--- | :--- |
 | **Technical Blog Post / Deep Dive** | `TechArticle` / `Article` | `headline`, `description`, `dependencies`, `proficiencyLevel`, `author`, `publisher`, `datePublished`, `dateModified`, `image` |
-| **Official Site / Root Domain** | `WebSite` | `name`, `alternateName`, `url`, `potentialAction` (`SearchAction`) |
+| **Official Site / Root Domain** | `WebSite` | `name`, `alternateName`, `url`, `publisher`, `description` |
 | **Author Bio / About Page** | `ProfilePage` | `mainEntity` (`Person`), `jobTitle`, `worksFor`, `sameAs`, `description`, `image` |
 | **Company / Publisher Entity** | `Organization` | `name`, `url`, `logo`, `sameAs`, `contactPoint` |
 | **CLI Tool / Library / Open Source** | `SoftwareApplication` | `applicationCategory`, `operatingSystem`, `programmingLanguage`, `codeRepository`, `downloadUrl`, `softwareVersion` |
@@ -109,14 +109,6 @@ Place this schema on the homepage or in the site-wide base template to control h
   "publisher": {
     "@type": "Organization",
     "@id": "https://example.com/#organization"
-  },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://example.com/search/?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
   }
 }
 ```
@@ -459,13 +451,236 @@ In `layouts/partials/schema.html`:
 
 ---
 
-## 6. Testing & Validation Checklist
+## 6. Agent Skills & Open Knowledge Catalogs (`@graph` Architecture)
+
+For developer portals, agent skill registries, and open-source documentation hubs (e.g. `skills.danicat.dev`), multiple Schema entities must be interconnected cleanly in a single `@graph` array.
+
+### 6.1. Skill Detail Page Schema (`@graph` Implementation)
+
+Combines `Person` (author), `Organization` (consistent publishing entity), `SoftwareApplication` (the skill package), `TechArticle` (the documentation), and `BreadcrumbList` (navigation):
+
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://danicat.dev/#person",
+      "name": "Daniela Petruzalek",
+      "jobTitle": "Senior Developer Relations Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Google",
+        "url": "https://about.google/"
+      },
+      "url": "https://danicat.dev",
+      "image": "https://danicat.dev/images/chibi-dani.png",
+      "sameAs": [
+        "https://github.com/danicat",
+        "https://linkedin.com/in/petruzalek",
+        "https://bsky.app/profile/danicat83.bsky.social",
+        "https://x.com/danicat83",
+        "https://sessionize.com/daniela"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://danicat.dev/#organization",
+      "name": "danicat.dev",
+      "url": "https://danicat.dev",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://danicat.dev/apple-touch-icon.png"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#software",
+      "name": "ebitengineer",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-platform",
+      "image": "https://danicat.dev/apple-touch-icon.png",
+      "description": "Best practices and guidelines for building production-grade 2D games in Go using Ebitengine (v2).",
+      "softwareVersion": "1.2.0",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "url": "https://skills.danicat.dev/game-dev/ebitengineer/",
+      "downloadUrl": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
+      "codeRepository": "https://github.com/danicat/skills/tree/main/game-dev/ebitengineer",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "@id": "https://danicat.dev/#person",
+        "name": "Daniela Petruzalek",
+        "url": "https://danicat.dev"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://danicat.dev/#organization",
+        "name": "danicat.dev"
+      }
+    },
+    {
+      "@type": "TechArticle",
+      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#article",
+      "headline": "ebitengineer Agent Skill",
+      "description": "Best practices and guidelines for building production-grade 2D games in Go using Ebitengine (v2).",
+      "image": "https://danicat.dev/apple-touch-icon.png",
+      "url": "https://skills.danicat.dev/game-dev/ebitengineer/",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://skills.danicat.dev/game-dev/ebitengineer/"
+      },
+      "datePublished": "2025-01-01T00:00:00Z",
+      "dateModified": "2026-08-20T00:00:00Z",
+      "author": {
+        "@type": "Person",
+        "@id": "https://danicat.dev/#person",
+        "name": "Daniela Petruzalek",
+        "url": "https://danicat.dev"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://danicat.dev/#organization",
+        "name": "danicat.dev",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://danicat.dev/apple-touch-icon.png"
+        }
+      },
+      "about": {
+        "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#software"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#breadcrumbs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Catalog",
+          "item": "https://skills.danicat.dev/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Game Development",
+          "item": "https://skills.danicat.dev/game-dev/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "ebitengineer",
+          "item": "https://skills.danicat.dev/game-dev/ebitengineer/"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### 6.2. Catalog Root / Homepage Schema
+
+On catalog root domains, define the global `@graph` connecting the author, publisher organization, `WebSite` entity (for Google Site Names), and the `CollectionPage`:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://danicat.dev/#person",
+      "name": "Daniela Petruzalek",
+      "url": "https://danicat.dev",
+      "jobTitle": "Senior Developer Relations Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Google",
+        "url": "https://about.google/"
+      },
+      "image": "https://danicat.dev/images/chibi-dani.png",
+      "sameAs": [
+        "https://github.com/danicat",
+        "https://linkedin.com/in/petruzalek",
+        "https://bsky.app/profile/danicat83.bsky.social",
+        "https://x.com/danicat83",
+        "https://sessionize.com/daniela"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://danicat.dev/#organization",
+      "name": "danicat.dev",
+      "url": "https://danicat.dev",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://danicat.dev/apple-touch-icon.png"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://danicat.dev/#website",
+      "url": "https://skills.danicat.dev/",
+      "name": "danicat/skills",
+      "description": "A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.",
+      "publisher": { "@id": "https://danicat.dev/#organization" }
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://skills.danicat.dev/#catalog",
+      "url": "https://skills.danicat.dev/",
+      "name": "Agent Skills Catalog",
+      "isPartOf": { "@id": "https://danicat.dev/#website" },
+      "about": {
+        "@type": "ItemList",
+        "name": "All Agent Skills",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "ebitengineer",
+            "description": "Best practices for building 2D games in Go using Ebitengine v2.",
+            "url": "https://skills.danicat.dev/game-dev/ebitengineer/"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 7. Google Rich Results Data Quality & Warning Elimination Guide
+
+When validating with [Google's Rich Results Test](https://search.google.com/test/rich-results), Google enforces strict property rules:
+
+| Issue / Warning in Test | Root Cause | Exact Solution |
+| :--- | :--- | :--- |
+| **"No rich results detected" on Homepage** | Normal behavior: Google Rich Results tool only evaluates rich snippet card types (Articles, Products, Recipes). Root `Person`, `Organization`, and `WebSite` nodes are used for Google Knowledge Graph and Site Names, not rich snippets. | No fix needed. Ensure `WebSite.name`, `Organization.logo`, and `Person.sameAs` are present for Knowledge Graph. |
+| **"Missing field 'image'" (in 'TechArticle' or 'Article')** | Google requires a hero image or app icon for visual article cards. | Add `"image": "https://danicat.dev/apple-touch-icon.png"` (or an array of 16x9, 4x3, 1x1 image URLs) directly to `TechArticle`. |
+| **"Missing field 'name' (in 'author')"** | Referring to `author` solely by `@id` causes isolated entity validators to fail if they do not resolve the graph link inline. | Inline the author name & URL: <br>`"author": { "@type": "Person", "@id": "https://danicat.dev/#person", "name": "Daniela Petruzalek", "url": "https://danicat.dev" }` |
+| **"Missing field 'publisher.logo'"** | `publisher` reference lacks a resolvable image URL. | Include `"logo": { "@type": "ImageObject", "url": "https://danicat.dev/apple-touch-icon.png" }` on the `Organization`. |
+| **"Unrecognized value for 'operatingSystem'"** | Using `"Any"` is non-standard in Google's taxonomy. | Change `"Any"` to `"Cross-platform"` or `"macOS, Linux, Windows"`. |
+| **"Invalid 'mainEntityOfPage'"** | Providing `mainEntityOfPage` as a plain string URL can fail type checkers. | Format as an object: <br>`"mainEntityOfPage": { "@type": "WebPage", "@id": "https://skills.danicat.dev/..." }` |
+| **Organization Identity Inconsistency** | Child pages define competing organization entities (e.g., `danicat/skills` vs `danicat.dev`). | Standardize the organization root entity across all pages to `https://danicat.dev/#organization` with name `"danicat.dev"`. |
+
+---
+
+## 8. Testing & Validation Checklist
 
 Always validate your structured data prior to publication:
 
 1. **Google Rich Results Test**: [https://search.google.com/test/rich-results](https://search.google.com/test/rich-results)
    - Verify that your URL or code snippet passes with **0 errors and 0 critical warnings**.
 2. **Schema Markup Validator**: [https://validator.schema.org/](https://validator.schema.org/)
-   - Confirm standard Schema.org syntactic compliance and `@type` inheritance.
+   - Confirm standard Schema.org syntactic compliance and `@type` inheritance across all `@graph` entities.
 3. **Automated CI Validation**:
    - Ensure your build pipeline verifies that emitted `<script type="application/ld+json">` blocks contain valid, parseable JSON.
+

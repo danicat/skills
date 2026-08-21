@@ -26,9 +26,9 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const SITE_DIR = path.resolve(ROOT_DIR, '_site');
 
-const DOMAIN = 'https://skills.danicat.dev';
+const ROOT_DOMAIN = 'https://danicat.dev';
+const SUB_DOMAIN = 'https://skills.danicat.dev';
 const REPO_URL = 'https://github.com/danicat/skills';
-const BLOG_URL = 'https://danicat.dev';
 const GA_MEASUREMENT_ID = 'G-8RHDQGEGZ2';
 const ENABLE_KUNGFU = process.env.ENABLE_KUNGFU === 'true' || false;
 
@@ -42,30 +42,26 @@ const CATEGORIES = [
   { id: 'standards', name: 'Engineering Standards', emoji: '📐', description: 'Author immutable Architectural Decision Records (ADRs), collaborative Request for Comments (RFCs), and enforce Google open-source compliance.' },
 ];
 
-const SCHEMA_AUTHOR = {
-  '@type': 'Person',
-  '@id': 'https://danicat.dev/#person',
-  'name': 'Daniela Petruzalek',
-  'url': 'https://danicat.dev',
-  'jobTitle': 'Staff Developer Advocate & Software Engineer',
-  'sameAs': [
-    'https://github.com/danicat',
-    'https://twitter.com/danicat83',
-    'https://linkedin.com/in/danicat',
-    'https://bsky.app/profile/danicat.dev'
-  ]
-};
-
-const SCHEMA_PUBLISHER = {
-  '@type': 'Organization',
-  '@id': `${DOMAIN}/#organization`,
-  'name': 'danicat/skills',
-  'url': DOMAIN,
-  'logo': {
-    '@type': 'ImageObject',
-    'url': `${BLOG_URL}/apple-touch-icon.png`
+function loadAuthoritativeIdentity() {
+  const identityPath = path.resolve(ROOT_DIR, 'data/identity.json');
+  if (!fs.existsSync(identityPath)) {
+    throw new Error(`CRITICAL: Authoritative identity file missing at ${identityPath}`);
   }
-};
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(identityPath, 'utf8'));
+  } catch (e) {
+    throw new Error(`CRITICAL: Failed to parse ${identityPath}: ${e.message}`);
+  }
+  if (!data.author || !data.publisher) {
+    throw new Error(`CRITICAL: Identity file at ${identityPath} is missing required 'author' or 'publisher' fields`);
+  }
+  return data;
+}
+
+const IDENTITY = loadAuthoritativeIdentity();
+const SCHEMA_AUTHOR = IDENTITY.author;
+const SCHEMA_PUBLISHER = IDENTITY.publisher;
 
 const GITHUB_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="18" height="18" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>`;
 const MOON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>`;
@@ -572,15 +568,15 @@ function renderHeader(activePage = 'Skills') {
   return `
     <header>
       <nav class="nav-bar">
-        <a href="${BLOG_URL}" class="brand-link">
+        <a href="${ROOT_DOMAIN}" class="brand-link">
           danicat.dev
         </a>
         <div class="nav-links">
-          <a href="${BLOG_URL}/posts/" class="nav-link">Posts</a>
-          <a href="${BLOG_URL}/events/" class="nav-link">Events</a>
-          <a href="${BLOG_URL}/codelabs/" class="nav-link">Codelabs</a>
+          <a href="${ROOT_DOMAIN}/posts/" class="nav-link">Posts</a>
+          <a href="${ROOT_DOMAIN}/events/" class="nav-link">Events</a>
+          <a href="${ROOT_DOMAIN}/codelabs/" class="nav-link">Codelabs</a>
           <a href="/" class="nav-link ${activePage === 'Skills' ? 'active' : ''}">Skills</a>
-          <a href="${BLOG_URL}/about/" class="nav-link">About</a>
+          <a href="${ROOT_DOMAIN}/about/" class="nav-link">About</a>
           <a href="${REPO_URL}" target="_blank" rel="noopener" class="nav-icon-link" aria-label="GitHub" title="GitHub">
             ${GITHUB_SVG}
           </a>
@@ -597,7 +593,7 @@ function renderFooter() {
   return `
     <footer>
       <p>© Daniela Petruzalek · Open source under Apache-2.0</p>
-      <p><a href="${BLOG_URL}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a> · <a href="/sitemap.xml">sitemap.xml</a></p>
+      <p><a href="${ROOT_DOMAIN}">← Back to danicat.dev</a> · <a href="${REPO_URL}">GitHub Repository</a> · <a href="/llms.txt">llms.txt</a> · <a href="/sitemap.xml">sitemap.xml</a></p>
     </footer>`;
 }
 
@@ -1309,7 +1305,7 @@ const COMMON_CSS = `
 function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
   const { html: bodyHtml, toc } = markdownToHtml(skill.body, { isSubDocument: true });
   const title = `${skill.name} · Agent Skill · danicat.dev`;
-  const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/`;
+  const canonicalUrl = `${SUB_DOMAIN}/${skill.category}/${skill.folder}/`;
 
   const metaAuthor = skill.metadata?.author || 'Daniela Petruzalek (daniela@danicat.dev)';
   const metaVersion = skill.metadata?.version || '';
@@ -1328,7 +1324,8 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
         '@id': `${canonicalUrl}#software`,
         name: skill.name,
         applicationCategory: 'DeveloperApplication',
-        operatingSystem: 'Any',
+        operatingSystem: 'Cross-platform',
+        image: `${ROOT_DOMAIN}/apple-touch-icon.png`,
         offers: {
           '@type': 'Offer',
           price: '0',
@@ -1340,20 +1337,46 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
         url: canonicalUrl,
         downloadUrl: skill.url,
         codeRepository: skill.githubUrl,
-        author: { '@id': 'https://danicat.dev/#person' },
-        publisher: { '@id': `${DOMAIN}/#organization` }
+        author: {
+          '@type': 'Person',
+          '@id': 'https://danicat.dev/#person',
+          name: 'Daniela Petruzalek',
+          url: ROOT_DOMAIN
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${ROOT_DOMAIN}/#organization`,
+          name: 'danicat.dev'
+        }
       },
       {
         '@type': 'TechArticle',
         '@id': `${canonicalUrl}#article`,
         headline: `${skill.name} Agent Skill`,
         description: skill.description,
+        image: `${ROOT_DOMAIN}/apple-touch-icon.png`,
         url: canonicalUrl,
-        mainEntityOfPage: canonicalUrl,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonicalUrl
+        },
         datePublished: '2025-01-01',
         dateModified: todayIso,
-        author: { '@id': 'https://danicat.dev/#person' },
-        publisher: { '@id': `${DOMAIN}/#organization` },
+        author: {
+          '@type': 'Person',
+          '@id': 'https://danicat.dev/#person',
+          name: 'Daniela Petruzalek',
+          url: ROOT_DOMAIN
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${ROOT_DOMAIN}/#organization`,
+          name: 'danicat.dev',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${ROOT_DOMAIN}/apple-touch-icon.png`
+          }
+        },
         about: { '@id': `${canonicalUrl}#software` }
       },
       {
@@ -1364,13 +1387,13 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
             '@type': 'ListItem',
             position: 1,
             name: 'Catalog',
-            item: `${DOMAIN}/`
+            item: `${SUB_DOMAIN}/`
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: categoryName,
-            item: `${DOMAIN}/${skill.category}/`
+            item: `${SUB_DOMAIN}/${skill.category}/`
           },
           {
             '@type': 'ListItem',
@@ -1410,13 +1433,13 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
   <meta property="og:title" content="${escapeHtml(skill.name)} · Agent Skill">
   <meta property="og:description" content="${escapeHtml(skill.description)}">
   <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
-  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta property="og:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${escapeHtml(skill.name)} · Agent Skill">
   <meta name="twitter:description" content="${escapeHtml(skill.description)}">
-  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
   <meta name="twitter:creator" content="@danicat83">
 
   <!-- JSON-LD Schema -->
@@ -1424,9 +1447,9 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
 ${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
-  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="${ROOT_DOMAIN}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${ROOT_DOMAIN}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <script>
     (function() {
@@ -1656,8 +1679,8 @@ function generateReferenceHtml(refFile, skill, content) {
   const { html: bodyHtml, toc } = markdownToHtml(body, { isSubDocument: true });
   const refTitle = data.title || refFile.name.replace(/\.md$/, '').replace(/[_-]/g, ' ');
   const title = `${refTitle} · ${skill.name} · danicat.dev`;
-  const canonicalUrl = `${DOMAIN}/${skill.category}/${skill.folder}/${refFile.relPath.replace(/\.md$/, '.html')}`;
-  const skillDetailUrl = `${DOMAIN}/${skill.category}/${skill.folder}/`;
+  const canonicalUrl = `${SUB_DOMAIN}/${skill.category}/${skill.folder}/${refFile.relPath.replace(/\.md$/, '.html')}`;
+  const skillDetailUrl = `${SUB_DOMAIN}/${skill.category}/${skill.folder}/`;
   const refDescription = data.description || `${refTitle} reference guide and architectural documentation for ${skill.name}.`;
   const todayIso = new Date().toISOString().split('T')[0];
 
@@ -1674,12 +1697,29 @@ function generateReferenceHtml(refFile, skill, content) {
         '@id': `${canonicalUrl}#article`,
         headline: `${refTitle} · ${skill.name} Reference`,
         description: refDescription,
+        image: `${ROOT_DOMAIN}/apple-touch-icon.png`,
         url: canonicalUrl,
-        mainEntityOfPage: canonicalUrl,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonicalUrl
+        },
         datePublished: '2025-01-01',
         dateModified: todayIso,
-        author: { '@id': 'https://danicat.dev/#person' },
-        publisher: { '@id': `${DOMAIN}/#organization` },
+        author: {
+          '@type': 'Person',
+          '@id': 'https://danicat.dev/#person',
+          name: 'Daniela Petruzalek',
+          url: ROOT_DOMAIN
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${ROOT_DOMAIN}/#organization`,
+          name: 'danicat.dev',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${ROOT_DOMAIN}/apple-touch-icon.png`
+          }
+        },
         isPartOf: {
           '@type': 'SoftwareApplication',
           name: skill.name,
@@ -1694,13 +1734,13 @@ function generateReferenceHtml(refFile, skill, content) {
             '@type': 'ListItem',
             position: 1,
             name: 'Catalog',
-            item: `${DOMAIN}/`
+            item: `${SUB_DOMAIN}/`
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: categoryName,
-            item: `${DOMAIN}/${skill.category}/`
+            item: `${SUB_DOMAIN}/${skill.category}/`
           },
           {
             '@type': 'ListItem',
@@ -1746,13 +1786,13 @@ function generateReferenceHtml(refFile, skill, content) {
   <meta property="og:title" content="${escapeHtml(refTitle)} · ${escapeHtml(skill.name)} Reference">
   <meta property="og:description" content="${escapeHtml(refDescription)}">
   <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
-  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta property="og:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${escapeHtml(refTitle)} · ${escapeHtml(skill.name)} Reference">
   <meta name="twitter:description" content="${escapeHtml(refDescription)}">
-  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
   <meta name="twitter:creator" content="@danicat83">
 
   <!-- JSON-LD Schema -->
@@ -1760,9 +1800,9 @@ function generateReferenceHtml(refFile, skill, content) {
 ${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
-  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="${ROOT_DOMAIN}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${ROOT_DOMAIN}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <script>
     (function() {
@@ -1897,7 +1937,7 @@ ${COMMON_CSS}
 
 function generateCategoryHtml(category, skillsInCategory, allCategories, allSkills) {
   const title = `${category.name} Agent Skills · danicat.dev`;
-  const canonicalUrl = `${DOMAIN}/${category.id}/`;
+  const canonicalUrl = `${SUB_DOMAIN}/${category.id}/`;
 
   const schemaGraph = {
     '@context': 'https://schema.org',
@@ -1910,7 +1950,12 @@ function generateCategoryHtml(category, skillsInCategory, allCategories, allSkil
         url: canonicalUrl,
         name: `${category.name} Agent Skills`,
         description: category.description,
-        isPartOf: { '@id': `${DOMAIN}/#website` },
+        isPartOf: { '@id': `${ROOT_DOMAIN}/#website` },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${ROOT_DOMAIN}/#organization`,
+          name: 'danicat.dev'
+        },
         about: {
           '@type': 'ItemList',
           name: `${category.name} Skills`,
@@ -1931,7 +1976,7 @@ function generateCategoryHtml(category, skillsInCategory, allCategories, allSkil
             '@type': 'ListItem',
             position: 1,
             name: 'Catalog',
-            item: `${DOMAIN}/`
+            item: `${SUB_DOMAIN}/`
           },
           {
             '@type': 'ListItem',
@@ -1971,13 +2016,13 @@ function generateCategoryHtml(category, skillsInCategory, allCategories, allSkil
   <meta property="og:title" content="${escapeHtml(category.emoji)} ${escapeHtml(category.name)} · Agent Skills">
   <meta property="og:description" content="${escapeHtml(category.description)}">
   <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
-  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta property="og:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${escapeHtml(category.emoji)} ${escapeHtml(category.name)} · Agent Skills">
   <meta name="twitter:description" content="${escapeHtml(category.description)}">
-  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
   <meta name="twitter:creator" content="@danicat83">
 
   <!-- JSON-LD Schema -->
@@ -1985,9 +2030,9 @@ function generateCategoryHtml(category, skillsInCategory, allCategories, allSkil
 ${JSON.stringify(schemaGraph, null, 2)}
   </script>
 
-  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="${ROOT_DOMAIN}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${ROOT_DOMAIN}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <script>
     (function() {
@@ -2501,8 +2546,8 @@ async function build() {
         installCommand: `npx skills add danicat/skills --skill ${data.name || skillFolder} -y`,
         kungfuLoadCommand: `kungfu load ${data.name || skillFolder}`,
         kungfuLearnCommand: `kungfu learn ${data.name || skillFolder}`,
-        url: `${DOMAIN}/${cat.id}/${skillFolder}/SKILL.md`,
-        detailUrl: `${DOMAIN}/${cat.id}/${skillFolder}/`,
+        url: `${SUB_DOMAIN}/${cat.id}/${skillFolder}/SKILL.md`,
+        detailUrl: `${SUB_DOMAIN}/${cat.id}/${skillFolder}/`,
         githubUrl: `${REPO_URL}/tree/main/${cat.id}/${skillFolder}`,
         relativePath: `${cat.id}/${skillFolder}/SKILL.md`,
         body: body.trim(),
@@ -2576,9 +2621,9 @@ async function build() {
     llmsTxt += `\n`;
   }
   llmsTxt += `## Optional\n\n`;
-  llmsTxt += `- [Full Instructions Catalog](${DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
-  llmsTxt += `- [Skills Catalog JSON](${DOMAIN}/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.\n`;
-  llmsTxt += `- [Fast Versions JSON](${DOMAIN}/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
+  llmsTxt += `- [Full Instructions Catalog](${SUB_DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
+  llmsTxt += `- [Skills Catalog JSON](${SUB_DOMAIN}/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.\n`;
+  llmsTxt += `- [Fast Versions JSON](${SUB_DOMAIN}/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
@@ -2597,7 +2642,7 @@ async function build() {
     name: 'danicat/skills',
     title: 'Daniela Petruzalek Agent Skills Catalog',
     description: 'A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.',
-    url: DOMAIN,
+    url: SUB_DOMAIN,
     repository: REPO_URL,
     totalSkills: skills.length,
     updatedAt: new Date().toISOString(),
@@ -2605,7 +2650,7 @@ async function build() {
     gateway: {
       name: 'catalog',
       description: 'Dynamic search and loader for all skills in this repository.',
-      url: `${DOMAIN}/SKILL.md`
+      url: `${SUB_DOMAIN}/SKILL.md`
     },
     items: skills.map(({ body, installCommand, npxInstallCommand, kungfuLoadCommand, kungfuLearnCommand, ...rest }) => ({
       ...rest,
@@ -2639,14 +2684,14 @@ async function build() {
   // 6. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/catalog.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/catalog.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   for (const cat of CATEGORIES) {
-    sitemapXml += `  <url>\n    <loc>${DOMAIN}/${cat.id}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+    sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/${cat.id}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
   }
   for (const s of skills) {
     // Detail page
@@ -2661,7 +2706,7 @@ async function build() {
   fs.writeFileSync(path.join(SITE_DIR, 'sitemap.xml'), sitemapXml);
 
   // 7. robots.txt
-  const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${DOMAIN}/sitemap.xml\n`;
+  const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${SUB_DOMAIN}/sitemap.xml\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'robots.txt'), robotsTxt);
 
   // 8. Catalog Home Page HTML
@@ -2672,18 +2717,18 @@ async function build() {
       SCHEMA_PUBLISHER,
       {
         '@type': 'WebSite',
-        '@id': `${DOMAIN}/#website`,
-        url: `${DOMAIN}/`,
+        '@id': `${ROOT_DOMAIN}/#website`,
+        url: `${SUB_DOMAIN}/`,
         name: 'danicat/skills',
         description: 'A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.',
-        publisher: { '@id': `${DOMAIN}/#organization` }
+        publisher: { '@id': `${ROOT_DOMAIN}/#organization` }
       },
       {
         '@type': 'CollectionPage',
-        '@id': `${DOMAIN}/#catalog`,
-        url: `${DOMAIN}/`,
+        '@id': `${SUB_DOMAIN}/#catalog`,
+        url: `${SUB_DOMAIN}/`,
         name: 'Agent Skills Catalog',
-        isPartOf: { '@id': `${DOMAIN}/#website` },
+        isPartOf: { '@id': `${ROOT_DOMAIN}/#website` },
         about: {
           '@type': 'ItemList',
           name: 'All Agent Skills',
@@ -2706,7 +2751,7 @@ async function build() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Skills · Daniela Petruzalek (danicat.dev)</title>
   <meta name="description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
-  <link rel="canonical" href="${DOMAIN}/">
+  <link rel="canonical" href="${SUB_DOMAIN}/">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="theme-color" content="#0f172a">
   <meta name="color-scheme" content="dark light">
@@ -2722,17 +2767,17 @@ async function build() {
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="${DOMAIN}/">
+  <meta property="og:url" content="${SUB_DOMAIN}/">
   <meta property="og:title" content="Agent Skills · Daniela Petruzalek">
   <meta property="og:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
   <meta property="og:site_name" content="Daniela Petruzalek (danicat.dev)">
-  <meta property="og:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta property="og:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Agent Skills · Daniela Petruzalek">
   <meta name="twitter:description" content="A curated collection of Agent Skills for 2D Go games, Python tooling, engineering standards, technical writing, and generative media.">
-  <meta name="twitter:image" content="${BLOG_URL}/apple-touch-icon.png">
+  <meta name="twitter:image" content="${ROOT_DOMAIN}/apple-touch-icon.png">
   <meta name="twitter:creator" content="@danicat83">
 
   <!-- JSON-LD Schema -->
@@ -2740,9 +2785,9 @@ async function build() {
 ${JSON.stringify(homeGraph, null, 2)}
   </script>
 
-  <link rel="icon" type="image/png" sizes="32x32" href="${BLOG_URL}/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="${BLOG_URL}/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="${BLOG_URL}/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="${ROOT_DOMAIN}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${ROOT_DOMAIN}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${ROOT_DOMAIN}/apple-touch-icon.png">
 
   <script>
     (function() {
