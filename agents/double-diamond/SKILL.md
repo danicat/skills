@@ -14,9 +14,7 @@ metadata:
   tags: "inception, delivery, agile, planning, research, subagents"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/agents/double-diamond/
-  canonical: https://skills.danicat.dev/agents/double-diamond/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/agents/double-diamond
+  canonical: https://skills.danicat.dev/agents/double-diamond/
 ---
 
 # Double-Diamond Multi-Agent Orchestration

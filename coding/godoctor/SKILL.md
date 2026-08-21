@@ -13,9 +13,7 @@ metadata:
   tags: "go, golang, testing, refactoring, quality, mutation-testing"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.34.1"
-  homepage: https://skills.danicat.dev/coding/godoctor/
-  canonical: https://skills.danicat.dev/coding/godoctor/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/coding/godoctor
+  canonical: https://skills.danicat.dev/coding/godoctor/
 ---
 
 # Go Quality & Tooling Guide (GoDoctor)

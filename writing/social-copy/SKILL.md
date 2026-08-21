@@ -14,9 +14,7 @@ metadata:
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/writing/social-copy/
-  canonical: https://skills.danicat.dev/writing/social-copy/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/writing/social-copy
+  canonical: https://skills.danicat.dev/writing/social-copy/
 ---
 
 # Social Copy Playbook

@@ -13,9 +13,7 @@ metadata:
   tags: "documentation, writing, structure, editorial, blog, style-guide"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/writing/inverted-pyramid/
-  canonical: https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/writing/inverted-pyramid
+  canonical: https://skills.danicat.dev/writing/inverted-pyramid/
 ---
 
 # Inverted Pyramid Documentation Model

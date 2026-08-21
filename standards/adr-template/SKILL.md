@@ -13,9 +13,7 @@ metadata:
   tags: "adr, architecture, standards, documentation, design"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/standards/adr-template/
-  canonical: https://skills.danicat.dev/standards/adr-template/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/standards/adr-template
+  canonical: https://skills.danicat.dev/standards/adr-template/
 ---
 
 # Architecture Decision Records (ADRs)

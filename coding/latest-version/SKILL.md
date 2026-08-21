@@ -13,9 +13,7 @@ metadata:
   tags: "dependencies, packages, versions, registry, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/coding/latest-version/
-  canonical: https://skills.danicat.dev/coding/latest-version/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/coding/latest-version
+  canonical: https://skills.danicat.dev/coding/latest-version/
 ---
 
 # Latest Software Version (latest-version)

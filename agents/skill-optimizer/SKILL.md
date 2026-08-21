@@ -11,84 +11,41 @@ metadata:
   category: agents
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.0"
-  homepage: https://skills.danicat.dev/agents/skill-optimizer/
-  canonical: https://skills.danicat.dev/agents/skill-optimizer/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/agents/skill-optimizer
+  version: "0.5.0"
+  canonical: https://skills.danicat.dev/agents/skill-optimizer/
 ---
 
 # Agent Skill Optimizer
 
-Procedures, evaluation loops, and standards for authoring, auditing, and optimizing Agent Skills according to the Agent Skills specification and official best practices.
+Procedures, authoring principles, and quality standards for creating, auditing, and optimizing Agent Skills according to the Agent Skills specification and open-source best practices.
 
 ---
 
-## Skill Architecture & Progressive Disclosure
+## Skill Architecture & Progressive Disclosure Limits
 
-Skills use progressive disclosure to minimize context consumption:
-1. **Metadata** (~100 tokens): `name` and `description` in YAML frontmatter, loaded at startup for all skills.
-2. **Instructions** (< 5,000 tokens / < 500 lines): The main `SKILL.md` body, loaded only when the skill activates.
-3. **Resources** (Loaded on demand): Subdirectories loaded only when explicitly triggered by instructions:
-   - `scripts/`: Executable code for automation and repetitive tasks.
-   - `references/`: Domain documentation, schemas, and API guides (kept 1 level deep from skill root).
-   - `assets/`: Static templates, examples, and data files.
-   - `evals/`: Test cases, assertion datasets (`evals.json`), and test fixtures (`evals/files/`).
+Skills use a 3-tier progressive disclosure model to minimize token consumption:
 
----
+1. **Tier 1 — Routing & Discovery Metadata** (~50–100 words / $\le 150$ tokens):
+   - **Fields**: `name` (1–64 characters) and `description` (1–1024 characters).
+   - **Runtime behavior**: Injected into the model's system prompt at startup for all available skills so the orchestrator can route tasks accurately.
+   - **Budget limit**: Keep routing tokens $\le 150$ (ideal ~100 tokens). Keep description $\le 1024$ characters.
 
-## Installing Skills via `npx skills` CLI
+2. **Tier 2 — Skill Instructions & Body** (< 5,000 tokens / < 500 lines):
+   - **Scope**: The main `SKILL.md` body (excluding frontmatter).
+   - **Runtime behavior**: Loaded into active context only when the skill is explicitly activated.
+   - **Budget limit**: Strict limit of $\le 5,000$ tokens and $\le 500$ lines. Move detailed API tables, expansive guides, and catalogs into Tier 3.
 
-The official and standard package manager for agent skills is the **`skills`** CLI ([skills.sh](https://skills.sh)):
-
-### Quick Commands
-
-```bash
-# Install a specific skill from a repository (project-level)
-npx skills add anthropics/skills --skill skill-creator
-
-# Install a skill globally (user-level)
-npx skills add anthropics/skills --skill skill-creator -g
-
-# Install non-interactively (skip confirmation prompts)
-npx skills add anthropics/skills --skill skill-creator -g -y
-
-# List available skills inside a repository without installing
-npx skills add anthropics/skills --list
-
-# Interactively search for skills
-npx skills find
-
-# List currently installed skills
-npx skills list -g
-```
+3. **Tier 3 — On-Demand Resources & References**:
+   - **Scope**: Subdirectories loaded only when explicitly requested by instructions:
+     - `references/`: Domain guides, schemas, cheat sheets, and syntax rules.
+     - `scripts/`: Executable helper tools and automation scripts.
+     - `assets/`: Static templates, seed data, or boilerplate files.
 
 ---
 
-## Official Reference Skill: `skill-creator`
+## Frontmatter Specification & Metadata Guidelines
 
-The official reference implementation for skill creation and automated evaluation from Anthropic is **`skill-creator`** ([anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator)).
-
-### 1-Line Installation
-```bash
-# Global installation (recommended)
-npx skills add anthropics/skills --skill skill-creator -g -y
-
-# Local workspace installation
-npx skills add anthropics/skills --skill skill-creator -y
-```
-
-*(Alternatively in Claude Code: `/plugin install skill-creator@claude-plugins-official`)*
-
-### How `skill-creator` Works
-- **Scaffolding**: Prompts interactively to generate new skill skeletons conforming to naming and directory conventions.
-- **Eval Runner**: Executes test prompts against `evals/evals.json`, runs blind comparisons across iterations, and computes pass rates in HTML/JSON reports.
-- **Description Optimizer**: Automates description evaluations with train/validation splits to tune trigger rates.
-
----
-
-## Frontmatter Specification, Provenance & Version Control
-
-Every skill must provide valid YAML frontmatter containing complete provenance, versioning, and catalog metadata:
+Every skill must provide valid YAML frontmatter containing core identifiers, licensing, and an authoritative canonical URL:
 
 ```yaml
 ---
@@ -100,55 +57,46 @@ description: >
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "coding, go, quality, refactoring"
-  author: Author Name (email@example.com)
+  tags: "go, refactoring, testing, quality"
+  author: Maintainer Name (maintainer@example.com)
   version: "1.0.0"
-  homepage: https://skills.danicat.dev/coding/my-skill/
-  canonical: https://skills.danicat.dev/coding/my-skill/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/coding/my-skill
+  canonical: https://skills.example.com/coding/my-skill/
 compatibility: Requires Go 1.22+
 allowed-tools: Bash(go:*) Read
 ---
 ```
 
-### Validation & Provenance Rules
+### Field Rules & Single-URL Provenance
 
 #### 1. Core Top-Level Fields
 - `name` (required): 1-64 characters, lowercase alphanumeric and single hyphens (`a-z`, `0-9`, `-`). No consecutive hyphens (`--`), no leading/trailing hyphens. Must match directory name exactly.
-- `description` (required): 1-1024 characters. Non-empty. Follows the 3-Part Skill Description Formula (Definition & Scope + Superpower + Human Triggers). Do NOT include internal algorithms or implementation plumbing.
+- `description` (required): 1-1024 characters. Non-empty. Follows the 3-Part Skill Description Blueprint (Definition & Scope + Superpower + Human Triggers). Do not include internal implementation plumbing.
 - `license` (required): Short SPDX license identifier (e.g., `Apache-2.0`, `MIT`) or path to a bundled license.
-- `compatibility` (optional): Max 500 characters. Environment or tool requirements. Omit if standard.
+- `compatibility` (optional): Environment or tool requirements (e.g., `Requires Python 3.11+`). Omit if standard.
 - `allowed-tools` (optional): Space-separated list of pre-approved tools (experimental).
 
-#### 2. Full Provenance & Version Control (`metadata` Block)
-- `category` (required): Functional taxonomy domain (`agents`, `coding`, `game-dev`, `media`, `writing`, `analytics`, `standards`, `gateway`). Must match the parent category folder name.
-- `tags` (required): 3 to 6 high-level domain anchors for search and categorization. Avoid redundant synonym stuffing.
-- `author` (required): Provenance attribution string (e.g., `Author Name (email@domain.com)` or organization name).
-- `version` (required): Strict Semantic Versioning SemVer 2.0.0 (`MAJOR.MINOR.PATCH`, e.g., `1.0.0`, `0.3.3`).
-  - **Patch (`0.0.X`)**: Clarifications, wording improvements, typo fixes, or internal doc tweaks.
-  - **Minor (`0.X.0`)**: Added reference guides, new companion scripts, expanded evals, or new activation triggers.
-  - **Major (`X.0.0`)**: Breaking restructuring, incompatible workflow shifts, or major tool replacements.
-- `homepage` (required): Canonical web landing page (`https://skills.danicat.dev/<category>/<name>/`).
-- `canonical` (required): Authoritative direct URL to the source `SKILL.md` (`https://skills.danicat.dev/<category>/<name>/SKILL.md` or git repository path).
-- `repository` (required): Direct link to the source directory in the git repository (`https://github.com/danicat/skills/tree/main/<category>/<name>`).
+#### 2. Metadata Block (`metadata`)
+- `category` (recommended): Functional taxonomy domain (e.g., `coding`, `agents`, `devops`, `media`, `writing`, `analytics`). Recommended to match the parent category folder name in structured repositories.
+- `tags` (recommended): 3 to 6 high-level domain anchors for search and categorization. Avoid redundant synonym stuffing.
+- `author` (recommended): Maintainer attribution string (e.g., `Author Name (email@example.com)` or organization name).
+- `version` (recommended): Semantic Versioning SemVer 2.0.0 (`MAJOR.MINOR.PATCH`).
+- `canonical` (recommended): The authoritative web URL pointing to the skill's published documentation (e.g., `https://skills.example.com/<category>/<skill-name>/`).
+  - **Single Canonical URL Standard**: Avoid duplicating `homepage` and `repository` fields in frontmatter when a single canonical URL suffices. This reduces metadata overhead by ~60–80 tokens per skill while maintaining full provenance.
 
-#### 3. Zero Contamination Gate (Mandatory)
-All public skills must be strictly generic, open-source clean, and platform-agnostic:
-- **No local machine specifics**: Never include personal machine paths (e.g., hardcoded user directories or home folders).
-- **No internal corporate knowledge**: Never include internal project names, internal team/chat references, or proprietary infrastructure URLs.
+#### 3. Zero Contamination Gate
+All public skills must be strictly generic, modular, and platform-agnostic:
+- **No local machine specifics**: Never include personal machine paths or local home directory structures.
+- **No internal corporate knowledge**: Never include internal project names, private channel names, or proprietary infrastructure URLs.
 - **No credentials or tokens**: Never leak API keys, personal access tokens, or private secrets.
 
 ---
 
-## Agent Skills MCP Server Setup
+## Optional Reference: Agent Skills MCP Server
 
-Connect the official Agent Skills MCP server to query live specifications, documentation, and best practice guides directly during development.
+To query live specifications and documentation during development, you can connect the Agent Skills MCP server:
 
-### Endpoint
-- Server URL: `https://agentskills.io/mcp`
-
-### Configuration
-Add the server to your agent's MCP configuration file (e.g., `~/.gemini/config/mcp_config.json` or `claude_desktop_config.json`):
+- **Server URL**: `https://agentskills.io/mcp`
+- **MCP Configuration** (e.g., `~/.gemini/config/mcp_config.json` or `claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
@@ -159,64 +107,136 @@ Add the server to your agent's MCP configuration file (e.g., `~/.gemini/config/m
 }
 ```
 
-### Available MCP Tools
-- `search_agent_skills`: Search the Agent Skills knowledge base with natural language queries to locate relevant guides and examples.
-- `query_docs_filesystem_agent_skills`: Run shell commands (`tree /`, `cat /specification.mdx`, `rg`, `head`) against the virtual documentation filesystem.
-- `submit_feedback`: Report doc issues or omissions directly to the Agent Skills documentation team.
-
 ---
 
-## 5-Stage Skill Audit & Optimization Workflow
+## 5-Stage Skill Audit & Optimization Process
 
-Follow this procedure when reviewing or refining skills:
+Follow this procedure when creating, reviewing, or refining skills:
 
-### Stage 1: Specification, Provenance & Structure Audit
-- **Name & Category Alignment**: Confirm `name` matches the folder name and `metadata.category` matches the parent category directory.
-- **Provenance Integrity**: Verify `version` adheres to SemVer, and URLs (`homepage`, `canonical`, `repository`) are consistent and accessible.
-- **Zero Contamination**: Scan for hardcoded local user paths, internal infrastructure names, or private credentials.
-- **Size Constraints**: Verify `SKILL.md` line count is under 500 lines and under 5,000 tokens.
-- **Progressive Disclosure**: Ensure large documentation (> 100 lines) or static data is moved to `references/` or `assets/`.
-- **Intra-Skill Links**: Verify all intra-skill file links use paths relative to the skill root (e.g., `references/guide.md`, `scripts/run.py`).
-- **Conditional Triggers**: Ensure instructions clearly tell the agent *when* to load each reference file.
+### Stage 1: Structure & File Layout
+- **Name Alignment**: Confirm `name` in frontmatter matches the directory name exactly.
+- **Tier 1 & Tier 2 Limits**: Verify routing budget ($\le 150$ tokens, $\le 1024$ chars) and body budget ($\le 5,000$ tokens, $\le 500$ lines) using `scripts/count_tokens.py`.
+- **Progressive Disclosure**: Move extensive documentation (> 100 lines), schemas, or static data into `references/` or `assets/`.
+- **Relative Links**: Ensure all internal file references use relative paths from the skill root (e.g., `references/guide.md`, `scripts/run.py`).
+- **Conditional Loading**: Clearly state *when* the agent should read each reference file.
+
+#### Auditing Skills with Bundled `scripts/count_tokens.py`
+Audit skills against Tier 1, Tier 2, and Tier 3 limits using the self-contained PEP 723 Python script:
+
+```bash
+# 1. Audit a single skill
+uv run scripts/count_tokens.py coding/godoctor/SKILL.md
+
+# 2. Audit a category directory of skills
+uv run scripts/count_tokens.py coding/
+
+# 3. Fast offline audit (uses ~4 chars/token heuristic, no API or network calls)
+uv run scripts/count_tokens.py agents/ --heuristic-only
+
+# 4. Machine-readable JSON output (for CI/CD pipelines)
+uv run scripts/count_tokens.py coding/godoctor/SKILL.md --json
+```
+
+**Authentication & Models**:
+- **Vertex AI ADC (Default)**: Automatically detects Application Default Credentials (`gcloud auth application-default login`) with model `gemini-3.7-flash` and location `global`.
+- **Gemini Developer API**: Set `export GEMINI_API_KEY="..."` to authenticate directly via Gemini API.
+- **Offline Fallback**: Automatically falls back to an offline ~4 chars/token heuristic if no network or credentials are available.
 
 ### Stage 2: Description, Trigger & Tag Optimization
 
-The frontmatter `description` is the **only** piece of text loaded by the orchestrator at startup to determine whether to activate the skill. Craft every `description` and `metadata.tags` against this core blueprint:
-
-#### The 3-Part Skill Description Blueprint
+The frontmatter `description` is the primary text loaded by orchestrators at startup to determine activation. Craft every `description` against this 3-part blueprint:
 
 ```
 [1. Concrete Definition & Scope] + [2. Architectural Superpower / Key Topics] + [3. Natural, Decisive Trigger]
 ```
 
-1. **Concrete Definition & Scope (Simple English, No Jargon, No Play-by-Play Choreography)**:
-   - State **what the skill is** in one clear sentence using plain English.
-   - Enumerate the **tangible artifacts, formats, and topics** covered (e.g., *"formatting (frontmatter and metadata), naming, descriptions, evaluations..."*) instead of abstract process fluff (*"enforces quantitative optimization gates..."*).
-   - Use **universal mental models** (e.g., *"Divide to Conquer approach"*) rather than internal mechanical org-charts or role labels.
-   - Do NOT narrate an internal step-by-step checklist disguised as a paragraph.
-2. **Key Architecture / Superpower (Why Use It)**:
-   - State the technical mechanism or value proposition plainly and directly (e.g., *"uses parallel subagents to ensure context isolation"*, *"follows the process: Inception -> Discovery -> Definition -> Development and Delivery"*).
-   - Explain **why** the architecture is chosen (e.g., *"guarantees context isolation for orthogonal subproblems like concurrent frontend and backend development"*).
-   - Use **illustrative examples rather than closed lists** when referencing supported services or formats (e.g., *"connected channels (such as LinkedIn, X/Twitter, Bluesky, and others)"*).
-   - NEVER waste description tokens explaining internal code plumbing, algorithms, or private data structures (e.g., do *not* mention BM25, AST parsing, regex, SQLite).
-3. **Decisive, Human Triggers**:
-   - **Explicit terms**: When the user requests the skill by name, methodology, or key domain terms.
-   - **Problem-state traits & natural phrasing**: A concise, universal trigger tied to what the user is trying to achieve (e.g., *"when tackling problems that require out of the box thinking"*, *"when developing new skills or refining existing ones"*, *"or to employ multiple agents to perform a task"*), avoiding cluttered laundry lists of minor edge cases.
+1. **Concrete Definition & Scope**:
+   - State what the skill does in plain, direct English.
+   - Enumerate tangible topics, formats, and artifacts covered.
+   - Use universal mental models (e.g., *"Divide to Conquer approach"*).
+   - Avoid narrating a play-by-play checklist in the description.
+2. **Key Architecture / Superpower**:
+   - State the technical capability plainly (e.g., *"uses parallel subagents to ensure context isolation"*).
+   - Explain why the approach matters for quality and reliability.
+   - Use open, illustrative examples (e.g., *"connected channels (such as LinkedIn, X/Twitter, Bluesky, and others)"*).
+   - Do not waste tokens explaining internal algorithms or private code plumbing (e.g., AST parsing, regex, SQLite internals).
+3. **Decisive Triggers**:
+   - Include explicit domain terms and tool names.
+   - Anchor triggers to user intent and problem characteristics (e.g., *"when tackling problems that require out of the box thinking"*, *"when developing new skills or refining existing ones"*).
 
-#### Tag Taxonomy Strategy
-- Choose **3 to 6 high-level domain anchors** that classify the skill in search and discovery indices.
-- Prioritize **primary domain concepts, standards, and user intent** (e.g., `skills, agent-skills, optimization, standards` or `analytics, traffic, metrics, optimization`).
-- **Do NOT repeat the skill name as a tag**: The skill `name` is already indexed and searchable by default. Repeating the exact slug as the first tag consumes tag budget without adding categorical value.
-- **Avoid overly generic tags**: Single words like `cli` or `hierarchy` convey minimal domain signal on their own. Prefer actionable domain anchors like `management` (e.g., social media management) or `structure`.
-- **Omit internal implementation details** from tags if they are already in the description (e.g., omit `sqlite` when `sql` and `analytics` are present) to keep search signals clean.
+#### Trigger Discipline (The Anti-Pushy Rule)
+- **Eliminate Artificial Coercion**: Avoid phrases like *"Activate even if the user does not explicitly mention..."* or *"Trigger whenever anything related is requested"*. Overly aggressive trigger language causes false positives and pollutes the context window during multi-turn chats.
+- **Describe Problem Traits, Not Model Behavior**: Guide the orchestrator by detailing the **problem symptoms**, **task objectives**, and **domain vocabulary** that uniquely require this skill. Let clear architectural boundaries drive routing decisions naturally.
+
+#### Tag Taxonomy Guidelines
+- Choose **3 to 6 high-level domain anchors** for search indices.
+- **Do NOT repeat the skill name as a tag**: The `name` is already indexed. Repeating it wastes tag budget.
+- **Avoid generic noise tags**: Words like `cli` or `hierarchy` convey minimal context. Use domain-specific anchors like `management` or `structure`.
+- **Omit implementation details**: Skip low-level tags (`sqlite`) when high-level intent tags (`sql`, `analytics`) are present.
 - **Include brand/ecosystem anchors** when scoped specifically (e.g., `google` for Google-specific standards).
+
+### Stage 3: Core Principles for Skill Body Design
+
+Every skill body must adhere to these 6 instructional standards:
+
+1. **Teach Practices, Not Passive Declarations**:
+   - Provide concrete, repeatable workflows, architectural patterns, commands, and debugging steps.
+   - Focus on what the agent should *do*, *check*, and *produce*, rather than reciting encyclopedia definitions.
+
+2. **Readability & Clear Scannability**:
+   - Maintain clear sentence structure and high scannability (aim for Fog Index ~12–15 with leeway for technical syntax).
+   - Avoid dense walls of text; organize multi-step procedures into structured checklists (`- [ ] Step 1...`).
+
+3. **Zero Marketing, Buzzwords & Fake Qualifiers**:
+   - Never use marketing buzzwords (*"vibrant"*, *"cutting-edge"*, *"blazing-fast"*, *"world-class"*, *"bespoke"*, *"game-changing"*).
+   - Never use fake technical qualifiers (*"high signal SQLite WAL Engine"* ❌). State capabilities plainly (*"SQLite database"* ✅).
+
+4. **Usability Over Implementation Plumbing**:
+   - Emphasize the interface the agent interacts with (e.g., `SQLite` tells the agent to query via SQL).
+   - Omit internal runtime trivia that does not affect agent interaction (e.g., disk page size, WAL flushing mechanics, internal cache layouts).
+
+5. **Self-Contained with Explicit Installation for Optional Skills**:
+   - Skills must function independently and provide complete baseline instructions.
+   - When referencing a companion or guest skill (e.g., `godoctor`, `pyhd`, `buffer`), always provide its exact installation command:
+     ```bash
+     npx skills add <owner>/<repo> --skill <skill-name> -y
+     ```
+   - Always treat guest skills as **strictly optional** with graceful fallbacks if the companion skill is not installed in the workspace.
+
+6. **Zero Contamination**:
+   - Ensure all instructions, examples, and scripts are 100% generic, platform-agnostic, and safe for public open-source distribution.
+
+### Stage 4: Script Design & Bundling
+When bundling helper scripts into `scripts/`:
+- **Mandatory Invocation & Auth Documentation**: Every bundled script must be documented in `SKILL.md` with concrete execution examples, runtime requirements (`uv`, `deno`, `bun`), expected arguments, and its authorization model (e.g. ADC, API keys, OAuth, or offline fallback).
+- **Explicit Paths in Examples**: Always provide explicit category and file paths in command examples (e.g., `uv run scripts/tool.py coding/godoctor/SKILL.md` or `uv run scripts/tool.py coding/`). Never use ambiguous relative dot paths like `.` which depend on unpredictable agent working directories.
+- **Non-interactive execution**: Accept arguments via flags, environment variables, or stdin; never prompt for TTY input.
+- **Self-contained dependencies**: Declare dependencies inline using standard runtimes:
+  - Python: PEP 723 script metadata (`# /// script ... # ///`) executed via `uv run` or `pipx`.
+  - TypeScript/JavaScript: Deno (`deno run`) or Bun (`bun run`).
+  - Ruby: `bundler/inline` (`require 'bundler/inline'`).
+- **Clean interfaces**: Provide `--help` with clear options and usage examples.
+- **Structured output**: Write machine-readable output (JSON/CSV) to stdout; write logs and progress to stderr.
+- **Actionable errors**: Output specific failure causes, expected inputs, and recovery steps.
+- **Safe operations**: Support `--dry-run` and idempotent execution for stateful or destructive operations.
+
+### Stage 5: Operational Patterns & Failure Recovery
+Enhance skills with proven structural patterns:
+- **Gotchas & Edge Cases**: Document environment quirks, schema oddities, or non-obvious failure recovery steps.
+- **Output Templates**: Provide concrete Markdown, YAML, or JSON templates for expected outputs.
+- **Workflow Checklists**: Use markdown task lists (`- [ ] Step 1...`) for multi-stage processes.
+- **Validation Loops**: Require running a validator script or checklist, inspecting errors, and iterating until passing.
+- **Plan-Validate-Execute**: For batch or high-risk tasks, require generating a plan file, validating against schema, and executing only after validation passes.
 
 ---
 
-#### Case Studies: 10 Before & After Optimizations
+## Case Studies: 3 Representative Before & After Optimizations
 
-##### Case Study 1: `double-diamond` (Architecture & Process)
+The following 3 case studies demonstrate how to apply these principles across three major skill archetypes:
 
+### Case Study 1: `double-diamond` (Process, Agents & Context Isolation)
+
+* **Scenario**: Complex orchestration and multi-phase methodologies.
 * **Anti-Pattern (AI Slop & Procedural Choreography ❌)**:
   ```yaml
   description: >
@@ -229,7 +249,7 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     workflows. Do not use for single-file edits or simple bug fixes.
   tags: "agents, double-diamond, agile, swarm, orchestration, architecture, planning, research, problem-framing, parallel-coding, subagents, quality-gates"
   ```
-* **Best Practice (Clean, Human, Context-Isolated ✅)**:
+* **Best Practice (Clean Definition & Architectural Superpower ✅)**:
   ```yaml
   description: >
     Development methodology to perform tasks using the Double Diamond framework,
@@ -245,97 +265,10 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
 
 ---
 
-##### Case Study 2: `skill-optimizer` (Standards & Meta-Skill)
+### Case Study 2: `godoctor` (Developer Tooling & Safety Gates)
 
-* **Anti-Pattern (Abstract Jargon & Laundry List ❌)**:
-  ```yaml
-  description: >
-    Standards, validation procedures, and evaluation workflows for authoring and
-    optimizing Agent Skills. Enforces progressive disclosure, metadata schema
-    compliance, and zero-contamination security gates, using quantitative trigger
-    tuning and eval benchmarks to ensure high activation reliability and task
-    execution quality. Activate when authoring new skills, refining existing
-    instructions, diagnosing skill activation misfires, writing evaluation suites
-    in evals.json, or auditing skills for public open-source distribution.
-  tags: "agent-skills, meta-skill, authoring, evals, benchmarks, optimization, quality-gates"
-  ```
-* **Best Practice (Concrete Scope & Universal Trigger ✅)**:
-  ```yaml
-  description: >
-    Comprehensive guide to develop and improve Agent Skill performance. Contains
-    best practices for skill formatting (frontmatter and metadata), naming,
-    descriptions, fine-tuning activation triggers, evaluations,
-    production-readiness and open sourcing. Activate when developing new skills
-    or refining existing ones.
-  tags: "skills, agent-skills, optimization, standards"
-  ```
-* **Why it works**: Replaces heavy abstract nouns with a concrete enumeration of covered topics (formatting, naming, descriptions, triggers, evals, open-sourcing) and replaces a wordy sub-scenario laundry list with a crisp, universal activation trigger.
-
----
-
-##### Case Study 3: `swarm-coding` (Divide to Conquer & Orthogonal Subproblems)
-
-* **Anti-Pattern (Mechanical Hierarchy & Jargon ❌)**:
-  ```yaml
-  description: >
-    Hierarchical multi-agent coordination framework for executing large-scale,
-    multi-component engineering projects. Structures subagents into a three-tier
-    team (Coordinator -> Domain Leads -> Specialists) with strict vertical
-    communication, disjoint file allocations to prevent write collisions, and
-    persistent agent reuse to preserve context. Activate when the user requests
-    swarm coding or mentions "swarm", or when executing complex full-stack
-    initiatives, multi-service migrations, or large refactorings across parallel
-    agents.
-  tags: "swarm, multi-agent, parallel-coding, coordination, architecture"
-  ```
-* **Best Practice (Divide to Conquer & Orthogonal Problems ✅)**:
-  ```yaml
-  description: >
-    Orchestration strategy based on a Divide to Conquer approach. Breaks down
-    complex problems into subproblems and assigns each subproblem to a specialised
-    team. Contains instructions for efficient coordination of the swarm so that
-    each agent performs at its top capacity. Activate when the user requests swarm
-    coding or to employ multiple agents to perform a task. You should also
-    activate it when dealing with orthogonal problems in the same task, like for
-    example implementing backend and frontend at the same time, as the swarm will
-    guarantee context isolation and optimal results.
-  tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
-  ```
-* **Why it works**: Leads with the universal mental model ("Divide to Conquer"), provides a relatable scenario ("orthogonal problems like backend and frontend"), explains the architectural benefit ("guarantee context isolation"), and captures natural user phrasing ("to employ multiple agents").
-
----
-
-##### Case Study 4: `buffer-analytics` (Open Examples & Goal-Oriented Tags)
-
-* **Anti-Pattern (Inflated Modifiers & Rigid Lists ❌)**:
-  ```yaml
-  description: >
-    Ingest raw Buffer social post and channel data into a local SQLite analytics
-    database (without loss), run backfills and incremental syncs, execute ad-hoc
-    SQL queries, and perform deep performance crunching across LinkedIn,
-    Twitter/X, and Bluesky. Activate whenever analyzing social post performance,
-    auditing historical metrics, finding best days/hours to post, running SQL
-    queries over social archives, or evaluating campaign engagement.
-  tags: "analytics, buffer, social-metrics, sqlite, engagement, sql"
-  ```
-* **Best Practice (Open Examples & Clean Intent Tags ✅)**:
-  ```yaml
-  description: >
-    Collect and analyze social media data from Buffer in a local SQLite database.
-    Stores your full post history and metrics across connected channels (such as
-    LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view
-    reports on engagement, clicks, and views. Activate when you need to analyze
-    social media performance, find the best days or times to post, identify
-    top-performing content, or query Buffer data with SQL.
-  tags: "buffer, social-media, analytics, sql, metrics, optimization"
-  ```
-* **Why it works**: Replaces inflated adjectives ("without loss", "deep performance crunching") with simple, direct verbs, uses open illustrative phrasing for channels, drops redundant implementation tags (`sqlite`), and adds user-intent tags (`optimization`).
-
----
-
-##### Case Study 5: `godoctor` (Developer Tooling & Safety Gates)
-
-* **Anti-Pattern (Generic Linter Jargon & Internal Method Stacking ❌)**:
+* **Scenario**: Language tooling, linters, code quality, and testing frameworks.
+* **Anti-Pattern (Generic Linter Jargon & Self-Referential Tags ❌)**:
   ```yaml
   description: >
     Developer tooling for Go that enforces language style, idioms, code formatting,
@@ -346,7 +279,7 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     complexity, or ensuring strict adherence to idiomatic Go conventions.
   tags: "godoctor, go, golang, ast, selene, mutation-testing, testing, refactoring, quality"
   ```
-* **Best Practice (Architectural Safety & Concrete Tooling ✅)**:
+* **Best Practice (Concrete Safety Mechanisms & Value Framing ✅)**:
   ```yaml
   description: >
     Developer tooling and architectural safety rules for Go. Automatically
@@ -357,42 +290,14 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     thoroughness with mutation testing, or enforcing idiomatic Go standards.
   tags: "go, golang, testing, refactoring, quality, mutation-testing"
   ```
-* **Why it works**: Highlights the architectural safety mechanism (**compiler rollback gates** and **isolated SQL transactions**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
+* **Why it works**: Highlights the architectural safety mechanisms (**compiler rollback gates** and **isolated SQL transactions**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
 
 ---
 
-##### Case Study 6: `procedural-composer` (Flexible Qualifiers vs Rigid Numerical Caps)
+### Case Study 3: `google-oss` (Ecosystem Scoping & Organizational Standards)
 
-* **Anti-Pattern (Arbitrary Numerical Caps & File Lists ❌)**:
-  ```yaml
-  description: >
-    Procedural 6-channel polyphonic audio generation and sound engine for 2D games
-    (Ebitengine / WebAudio / WAV). Synthesizes chiptune instruments (square, triangle,
-    saw, noise, pulse-width modulation) and math-driven sound effects (jumps, explosions,
-    powerups, laser blasts) entirely in pure code without external audio files.
-    Activate when composing background music (BGM), synthesizing procedural sound
-    effects (SFX), building dynamic game audio managers, exporting WAVs, or tuning
-    audio synthesis DSP parameters.
-  tags: "game-dev, procedural-composer, procedural-audio, chiptune, synth, sfx, bgm, ebitengine"
-  ```
-* **Best Practice (Flexible Polyphony & Pure-Code Synthesis ✅)**:
-  ```yaml
-  description: >
-    Procedural multi-channel polyphonic audio engine and sound synthesis for 2D
-    games (Ebitengine, WebAudio, WAV). Synthesizes chiptune instruments (square,
-    triangle, saw, noise, PWM) and math-driven sound effects (explosions, jumps,
-    lasers) entirely in pure code without external assets. Activate when
-    composing procedural background music (BGM), synthesizing sound effects
-    (SFX), building dynamic audio managers, or exporting WAV files from code.
-  tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
-  ```
-* **Why it works**: Replaces an arbitrary numerical restriction ("6-channel") with qualitative depth ("multi-channel polyphony") allowing the model to adapt channel count dynamically, simplifies acronyms, and drops the self-referential tag.
-
----
-
-##### Case Study 7: `google-oss` (Ecosystem & Organizational Scoping)
-
-* **Anti-Pattern (Vague General Purpose Framing ❌)**:
+* **Scenario**: Brand-specific or organizationally bounded guidelines.
+* **Anti-Pattern (Vague General Purpose Claims ❌)**:
   ```yaml
   description: >
     Standards, compliance verification, and licensing automation for Google
@@ -404,7 +309,7 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     compliance with open-source policies.
   tags: "standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer"
   ```
-* **Best Practice (Explicit Organizational Scope & Brand Tag ✅)**:
+* **Best Practice (Explicit Organizational Boundaries & Brand Tag ✅)**:
   ```yaml
   description: >
     Compliance guide and licensing automation strictly for Google Open Source
@@ -415,198 +320,4 @@ The frontmatter `description` is the **only** piece of text loaded by the orches
     license headers, or verifying open-source policy compliance.
   tags: "google, open-source, licensing, compliance, standards, copyright"
   ```
-* **Why it works**: Explicitly states the organizational boundary ("strictly for Google Open Source projects and personal projects created by Googlers") to prevent misuse on generic third-party open-source, and adds the essential `google` ecosystem tag.
-
----
-
-##### Case Study 8: `buffer` (Actionable Domain Anchors vs Generic Tags)
-
-* **Anti-Pattern (Generic Tags & Rigid Command Narratives ❌)**:
-  ```yaml
-  description: >
-    Manage, draft, schedule, and publish social media content across connected
-    channels using the Buffer CLI (@bufferapp/cli). Use this skill when listing
-    connected Buffer social channels, inspecting accounts, creating ideas,
-    scheduling posts to queues, validating payloads via --dry-run, querying post
-    statuses, introspecting Buffer GraphQL schemas, or diagnosing Buffer
-    authentication and environment issues. Activate whenever interacting with
-    Buffer or automating cross-platform social publishing from the terminal.
-  tags: "writing, social-media, buffer, publishing, automation, cli"
-  ```
-* **Best Practice (Domain-Anchored Tags & Safety Gates ✅)**:
-  ```yaml
-  description: >
-    Manage, draft, schedule, and publish social media content across connected
-    channels (such as LinkedIn, X/Twitter, Bluesky, and others) using the Buffer
-    CLI (@bufferapp/cli). Covers account and channel inspection, queue scheduling
-    with dry-run safety validation, draft ideas management, and GraphQL schema
-    introspection. Activate when scheduling social media posts, inspecting Buffer
-    channels, automating social publishing, or managing social queues.
-  tags: "social-media, publishing, automation, management"
-  ```
-* **Why it works**: Replaces vague tags like `cli` (which convey no domain context) with `management` (online presence & social media management), incorporates open channel phrasing, and strips redundant slug/category tags.
-
----
-
-##### Case Study 9: `deslopify` (Concrete Tells & Human Rhythm)
-
-* **Anti-Pattern (Overloaded Jargon & Cluttered Triggers ❌)**:
-  ```yaml
-  description: >
-    Re-write, edit, and purge text of common AI tropes, clichés, formulaic filler,
-    and recognizable large language model structural patterns (AI slop) using
-    strict editorial guidelines. Activate this skill whenever the user asks to
-    "deslopify" text, remove AI tells, polish text to sound authentically human,
-    eliminate formulaic transitions (e.g. "delve", "testament", "tapestry",
-    "seamlessly"), fix negative parallelism, or audit prose for AI idioms.
-  tags: "writing, deslopify, editorial, tropes, ai-cleanup, style, prose"
-  ```
-* **Best Practice (Clear Superpower & Human Cadence ✅)**:
-  ```yaml
-  description: >
-    Editorial guidelines and rewriting workflow for purging text of AI clichés,
-    tropes, and formulaic filler. Identifies and removes overused AI vocabulary
-    (such as delve, tapestry, seamlessly), negative parallelism, dramatic
-    countdowns, and repetitive summaries to restore natural human cadence.
-    Activate when rewriting text to remove AI tells, polishing drafts to sound
-    authentically human, eliminating filler tropes, or auditing prose style.
-  tags: "writing, style, editing, quality"
-  ```
-* **Why it works**: Replaces wordy phrasing with an active breakdown of anti-patterns (negative parallelism, dramatic countdowns, repetitive summaries), frames the goal as restoring natural human cadence, and cleans up tag clutter.
-
----
-
-##### Case Study 10: `seo-optimizer` (Dual-Purpose Metadata Split & GEO)
-
-* **Anti-Pattern (Dense Laundry List & Flat Objectives ❌)**:
-  ```yaml
-  description: >
-    Audit, optimize, and enhance technical articles, developer documentation, and
-    engineering blogs for traditional search engines and AI-driven answer engines
-    (Google AI Overviews, Gemini Grounding, ChatGPT Search, Perplexity, Claude).
-    Use when auditing technical SEO, structuring metadata (distinguishing
-    human-facing 'summary' vs search-facing 'description'), implementing
-    Generative Engine Optimization (GEO), enforcing Inverted Pyramid direct-answer
-    density, verifying JSON-LD structured data (TechArticle, BreadcrumbList),
-    generating or maintaining llms.txt, performing keyword gap analysis, or fixing
-    heading and content hierarchies.
-  tags: "writing, seo, geo, json-ld, llms-txt, keywords, search-engines"
-  ```
-* **Best Practice (Core Architectural Differentiator & Actionable Triggers ✅)**:
-  ```yaml
-  description: >
-    Technical SEO and Generative Engine Optimization (GEO) guide for developer
-    docs and engineering blogs. Optimizes content for search engines and AI answer
-    engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from
-    search description metadata, verifies JSON-LD structured data (TechArticle),
-    and maintains llms.txt. Activate when auditing technical SEO, optimizing
-    articles for AI answer engines (GEO), generating llms.txt, or structuring
-    search metadata.
-  tags: "seo, geo, optimization, search-engines, blog, website, metadata"
-  ```
-* **Why it works**: Synthesizes the core architectural differentiators (GEO for AI answer engines, the human `summary` vs search `description` split, and `llms.txt`), cleans up keyword stuffing, and incorporates `website` and `metadata` discovery tags.
-
----
-
-#### Contrastive Anti-Patterns vs Best Practices
-
-| Anti-Pattern (Implementation-Heavy or Procedural Slop ❌) | Best Practice (Outcome, Superpower & Clean Trigger ✅) |
-|---|---|
-| *"A CLI tool that uses pure Go BM25 and TF-IDF search algorithms to parse JSON manifests and index markdown files in memory."* | *"Activate this skill to acquire knowledge about anything immediately. Use when the user asks to perform tasks using unknown skills, executes unmapped slash commands, or needs up-to-date domain instructions."* |
-| *"Uses AST parser to walk syntax trees, calculate cyclomatic complexity metrics, and run mutation testing."* | *"Use this skill when auditing Go code quality, refactoring complex code, eliminating technical debt, or verifying test suite thoroughness with mutation testing."* |
-| *"Runs python-docx and regex to parse docx files into XML AST nodes and data frames."* | *"Use this skill whenever working with Word (.docx) documents, including extracting text and tables, summarizing report contents, or converting documents into clean markdown."* |
-| *"Integrates game loops, OpenGL shaders, and linear algebra matrices for physics calculation."* | *"Use this skill when designing or building 2D games, implementing character movement, creating collision physics, or tuning gameplay mechanics."* |
-| *"Scrapes DOM trees, queries JSON-LD objects, and computes readability formulas."* | *"Use this skill to audit webpage SEO, validate search engine snippets, diagnose ranking drops, and improve article readability."* |
-
-### Stage 3: Instruction Density & Context Calibration
-- **Omit baseline knowledge**: Cut explanations of standard technologies (HTTP, JSON, Git, basic language syntax).
-- **Add domain delta**: Keep project conventions, specific API patterns, and non-obvious constraints.
-- **Provide defaults, not menus**: Pick one recommended tool or approach as the default; mention alternatives only as fallback escapes.
-- **Procedures over declarations**: Teach reusable problem-solving workflows rather than hardcoded single-instance solutions.
-- **Match specificity to fragility**: Allow freedom for flexible review tasks; use strict, numbered sequences for fragile or destructive operations.
-
-### Stage 4: Script Design & Bundling
-When bundling scripts into `scripts/`:
-- **Non-interactive execution**: Never prompt for TTY input; accept flags, environment variables, or stdin.
-- **Self-contained dependencies**: Declare dependencies inline using standard runtimes:
-  - Python: PEP 723 script metadata (`# /// script ... # ///`) executed via `uv run` or `pipx`.
-  - TypeScript/JavaScript: Deno (`deno run`) with `npm:` specifiers or Bun (`bun run`).
-  - Ruby: `bundler/inline` (`require 'bundler/inline'`).
-- **Clean interfaces**: Provide `--help` with brief options and examples.
-- **Structured output**: Write clean machine-readable data (JSON/CSV) to stdout; write logs and progress to stderr.
-- **Actionable errors**: Explain what failed, expected formats, and recovery steps.
-- **Safe operations**: Support `--dry-run` and idempotent execution for stateful or destructive commands.
-
-### Stage 5: Proven Instruction Patterns
-Enhance skills with proven structural patterns:
-- **Gotchas sections**: Document environment quirks, schema oddities, or non-obvious failure modes in `SKILL.md`.
-- **Output Templates**: Provide concrete Markdown or JSON structures for expected outputs.
-- **Workflow Checklists**: Use markdown task lists (`- [ ] Step 1...`) for multi-stage processes.
-- **Validation Loops**: Require the agent to run a validator script or checklist, inspect errors, fix issues, and iterate until passing.
-- **Plan-Validate-Execute**: For batch or high-risk tasks, require generating a structured plan file, validating against schema/truth, and executing only after validation passes.
-
----
-
-## Trigger Evaluation & Description Tuning (Train/Val Splits)
-
-To systematically test and optimize triggering accuracy without overfitting:
-
-1. **Build Query Dataset**: Create ~20 realistic user queries:
-   - **Should-trigger (8-10)**: Varied phrasing, casual prompts, complex multi-step workflows, and implicit tasks without explicit keywords.
-   - **Should-not-trigger (8-10)**: Near-miss queries that share keywords or concepts but require different capabilities.
-2. **Train/Validation Split**:
-   - **Train Set (~60%)**: Used to identify failures and guide description tweaks.
-   - **Validation Set (~40%)**: Set aside and used exclusively to check if improvements generalize.
-3. **Run Trigger Eval**:
-   - Execute queries 3x each to compute **Trigger Rate** ($\text{triggers} / \text{runs}$).
-   - A should-trigger query passes if trigger rate $\ge 0.5$.
-   - A should-not-trigger query passes if trigger rate $< 0.5$.
-4. **Optimize on Train Set Only**: Broaden scope if positives fail; add boundary exclusions if negatives false-trigger. Avoid keyword stuffing.
-5. **Verify on Validation Set**: Select the iteration with highest validation pass rate. Ensure description stays $\le 1024$ characters.
-
----
-
-## Output Quality Evaluation (`evals/evals.json`) & Blind Comparison
-
-Structure test cases inside `evals/evals.json`:
-
-```json
-{
-  "skill_name": "my-skill",
-  "evals": [
-    {
-      "id": 1,
-      "prompt": "Realistic user prompt with specific context and paths",
-      "expected_output": "Description of what success looks like",
-      "files": ["evals/files/input_sample.json"],
-      "assertions": [
-        "The output file exists and contains valid JSON",
-        "The summary table contains exactly 4 columns",
-        "The generated report includes actionable recommendations"
-      ]
-    }
-  ]
-}
-```
-
-### Eval Workspace Directory Structure
-
-```
-my-skill-workspace/
-└── iteration-1/
-    ├── eval-case-1/
-    │   ├── with_skill/
-    │   │   ├── outputs/       # Generated files
-    │   │   ├── timing.json    # {"total_tokens": 84000, "duration_ms": 22000}
-    │   │   └── grading.json   # Assertion results with quoted evidence
-    │   └── without_skill/     # (or old_skill/ for version comparisons)
-    │       ├── outputs/
-    │       ├── timing.json
-    │       └── grading.json
-    └── benchmark.json         # Aggregated pass rates, tokens, latency, and delta
-```
-
-### Grading & Blind Comparison Principles
-- **Require Concrete Evidence for PASS**: Never give the benefit of the doubt. Cite or quote the exact output text/file in `grading.json`.
-- **Blind Comparison for Qualitative Nuance**: When comparing two skill versions (e.g. `old_skill` vs `new_skill`), present both outputs to an LLM judge without revealing which version produced which output. The judge evaluates holistic criteria (depth, clarity, ergonomics, formatting) without bias.
-- **Delta Analysis**: Calculate delta in pass rate vs token and duration overhead in `benchmark.json`.
+* **Why it works**: Explicitly defines the organizational boundary ("strictly for Google Open Source projects and personal projects created by Googlers") to prevent misuse on generic third-party open-source, and adds the essential `google` ecosystem tag.

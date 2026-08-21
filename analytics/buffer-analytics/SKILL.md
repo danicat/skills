@@ -13,9 +13,7 @@ metadata:
   tags: "buffer, social-media, analytics, sql, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/analytics/buffer-analytics/
-  canonical: https://skills.danicat.dev/analytics/buffer-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/analytics/buffer-analytics
+  canonical: https://skills.danicat.dev/analytics/buffer-analytics/
 ---
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine

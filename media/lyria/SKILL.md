@@ -13,9 +13,7 @@ metadata:
   tags: "music, audio, generative-ai, sound"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/media/lyria/
-  canonical: https://skills.danicat.dev/media/lyria/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/media/lyria
+  canonical: https://skills.danicat.dev/media/lyria/
 ---
 
 # Lyria Music Generation Skill

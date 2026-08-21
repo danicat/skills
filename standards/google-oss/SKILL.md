@@ -14,9 +14,7 @@ metadata:
   tags: "google, open-source, licensing, compliance, standards, copyright"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/standards/google-oss/
-  canonical: https://skills.danicat.dev/standards/google-oss/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/standards/google-oss
+  canonical: https://skills.danicat.dev/standards/google-oss/
 ---
 
 # Google Open Source Compliance & License Attributions

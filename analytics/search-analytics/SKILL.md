@@ -13,9 +13,7 @@ metadata:
   tags: "google-search, analytics, seo, geo, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/analytics/search-analytics/
-  canonical: https://skills.danicat.dev/analytics/search-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/analytics/search-analytics
+  canonical: https://skills.danicat.dev/analytics/search-analytics/
 ---
 
 # Google Search Console SQLite Ingestion & SQL Analytics

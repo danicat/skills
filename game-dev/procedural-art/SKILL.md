@@ -13,9 +13,7 @@ metadata:
   tags: "game-dev, sprites, pixel-art, particles, vfx"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.1"
-  homepage: https://skills.danicat.dev/game-dev/procedural-art/
-  canonical: https://skills.danicat.dev/game-dev/procedural-art/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/game-dev/procedural-art
+  canonical: https://skills.danicat.dev/game-dev/procedural-art/
 ---
 
 # Procedural Art: Pure-Code 2D Sprites, Tiles, Particle Systems & Vector Graphics Guide

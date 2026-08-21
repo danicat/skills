@@ -15,9 +15,7 @@ metadata:
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/agents/swarm-coding/
-  canonical: https://skills.danicat.dev/agents/swarm-coding/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/agents/swarm-coding
+  canonical: https://skills.danicat.dev/agents/swarm-coding/
 ---
 
 # Swarm Coding

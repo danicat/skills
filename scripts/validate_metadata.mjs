@@ -222,30 +222,19 @@ function validateSkillFile(filePath, isGateway = false) {
     errors.push(`metadata.version ("${meta.version}") is not a valid Semantic Version (e.g. 1.0.0, 0.1.0)`);
   }
 
-  // URLs
+  // Single Canonical URL Validation
   if (isGateway) {
-    if (meta.homepage !== `${DOMAIN}/`) {
-      warnings.push(`Gateway homepage expected "${DOMAIN}/", got "${meta.homepage}"`);
-    }
-    if (meta.canonical !== `${DOMAIN}/SKILL.md`) {
-      warnings.push(`Gateway canonical expected "${DOMAIN}/SKILL.md", got "${meta.canonical}"`);
-    }
-    if (meta.repository !== REPO_BASE) {
-      warnings.push(`Gateway repository expected "${REPO_BASE}", got "${meta.repository}"`);
+    if (!meta.canonical) {
+      errors.push("Missing required metadata field: 'canonical'");
+    } else if (meta.canonical !== `${DOMAIN}/` && meta.canonical !== `${DOMAIN}/SKILL.md`) {
+      errors.push(`Gateway canonical mismatch: expected "${DOMAIN}/", got "${meta.canonical}"`);
     }
   } else {
-    const expectedHomepage = `${DOMAIN}/${meta.category}/${data.name}/`;
-    const expectedCanonical = `${DOMAIN}/${meta.category}/${data.name}/SKILL.md`;
-    const expectedRepo = `${REPO_BASE}/tree/main/${meta.category}/${data.name}`;
-
-    if (meta.homepage !== expectedHomepage) {
-      errors.push(`metadata.homepage mismatch: expected "${expectedHomepage}", got "${meta.homepage}"`);
-    }
-    if (meta.canonical !== expectedCanonical) {
+    const expectedCanonical = `${DOMAIN}/${meta.category}/${data.name}/`;
+    if (!meta.canonical) {
+      errors.push("Missing required metadata field: 'canonical'");
+    } else if (meta.canonical !== expectedCanonical && meta.canonical !== `${DOMAIN}/${meta.category}/${data.name}/SKILL.md`) {
       errors.push(`metadata.canonical mismatch: expected "${expectedCanonical}", got "${meta.canonical}"`);
-    }
-    if (meta.repository !== expectedRepo) {
-      errors.push(`metadata.repository mismatch: expected "${expectedRepo}", got "${meta.repository}"`);
     }
   }
 

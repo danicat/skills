@@ -13,9 +13,7 @@ metadata:
   tags: "ga4, analytics, traffic, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  homepage: https://skills.danicat.dev/analytics/google-analytics/
-  canonical: https://skills.danicat.dev/analytics/google-analytics/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/analytics/google-analytics
+  canonical: https://skills.danicat.dev/analytics/google-analytics/
 ---
 
 # Google Analytics 4 SQLite Ingestion & SQL Analytics

@@ -1,24 +1,18 @@
 ---
 name: catalog
 description: >
-  Search and dynamically load specialized Agent Skills from https://skills.danicat.dev.
-  Activate this skill when the user wants to:
-  (1) Design, architect, or build 2D games, including game design documents (GDD), procedural art/sprites, and synth/chiptune audio;
-  (2) Enforce strict software engineering standards, clean up codebases, eliminate technical debt, or manage dependencies;
-  (3) Propose major architectural changes, lead technical consensus (RFCs), or document high-impact structural decisions (ADRs);
-  (4) Author developer documentation, SEO/GEO-optimized articles, or publication-grade engineering blog posts;
-  (5) Generate original stereo background music, sound effects, or iterative visual artwork;
-  (6) Orchestrate multi-agent coding swarms or author and optimize agent skills.
-  Activate whenever the user aims to accomplish these workflows, even if they do not explicitly request a specific skill or tool.
+  Search, discover, and dynamically load specialized Agent Skills from
+  https://skills.danicat.dev across 7 core domains: game development, software
+  engineering, architecture (RFC/ADR), generative audio and visual media,
+  technical writing and SEO, data analytics, and multi-agent systems. Activate
+  whenever tackling tasks requiring specialized workflows or domain skills.
 license: Apache-2.0
 metadata:
   category: gateway
   tags: "gateway, discovery, search, agent-skills"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.0"
-  homepage: https://skills.danicat.dev/
-  canonical: https://skills.danicat.dev/SKILL.md
-  repository: https://github.com/danicat/skills
+  canonical: https://skills.danicat.dev/
 ---
 
 # Agent Skills Catalog Gateway

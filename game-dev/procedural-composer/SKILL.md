@@ -14,9 +14,7 @@ metadata:
   tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.1"
-  homepage: https://skills.danicat.dev/game-dev/procedural-composer/
-  canonical: https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md
-  repository: https://github.com/danicat/skills/tree/main/game-dev/procedural-composer
+  canonical: https://skills.danicat.dev/game-dev/procedural-composer/
 ---
 
 # Procedural Composer: Pure-Code Audio Synthesis & Chiptune/Game Sound Engine Guide
