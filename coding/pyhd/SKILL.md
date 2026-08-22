@@ -1,42 +1,117 @@
 ---
 name: pyhd
 description: >
-  Modern Python development workflow and code quality guidelines using uv and
-  Ruff. Enforces virtual environment isolation with uv, fast linting and
-  formatting with Ruff, automated pytest verification, and safe multi-file
-  refactoring. Activate when writing, refactoring, debugging, or testing Python
-  code, configuring pyproject.toml, or managing Python dependencies with uv.
+  Modern Python development workflow, project architecture, and code quality
+  guidelines using uv, Ruff, and pytest. Enforces strict virtual environment
+  isolation with uv, modern Python 3.10+ typing, AST-safe linting and formatting
+  with Ruff, and automated pytest verification loops. Activate when creating,
+  refactoring, testing, or building Python code, managing dependencies with uv,
+  or configuring pyproject.toml.
 license: Apache-2.0
 metadata:
   category: coding
   tags: "python, uv, ruff, formatting, linting, testing"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/coding/pyhd/
 ---
 
-# Pyhd (Python Development)
+# Modern Python Development (Pyhd)
 
-This workflow outlines the standard development process for Python projects using Ruff to format and lint code and uv to manage the local environment.
-
-## 1. Plan-Validate-Execute (Refactoring)
-
-When performing complex or multi-file Python refactorings, follow this pattern:
-1. **Plan**: Scan the workspace with `grep_search` to identify all call-sites, import statements, and references to the target code.
-2. **Validate**: Verify compatibility of the planned changes against the rest of the codebase and any external library APIs.
-3. **Execute**: Modify the files incrementally, running the **Code Verification Loop** below after each file change.
+This guide establishes the standard development workflow, project structure, and code quality gates for Python projects using `uv` for fast environment and dependency management, `ruff` for linting and formatting, and `pytest` for test verification.
 
 ---
 
-## 2. Code Verification Loop
+## 1. Project Scaffolding & Architecture
 
-After making any code modification, run this loop recursively before submitting:
+Prefer the standard `src/` layout for Python packages to avoid accidental imports of uninstalled local code and ensure test parity with installed packages.
+
+### Standard Project Layout
+
+```text
+my-project/
+├── .venv/                   # Managed isolated virtual environment (gitignored)
+├── pyproject.toml           # Unified project metadata, dependencies, and tool config
+├── README.md                # Project documentation
+├── src/
+│   └── my_package/
+│       ├── __init__.py      # Package export root
+│       ├── core.py          # Domain logic
+│       └── py.typed         # PEP 561 marker for type checkers
+└── tests/
+    ├── conftest.py          # Shared test fixtures and pytest hooks
+    ├── unit/                # Fast, isolated unit tests
+    └── integration/         # Multi-module integration tests
+```
+
+### Dependency Management with `uv`
+
+Manage dependencies deterministically using `uv` commands:
+
+```bash
+# Initialize a new application or library project
+uv init --app my-project       # For standalone applications
+uv init --lib my-library       # For reusable packages with src/ layout
+
+# Add production dependencies
+uv add requests pydantic
+
+# Add development / testing dependencies
+uv add --dev ruff pytest pytest-cov
+
+# Synchronize local .venv with pyproject.toml and lockfile
+uv sync
+
+# Update lockfile without modifying dependencies
+uv lock
+```
+
+### Self-Contained Scripts (PEP 723)
+
+For standalone automation or utility scripts, declare dependencies directly inline using PEP 723 script metadata:
+
+```python
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "httpx",
+#     "rich",
+# ]
+# ///
+
+import httpx
+from rich import print
+
+response = httpx.get("https://httpbin.org/get")
+print(response.json())
+```
+
+Execute single-file scripts with automated dependency isolation:
+```bash
+uv run script.py
+```
+
+---
+
+## 2. Plan-Validate-Execute (Refactoring)
+
+When performing complex or multi-file Python refactoring:
+
+1. **Plan**: Scan the workspace with `grep_search` to identify all call-sites, import statements, and references to target symbols.
+2. **Validate**: Verify compatibility of planned changes against dependent modules and type signatures.
+3. **Execute**: Modify files incrementally, running the **Code Verification Loop** after each change.
+
+---
+
+## 3. Code Verification Loop
+
+After modifying any Python file, execute this verification loop before completing tasks:
 
 ```mermaid
 graph TD
     A[Start: Modify Code] --> B[Lint: uv run ruff check --fix]
-    B --> C{Lint Success?}
-    C -->|No: Errors remain| D[Manual Fix]
+    B --> C{Lint Clean?}
+    C -->|No: Manual fixes needed| D[Fix Violations]
     D --> B
     C -->|Yes| E[Format: uv run ruff format]
     E --> F[Test: uv run pytest]
@@ -45,34 +120,69 @@ graph TD
     G -->|Yes| H[Loop Complete]
 ```
 
-1. **Incremental Changes**: Make modular edits to target files.
-2. **Lint & Auto-Fix**: Run `uv run ruff check --fix <filename>` to resolve formatting and style warnings automatically.
-3. **Formatter**: Run `uv run ruff format <filename>` to format the code structure cleanly.
-4. **Local Verification**: Manually resolve any remaining syntax or semantic errors flagged by Ruff.
-5. **Run Test Suite**: Run `uv run pytest` from the root of the project to verify that changes have not broken existing functionality. Do not report success with failing tests or unresolved linter errors.
+### Step-by-Step Verification Commands
+
+1. **Lint & Auto-Fix**: Resolve syntax, style, and import sorting issues:
+   ```bash
+   uv run ruff check --fix
+   ```
+2. **Format Code**: Ensure consistent code style:
+   ```bash
+   uv run ruff format
+   ```
+3. **Run Unit & Integration Tests**: Verify zero regressions:
+   ```bash
+   # Run all tests
+   uv run pytest
+
+   # Run targeted test file or function
+   uv run pytest tests/unit/test_core.py -k "test_process_data"
+   ```
 
 ---
 
-## 3. Environment Isolation Rules
+## 4. Virtual Environment Isolation
 
 > [!IMPORTANT]
-> **Virtual Environment Isolation**: Always run your Python commands, test suites, or formatting scripts prefixed with `uv run` (e.g. `uv run python <script.py>` or `uv run pytest`). This ensures the packages and interpreters resolve correctly to the local `.venv/` directory, preventing global system interpreter contamination or dependency resolution failures.
+> **Virtual Environment Isolation**: Always prefix Python commands, test runners, and formatting tools with `uv run` (e.g. `uv run python script.py`, `uv run ruff check`, `uv run pytest`). This guarantees execution within the local `.venv/` interpreter, preventing system package contamination and missing import errors.
 
 ---
 
-## 4. API Documentation
+## 5. Gotchas & Edge Cases
 
-Verify package APIs before writing or modifying code.
+* **Circular Imports in Type Annotations**: When module `A` imports type `B` purely for type annotations, prevent runtime import cycles by using `typing.TYPE_CHECKING`:
+  ```python
+  from __future__ import annotations
+  from typing import TYPE_CHECKING
 
-- **Online search**: Use search tools to find the official documentation. Helpful search queries include `python <package_name> documentation` or `python <package_name> <function_name>`.
-- **Local inspection**: If the package is already installed, inspect its source files under `.venv/lib/python3.x/site-packages/<package>`.
-- **Interactive help**: Run a short command to read the Python help docstring:
-  ```bash
-  uv run python -c "import <package>; help(<package>.<symbol>)"
+  if TYPE_CHECKING:
+      from my_package.service import DatabaseService
   ```
+* **Mutable Default Arguments**: Never use mutable objects (`list`, `dict`, `set`) as default parameter values. Use `None` as a sentinel:
+  ```python
+  # ❌ Bug: Shared list across calls
+  def append_item(item: str, target: list[str] = []) -> list[str]:
+      target.append(item)
+      return target
+
+  # ✅ Correct: Fresh container per invocation
+  def append_item(item: str, target: list[str] | None = None) -> list[str]:
+      if target is None:
+          target = []
+      target.append(item)
+      return target
+  ```
+* **Explicit Exception Chaining**: When catching and re-raising errors as domain-specific exceptions, preserve root-cause tracebacks using `from err`:
+  ```python
+  try:
+      data = parse_payload(raw)
+  except json.JSONDecodeError as err:
+      raise ValidationError("Malformed JSON payload") from err
+  ```
+* **Modern Python 3.10+ Typing**: Use built-in generics (`list[str]`, `dict[str, Any]`) and union syntax (`str | None`, `int | float`). Avoid importing legacy types from `typing` (`List`, `Dict`, `Union`, `Optional`).
 
 ---
 
-## 5. Best Practices
+## 6. 📚 Progressive Disclosure & References
 
-Detailed coding standards and idiomatic Python patterns are located in [best_practices.md](references/best_practices.md).
+- **Python Best Practices Guide**: [`references/best_practices.md`](references/best_practices.md) — Idiomatic Python patterns, type annotations, Ruff configuration, and pytest fixture guidelines.
