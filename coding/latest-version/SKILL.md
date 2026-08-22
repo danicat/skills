@@ -20,6 +20,10 @@ metadata:
 
 Queries official registries to find stable package versions. Do not guess versions or rely on outdated knowledge.
 
+## Available scripts
+
+- **`scripts/latest.js`** — Queries official package registries (npm, PyPI, Go proxy, Cargo, RubyGems) and Gemini models for stable versions.
+
 ## How to Use
 
 ### 1. Find the Ecosystem
@@ -34,8 +38,7 @@ We support these registries:
 ### 2. Run the Command (Node.js 18+)
 Execute the bundled helper script with one or more package names. You can append the `--json` flag to receive structured JSON results:
 ```bash
-# Direct execution (adjust path based on current working directory)
-node coding/latest-version/scripts/latest.js <ecosystem> <package-name1> [package-name2]... [--json]
+node scripts/latest.js <ecosystem> <package-name1> [package-name2]... [--json]
 ```
 
 ### 3. Save the Version
