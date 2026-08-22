@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "spritesheet, animation, keyframes, aseprite, game-dev, ebitengine"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/game-dev/sprite-animation/
 ---
 

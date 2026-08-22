@@ -13,7 +13,7 @@ metadata:
   category: game-dev
   tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.2"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/game-dev/procedural-composer/
 ---
 

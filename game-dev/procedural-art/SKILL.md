@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "game-dev, sprites, pixel-art, particles, vfx"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.2"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/game-dev/procedural-art/
 ---
 
