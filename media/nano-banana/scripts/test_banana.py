@@ -18,19 +18,44 @@ import os
 
 def test_banana_help():
     script_path = os.path.join(os.path.dirname(__file__), "banana.py")
+    cmd = ["uv", "run", script_path, "--help"] if os.system("which uv > /dev/null 2>&1") == 0 else [sys.executable, script_path, "--help"]
     try:
-        cmd = ["uv", "run", script_path, "--help"] if os.system("which uv > /dev/null 2>&1") == 0 else [sys.executable, script_path, "--help"]
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        if "-p PROMPT" in result.stdout or "--prompt PROMPT" in result.stdout:
-            print("Test passed: --help output contains expected arguments.")
-        else:
-            print("Test failed: --help output is missing arguments.")
-            print(result.stdout)
-            sys.exit(1)
-    except subprocess.CalledProcessError as e:
-        print("Test failed: script execution failed.")
-        print(e.stderr)
+        assert "--prompt" in result.stdout or "-p" in result.stdout
+        assert "--aspect-ratio" in result.stdout or "-a" in result.stdout
+        assert "--resolution" in result.stdout or "-r" in result.stdout
+        assert "--thinking-level" in result.stdout
+        assert "--search" in result.stdout
+        assert "--image-search" in result.stdout
+        assert "--api" in result.stdout
+        print("Test passed: banana.py --help includes all expected flags.")
+    except Exception as e:
+        print(f"Test failed: {e}")
         sys.exit(1)
+
+def test_capability_validation():
+    script_path = os.path.join(os.path.dirname(__file__), "banana.py")
+    cmd_base = ["uv", "run", script_path] if os.system("which uv > /dev/null 2>&1") == 0 else [sys.executable, script_path]
+
+    # Test 1: Nano Banana 2 Lite rejecting 4K resolution
+    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "-r", "4K"], capture_output=True, text=True)
+    assert res.returncode != 0
+    assert "Resolution '4K' is not supported by nano-banana-2-lite" in res.stderr
+    print("Test passed: 4K rejected on nano-banana-2-lite.")
+
+    # Test 2: Search grounding rejected on nano-banana-2-lite
+    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "--search"], capture_output=True, text=True)
+    assert res.returncode != 0
+    assert "Search grounding is not supported by nano-banana-2-lite" in res.stderr
+    print("Test passed: Search grounding rejected on nano-banana-2-lite.")
+
+    # Test 3: Thinking level rejected on nano-banana
+    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana", "--thinking-level", "high"], capture_output=True, text=True)
+    assert res.returncode != 0
+    assert "Thinking mode is not supported by 'nano-banana'" in res.stderr
+    print("Test passed: Thinking level rejected on nano-banana.")
 
 if __name__ == "__main__":
     test_banana_help()
+    test_capability_validation()
+    print("All banana CLI tests passed successfully!")
