@@ -12,92 +12,97 @@ metadata:
   category: media
   tags: "music, audio, generative-ai, sound"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/media/lyria/
 ---
 
 # Lyria Music Generation Skill
 
-Generate high-fidelity **44.1 kHz stereo audio**, full songs, instrumental tracks, and soundtrack compositions from text prompts or images using Google's **Lyria 3** models (`lyria-3-clip-preview` and `lyria-3-pro-preview`) with Application Default Credentials (ADC) authentication.
+Generate high-fidelity **44.1 kHz stereo audio**, full songs with structured lyrics, instrumental soundtracks, and thematic compositions from text prompts or visual reference images using Google's **Lyria 3** foundation models (`lyria-3-clip-preview` and `lyria-3-pro-preview`).
+
+---
+
+## Available scripts
+
+- `scripts/lyria.py`: CLI tool for text-to-music and image-to-music generation, lyric export, and audio format conversion.
+- `scripts/test_lyria.py`: Test suite verifying Lyria argument parsing and multimodal input limit enforcement.
 
 ---
 
 ## Trigger Conditions
 Activate this skill whenever the user asks to:
-- Generate music, songs, soundtracks, or background tracks.
-- Compose audio inspired by an image or photo.
-- Create 30-second music clips, loops, or full-length songs with custom lyrics.
-- Trigger keywords: "lyria", "generate music", "compose a song", "make a track", "create a soundtrack", "background music".
+- Generate music, songs, soundtracks, game audio beds, or background music.
+- Compose musical themes inspired by artwork, concept photos, or screenshots.
+- Create 30-second audio loops or multi-minute structured songs with verses, choruses, and custom lyrics.
+- Synthesize instrumental audio tracks (`"Instrumental only, no vocals"`).
 
 ---
 
 ## Model Selection & Comparison Matrix
 
-| Model | Model ID | CLI Choice | Best For | Fixed Duration | Audio Output Formats |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Lyria 3 Clip** | `lyria-3-clip-preview` | `clip` / `lyria-3-clip-preview` | Short clips, loops, previews, fast experimentation | Exactly 30 seconds | MP3 |
-| **Lyria 3 Pro** | `lyria-3-pro-preview` | `pro` / `lyria-3-pro-preview` | Full-length songs, multi-section compositions, professional production | A couple of minutes (controllable via prompt) | MP3, WAV |
+| Model | Model ID | CLI Name | Primary Use Case | Duration | Audio Format | Reference Guide |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lyria 3 Clip** | `lyria-3-clip-preview` | `clip` | Short clips, loops, previews, rapid style testing | Exactly 30s | MP3, WAV | [lyria-3-clip.md](references/lyria-3-clip.md) |
+| **Lyria 3 Pro** | `lyria-3-pro-preview` | `pro` | Full songs, multi-section arrangements, film scoring | Up to 184s | MP3, WAV | [lyria-3-pro.md](references/lyria-3-pro.md) |
 
-### Recommendations
-- **Experimentation**: Start with **Lyria 3 Clip** (`clip`) to test prompts and musical styles rapidly.
-- **Full Production**: Upgrade to **Lyria 3 Pro** (`pro`) for multi-verse songs, custom lyrics, timestamp control, or WAV format outputs.
-
----
-
-## Capabilities & Features
-
-1. **High-Fidelity Audio**: Generates crisp, full 44.1 kHz stereo audio with structural coherence.
-2. **Multimodal Generation**: Accepts up to **10 reference images** alongside text prompts to compose music matching visual mood and color scheme.
-3. **Custom Lyrics & Structure**: Parses section tags (`[Verse 1]`, `[Chorus]`, `[Bridge]`, `[Intro]`, `[Outro]`) to align lyrics and vocals.
-4. **Timestamp & Timing Control**: Supports explicit timestamps (e.g. `[0:00 - 0:10] Intro: soft lo-fi beat`) to define arrangement milestones.
-5. **Instrumental Tracks**: Prompt with "Instrumental only, no vocals" to generate pure music beds without vocals.
-6. **Multilingual Vocal Support**: Generates vocals and lyrics natively in the prompt's language (e.g., French, Spanish, Japanese).
-7. **SynthID Watermarking**: All generated audio includes an imperceptible SynthID audio watermark for responsible AI attribution.
+### Model Selection Guide
+- **Rapid Prototyping**: Start with **Lyria 3 Clip** (`clip`) to iterate quickly on genre combinations, tempos, and instrumentation.
+- **Full Song Production**: Select **Lyria 3 Pro** (`pro`) when requiring timestamped transitions (`[0:00 - 0:15] Intro...`), multi-verse vocal delivery, or multi-minute thematic development.
 
 ---
 
-## Prompting Guide & Best Practices
+## Deep Technical References
 
-### Recommended Prompt Structure
-For optimal results, specify:
-- **Genre & Blend**: e.g., "lo-fi hip hop", "cinematic orchestral", "synthwave pop".
-- **Instruments**: e.g., "Fender Rhodes piano", "acoustic guitar", "TR-808 drum machine".
-- **BPM / Tempo**: e.g., "120 BPM", "slow tempo around 70 BPM".
-- **Musical Key / Scale**: e.g., "in G major", "in D minor".
-- **Mood & Atmosphere**: e.g., "nostalgic", "soaring", "dark and ethereal".
-- **Duration & Structure**: Use section tags or timestamps.
+Consult dedicated reference cards in `references/` for detailed audio parameters, timing controls, and API schemas:
 
-### Example Prompts
+- **[references/lyria-3-clip.md](references/lyria-3-clip.md)**: Specifications for 30-second clips, loops, and rapid prototyping.
+- **[references/lyria-3-pro.md](references/lyria-3-pro.md)**: Specifications for full-length song arrangement, timestamp controls, and multimodal scoring.
+- **[references/README.md](references/README.md)**: Musical composition prompt reference and index.
 
-#### 1. Short Lo-Fi Instrumental Clip
-> "A 30-second lofi hip hop beat with dusty vinyl crackle, mellow Rhodes piano chords, a slow boom-bap drum pattern at 85 BPM, and a jazzy upright bass line. Instrumental only."
+---
 
-#### 2. Full Pop Song with Custom Lyrics
-```text
-Create an upbeat, feel-good pop song in G major at 120 BPM with bright acoustic guitar and warm vocal harmonies:
+## Core Execution Workflows
 
-[Verse 1]
-Walking through the neon glow,
-city lights reflect below.
+### 1. CLI Execution via `scripts/lyria.py`
 
-[Chorus]
-We are the echoes in the night,
-burning brighter than the light.
+Execute `scripts/lyria.py` with `uv run`:
+
+```bash
+# Generate a 30-second chiptune arcade loop with Lyria 3 Clip
+uv run scripts/lyria.py \
+  -p "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only." \
+  -f "chiptune.mp3" \
+  -m "clip"
+
+# Generate a full orchestral soundtrack with Lyria 3 Pro
+uv run scripts/lyria.py \
+  -p "An epic cinematic orchestral theme building from quiet strings to a triumphant brass finale" \
+  -f "soundtrack.mp3" \
+  -m "pro" \
+  --lyrics-file "structure.txt"
+
+# Multimodal Image-to-Music (compose music inspired by an image)
+uv run scripts/lyria.py \
+  -p "Ambient relaxing soundscape matching the mood of this landscape. Instrumental only." \
+  -i "landscape.jpg" \
+  -f "landscape_theme.mp3" \
+  -m "pro"
 ```
 
-#### 3. Timestamp-Controlled Cinematic Score
-```text
-[0:00 - 0:10] Intro: Begin with a soft lo-fi beat and vinyl crackle.
-[0:10 - 0:30] Verse: Warm Rhodes piano melody with gentle vocals about a rainy morning.
-[0:30 - 0:50] Chorus: Full orchestra with soaring synth leads and uplifting vocals.
-[0:50 - 1:00] Outro: Fade out with piano melody alone.
-```
+#### CLI Argument Reference
+- `-p`, `--prompt`: Text prompt describing style, genre, instruments, BPM, and structure (required).
+- `-f`, `--filename`: Output audio file path (default: `music.mp3`).
+- `-m`, `--model`: `clip` / `lyria-3-clip-preview` or `pro` / `lyria-3-pro-preview` (default: `pro`).
+- `-i`, `--input-image`: Path to input image(s) for visual mood inspiration (up to 10).
+- `--format`: Audio container format (`mp3` or `wav`).
+- `--lyrics-file`: Optional path to write generated lyric transcription / structure text.
+- `--api`: `interactions` (default) or `models`.
 
 ---
 
-## SDK Integration Examples
+### 2. Dual SDK Integration Patterns
 
-### Python (`google-genai`)
+#### Interactions API (`client.interactions.create`) — Recommended
 
 ```python
 import base64
@@ -105,73 +110,57 @@ from google import genai
 
 client = genai.Client()
 
-# Generate a 30-second clip
+# Generate full-length song with timestamp structure
+prompt = """
+An atmospheric lo-fi beat in D Minor at 80 BPM:
+[0:00 - 0:15] Intro: Dusty vinyl crackle and mellow electric piano chords.
+[0:15 - 0:45] Verse: Warm boom-bap drum groove enters with subtle bassline.
+[0:45 - 1:15] Chorus: Full melodic progression with saxophone accents.
+[1:15 - 1:30] Outro: Slow fade out with piano alone.
+"""
+
 interaction = client.interactions.create(
-    model="lyria-3-clip-preview",
-    input="An energetic synthwave track with driving 808 drums at 128 BPM. Instrumental only."
+    model="lyria-3-pro-preview",
+    input=prompt,
 )
 
-# Extract audio and lyrics
 if interaction.output_audio:
-    with open("synthwave.mp3", "wb") as f:
+    with open("lofi_track.mp3", "wb") as f:
         f.write(base64.b64decode(interaction.output_audio.data))
 
 if interaction.output_text:
-    print("Lyrics / Structure:\n", interaction.output_text)
+    print("Generated Lyrics / Structure:\n", interaction.output_text)
 ```
 
-### Multimodal Image-to-Music (Python)
+#### Multimodal Image-to-Audio (Python)
 
 ```python
-with open("landscape.jpg", "rb") as f:
+import base64
+from google import genai
+
+client = genai.Client()
+
+with open("art_concept.png", "rb") as f:
     img_b64 = base64.b64encode(f.read()).decode("utf-8")
 
 interaction = client.interactions.create(
     model="lyria-3-pro-preview",
     input=[
-        {"type": "text", "text": "An atmospheric ambient orchestral track inspired by this scenery."},
-        {"type": "image", "mime_type": "image/jpeg", "data": img_b64}
-    ]
+        {"type": "image", "data": img_b64, "mime_type": "image/png"},
+        {"type": "text", "text": "Compose an ethereal cyberpunk synth soundtrack matching this neon cityscape. Instrumental only."},
+    ],
 )
+
+if interaction.output_audio:
+    with open("cyberpunk_theme.mp3", "wb") as f:
+        f.write(base64.b64decode(interaction.output_audio.data))
 ```
 
 ---
 
-## Usage & Execution via CLI
-
-Note: `{baseDir}` refers to the root directory of the installed skill.
-
-Use `uv run` to execute the music generation script at `{baseDir}/scripts/lyria.py`.
-
-### CLI Arguments
-- `-p`, `--prompt`: Text prompt describing the music to generate (required).
-- `-f`, `--filename`: Output audio file path (default: `music.mp3`).
-- `-m`, `--model`: Model choice (`clip` / `lyria-3-clip-preview` or `pro` / `lyria-3-pro-preview`). Default: `pro`.
-- `-i`, `--input-image`: Path to input image(s) for visual inspiration (up to 10).
-- `--format`: Audio output format (`mp3` or `wav`).
-- `--lyrics-file`: File path to save generated lyrics/structure text.
-- `--project`: GCP Project ID for Vertex AI (optional).
-- `--location`: GCP Location for Vertex AI (optional, default: `us-central1`).
-
-### Example CLI Commands
-
-```bash
-# Generate a 30-second instrumental clip
-uv run {baseDir}/scripts/lyria.py -p "A bright 8-bit retro video game chiptune melody in C major. Instrumental only." -f "chiptune.mp3" -m "clip"
-
-# Generate a full-length song with lyrics
-uv run {baseDir}/scripts/lyria.py -p "An epic cinematic orchestral song about a hero's return" -f "hero_journey.mp3" -m "pro" --lyrics-file "lyrics.txt"
-
-# Generate music inspired by an image
-uv run {baseDir}/scripts/lyria.py -p "Ambient relaxing soundscape matching the mood of this sunset" -i "sunset.jpg" -f "sunset_ambient.mp3" -m "pro"
-
-# Generate high-quality WAV audio
-uv run {baseDir}/scripts/lyria.py -p "Solo grand piano performance in A minor" -f "piano.wav" -m "pro" --format "wav"
-```
-
----
-
-## Key Limitations
-- **Safety Filters**: Prompts requesting specific artist vocal clones or copyrighted lyrics will be blocked.
-- **Single-Turn Generation**: Music generation is single-turn; multi-turn sequential editing of generated audio is not currently supported.
-- **Duration**: Clip model is strictly 30 seconds. Pro model duration is controlled via prompt instructions or timestamps.
+## Prompting Best Practices
+1. **Genre & Subgenre**: Be specific (e.g. `synthwave`, `delta blues`, `chamber pop`, `lo-fi hip-hop`).
+2. **Instrumentation**: Name specific instruments (`Fender Rhodes`, `TR-808 drums`, `nylon-string guitar`, `cello`).
+3. **Tempo & Key**: Include BPM and musical key (`120 BPM`, `in A Minor`).
+4. **Vocal Control**: For instrumental tracks, explicitly specify `"Instrumental only, no vocals"`. For vocals, provide bracketed lyrics (`[Verse]`, `[Chorus]`).
+5. **Timestamp Arrangements**: For Pro models, use bracketed timestamps (`[0:00 - 0:20]`) to direct transitions and builds.
