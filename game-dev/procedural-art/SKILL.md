@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "game-dev, sprites, pixel-art, particles, vfx"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "1.0.1"
+  version: "1.0.2"
   canonical: https://skills.danicat.dev/game-dev/procedural-art/
 ---
 
@@ -21,9 +21,9 @@ metadata:
 This skill provides complete mathematical, graphical, and software architecture patterns for generating high-quality 2D sprites, tilesets, vector shapes, particle systems, and visual effects (VFX) purely in code—without relying on external `.png`, `.jpg`, or `.svg` asset files.
 
 > [!TIP]
-> **Production Reference Implementation**:
-> * **Procedural Art Driver**: [`references/art.go`](./references/art.go)
-> * **Matrix Order & Easing Tests**: [`references/art_test.go`](./references/art_test.go)
+> **Reference Implementation**:
+> * **Procedural Art Driver**: [`references/art.go`](references/art.go)
+> * **Matrix Order & Easing Tests**: [`references/art_test.go`](references/art_test.go)
 
 ---
 
@@ -196,3 +196,10 @@ When an AI agent uses this skill to generate procedural graphics or sprite rende
 3. **Verify Matrix Order**: Enforce `Pivot -> Scale -> Rotate -> World Translation` on every `ebiten.GeoM` call.
 4. **Pre-allocate VFX Particle Pools**: Use fixed particle arrays with zero heap allocations during frame updates.
 5. **Apply Additive Blending to Spells**: Enable `ebiten.BlendLighter` for fire, lasers, and magical energy glows.
+
+---
+
+## 📚 Progressive Disclosure & References
+
+- **Procedural Art Driver**: [`references/art.go`](references/art.go) — In-memory sprite rasterization, 32-bit RGBA color palettes, SDF shapes, and particle systems.
+- **Matrix Order & Easing Tests**: [`references/art_test.go`](references/art_test.go) — Mathematical unit test suite verifying transformation order ($T \cdot R \cdot S \cdot T_{pivot}$) and non-linear easing functions.
