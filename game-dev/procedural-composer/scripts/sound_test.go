@@ -163,8 +163,8 @@ func ExampleSynthesizeAudio_stageBGM() {
 	// Synthesized Stage BGM: 16-Bit Genesis Stage Theme (5211136 bytes PCM)
 }
 
-// ExampleBossBGM demonstrates composing an intense 170 BPM diminished boss theme.
-func ExampleBossBGM() {
+// ExampleSynthesizeAudio_bossBGM demonstrates composing an intense 170 BPM diminished boss theme.
+func ExampleSynthesizeAudio_bossBGM() {
 	chords := [][]float64{
 		{220.00, 261.63, 311.13, 440.00}, // Adim
 		{196.00, 233.08, 277.18, 392.00}, // Gdim
@@ -274,8 +274,8 @@ func ExampleSynthesizeAudio_laserSFX() {
 	// Laser SFX Duration: 0.15s (26460 bytes)
 }
 
-// ExampleExplosionSFX demonstrates synthesizing a low-pass filtered noise rumble explosion.
-func ExampleExplosionSFX() {
+// ExampleSynthesizeAudio_explosionSFX demonstrates synthesizing a low-pass filtered noise rumble explosion.
+func ExampleSynthesizeAudio_explosionSFX() {
 	def := AudioDefJSON{
 		Title: "Filtered Noise Explosion",
 		Type:  "sfx",
