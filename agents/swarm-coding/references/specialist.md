@@ -59,6 +59,7 @@ graph TD
 Before submitting your task to your Lead Agent, verify:
 
 - [ ] **Validation Loop Completed**: Operational validation cycle ran with zero errors.
-- [ ] **Local Build & Tests Pass**: Build passes and relevant test suites succeed.
+- [ ] **Local Build & Tests Pass**: Targeted package builds pass and unit tests succeed.
+- [ ] **Zero Lingering Placeholders**: All temporary stubs, dummy return values, and `TODO` comments in assigned code are replaced with real implementations.
 - [ ] **Evidence Log Attached**: Actual terminal logs attached to completion report.
 - [ ] **No Scope Creep**: Only files within assigned task scope were modified.

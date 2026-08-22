@@ -36,5 +36,6 @@ Before submitting your work, execute this validation loop:
 ### 4. Definition of Done
 Your task is done when:
 - The code is fully written and formatted.
-- Build and tests pass with zero errors.
+- Targeted package builds and unit tests pass with zero errors.
+- All temporary mocks, stubs, and `TODO` items in assigned code are replaced with real implementations.
 - Terminal proof of validation log is provided to your Lead Agent.

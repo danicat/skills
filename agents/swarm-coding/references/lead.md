@@ -29,9 +29,9 @@ As a Lead Agent, you receive a domain objective and an allocated agent sub-budge
 - Before delegating execution tasks to specialists, draft or update the domain's technical specification, contract, or schema file in the repository.
 - Save specifications as shared files in the project workspace. All specialists in your team must implement according to these specifications.
 
-### 3. Task Deconstruction & Backlog Drip-Feeding
+### 3. Task Deconstruction, Dynamic Arbitration & Backlog Drip-Feeding
 - Deconstruct your domain objective into granular, independent tasks.
-- Ensure parallel task assignments have disjoint (isolated) target file allocations to prevent file write conflicts.
+- **Dynamic Collision Arbitration**: Actively arbitrate file assignments, package boundaries, and inter-specialist dependencies. If multiple specialists touch adjacent files, assign clear boundaries and interface stubs.
 - If task granules exceed your available specialist headcount, maintain a domain task backlog and drip-feed tasks to specialists as they complete prior work.
 
 ### 4. Strict Hierarchical Communication
@@ -44,6 +44,7 @@ As a Lead Agent, you receive a domain objective and an allocated agent sub-budge
 - **Cross-Domain Coordination:**
   - If a change in your domain impacts another domain, update the shared design document first, then send a message to the Swarm Coordinator detailing the change. The Swarm Coordinator will notify the affected Lead Agent.
 
-### 5. Deliverable Integration & Review
+### 5. Domain Deliverable Integration & Reconciliation
 - Review code submissions and proof-of-validation logs from specialists.
-- Specialists run compilation, tests, and scripts, providing terminal validation evidence in their reports.
+- **Domain Reconciliation**: Ensure specialists replace temporary mock structures with real domain implementations before reporting completion to the Swarm Coordinator.
+- Specialists execute local compilation, unit tests, and style checks, providing terminal validation evidence in their reports.
