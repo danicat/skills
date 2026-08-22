@@ -12,13 +12,17 @@ metadata:
   category: analytics
   tags: "ga4, analytics, traffic, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/analytics/google-analytics/
 ---
 
 # Google Analytics 4 SQLite Ingestion & SQL Analytics
 
 The `google-analytics` skill ingests Google Analytics 4 (GA4) traffic, reading depth, acquisition channels, event streams, and outbound clicks into a local SQLite analytics database (`google_analytics.db` or `$XDG_DATA_HOME/google-analytics/analytics.db`) without data loss, preserving raw JSON payloads on all records, and providing a fast SQL interface for website analytics.
+
+## Available scripts
+- `scripts/google_analytics.py`: Automated sync, reporting, and annotation CLI for Google Analytics 4. Executed via `uv run scripts/google_analytics.py` (requires Google Cloud ADC or OAuth credentials).
+- `scripts/test_google_analytics.py`: Unit and regression test suite validating schema, query extraction, and CLI flags.
 
 ---
 
@@ -28,35 +32,35 @@ All operations are driven via the bundled Python CLI script:
 
 ```bash
 # 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
-uv run <skill_dir>/scripts/google_analytics.py auth --port 8080
+uv run scripts/google_analytics.py auth --port 8080
 
 # 2. Discover accessible GA4 properties
-uv run <skill_dir>/scripts/google_analytics.py properties
+uv run scripts/google_analytics.py properties
 
 # 3. Create Deployment / Milestone Annotation (Cloud API + Local SQLite)
-uv run <skill_dir>/scripts/google_analytics.py annotate \
+uv run scripts/google_analytics.py annotate \
   --title "Major Release / Architecture Overhaul" \
   --date 2026-08-18 \
   --commit abc1234 \
   --description "Milestone description and release context."
 
 # 4. Incremental Sync (Updates newest days + 3-day latency lookback overlap)
-uv run <skill_dir>/scripts/google_analytics.py sync --db path/to/database.db
+uv run scripts/google_analytics.py sync --db path/to/database.db
 
 # 5. Full Historical Backfill (Ingests up to 14 months of daily granular data)
-uv run <skill_dir>/scripts/google_analytics.py sync --full --db path/to/database.db
+uv run scripts/google_analytics.py sync --full --db path/to/database.db
 
 # 6. Run Pre-Built Reports
-uv run <skill_dir>/scripts/google_analytics.py report overview --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report top-pages --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report channels --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report geo --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report events --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report outbound --db path/to/database.db
-uv run <skill_dir>/scripts/google_analytics.py report milestone-impact --db path/to/database.db
+uv run scripts/google_analytics.py report overview --db path/to/database.db
+uv run scripts/google_analytics.py report top-pages --db path/to/database.db
+uv run scripts/google_analytics.py report channels --db path/to/database.db
+uv run scripts/google_analytics.py report geo --db path/to/database.db
+uv run scripts/google_analytics.py report events --db path/to/database.db
+uv run scripts/google_analytics.py report outbound --db path/to/database.db
+uv run scripts/google_analytics.py report milestone-impact --db path/to/database.db
 
 # 7. Execute Ad-Hoc SQL Query
-uv run <skill_dir>/scripts/google_analytics.py query "SELECT page_path, total_views, total_users, avg_dwell_sec, avg_bounce_pct FROM v_page_performance LIMIT 10" --db path/to/database.db
+uv run scripts/google_analytics.py query "SELECT page_path, total_views, total_users, avg_dwell_sec, avg_bounce_pct FROM v_page_performance LIMIT 10" --db path/to/database.db
 ```
 
 If `--db` is omitted, the script defaults to `google_analytics.db` in the current working directory.
@@ -154,4 +158,3 @@ When cross-referencing GA4 acquisition metrics with Google Search Console data:
 - **Full DDL Schema Reference**: [`references/schema.md`](references/schema.md) — Complete SQL table definitions, column types, constraints, and views.
 - **SQL Query Cookbook**: [`references/queries.md`](references/queries.md) — Tested SQL recipes for reading depth, acquisition channels, and exit destinations.
 - **Authentication Guide**: [`references/setup_auth.md`](references/setup_auth.md) — Google Cloud ADC login, API enablement, and GA4 property permissions.
-- **Evaluation Suite**: [`evals/evals.json`](evals/evals.json) — Test benchmarks for validating skill triggers and query execution.
