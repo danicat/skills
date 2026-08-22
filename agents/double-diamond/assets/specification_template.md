@@ -1,60 +1,64 @@
-# [Project / Feature Name] Technical Specification
+# [Initiative / Project Name] Foundation Document
 
-**Date:** YYYY-MM-DD
-**Status:** [Draft | Under Review | Approved]
-**Coordinator:** Double-Diamond Coordinator
-**DOP / Agent Budget:** Research: [N], Development: [M]
+**Document Type:** [Technical Specification | Editorial Outline | Legal Brief | Product PRD]  
+**Date:** YYYY-MM-DD  
+**Status:** [Draft | Under Review | Approved]  
+**Coordinator:** Double-Diamond Coordinator  
+**DOP / Agent Budget:** Discovery: [N], Development: [M]  
 
 ---
 
 ## 1. Executive Summary & Problem Space
 
-### 1.1 Context & Objectives
-* State the primary objective and business/technical driver in 2-3 clear sentences.
-* Summarize what problem is being solved and why.
+### 1.1 Context & Core Objectives
+* State the primary objective, thesis, or problem statement in 2-3 clear sentences.
+* Summarize the target audience, user persona, or stakeholder expectations.
 
 ### 1.2 Research Findings & Synthesis (Diamond 1 Convergence)
-* **Codebase State:** Current architecture, key files, existing patterns, and constraints discovered by research agents.
-* **External Ecosystem & Dependencies:** Third-party libraries, APIs, SDKs, or protocols evaluated.
-* **Trade-off Analysis:** Alternatives explored, pros/cons, and rationale for selected technical direction.
+* **Current Landscape / Baseline:** Existing architecture, literature, case precedents, or market state.
+* **External Standards & Ecosystem:** Relevant third-party tools, statutes, publications, or competitive benchmarks.
+* **Trade-off Analysis:** Alternative approaches evaluated, pros/cons, and rationale for the selected direction.
 
 ---
 
-## 2. Technical Architecture & System Contracts
+## 2. System Contracts & Deliverable Structure
 
-### 2.1 Component Architecture
-* Describe the target component architecture, data flow, and subsystem boundaries.
+### 2.1 Core Structure / Architecture
+* **Software**: Component architecture, data flow, subsystem boundaries.
+* **Writing**: Narrative arc, chapter breakdown, section word count targets.
+* **Legal**: Legal theory, cause of action, argument hierarchy.
+* **Product**: Feature requirements, user journey, success metrics.
 
-### 2.2 API / Data Models & Schemas
-* Explicit data structures, type definitions, function signatures, or database schemas:
+### 2.2 Detailed Schemas / Content Outlines / Argument Trees
+* Explicit contracts, type definitions, function signatures, section outlines, or statutory references:
 ```
-// Code/Schema definitions
+// Definitions, Outlines, or Contract Schemas
 ```
 
-### 2.3 Error Handling & Edge Cases
-* Explicit recovery strategies, failure modes, timeouts, and boundary conditions.
+### 2.3 Edge Cases, Counter-Arguments & Risk Mitigations
+* Anticipated failure modes, opposing arguments, latency/security risks, or editorial sensitivities.
 
 ---
 
-## 3. Work Breakdown & Disjoint File Allocation (Diamond 2 Divergence)
+## 3. Work Breakdown & Disjoint Work Allocation (Diamond 2 Divergence)
 
-To ensure parallel developer agents work without merge conflicts, all tasks must target mutually disjoint files:
+To ensure parallel creator subagents work without collision, all tasks must target mutually exclusive files or sections:
 
-| Work Package (WP) | Target Package / Files | Developer Role | Scope & Deliverable | Pre-requisites |
+| Work Package (WP) | Target File / Section | Creator Role | Scope & Deliverable | Pre-requisites |
 | :--- | :--- | :--- | :--- | :--- |
-| **WP-1: Core Models** | `internal/model/...` | Backend Developer | Data structures, validation methods | None |
-| **WP-2: Service Layer** | `internal/service/...` | Service Developer | Business logic, interface implementations | WP-1 |
-| **WP-3: CLI / Transport** | `cmd/app/...`, `internal/api/...` | API Developer | Transport handlers, CLI commands | WP-1, WP-2 |
-| **WP-4: Test & Integration** | `test/e2e/...`, `internal/.../*_test.go` | QA / Test Engineer | Unit tests, mock suites, benchmarks | WP-1, WP-2 |
+| **WP-1: Foundation/Core** | `pkg/core/...` or `Chapter 1-2` or `Claim I` | Primary Author / Dev | Core structures, definitions, baseline argument | None |
+| **WP-2: Logic / Body** | `pkg/service/...` or `Chapter 3-4` or `Claim II` | Domain Specialist | Implementation logic, deep analysis, evidence | WP-1 |
+| **WP-3: Surface / Transport** | `pkg/api/...` or `Chapter 5-6` or `Relief Sought` | Interface Specialist | API handlers, practical examples, conclusion | WP-1, WP-2 |
+| **WP-4: Verification / QA** | `test/...` or `Fact-Checking & Citations` | Quality Reviewer | Unit tests, benchmark suite, citation audit | WP-1, WP-2 |
 
 ---
 
 ## 4. Verification & Quality Delivery Gates (Diamond 2 Convergence)
 
-Before marking delivery complete, the following gates must pass:
+Before marking delivery complete, the following domain gates must pass:
 
-- [ ] **Compilation Gate:** Full project builds with 0 errors (`go build ./...` or language equivalent).
-- [ ] **Test Gate:** All package unit tests and integration tests pass with 0 failures (`go test ./...`).
-- [ ] **Static Analysis / Lint Gate:** Linter and formatting clean (`go vet`, `golangci-lint`, etc.).
-- [ ] **Specification Compliance:** All requirements from Section 2 are fully satisfied.
-- [ ] **Documentation Integrity:** All public APIs and configuration flags documented.
+- [ ] **Structural Integrity Gate:** Code compiles cleanly with 0 errors, or prose follows required chapter/section format.
+- [ ] **Localized Verification Gate:** All package unit tests pass, or all section claims are backed by verified citations/data.
+- [ ] **Quality & Consistency Gate:** Code meets linting/style rules, or writing passes readability, tone, and grammar audits.
+- [ ] **Foundation Compliance Gate:** All requirements and acceptance criteria from Section 2 are fully satisfied.
+- [ ] **Documentation / Attribution Gate:** All public interfaces, configuration flags, or source citations are fully documented.

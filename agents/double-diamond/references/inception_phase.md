@@ -1,6 +1,6 @@
 # Double-Diamond Inception Phase (Pre-Diamond Alignment)
 
-The **Inception Phase** is the foundational alignment gate that precedes Diamond 1 (Discovery). Derived from agile engineering inception practices (pioneered at ThoughtWorks and modern product design), Inception aligns the agent swarm with the human stakeholder before research divergence begins.
+The **Inception Phase** is the foundational alignment gate that precedes Diamond 1 (Discovery). It aligns the agent swarm with the human stakeholder before research divergence begins.
 
 ```
                               INCEPTION PHASE
@@ -9,17 +9,17 @@ The **Inception Phase** is the foundational alignment gate that precedes Diamond
                       Establish Shared Understanding
                                      │
                                      ▼
-                        DIAMOND 1: DISCOVERY & SPECS
+                      DIAMOND 1: DISCOVERY & DEFINITION
 ```
 
 ---
 
 ## 1. Objectives & Rationale
 
-1. **Eliminate False Assumptions Early:** Prevents research agents from exploring irrelevant technical branches or solving the wrong problem.
-2. **Uncover Non-Negotiables & Constraints:** Surfaces critical technical boundaries (e.g., target programming language, offline vs cloud requirements, strict latency budgets, zero-dependency rules).
-3. **Establish Deliverable Modality:** Clarifies upfront whether the deliverable is a standalone CLI binary, a shared library, a schema, or documentation.
-4. **Map Decision Dependencies:** Traverses the design tree systematically, resolving foundational architectural choices before secondary ones.
+1. **Eliminate False Assumptions Early:** Prevents subagents from exploring irrelevant branches or solving the wrong problem.
+2. **Uncover Non-Negotiables & Constraints:** Surfaces critical boundaries (e.g., target language/framework, offline requirements, word count limits, jurisdictional scope, licensing, security).
+3. **Establish Deliverable Modality:** Clarifies whether the output is a standalone CLI, a microservice, an editorial article, a legal motion, a PRD, or an architecture document.
+4. **Map Decision Dependencies:** Traverses the design tree systematically, resolving foundational choices before secondary ones.
 
 ---
 
@@ -29,55 +29,34 @@ During Inception, the Coordinator conducts an interactive interview using the `/
 
 ### Operational Rules for Inception Grilling:
 
-1. **One Decision at a Time:** Focus each question on a distinct architectural or business decision node. Do not overwhelm the user with multi-part questionnaires.
-2. **Explore Before Asking:** If an answer can be unambiguously determined by inspecting the existing repository or local environment, inspect the codebase first. Only ask about user intent, trade-offs, and uncommitted requirements.
-3. **Always Provide a Recommended Default:** Prefix the recommended choice with `(Recommended)` and clearly articulate the engineering rationale.
-4. **Format Options as Direct User Responses:** Provide concise, direct options representing distinct architectural branches.
-5. **Traverse the Decision Tree in Order:**
-   - **Level 1: Mission & Scope Boundaries** (What is in scope? What is explicitly out of scope?)
-   - **Level 2: Core Runtime & Tech Stack** (Language, frameworks, dependencies, deployment targets)
-   - **Level 3: Operational Constraints** (Offline-first vs Cloud, latency budgets, licensing, security)
-   - **Level 4: UX & Integration Surfaces** (CLI flags, interactive TUI vs headless JSON, API contracts)
+1. **One Decision at a Time:** Focus each question on a distinct architectural, editorial, or business decision node. Avoid overwhelming the user with multi-part questionnaires.
+2. **Explore Before Asking:** If an answer can be unambiguously determined by inspecting the existing repository, local environment, or provided materials, inspect them first. Only ask about user intent, trade-offs, and uncommitted requirements.
+3. **Always Provide a Recommended Default:** Prefix the recommended choice with `(Recommended)` and clearly articulate the rationale.
+4. **Format Options as Direct User Responses:** Provide concise, direct options representing distinct architectural or editorial branches.
 
 ---
 
-## 3. Inception Question Archetypes & Examples
+## 3. The 4-Tier Decision Tree Traversal
 
-### Archetype A: Tech Stack & Runtime Fork
-```json
-{
-  "question": "Which language and runtime should we use to implement the new toolchain?",
-  "options": [
-    "(Recommended) Go (single static binary, zero runtime dependencies, instant <10ms startup)",
-    "Python 3 (modern uv/PEP 723 scripting with rich ecosystem)",
-    "TypeScript / Node.js (npx runnable, cross-platform JS ecosystem)"
-  ]
-}
-```
+Traverse these 4 tiers in order, formulating targeted questions with `ask_question`:
 
-### Archetype B: Agentic & Model Execution Tier
-```json
-{
-  "question": "How should the agentic routing and intent-matching engine operate?",
-  "options": [
-    "(Recommended) Hybrid: Fast zero-token keyword/BM25 pre-filter (<1ms) with Gemma 4 / Gemini API fallback for ambiguous vibes",
-    "Pure Cloud LLM: Always invoke hosted Gemini API (gemini-3.5-flash-lite / Gemma 4)",
-    "Pure Local / Offline: Deterministic BM25 + Subword TF-IDF without any external LLM dependencies"
-  ]
-}
-```
-
-### Archetype C: Local Storage & Installation Scope
-```json
-{
-  "question": "Where should the downloaded assets/skills be installed on the host system?",
-  "options": [
-    "(Recommended) Dual-scope: Default to workspace (.gemini/skills/ or .agent/skills/) with optional --global flag (~/.gemini/config/skills/)",
-    "Workspace-only: Always install into the current project repository",
-    "Global-only: Always install into user home directory"
-  ]
-}
-```
+1. **Tier 1: Mission & Scope Boundaries**
+   - What is explicitly in scope? What is explicitly out of scope?
+   - *Software*: Standalone tool vs modifying existing repository.
+   - *Writing*: Core thesis, narrative angle, target audience.
+   - *Legal*: Primary claims, causes of action, target forum.
+2. **Tier 2: Core Foundation & Technical / Editorial Stack**
+   - *Software*: Programming language, runtime, key frameworks, persistence tier.
+   - *Writing*: Style guide, length/depth target, source citation format.
+   - *Legal*: Governing statutes, applicable jurisdiction, standard of review.
+3. **Tier 3: Operational Constraints & Non-Negotiables**
+   - *Software*: Offline vs cloud dependencies, latency budgets, security requirements.
+   - *Writing*: Editorial voice, prohibited terms, factual evidence thresholds.
+   - *Legal*: Procedural deadlines, evidentiary boundaries, precedent hierarchy.
+4. **Tier 4: Deliverable Modality & Interaction Surface**
+   - *Software*: CLI commands, REST/gRPC endpoints, TUI vs headless JSON.
+   - *Writing*: Markdown publication, PDF report, slide deck summary.
+   - *Legal*: Formal brief, motion memorandum, advisory opinion.
 
 ---
 
@@ -85,7 +64,7 @@ During Inception, the Coordinator conducts an interactive interview using the `/
 
 The Coordinator concludes the Inception Phase and transitions to Diamond 1 (Discovery) when:
 
-- [ ] Core mission and scope boundaries are established without ambiguity.
-- [ ] Primary language, runtime, and framework selections are confirmed.
-- [ ] Key trade-offs and user preferences are recorded.
+- [ ] Core mission, thesis, and scope boundaries are established without ambiguity.
+- [ ] Primary foundation, frameworks, and deliverable modality are confirmed.
+- [ ] Key trade-offs, non-negotiables, and user preferences are recorded.
 - [ ] Research vectors for Diamond 1 are cleanly defined based on user steering.
