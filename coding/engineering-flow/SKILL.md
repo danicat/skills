@@ -13,7 +13,7 @@ metadata:
   category: coding
   tags: "engineering, standards, architecture, workflow, quality, hygiene"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/coding/engineering-flow/
 ---
 
@@ -87,8 +87,8 @@ Research rules:
 
 Never guess version numbers, dependency syntax, or model names:
 - Inspect local project manifests (`go.mod`, `package.json`, `pyproject.toml`) for existing pinned constraints.
-- Consult the `latest-version` skill or query registries directly (`npm view <pkg> version`, `go list -m -versions <pkg>`, `pip index versions <pkg>`).
-- Verify Gemini model names against current Google GenAI documentation before updating API calls.
+- Query package registries directly (`npm view <pkg> version`, `go list -m -versions <pkg>`, `pip index versions <pkg>`) or verify current dependency documentation.
+- Verify AI model names and API versions against current official documentation before updating API calls (e.g., verifying current Gemini model names against Google GenAI documentation).
 
 ---
 
@@ -121,5 +121,5 @@ Enforce clean code standards across every edit:
 
 Before staging, committing, or pushing code:
 - Run the full build, format, lint, and test suite.
-- Run the `ready-for-release-check` skill if present.
+- Verify all modified files satisfy the Broken Window Code Hygiene criteria.
 - Never commit or push with failing tests, broken formatting, or active lint errors.
