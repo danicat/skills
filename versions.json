@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T20:52:33.185Z",
+  "updatedAt": "2026-08-22T02:24:24.486Z",
   "totalSkills": 27,
   "skills": {
     "ebitengineer": {
@@ -51,32 +51,32 @@
       "u": "https://skills.danicat.dev/media/nano-banana/SKILL.md"
     },
     "engineering-flow": {
-      "v": "0.1.1",
-      "h": "4c8ef1717b2f",
+      "v": "0.2.0",
+      "h": "8a2ca65c8fbe",
       "c": "coding",
       "u": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md"
     },
     "godoctor": {
-      "v": "0.34.1",
-      "h": "6ead4c63e528",
+      "v": "0.2.0",
+      "h": "cb8f829d8d3e",
       "c": "coding",
       "u": "https://skills.danicat.dev/coding/godoctor/SKILL.md"
     },
     "latest-version": {
-      "v": "0.1.1",
-      "h": "c3ec3123c5bf",
+      "v": "0.2.0",
+      "h": "e80e6057e413",
       "c": "coding",
       "u": "https://skills.danicat.dev/coding/latest-version/SKILL.md"
     },
     "pyhd": {
-      "v": "0.1.1",
-      "h": "34cc35bf6e63",
+      "v": "0.2.0",
+      "h": "438e2e1af2e5",
       "c": "coding",
       "u": "https://skills.danicat.dev/coding/pyhd/SKILL.md"
     },
     "double-diamond": {
-      "v": "0.1.1",
-      "h": "71f03f1ba7f4",
+      "v": "0.2.0",
+      "h": "9f3d7375e1bd",
       "c": "agents",
       "u": "https://skills.danicat.dev/agents/double-diamond/SKILL.md"
     },
@@ -87,8 +87,8 @@
       "u": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md"
     },
     "swarm-coding": {
-      "v": "0.1.1",
-      "h": "a1d065bae46d",
+      "v": "0.2.0",
+      "h": "fd489614a5f1",
       "c": "agents",
       "u": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md"
     },
