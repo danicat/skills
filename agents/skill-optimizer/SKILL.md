@@ -19,6 +19,10 @@ metadata:
 
 Procedures, authoring principles, and quality standards for creating, auditing, and optimizing Agent Skills according to the Agent Skills specification and open-source best practices.
 
+## Available scripts
+
+- **`scripts/count_tokens.py`** — Audits skills and categories against Tier 1, 2, and 3 token limits using Vertex AI ADC, Gemini API, or offline heuristic.
+
 ---
 
 ## Skill Architecture & Progressive Disclosure Limits
@@ -117,7 +121,11 @@ Follow this procedure when creating, reviewing, or refining skills:
 - **Name Alignment**: Confirm `name` in frontmatter matches the directory name exactly.
 - **Tier 1 & Tier 2 Limits**: Verify routing budget ($\le 150$ tokens, $\le 1024$ chars) and body budget ($\le 5,000$ tokens, $\le 500$ lines) using `scripts/count_tokens.py`.
 - **Progressive Disclosure**: Move extensive documentation (> 100 lines), schemas, or static data into `references/` or `assets/`.
-- **Relative Links**: Ensure all internal file references use relative paths from the skill root (e.g., `references/guide.md`, `scripts/run.py`).
+- **Clean Relative Paths from Skill Root**: All internal file and script references in `SKILL.md` MUST use relative paths starting from the skill root directory (e.g., `scripts/process.py`, `references/guide.md`, `assets/template.md`).
+  - **No category prefixes**: Use `scripts/tool.py`, never `category/skill-name/scripts/tool.py`.
+  - **No placeholders**: Use `scripts/tool.py`, never `{skillDir}/scripts/tool.py` or `{baseDir}/scripts/tool.py`.
+  - **No absolute paths**: The agent harness resolves relative paths against the skill base directory automatically.
+- **Available Scripts Discovery**: List bundled scripts in an `## Available scripts` section in `SKILL.md` so the agent immediately discovers available tools.
 - **Conditional Loading**: Clearly state *when* the agent should read each reference file.
 
 #### Auditing Skills with Bundled `scripts/count_tokens.py`
@@ -125,16 +133,16 @@ Audit skills against Tier 1, Tier 2, and Tier 3 limits using the self-contained 
 
 ```bash
 # 1. Audit a single skill
-uv run scripts/count_tokens.py coding/godoctor/SKILL.md
+uv run scripts/count_tokens.py ../../coding/godoctor/SKILL.md
 
 # 2. Audit a category directory of skills
-uv run scripts/count_tokens.py coding/
+uv run scripts/count_tokens.py ../../coding/
 
 # 3. Fast offline audit (uses ~4 chars/token heuristic, no API or network calls)
-uv run scripts/count_tokens.py agents/ --heuristic-only
+uv run scripts/count_tokens.py ../../agents/ --heuristic-only
 
 # 4. Machine-readable JSON output (for CI/CD pipelines)
-uv run scripts/count_tokens.py coding/godoctor/SKILL.md --json
+uv run scripts/count_tokens.py ../../coding/godoctor/SKILL.md --json
 ```
 
 **Authentication & Models**:
@@ -208,8 +216,9 @@ Every skill body must adhere to these 6 instructional standards:
 
 ### Stage 4: Script Design & Bundling
 When bundling helper scripts into `scripts/`:
-- **Mandatory Invocation & Auth Documentation**: Every bundled script must be documented in `SKILL.md` with concrete execution examples, runtime requirements (`uv`, `deno`, `bun`), expected arguments, and its authorization model (e.g. ADC, API keys, OAuth, or offline fallback).
-- **Explicit Paths in Examples**: Always provide explicit category and file paths in command examples (e.g., `uv run scripts/tool.py coding/godoctor/SKILL.md` or `uv run scripts/tool.py coding/`). Never use ambiguous relative dot paths like `.` which depend on unpredictable agent working directories.
+- **Relative Path Invocations**: In `SKILL.md`, all execution examples must use relative paths from the skill root directory (e.g., `uv run scripts/analyze.py input.json`). Never prefix with category directories or template variables (`{skillDir}`, `{baseDir}`).
+- **Discovery in `## Available scripts`**: List all bundled scripts in an `## Available scripts` section in `SKILL.md` with brief functional descriptions so the agent discovers them up front.
+- **Mandatory Invocation & Auth Documentation**: Every bundled script must be documented with concrete execution examples, runtime requirements (`uv`, `deno`, `bun`), expected arguments, and its authorization model (e.g., Vertex AI ADC, API keys, OAuth, or offline fallback).
 - **Non-interactive execution**: Accept arguments via flags, environment variables, or stdin; never prompt for TTY input.
 - **Self-contained dependencies**: Declare dependencies inline using standard runtimes:
   - Python: PEP 723 script metadata (`# /// script ... # ///`) executed via `uv run` or `pipx`.
