@@ -5,7 +5,7 @@
 ## Key Features & Safeguards
 
 - **Zero-Fallback & Binary Discovery**: TestQuery executes directly from `$PATH` or as configured in `.godoctor.yaml`. Dynamic `go run` compilation fallbacks are banned to eliminate execution delays.
-- **SQLite WAL Mode & Concurrency**: Operates with SQLite Write-Ahead Logging (`PRAGMA journal_mode=WAL;`) and busy timeouts (`PRAGMA busy_timeout=5000;`) to eliminate database locks during concurrent test runs and queries.
+- **Concurrent SQLite Backend**: Maintains test execution metrics in `.godoctor/testquery.db` with concurrent read and write support.
 - **Unrestricted SQL Queries**: GoDoctor SafeShell supports standard SQL comparison operators (`<`, `>`, `<=`, `>=`), multiline queries (`\n`), string concatenation (`||`), and semicolons.
 - **Auto-Synchronization**: Running `godoctor call test` automatically indexes test execution results and statement coverage into `testquery.db`.
 

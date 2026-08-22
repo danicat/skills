@@ -1,18 +1,19 @@
 ---
 name: godoctor
 description: >
-  Developer tooling and code quality guide for Go (Golang). Enforces idiomatic
-  Go style, flat package architecture, AST-safe code editing with compiler
-  rollback gates, multi-tier test execution, mutation testing with Selene, and
-  SQL test coverage analytics via TestQuery. Activate when writing, testing,
-  refactoring, building, or reviewing Go code, running mutation testing, or
-  analyzing test coverage.
+  Developer tooling and architectural safety rules for Go. Automatically
+  validates AST integrity, guards against regressions with compiler rollback
+  gates, eliminates blind spots via Selene mutation testing, and enables
+  fast test and coverage analytics with TestQuery SQLite queries. Activate
+  when writing or refactoring Go code, fixing compilation or test failures,
+  auditing test thoroughness with mutation testing, or enforcing idiomatic
+  Go standards.
 license: Apache-2.0
 metadata:
   category: coding
   tags: "go, golang, testing, refactoring, quality, mutation-testing"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.34.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/coding/godoctor/
 ---
 
