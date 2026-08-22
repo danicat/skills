@@ -12,13 +12,17 @@ metadata:
   category: analytics
   tags: "buffer, social-media, analytics, sql, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/analytics/buffer-analytics/
 ---
 
 # Buffer Analytics: SQLite Ingestion & SQL Query Engine
 
 The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database and provides a SQL interface for deep content crunching.
+
+## Available scripts
+- `scripts/buffer_analytics.py`: Automated sync and report CLI (incremental sync, backfill, pre-packaged reports, ad-hoc queries). Executed via `uv run scripts/buffer_analytics.py` (requires Node.js 18+ and `@bufferapp/cli`).
+- `scripts/test_buffer_analytics.py`: Unit and regression test suite validating schema, query extraction, and CLI flags.
 
 ---
 
@@ -28,20 +32,20 @@ All operations are driven via the bundled Python script in `scripts/buffer_analy
 
 ```bash
 # 1. Incremental Sync (New posts + 2-day lookback metrics refresh)
-uv run <skill_dir>/scripts/buffer_analytics.py sync --db path/to/database.db
+uv run scripts/buffer_analytics.py sync --db path/to/database.db
 
 # 2. Full Historical Backfill (Paginates through entire history)
-uv run <skill_dir>/scripts/buffer_analytics.py sync --full --db path/to/database.db
+uv run scripts/buffer_analytics.py sync --full --db path/to/database.db
 
 # 3. Run Pre-Packaged Reports
-uv run <skill_dir>/scripts/buffer_analytics.py report overview --db path/to/database.db
-uv run <skill_dir>/scripts/buffer_analytics.py report top-posts --db path/to/database.db
-uv run <skill_dir>/scripts/buffer_analytics.py report channels --db path/to/database.db
-uv run <skill_dir>/scripts/buffer_analytics.py report timing --db path/to/database.db
-uv run <skill_dir>/scripts/buffer_analytics.py report hooks --db path/to/database.db
+uv run scripts/buffer_analytics.py report overview --db path/to/database.db
+uv run scripts/buffer_analytics.py report top-posts --db path/to/database.db
+uv run scripts/buffer_analytics.py report channels --db path/to/database.db
+uv run scripts/buffer_analytics.py report timing --db path/to/database.db
+uv run scripts/buffer_analytics.py report hooks --db path/to/database.db
 
 # 4. Run Ad-Hoc SQL Query
-uv run <skill_dir>/scripts/buffer_analytics.py query "SELECT service, AVG(impressions), AVG(reactions) FROM v_posts_summary WHERE status = 'sent' GROUP BY service" --db path/to/database.db
+uv run scripts/buffer_analytics.py query "SELECT service, AVG(impressions), AVG(reactions) FROM v_posts_summary WHERE status = 'sent' GROUP BY service" --db path/to/database.db
 ```
 
 If `--db` is omitted, the script defaults to `buffer_analytics.db` in the current working directory.
@@ -154,4 +158,3 @@ GROUP BY placement;
 - **SQL Query Recipes**: [`references/queries.md`](references/queries.md) — Analytical queries for timing, link penalties, hooks, and topic cohorts.
 - **Workflows Guide**: [`references/workflows.md`](references/workflows.md) — Operational guidance for periodic backfills and cron automations.
 - **Inquiry Playbook**: [`references/inquiry_playbook.md`](references/inquiry_playbook.md) — Strategic questions for campaign and social retrospectives.
-- **Evaluation Suite**: [`evals/evals.json`](evals/evals.json) — Test cases for validating ingestion and analytical queries.
