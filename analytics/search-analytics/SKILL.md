@@ -12,13 +12,17 @@ metadata:
   category: analytics
   tags: "google-search, analytics, seo, geo, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/analytics/search-analytics/
 ---
 
 # Google Search Console SQLite Ingestion & SQL Analytics
 
 The `search-analytics` skill ingests Google Search Console performance metrics into a local SQLite analytics database (`search_analytics.db` or `$XDG_DATA_HOME/search-analytics/analytics.db`) without data loss, preserving all raw JSON payloads, handling API quotas via 25,000 batch chunks, and providing direct SQL querying over indexed search traffic.
+
+## Available scripts
+- `scripts/search_analytics.py`: Automated sync, reporting, and OAuth CLI for Google Search Console. Executed via `uv run scripts/search_analytics.py` (requires Google Cloud OAuth credentials).
+- `scripts/test_search_analytics.py`: Unit and regression test suite validating schema, query extraction, and CLI flags.
 
 ---
 
@@ -28,25 +32,25 @@ All operations are driven via the bundled Python script in `scripts/search_analy
 
 ```bash
 # 1. Authenticate with Google OAuth 2.0
-uv run <skill_dir>/scripts/search_analytics.py auth --port 8080
+uv run scripts/search_analytics.py auth --port 8080
 
 # 2. Incremental Sync (Updates newest days + 3-day latency overlap)
-uv run <skill_dir>/scripts/search_analytics.py sync --db path/to/database.db
+uv run scripts/search_analytics.py sync --db path/to/database.db
 
 # 3. Full Historical Backfill (Ingests up to 16 months of granular daily data)
-uv run <skill_dir>/scripts/search_analytics.py sync --full --db path/to/database.db
+uv run scripts/search_analytics.py sync --full --db path/to/database.db
 
 # 4. Run Pre-Built SQL Reports
-uv run <skill_dir>/scripts/search_analytics.py report overview --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report top-queries --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report top-pages --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report countries --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report devices --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report timing --db path/to/database.db
-uv run <skill_dir>/scripts/search_analytics.py report milestone-impact --db path/to/database.db
+uv run scripts/search_analytics.py report overview --db path/to/database.db
+uv run scripts/search_analytics.py report top-queries --db path/to/database.db
+uv run scripts/search_analytics.py report top-pages --db path/to/database.db
+uv run scripts/search_analytics.py report countries --db path/to/database.db
+uv run scripts/search_analytics.py report devices --db path/to/database.db
+uv run scripts/search_analytics.py report timing --db path/to/database.db
+uv run scripts/search_analytics.py report milestone-impact --db path/to/database.db
 
 # 5. Run Ad-Hoc SQL Query
-uv run <skill_dir>/scripts/search_analytics.py query "SELECT query, SUM(clicks), SUM(impressions) FROM search_performance GROUP BY query ORDER BY SUM(clicks) DESC LIMIT 10" --db path/to/database.db
+uv run scripts/search_analytics.py query "SELECT query, SUM(clicks), SUM(impressions) FROM search_performance GROUP BY query ORDER BY SUM(clicks) DESC LIMIT 10" --db path/to/database.db
 ```
 
 If `--db` is omitted, the script defaults to `search_analytics.db` in the current working directory.
@@ -148,4 +152,3 @@ When querying and analyzing Search Console data, note the two distinct API behav
 - **Full DDL Schema Reference**: [`references/schema.md`](references/schema.md) — Complete SQL table definitions, column types, constraints, and views.
 - **SQL Query Cookbook**: [`references/queries.md`](references/queries.md) — Tested SQL recipes for CTR decay curves, keyword cannibalization, and MoM trends.
 - **OAuth Setup Guide**: [`references/setup_oauth.md`](references/setup_oauth.md) — Step-by-step GCP project, API enablement, and credential setup.
-- **Evaluation Suite**: [`evals/evals.json`](evals/evals.json) — Test cases for validating ingestion and analytical queries.
