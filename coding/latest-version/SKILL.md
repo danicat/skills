@@ -12,7 +12,7 @@ metadata:
   category: coding
   tags: "dependencies, packages, versions, registry, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   canonical: https://skills.danicat.dev/coding/latest-version/
 ---
 
@@ -31,14 +31,15 @@ We support these registries:
 * `gem`: Ruby
 * `gemini`: Gemini models (use 'latest', 'flash', 'pro', or brand names as the name)
 
-### 2. Run the Command
-Execute the script using one or more package names. You can append the `--json` flag to receive structured JSON results:
+### 2. Run the Command (Node.js 18+)
+Execute the bundled helper script with one or more package names. You can append the `--json` flag to receive structured JSON results:
 ```bash
-node scripts/latest.js <ecosystem> <package-name1> [package-name2]... [--json]
+# Direct execution (adjust path based on current working directory)
+node coding/latest-version/scripts/latest.js <ecosystem> <package-name1> [package-name2]... [--json]
 ```
 
 ### 3. Save the Version
-Write the returned version constraint to your configuration file (such as `package.json`, `requirements.txt`, etc.).
+Write the returned version constraint to your configuration file (such as `package.json`, `requirements.txt`, `go.mod`, etc.).
 
 ---
 
