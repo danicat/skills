@@ -1,20 +1,20 @@
 ---
 name: social-copy
 description: >
-  Editorial workflow and platform playbooks for drafting developer-native
-  social media copy and campaigns. Extracts technical evidence via git log
-  inspections or /grill-me interviews, establishes a canonical foundation
-  narrative (CANONICAL.md), tailors derivatives for connected platforms (such as
-  LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines.
-  Activate when drafting social media posts, writing release announcements,
-  authoring technical threads, or running developer campaigns.
+  Editorial workflow and platform playbooks for drafting developer-native social
+  media copy and campaigns. Extracts technical evidence via git log inspections
+  or /grill-me interviews, establishes a canonical foundation narrative
+  (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn,
+  X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate
+  when drafting social media posts, writing release announcements, authoring
+  technical threads, or running developer campaigns.
 license: Apache-2.0
 metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  canonical: https://skills.danicat.dev/writing/social-copy/
+  catalog: https://skills.danicat.dev
 ---
 
 # Social Copy Playbook

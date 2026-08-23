@@ -13,7 +13,7 @@ metadata:
   tags: "rfc, design-docs, architecture, standards, proposals"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  canonical: https://skills.danicat.dev/standards/rfc-template/
+  catalog: https://skills.danicat.dev
 ---
 
 # Request for Comments (RFC) Framework

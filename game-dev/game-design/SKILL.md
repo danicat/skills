@@ -14,7 +14,7 @@ metadata:
   tags: "gdd, mechanics, game-dev, prototyping"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/game-dev/game-design/
+  catalog: https://skills.danicat.dev
 ---
 
 # Game Design & Interactive GDD Creation Guide (Game Designer Role)

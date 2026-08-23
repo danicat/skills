@@ -222,19 +222,16 @@ function validateSkillFile(filePath, isGateway = false) {
     errors.push(`metadata.version ("${meta.version}") is not a valid Semantic Version (e.g. 1.0.0, 0.1.0)`);
   }
 
-  // Single Canonical URL Validation
+  // Provenance Coordinates: Master Catalog Pointer (or standalone repository)
   if (isGateway) {
-    if (!meta.canonical) {
-      errors.push("Missing required metadata field: 'canonical'");
-    } else if (meta.canonical !== `${DOMAIN}/` && meta.canonical !== `${DOMAIN}/SKILL.md`) {
-      errors.push(`Gateway canonical mismatch: expected "${DOMAIN}/", got "${meta.canonical}"`);
+    if (!meta.catalog && !meta.canonical) {
+      errors.push("Missing required metadata field: 'catalog'");
     }
   } else {
-    const expectedCanonical = `${DOMAIN}/${meta.category}/${data.name}/`;
-    if (!meta.canonical) {
-      errors.push("Missing required metadata field: 'canonical'");
-    } else if (meta.canonical !== expectedCanonical && meta.canonical !== `${DOMAIN}/${meta.category}/${data.name}/SKILL.md`) {
-      errors.push(`metadata.canonical mismatch: expected "${expectedCanonical}", got "${meta.canonical}"`);
+    if (!meta.catalog && !meta.repository) {
+      errors.push("Missing required provenance field: either 'metadata.catalog' or 'metadata.repository' must be specified");
+    } else if (meta.catalog && meta.catalog !== DOMAIN && meta.catalog !== `${DOMAIN}/` && meta.catalog !== `${DOMAIN}/.well-known/agent-skills/index.json`) {
+      errors.push(`metadata.catalog mismatch: expected "${DOMAIN}", got "${meta.catalog}"`);
     }
   }
 

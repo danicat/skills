@@ -12,7 +12,7 @@ metadata:
   tags: "gateway, discovery, search, agent-skills"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "1.0.0"
-  canonical: https://skills.danicat.dev/
+  catalog: https://skills.danicat.dev
 ---
 
 # Agent Skills Catalog Gateway

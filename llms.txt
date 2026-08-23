@@ -28,6 +28,7 @@
 - [double-diamond](https://skills.danicat.dev/agents/double-diamond/SKILL.md): Universal multi-agent orchestration workflow based on the Double Diamond framework (Inception -> Discovery -> Definition -> Development -> Delivery). Coordinates parallel subagents with context isolation to separate problem-space research from solution-space implementation. Activate for complex, high-ambiguity initiatives across software engineering, in-depth research, long-form writing, legal analysis, or product strategy requiring structured human alignment gates.
 - [skill-optimizer](https://skills.danicat.dev/agents/skill-optimizer/SKILL.md): Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.
 - [swarm-coding](https://skills.danicat.dev/agents/swarm-coding/SKILL.md): Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, disjoint work allocations, and strict parent-child communication. Activate whenever the user mentions 'swarm', requests multi-agent team coordination, or needs context isolation across multiple technical domains.
+- [uno-reverse](https://skills.danicat.dev/agents/uno-reverse/SKILL.md): Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.
 
 ## Technical Writing
 
@@ -52,6 +53,6 @@
 
 ## Optional
 
-- [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 27 skill instructions in a single file for large-context models.
-- [Skills Catalog JSON](https://skills.danicat.dev/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.
-- [Fast Versions JSON](https://skills.danicat.dev/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.
+- [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 28 skill instructions in a single file for large-context models.
+- [Agent Skills Discovery Manifest](https://skills.danicat.dev/.well-known/agent-skills/index.json): Standard machine-readable discovery manifest conforming to the agentskills.io schema.
+- [Fast Versions JSON](https://skills.danicat.dev/.well-known/agent-skills/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.

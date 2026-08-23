@@ -3,17 +3,18 @@ name: double-diamond
 description: >
   Universal multi-agent orchestration workflow based on the Double Diamond
   framework (Inception -> Discovery -> Definition -> Development -> Delivery).
-  Coordinates parallel subagents with context isolation to separate problem-space
-  research from solution-space implementation. Activate for complex, high-ambiguity
-  initiatives across software engineering, in-depth research, long-form writing,
-  legal analysis, or product strategy requiring structured human alignment gates.
+  Coordinates parallel subagents with context isolation to separate
+  problem-space research from solution-space implementation. Activate for
+  complex, high-ambiguity initiatives across software engineering, in-depth
+  research, long-form writing, legal analysis, or product strategy requiring
+  structured human alignment gates.
 license: Apache-2.0
 metadata:
   category: agents
   tags: "orchestration, workflow, research, planning, subagents, agile"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/agents/double-diamond/
+  catalog: https://skills.danicat.dev
 ---
 
 # Double-Diamond Multi-Agent Orchestration

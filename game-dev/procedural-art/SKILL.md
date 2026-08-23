@@ -5,15 +5,15 @@ description: >
   guide for 2D games. Generates sprites, tilesets, particle systems, and vector
   shapes in memory without external image files, enforcing 2D matrix
   transformation order, sub-frame animation easing, and pre-allocated particle
-  pools. Activate when creating procedural 2D sprites, building zero-asset games,
-  designing particle effects, or implementing 2D matrix transformations.
+  pools. Activate when creating procedural 2D sprites, building zero-asset
+  games, designing particle effects, or implementing 2D matrix transformations.
 license: Apache-2.0
 metadata:
   category: game-dev
   tags: "game-dev, sprites, pixel-art, particles, vfx"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/game-dev/procedural-art/
+  catalog: https://skills.danicat.dev
 ---
 
 # Procedural Art: Pure-Code 2D Sprites, Tiles, Particle Systems & Vector Graphics Guide

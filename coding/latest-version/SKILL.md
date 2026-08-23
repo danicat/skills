@@ -13,7 +13,7 @@ metadata:
   tags: "dependencies, packages, versions, registry, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/coding/latest-version/
+  catalog: https://skills.danicat.dev
 ---
 
 # Latest Software Version (latest-version)

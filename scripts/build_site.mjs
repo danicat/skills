@@ -63,6 +63,32 @@ const IDENTITY = loadAuthoritativeIdentity();
 const SCHEMA_AUTHOR = IDENTITY.author;
 const SCHEMA_PUBLISHER = IDENTITY.publisher;
 
+const FIREBASE_SDK_SNIPPET = `
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script>
+    (function() {
+      try {
+        var firebaseConfig = {
+          apiKey: "AIzaSyCazN8y12SLQdV5PPztJ7GsKnFrfCkXVvw",
+          authDomain: "danicat-dev.firebaseapp.com",
+          projectId: "danicat-dev",
+          storageBucket: "danicat-dev.firebasestorage.app",
+          messagingSenderId: "1014224596022",
+          appId: "1:1014224596022:web:05c63cd335f5c0d34c3c97",
+          measurementId: "G-97TXNTPG93"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+      } catch (e) {
+        console.warn('Firebase init warning:', e);
+      }
+    })();
+  </script>`;
+
 const GITHUB_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="18" height="18" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>`;
 const MOON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>`;
 const SUN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" fill="currentColor"><path d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>`;
@@ -1300,6 +1326,617 @@ const COMMON_CSS = `
     }
 
     .related-skills-list a:hover { color: var(--primary); }
+
+    /* Grid & Cards */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.2s ease, 
+                  box-shadow 0.2s ease;
+      will-change: transform;
+    }
+
+    .skill-card:hover {
+      border-color: var(--primary-border);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-top {
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .skill-name-link {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .skill-name-link:hover {
+      color: var(--primary);
+    }
+
+    .cat-badge {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .skill-description {
+      font-size: 0.90rem;
+      color: var(--text);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Elevated Metrics Bar */
+    .card-metrics-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0.75rem 0 1rem;
+      padding: 0.35rem 0.55rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .detail-metrics-bar {
+      margin-top: 1rem;
+      width: fit-content;
+    }
+
+    .metric-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      transition: all 0.15s ease;
+      line-height: 1;
+    }
+
+    .metric-pill svg {
+      flex-shrink: 0;
+      stroke: currentColor;
+    }
+
+    .star-btn {
+      cursor: pointer;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .star-btn:hover {
+      border-color: #f59e0b;
+      color: #d97706;
+      transform: translateY(-1px);
+    }
+
+    .star-btn.is-starred {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #d97706;
+    }
+
+    .star-btn.is-starred .star-icon {
+      fill: #f59e0b;
+      stroke: #d97706;
+      animation: starPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes starPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35) rotate(12deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    .card-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .cmd-box {
+      display: flex;
+      align-items: center;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .cmd-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      padding-right: 0.5rem;
+    }
+
+    .copy-button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem 0.55rem;
+      border-radius: 5px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s ease;
+    }
+
+    .copy-button:hover {
+      color: var(--text-heading);
+      border-color: var(--border-hover);
+      background: var(--surface-hover);
+    }
+
+    .copy-button.copied {
+      background: rgba(22, 163, 74, 0.12);
+      border-color: var(--green);
+      color: var(--green);
+      transform: scale(1.02);
+    }
+
+    .card-links {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+
+    .card-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .card-links a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+`;
+
+function renderSkillCard(s, options = { showCategoryBadge: true }) {
+  const badgeHtml = options.showCategoryBadge
+    ? `<span class="cat-badge">${s.categoryEmoji} ${s.categoryName}</span>`
+    : `<span class="cat-badge">v${s.version}</span>`;
+
+  return `
+        <div class="skill-card"
+             id="card-${s.name.toLowerCase()}"
+             data-skill-id="${s.name.toLowerCase()}"
+             data-category="${s.category}"
+             data-name="${s.name.toLowerCase()}"
+             data-desc="${s.description.toLowerCase().replace(/"/g, '&quot;')}"
+             data-stars="0"
+             data-views="0"
+             data-copies="0"
+             data-score="0">
+          <div class="card-top">
+            <div class="card-title-row">
+              <a href="/${s.category}/${s.folder}/" class="skill-name-link">${s.name}</a>
+              ${badgeHtml}
+            </div>
+            <p class="skill-description">${s.description}</p>
+          </div>
+
+          <div class="card-metrics-bar">
+            <button type="button" 
+                    class="metric-pill star-btn" 
+                    data-action="star" 
+                    aria-label="Star this skill" 
+                    title="Star this skill"
+                    onclick="handleStarToggle(this, '${s.category}', '${s.name.toLowerCase()}')">
+              <svg class="star-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span class="metric-val star-count">0</span>
+            </button>
+
+            <div class="metric-pill view-pill" title="Total Views">
+              <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span class="metric-val view-count">0</span>
+            </div>
+          </div>
+
+          <div class="card-bottom">
+            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : `data-npx="${escapeHtml(s.installCommand)}"`}>
+              <span class="cmd-text">${s.installCommand}</span>
+              <button class="copy-button" onclick="handleCardCopy(this, '${s.category}', '${s.name.toLowerCase()}')" title="Copy install command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+            <div class="card-links">
+              <a href="/${s.category}/${s.folder}/">View Skill →</a>
+              <a href="/${s.relativePath}">Raw SKILL.md</a>
+              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source ↗</a>
+            </div>
+          </div>
+        </div>`;
+}
+
+const CLIENT_TELEMETRY_JS = `
+  var compactNumFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
+    ? new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 })
+    : null;
+
+  function formatCompactNum(num) {
+    if (!num) return '0';
+    if (compactNumFormatter) return compactNumFormatter.format(num);
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return String(num);
+  }
+
+  var STORAGE_STARS_KEY = 'danicat_starred_skills_v1';
+  var STORAGE_VIEWS_KEY = 'danicat_viewed_skills_v1';
+  var STORAGE_COPIED_SESSION_KEY = 'danicat_session_copied_v1';
+
+  function getStarredSkills() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(STORAGE_STARS_KEY) || '[]'));
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function saveStarredSkills(set) {
+    try {
+      localStorage.setItem(STORAGE_STARS_KEY, JSON.stringify(Array.from(set)));
+    } catch (e) {}
+  }
+
+  function hasCopiedThisSession(docId) {
+    try {
+      var list = JSON.parse(sessionStorage.getItem(STORAGE_COPIED_SESSION_KEY) || '[]');
+      return list.indexOf(docId) !== -1;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function recordCopyThisSession(docId) {
+    try {
+      var list = JSON.parse(sessionStorage.getItem(STORAGE_COPIED_SESSION_KEY) || '[]');
+      if (list.indexOf(docId) === -1) {
+        list.push(docId);
+        sessionStorage.setItem(STORAGE_COPIED_SESSION_KEY, JSON.stringify(list));
+      }
+    } catch (e) {}
+  }
+
+  function calculateScore(stars, copies, views) {
+    return (3 * (parseInt(stars, 10) || 0)) + (2 * (parseInt(copies, 10) || 0)) + (1 * (parseInt(views, 10) || 0));
+  }
+
+  function handleStarToggle(btn, category, skillId) {
+    var starred = getStarredSkills();
+    var isStarred = starred.has(skillId);
+    var delta = isStarred ? -1 : 1;
+
+    if (isStarred) {
+      starred.delete(skillId);
+    } else {
+      starred.add(skillId);
+    }
+    saveStarredSkills(starred);
+
+    var elements = document.querySelectorAll('[data-skill-id="' + skillId + '"], #detailStarBtn');
+    elements.forEach(function(el) {
+      var starButton = el.classList.contains('star-btn') ? el : el.querySelector('.star-btn');
+      var starCountEl = el.querySelector ? el.querySelector('.star-count') : document.getElementById('detailStarCount');
+      if (starButton) {
+        if (!isStarred) {
+          starButton.classList.add('is-starred');
+          starButton.setAttribute('aria-pressed', 'true');
+        } else {
+          starButton.classList.remove('is-starred');
+          starButton.setAttribute('aria-pressed', 'false');
+        }
+      }
+      var card = el.classList.contains('skill-card') ? el : null;
+      if (card) {
+        var currentStars = Math.max(0, (parseInt(card.getAttribute('data-stars') || '0', 10) + delta));
+        card.setAttribute('data-stars', currentStars);
+        if (starCountEl) starCountEl.textContent = formatCompactNum(currentStars);
+        var currentCopies = parseInt(card.getAttribute('data-copies') || '0', 10);
+        var currentViews = parseInt(card.getAttribute('data-views') || '0', 10);
+        card.setAttribute('data-score', calculateScore(currentStars, currentCopies, currentViews));
+      }
+    });
+
+    var detailCount = document.getElementById('detailStarCount');
+    if (detailCount) {
+      var cur = Math.max(0, parseInt(detailCount.textContent || '0', 10) + delta);
+      detailCount.textContent = formatCompactNum(cur);
+    }
+
+    if (typeof scheduleSmoothReorder === 'function') {
+      scheduleSmoothReorder();
+    }
+
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      try {
+        firebase.auth().signInAnonymously().then(function() {
+          var db = firebase.firestore();
+          var docId = category + '-' + skillId;
+          db.collection('skills').doc(docId).set({
+            category: category,
+            skill: skillId,
+            likes: firebase.firestore.FieldValue.increment(delta),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }).catch(function(err) {
+          console.warn('Firestore star update warning:', err);
+        });
+      } catch (e) {}
+    }
+
+    if (typeof gtag === 'function') {
+      gtag('event', 'like_skill', {
+        skill_category: category,
+        skill_name: skillId,
+        action: !isStarred ? 'like' : 'unlike',
+        page_location: window.location.href
+      });
+    }
+  }
+
+  function handleCardCopy(btn, category, skillId) {
+    var cmdBox = btn.closest('.cmd-box');
+    var cmdText = cmdBox ? cmdBox.querySelector('.cmd-text').innerText : '';
+    if (!cmdText) return;
+
+    var docId = category + '-' + skillId;
+    var alreadyCopiedThisSession = hasCopiedThisSession(docId);
+
+    navigator.clipboard.writeText(cmdText).then(function() {
+      var origHtml = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> Copied';
+      btn.classList.add('copied');
+
+      if (!alreadyCopiedThisSession) {
+        recordCopyThisSession(docId);
+
+        var card = btn.closest('.skill-card');
+        if (card) {
+          var currentCopies = parseInt(card.getAttribute('data-copies') || '0', 10) + 1;
+          card.setAttribute('data-copies', currentCopies);
+          var currentStars = parseInt(card.getAttribute('data-stars') || '0', 10);
+          var currentViews = parseInt(card.getAttribute('data-views') || '0', 10);
+          card.setAttribute('data-score', calculateScore(currentStars, currentCopies, currentViews));
+          if (typeof scheduleSmoothReorder === 'function') {
+            scheduleSmoothReorder();
+          }
+        }
+
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+          try {
+            firebase.auth().signInAnonymously().then(function() {
+              var db = firebase.firestore();
+              db.collection('skills').doc(docId).set({
+                category: category,
+                skill: skillId,
+                copies: firebase.firestore.FieldValue.increment(1),
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            }).catch(function(err) {
+              console.warn('Firestore copy update warning:', err);
+            });
+          } catch (e) {}
+        }
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'copy_install_command', {
+            skill_category: category,
+            skill_name: skillId,
+            command_text: cmdText,
+            page_location: window.location.href
+          });
+        }
+      }
+
+      setTimeout(function() {
+        btn.innerHTML = origHtml;
+        btn.classList.remove('copied');
+      }, 1800);
+    });
+  }
+
+  function copyInstall(cmd, btn) {
+    var card = btn.closest('.skill-card');
+    var category = card ? card.getAttribute('data-category') : '';
+    var skillId = card ? card.getAttribute('data-skill-id') : '';
+    handleCardCopy(btn, category, skillId);
+  }
+`;
+
+const FLIP_RANKING_ENGINE_JS = `
+  var isReorderScheduled = false;
+
+  function scheduleSmoothReorder() {
+    if (typeof searchInput !== 'undefined' && searchInput && document.activeElement === searchInput) {
+      return;
+    }
+    if (isReorderScheduled) return;
+    isReorderScheduled = true;
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(executeFlipReorder);
+    } else {
+      setTimeout(executeFlipReorder, 50);
+    }
+  }
+
+  function executeFlipReorder() {
+    isReorderScheduled = false;
+    var gridEl = document.getElementById('skillsGrid');
+    if (!gridEl) return;
+    var cardNodes = Array.from(gridEl.querySelectorAll('.skill-card'));
+    if (cardNodes.length === 0) return;
+
+    var firstPositions = new Map();
+    cardNodes.forEach(function(card) {
+      firstPositions.set(card, card.getBoundingClientRect());
+    });
+
+    var sorted = cardNodes.slice().sort(function(a, b) {
+      var scoreA = parseFloat(a.getAttribute('data-score') || '0');
+      var scoreB = parseFloat(b.getAttribute('data-score') || '0');
+      if (scoreB !== scoreA) return scoreB - scoreA;
+
+      var starsA = parseInt(a.getAttribute('data-stars') || '0', 10);
+      var starsB = parseInt(b.getAttribute('data-stars') || '0', 10);
+      if (starsB !== starsA) return starsB - starsA;
+
+      var copiesA = parseInt(a.getAttribute('data-copies') || '0', 10);
+      var copiesB = parseInt(b.getAttribute('data-copies') || '0', 10);
+      if (copiesB !== copiesA) return copiesB - copiesA;
+
+      var nameA = a.getAttribute('data-name') || '';
+      var nameB = b.getAttribute('data-name') || '';
+      return nameA.localeCompare(nameB);
+    });
+
+    var hasChanged = sorted.some(function(card, idx) { return card !== cardNodes[idx]; });
+    if (!hasChanged) return;
+
+    sorted.forEach(function(card) { gridEl.appendChild(card); });
+
+    sorted.forEach(function(card) {
+      var first = firstPositions.get(card);
+      var last = card.getBoundingClientRect();
+      var dx = first.left - last.left;
+      var dy = first.top - last.top;
+
+      if (dx !== 0 || dy !== 0) {
+        card.style.transform = 'translate3d(' + dx + 'px, ' + dy + 'px, 0)';
+        card.style.transition = 'none';
+        card.offsetHeight;
+        card.style.transition = 'transform 380ms cubic-bezier(0.2, 0, 0, 1)';
+        card.style.transform = 'translate3d(0, 0, 0)';
+
+        card.addEventListener('transitionend', function handler() {
+          card.style.transform = '';
+          card.style.transition = '';
+          card.removeEventListener('transitionend', handler);
+        });
+      }
+    });
+  }
+
+  function hydrateCardsFromLocal() {
+    var starred = getStarredSkills();
+    var gridEl = document.getElementById('skillsGrid');
+    if (!gridEl) return;
+    gridEl.querySelectorAll('.skill-card').forEach(function(card) {
+      var skillId = card.getAttribute('data-skill-id');
+      if (starred.has(skillId)) {
+        var starBtn = card.querySelector('.star-btn');
+        if (starBtn) {
+          starBtn.classList.add('is-starred');
+          starBtn.setAttribute('aria-pressed', 'true');
+        }
+      }
+    });
+  }
+
+  function initFirestoreLiveMetrics() {
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    try {
+      firebase.auth().signInAnonymously().then(function() {
+        var db = firebase.firestore();
+        db.collection('skills').onSnapshot(function(snapshot) {
+          var gridEl = document.getElementById('skillsGrid');
+          if (!gridEl) return;
+          var metricsMap = {};
+          snapshot.forEach(function(doc) {
+            metricsMap[doc.id] = doc.data();
+          });
+
+          gridEl.querySelectorAll('.skill-card').forEach(function(card) {
+            var cat = card.getAttribute('data-category');
+            var skillId = card.getAttribute('data-skill-id');
+            var docId = cat + '-' + skillId;
+            var data = metricsMap[docId];
+            if (data) {
+              var stars = data.likes || 0;
+              var views = data.views || 0;
+              var copies = data.copies || 0;
+
+              card.setAttribute('data-stars', stars);
+              card.setAttribute('data-views', views);
+              card.setAttribute('data-copies', copies);
+              card.setAttribute('data-score', calculateScore(stars, copies, views));
+
+              var starCountEl = card.querySelector('.star-count');
+              var viewCountEl = card.querySelector('.view-count');
+              var copyCountEl = card.querySelector('.copy-count');
+
+              if (starCountEl) starCountEl.textContent = formatCompactNum(stars);
+              if (viewCountEl) viewCountEl.textContent = formatCompactNum(views);
+              if (copyCountEl) copyCountEl.textContent = formatCompactNum(copies);
+            }
+          });
+
+          scheduleSmoothReorder();
+        }, function(err) {
+          console.warn('Firestore snapshot warning:', err);
+        });
+      }).catch(function(err) {
+        console.warn('Anonymous auth warning:', err);
+      });
+    } catch (e) {}
+  }
 `;
 
 function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
@@ -1426,6 +2063,7 @@ function generateSkillHtml(skill, allSkillsInCategory, bundledResources) {
     gtag('js', new Date());
     gtag('config', '${GA_MEASUREMENT_ID}');
   </script>
+${FIREBASE_SDK_SNIPPET}
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="article">
@@ -1506,6 +2144,29 @@ ${COMMON_CSS}
         <span class="meta-pill"><strong>License:</strong> ${escapeHtml(skill.license)}</span>
         <span class="meta-pill"><strong>Author:</strong> ${escapeHtml(skill.author || 'Daniela Petruzalek')}</span>
         <span class="meta-pill" title="${escapeHtml(skill.digest || '')}"><strong>Digest:</strong> <code>${escapeHtml((skill.sha256 || '').slice(0, 8))}</code></span>
+      </div>
+
+      <div class="card-metrics-bar detail-metrics-bar">
+        <button type="button" 
+                class="metric-pill star-btn" 
+                id="detailStarBtn"
+                data-action="star" 
+                aria-label="Star this skill" 
+                title="Star this skill"
+                onclick="handleStarToggle(this, '${skill.category}', '${skill.name.toLowerCase()}')">
+          <svg class="star-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="metric-val star-count" id="detailStarCount">0</span>
+        </button>
+
+        <div class="metric-pill view-pill" title="Total Views">
+          <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span class="metric-val view-count" id="detailViewCount">0</span>
+        </div>
       </div>
 
       <div class="install-widget">
@@ -1642,6 +2303,38 @@ ${COMMON_CSS}
         btn.innerHTML = '<span>✓</span> Copied';
         btn.style.borderColor = 'var(--green)';
         btn.style.color = 'var(--green)';
+
+        const docId = '${skill.category}-${skill.name.toLowerCase()}';
+        if (typeof hasCopiedThisSession === 'function' && !hasCopiedThisSession(docId)) {
+          if (typeof recordCopyThisSession === 'function') {
+            recordCopyThisSession(docId);
+          }
+
+          // Trigger telemetry for copy
+          if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+            try {
+              firebase.auth().signInAnonymously().then(function() {
+                var db = firebase.firestore();
+                db.collection('skills').doc(docId).set({
+                  category: '${skill.category}',
+                  skill: '${skill.name.toLowerCase()}',
+                  copies: firebase.firestore.FieldValue.increment(1),
+                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+              });
+            } catch (e) {}
+          }
+
+          if (typeof gtag === 'function') {
+            gtag('event', 'copy_install_command', {
+              skill_category: '${skill.category}',
+              skill_name: '${skill.name.toLowerCase()}',
+              command_text: cmd,
+              page_location: window.location.href
+            });
+          }
+        }
+
         setTimeout(() => {
           btn.innerHTML = orig;
           btn.style.borderColor = '';
@@ -1669,6 +2362,64 @@ ${COMMON_CSS}
         }, 1500);
       });
     }
+
+    ${CLIENT_TELEMETRY_JS}
+
+    // Detail page live metric sync & view counter increment
+    (function() {
+      var category = '${skill.category}';
+      var skillId = '${skill.name.toLowerCase()}';
+      var docId = category + '-' + skillId;
+
+      var starred = getStarredSkills();
+      var detailStarBtn = document.getElementById('detailStarBtn');
+      if (starred.has(skillId) && detailStarBtn) {
+        detailStarBtn.classList.add('is-starred');
+        detailStarBtn.setAttribute('aria-pressed', 'true');
+      }
+
+      if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+      try {
+        firebase.auth().signInAnonymously().then(function() {
+          var db = firebase.firestore();
+
+          var viewed = false;
+          try {
+            var viewedList = JSON.parse(localStorage.getItem(STORAGE_VIEWS_KEY) || '[]');
+            if (viewedList.indexOf(docId) !== -1) {
+              viewed = true;
+            } else {
+              viewedList.push(docId);
+              localStorage.setItem(STORAGE_VIEWS_KEY, JSON.stringify(viewedList));
+            }
+          } catch (e) {}
+
+          if (!viewed) {
+            db.collection('skills').doc(docId).set({
+              category: category,
+              skill: skillId,
+              views: firebase.firestore.FieldValue.increment(1),
+              lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }
+
+          db.collection('skills').doc(docId).onSnapshot(function(doc) {
+            if (doc.exists) {
+              var data = doc.data();
+              var starCountEl = document.getElementById('detailStarCount');
+              var viewCountEl = document.getElementById('detailViewCount');
+              var copyCountEl = document.getElementById('detailCopyCount');
+
+              if (starCountEl && data.likes !== undefined) starCountEl.textContent = formatCompactNum(data.likes);
+              if (viewCountEl && data.views !== undefined) viewCountEl.textContent = formatCompactNum(data.views);
+              if (copyCountEl && data.copies !== undefined) copyCountEl.textContent = formatCompactNum(data.copies);
+            }
+          });
+        }).catch(function(err) {
+          console.warn('Detail telemetry warning:', err);
+        });
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>`;
@@ -2009,6 +2760,7 @@ function generateCategoryHtml(category, skillsInCategory, allCategories, allSkil
     gtag('js', new Date());
     gtag('config', '${GA_MEASUREMENT_ID}');
   </script>
+${FIREBASE_SDK_SNIPPET}
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -2163,134 +2915,6 @@ ${COMMON_CSS}
       font-weight: 600;
     }
 
-    /* Grid & Cards */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .skill-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow);
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .skill-card:hover {
-      border-color: var(--primary-border);
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .card-top {
-      margin-bottom: 1.25rem;
-    }
-
-    .card-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.85rem;
-      gap: 0.5rem;
-    }
-
-    .skill-name-link {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-heading);
-      text-decoration: none;
-      letter-spacing: -0.01em;
-    }
-
-    .skill-name-link:hover {
-      color: var(--primary);
-    }
-
-    .cat-badge {
-      font-size: 0.76rem;
-      font-weight: 600;
-      padding: 0.2rem 0.55rem;
-      border-radius: 9999px;
-      background: var(--badge-bg);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .skill-description {
-      font-size: 0.92rem;
-      color: var(--text);
-      line-height: 1.55;
-    }
-
-    .card-bottom {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .cmd-box {
-      display: flex;
-      align-items: center;
-      background: var(--code-bg);
-      border: 1px solid var(--code-border);
-      border-radius: 8px;
-      padding: 0.45rem 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .cmd-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-      padding-right: 0.5rem;
-    }
-
-    .copy-button {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 0.2rem 0.35rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      transition: color 0.15s ease, transform 0.1s ease;
-    }
-
-    .copy-button:hover {
-      color: var(--text-heading);
-      transform: scale(1.1);
-    }
-
-    .card-links {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .card-links a {
-      color: var(--primary);
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-
-    .card-links a:hover {
-      color: var(--primary-hover);
-      text-decoration: underline;
-    }
-
     .no-results {
       grid-column: 1 / -1;
       text-align: center;
@@ -2347,27 +2971,7 @@ ${COMMON_CSS}
 
     <main>
       <div class="skills-grid" id="skillsGrid">
-        ${skillsInCategory.map(s => `
-        <div class="skill-card" data-category="${s.category}" data-name="${s.name.toLowerCase()}" data-desc="${s.description.toLowerCase().replace(/"/g, '&quot;')}">
-          <div class="card-top">
-            <div class="card-title-row">
-              <a href="/${s.category}/${s.folder}/" class="skill-name-link">${s.name}</a>
-              <span class="cat-badge">v${s.version}</span>
-            </div>
-            <p class="skill-description">${s.description}</p>
-          </div>
-          <div class="card-bottom">
-            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : ''}>
-              <span class="cmd-text">${s.installCommand}</span>
-              <button class="copy-button" onclick="copyInstall(this.previousElementSibling.innerText, this)" title="Copy install command">📋</button>
-            </div>
-            <div class="card-links">
-              <a href="/${s.category}/${s.folder}/">View Skill →</a>
-              <a href="/${s.relativePath}">Raw SKILL.md</a>
-              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source ↗</a>
-            </div>
-          </div>
-        </div>`).join('')}
+        ${skillsInCategory.map(s => renderSkillCard(s, { showCategoryBadge: false })).join('')}
       </div>
     </main>
 
@@ -2443,20 +3047,12 @@ ${COMMON_CSS}
       }
     });
 
-    function copyInstall(cmd, btn) {
-      navigator.clipboard.writeText(cmd).then(() => {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<span>✓</span> Copied';
-        btn.style.borderColor = 'var(--green)';
-        btn.style.color = 'var(--green)';
-        setTimeout(() => {
-          btn.innerHTML = orig;
-          btn.style.borderColor = '';
-          btn.style.color = '';
-        }, 1500);
-      });
-    }${ENABLE_KUNGFU ? `
+    ${CLIENT_TELEMETRY_JS}
+    ${FLIP_RANKING_ENGINE_JS}
 
+    hydrateCardsFromLocal();
+    initFirestoreLiveMetrics();
+${ENABLE_KUNGFU ? `
     function setGlobalCliMode(mode, btn) {
       document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -2622,8 +3218,8 @@ async function build() {
   }
   llmsTxt += `## Optional\n\n`;
   llmsTxt += `- [Full Instructions Catalog](${SUB_DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
-  llmsTxt += `- [Skills Catalog JSON](${SUB_DOMAIN}/catalog.json): Full machine-readable index conforming to the agentskills.io catalog schema.\n`;
-  llmsTxt += `- [Fast Versions JSON](${SUB_DOMAIN}/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
+  llmsTxt += `- [Agent Skills Discovery Manifest](${SUB_DOMAIN}/.well-known/agent-skills/index.json): Standard machine-readable discovery manifest conforming to the agentskills.io schema.\n`;
+  llmsTxt += `- [Fast Versions JSON](${SUB_DOMAIN}/.well-known/agent-skills/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
@@ -2636,34 +3232,28 @@ async function build() {
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
 
-  // 5. catalog.json (agentskills.io schema)
-  const catalog = {
-    $schema: 'https://agentskills.io/schema/v1/catalog.json',
-    name: 'danicat/skills',
-    title: 'Daniela Petruzalek Agent Skills Catalog',
-    description: 'A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.',
-    url: SUB_DOMAIN,
-    repository: REPO_URL,
-    totalSkills: skills.length,
-    updatedAt: new Date().toISOString(),
-    categories: CATEGORIES,
-    gateway: {
-      name: 'catalog',
-      description: 'Dynamic search and loader for all skills in this repository.',
-      url: `${SUB_DOMAIN}/SKILL.md`
-    },
-    items: skills.map(({ body, installCommand, npxInstallCommand, kungfuLoadCommand, kungfuLearnCommand, ...rest }) => ({
-      ...rest,
-      id: rest.name,
-      type: 'skill',
-      title: rest.name
+  // 5. Standard Discovery Manifest (.well-known/agent-skills/index.json)
+  const discoveryManifest = {
+    $schema: 'https://schemas.agentskills.io/discovery/0.2.0/schema.json',
+    skills: skills.map(s => ({
+      name: s.name,
+      type: 'skill-md',
+      description: s.description,
+      url: s.url,
+      digest: `sha256:${s.sha256}`
     }))
   };
-  const catalogJson = JSON.stringify(catalog, null, 2);
-  fs.writeFileSync(path.join(SITE_DIR, 'catalog.json'), catalogJson);
-  fs.writeFileSync(path.join(ROOT_DIR, 'catalog.json'), catalogJson);
+  const discoveryJson = JSON.stringify(discoveryManifest, null, 2);
 
-  // 5b. versions.json (Ultra-lightweight fast check ~1.5 KB)
+  const siteWellKnownDir = path.join(SITE_DIR, '.well-known', 'agent-skills');
+  fs.mkdirSync(siteWellKnownDir, { recursive: true });
+  fs.writeFileSync(path.join(siteWellKnownDir, 'index.json'), discoveryJson);
+
+  const rootWellKnownDir = path.join(ROOT_DIR, '.well-known', 'agent-skills');
+  fs.mkdirSync(rootWellKnownDir, { recursive: true });
+  fs.writeFileSync(path.join(rootWellKnownDir, 'index.json'), discoveryJson);
+
+  // 5b. versions.json (Ultra-lightweight fast check ~1.5 KB inside .well-known)
   const versionsObj = {
     updatedAt: new Date().toISOString(),
     totalSkills: skills.length,
@@ -2672,22 +3262,22 @@ async function build() {
   for (const s of skills) {
     versionsObj.skills[s.name] = {
       v: s.version,
-      h: s.sha256.slice(0, 12),
+      h: s.sha256,
       c: s.category,
       u: s.url
     };
   }
   const versionsJson = JSON.stringify(versionsObj, null, 2);
-  fs.writeFileSync(path.join(SITE_DIR, 'versions.json'), versionsJson);
-  fs.writeFileSync(path.join(ROOT_DIR, 'versions.json'), versionsJson);
+  fs.writeFileSync(path.join(siteWellKnownDir, 'versions.json'), versionsJson);
+  fs.writeFileSync(path.join(rootWellKnownDir, 'versions.json'), versionsJson);
 
   // 6. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/catalog.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/index.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   for (const cat of CATEGORIES) {
@@ -2764,6 +3354,7 @@ async function build() {
     gtag('js', new Date());
     gtag('config', '${GA_MEASUREMENT_ID}');
   </script>
+${FIREBASE_SDK_SNIPPET}
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -2871,43 +3462,42 @@ ${COMMON_CSS}
       background: var(--code-bg);
       border: 1px solid var(--code-border);
       border-radius: 8px;
-      padding: 0.55rem 0.85rem;
+      padding: 0.5rem 0.75rem;
       font-family: var(--font-mono);
       font-size: 0.88rem;
-      color: var(--text-heading);
     }
 
     .gateway-cmd {
       flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: var(--text-heading);
+      overflow-x: auto;
       white-space: nowrap;
-      padding-right: 0.5rem;
     }
 
     .gateway-copy-btn {
       background: var(--surface);
       border: 1px solid var(--border);
-      color: var(--text-heading);
+      color: var(--text-muted);
       cursor: pointer;
-      padding: 0.3rem 0.65rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 6px;
       font-size: 0.8rem;
-      font-weight: 500;
-      display: flex;
+      font-weight: 600;
+      display: inline-flex;
       align-items: center;
       gap: 0.35rem;
       transition: all 0.15s ease;
     }
 
     .gateway-copy-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+      color: var(--text-heading);
+      border-color: var(--border-hover);
     }
 
     .gateway-caption {
       font-size: 0.82rem;
       color: var(--text-muted);
+      margin: 0;
     }${ENABLE_KUNGFU ? `
 
     /* KungFu Home Feature Mode */
@@ -3044,127 +3634,6 @@ ${COMMON_CSS}
       gap: 1.5rem;
     }
 
-    .skill-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow);
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .skill-card:hover {
-      border-color: var(--primary-border);
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .card-top {
-      margin-bottom: 1.25rem;
-    }
-
-    .card-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.85rem;
-      gap: 0.5rem;
-    }
-
-    .skill-name-link {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-heading);
-      text-decoration: none;
-      letter-spacing: -0.01em;
-    }
-
-    .skill-name-link:hover {
-      color: var(--primary);
-    }
-
-    .cat-badge {
-      font-size: 0.76rem;
-      font-weight: 600;
-      padding: 0.2rem 0.55rem;
-      border-radius: 9999px;
-      background: var(--badge-bg);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .skill-description {
-      font-size: 0.92rem;
-      color: var(--text);
-      line-height: 1.55;
-    }
-
-    .card-bottom {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .cmd-box {
-      display: flex;
-      align-items: center;
-      background: var(--code-bg);
-      border: 1px solid var(--code-border);
-      border-radius: 8px;
-      padding: 0.45rem 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .cmd-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-      padding-right: 0.5rem;
-    }
-
-    .copy-button {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 0.2rem 0.35rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      transition: color 0.15s ease, transform 0.1s ease;
-    }
-
-    .copy-button:hover {
-      color: var(--text-heading);
-      transform: scale(1.1);
-    }
-
-    .card-links {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .card-links a {
-      color: var(--primary);
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-
-    .card-links a:hover {
-      color: var(--primary-hover);
-      text-decoration: underline;
-    }
-
     .no-results {
       grid-column: 1 / -1;
       text-align: center;
@@ -3228,27 +3697,7 @@ ${COMMON_CSS}
 
     <main>
       <div class="skills-grid" id="skillsGrid">
-        ${skills.map(s => `
-        <div class="skill-card" data-category="${s.category}" data-name="${s.name.toLowerCase()}" data-desc="${s.description.toLowerCase().replace(/"/g, '&quot;')}">
-          <div class="card-top">
-            <div class="card-title-row">
-              <a href="/${s.category}/${s.folder}/" class="skill-name-link">${s.name}</a>
-              <span class="cat-badge">${s.categoryEmoji} ${s.categoryName}</span>
-            </div>
-            <p class="skill-description">${s.description}</p>
-          </div>
-          <div class="card-bottom">
-            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : ''}>
-              <span class="cmd-text">${s.installCommand}</span>
-              <button class="copy-button" onclick="copyInstall(this.previousElementSibling.innerText, this)" title="Copy install command">📋</button>
-            </div>
-            <div class="card-links">
-              <a href="/${s.category}/${s.folder}/">View Skill →</a>
-              <a href="/${s.relativePath}">Raw SKILL.md</a>
-              <a href="${s.githubUrl}" target="_blank" rel="noopener">Source ↗</a>
-            </div>
-          </div>
-        </div>`).join('')}
+        ${skills.map(s => renderSkillCard(s, { showCategoryBadge: true })).join('')}
       </div>
     </main>
 
@@ -3355,6 +3804,12 @@ ${COMMON_CSS}
         searchInput.focus();
       }
     });
+
+    ${CLIENT_TELEMETRY_JS}
+    ${FLIP_RANKING_ENGINE_JS}
+
+    hydrateCardsFromLocal();
+    initFirestoreLiveMetrics();
 
     function copyInstall(cmd, btn) {
       navigator.clipboard.writeText(cmd).then(() => {

@@ -4,8 +4,8 @@ This directory contains technical model cards, capability specifications, arrang
 
 ## Model Cards & Technical References
 
-- **[Lyria 3 Clip (`lyria-3-clip-preview`)](references/lyria-3-clip.md)**: 30-second music clips, short loops, social audio, and rapid style prototyping.
-- **[Lyria 3 Pro (`lyria-3-pro-preview`)](references/lyria-3-pro.md)**: Full-length songs (up to 184 seconds), multi-section structures (verse, chorus, bridge), explicit timestamp controls, and multimodal soundtrack composition.
+- **[Lyria 3 Clip (`lyria-3-clip-preview`)](lyria-3-clip.md)**: 30-second music clips, short loops, social audio, and rapid style prototyping.
+- **[Lyria 3 Pro (`lyria-3-pro-preview`)](lyria-3-pro.md)**: Full-length songs (up to 184 seconds), multi-section structures (verse, chorus, bridge), explicit timestamp controls, and multimodal soundtrack composition.
 
 ---
 

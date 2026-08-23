@@ -1,19 +1,19 @@
 ---
 name: adr-template
 description: >
-  Guide and template for authoring and maintaining Architecture Decision
-  Records (ADRs). Captures structural decisions, background context, trade-offs,
-  and compliance verification in lightweight, immutable markdown records to
-  preserve engineering context. Activate when making significant architectural
-  choices, documenting technical trade-offs, proposing major refactorings, or
-  authoring ADRs.
+  Guide and template for authoring and maintaining Architecture Decision Records
+  (ADRs). Captures structural decisions, background context, trade-offs, and
+  compliance verification in lightweight, immutable markdown records to preserve
+  engineering context. Activate when making significant architectural choices,
+  documenting technical trade-offs, proposing major refactorings, or authoring
+  ADRs.
 license: Apache-2.0
 metadata:
   category: standards
   tags: "adr, architecture, standards, documentation, design"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  canonical: https://skills.danicat.dev/standards/adr-template/
+  catalog: https://skills.danicat.dev
 ---
 
 # Architecture Decision Records (ADRs)

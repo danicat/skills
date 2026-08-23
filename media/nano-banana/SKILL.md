@@ -13,7 +13,7 @@ metadata:
   tags: "image-generation, images, art, generative-ai"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/media/nano-banana/
+  catalog: https://skills.danicat.dev
 ---
 
 # Nano Banana Skill

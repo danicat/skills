@@ -13,7 +13,7 @@ metadata:
   tags: "game-dev, ebitengine, orchestrator, workflow, architecture, 2d"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/game-dev/vibe-game-developer/
+  catalog: https://skills.danicat.dev
 ---
 
 # Vibe Game Developer: Master Orchestrator & Request Router

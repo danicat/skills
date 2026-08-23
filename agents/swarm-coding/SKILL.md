@@ -1,19 +1,20 @@
 ---
 name: swarm-coding
 description: >
-  Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture
-  for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent
-  backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists,
-  disjoint work allocations, and strict parent-child communication. Activate whenever
-  the user mentions 'swarm', requests multi-agent team coordination, or needs context
-  isolation across multiple technical domains.
+  Orchestrates multi-agent hierarchical swarms using a divide-and-conquer
+  architecture for complex, multi-system, or orthogonal engineering initiatives
+  (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead
+  Agents and Specialists, disjoint work allocations, and strict parent-child
+  communication. Activate whenever the user mentions 'swarm', requests
+  multi-agent team coordination, or needs context isolation across multiple
+  technical domains.
 license: Apache-2.0
 metadata:
   category: agents
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/agents/swarm-coding/
+  catalog: https://skills.danicat.dev
 ---
 
 # Swarm Coding

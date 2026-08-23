@@ -59,7 +59,7 @@ export function runAudit() {
   let uiIssues = [];
 
   // 1. Root Assets
-  const requiredRootAssets = ['CNAME', 'index.html', 'llms.txt', 'llms-full.txt', 'catalog.json', 'versions.json', 'sitemap.xml', 'robots.txt'];
+  const requiredRootAssets = ['CNAME', 'index.html', 'llms.txt', 'llms-full.txt', 'sitemap.xml', 'robots.txt', '.well-known/agent-skills/index.json', '.well-known/agent-skills/versions.json'];
   for (const asset of requiredRootAssets) {
     if (!fs.existsSync(path.join(SITE_DIR, asset))) {
       assetErrors.push(`[Root Asset Missing] Missing required site asset: _site/${asset}`);

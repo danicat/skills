@@ -44,8 +44,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build site and generate llms.txt / catalog.json
-        run: node scripts/build_site.mjs
+      - name: Build site, validate metadata, and run QA audit
+        run: |
+          node scripts/build_site.mjs
+          node scripts/validate_metadata.mjs
+          node scripts/qa_audit.mjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

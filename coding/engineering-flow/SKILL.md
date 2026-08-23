@@ -6,15 +6,14 @@ description: >
   task prioritization, grounded technical research, semantic versioning, and
   clean code practices like explicit error handling and dead code removal.
   Activate when designing system architecture, planning releases, refactoring
-  codebases, establishing project standards, or resolving technical
-  uncertainty.
+  codebases, establishing project standards, or resolving technical uncertainty.
 license: Apache-2.0
 metadata:
   category: coding
   tags: "engineering, standards, architecture, workflow, quality, hygiene"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/coding/engineering-flow/
+  catalog: https://skills.danicat.dev
 ---
 
 # Engineering Flow

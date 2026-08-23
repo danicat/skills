@@ -14,7 +14,7 @@ metadata:
   tags: "seo, geo, optimization, search-engines, blog, website, metadata"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  canonical: https://skills.danicat.dev/writing/seo-optimizer/
+  catalog: https://skills.danicat.dev
 ---
 
 # SEO & Generative Engine Optimizer (GEO)

@@ -4,15 +4,15 @@ description: >
   Comprehensive guide to develop and improve Agent Skill performance. Contains
   best practices for skill formatting (frontmatter and metadata), naming,
   descriptions, fine-tuning activation triggers, evaluations,
-  production-readiness and open sourcing. Activate when developing new skills
-  or refining existing ones.
+  production-readiness and open sourcing. Activate when developing new skills or
+  refining existing ones.
 license: Apache-2.0
 metadata:
   category: agents
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.5.0"
-  canonical: https://skills.danicat.dev/agents/skill-optimizer/
+  catalog: https://skills.danicat.dev
 ---
 
 # Agent Skill Optimizer
@@ -41,7 +41,7 @@ Skills use a 3-tier progressive disclosure model to minimize token consumption:
 
 3. **Tier 3 — On-Demand Resources & References**:
    - **Scope**: Subdirectories loaded only when explicitly requested by instructions:
-     - `references/`: Domain guides, schemas, cheat sheets, and syntax rules.
+     - `references/`: Domain guides, schemas, cheat sheets, and syntax rules. Formatted as **Open Knowledge Format (OKF v0.2)** concept markdown documents with YAML frontmatter (`type`, `resource`, `sources`, `verified`) and an `index.md` bundle map for progressive disclosure.
      - `scripts/`: Executable helper tools and automation scripts.
      - `assets/`: Static templates, seed data, or boilerplate files.
 

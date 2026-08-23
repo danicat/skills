@@ -13,7 +13,7 @@ metadata:
   tags: "social-media, publishing, automation, management"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"
-  canonical: https://skills.danicat.dev/writing/buffer/
+  catalog: https://skills.danicat.dev
 ---
 
 # Buffer CLI Playbook

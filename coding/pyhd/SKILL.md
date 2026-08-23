@@ -13,7 +13,7 @@ metadata:
   tags: "python, uv, ruff, formatting, linting, testing"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/coding/pyhd/
+  catalog: https://skills.danicat.dev
 ---
 
 # Modern Python Development (Pyhd)

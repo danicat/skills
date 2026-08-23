@@ -13,7 +13,7 @@ metadata:
   tags: "google, blog, style-guide, writing, editorial, compliance"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.1"
-  canonical: https://skills.danicat.dev/writing/google-blog-style/
+  catalog: https://skills.danicat.dev
 ---
 
 # Google Blog Style Guide

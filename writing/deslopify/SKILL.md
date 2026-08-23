@@ -13,7 +13,7 @@ metadata:
   tags: "writing, style, editing, quality"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
-  canonical: https://skills.danicat.dev/writing/deslopify/
+  catalog: https://skills.danicat.dev
 ---
 
 # Deslopify: AI Slop & Trope Removal
