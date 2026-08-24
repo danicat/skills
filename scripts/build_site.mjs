@@ -3219,7 +3219,6 @@ async function build() {
   llmsTxt += `## Optional\n\n`;
   llmsTxt += `- [Full Instructions Catalog](${SUB_DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
   llmsTxt += `- [Agent Skills Discovery Manifest](${SUB_DOMAIN}/.well-known/agent-skills/index.json): Standard machine-readable discovery manifest conforming to the agentskills.io schema.\n`;
-  llmsTxt += `- [Fast Versions JSON](${SUB_DOMAIN}/.well-known/agent-skills/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
@@ -3253,31 +3252,12 @@ async function build() {
   fs.mkdirSync(rootWellKnownDir, { recursive: true });
   fs.writeFileSync(path.join(rootWellKnownDir, 'index.json'), discoveryJson);
 
-  // 5b. versions.json (Ultra-lightweight fast check ~1.5 KB inside .well-known)
-  const versionsObj = {
-    updatedAt: new Date().toISOString(),
-    totalSkills: skills.length,
-    skills: {}
-  };
-  for (const s of skills) {
-    versionsObj.skills[s.name] = {
-      v: s.version,
-      h: s.sha256,
-      c: s.category,
-      u: s.url
-    };
-  }
-  const versionsJson = JSON.stringify(versionsObj, null, 2);
-  fs.writeFileSync(path.join(siteWellKnownDir, 'versions.json'), versionsJson);
-  fs.writeFileSync(path.join(rootWellKnownDir, 'versions.json'), versionsJson);
-
   // 6. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/index.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/versions.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   for (const cat of CATEGORIES) {

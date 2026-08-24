@@ -16,7 +16,7 @@
 Maintaining duplicate static JSON files (`/catalog.json` and `/.well-known/agent-skills/index.json`) creates unnecessary data duplication and violates Occam's Razor. 
 
 Following standard internet architecture established by RFC 8615 and package managers (npm, Cargo, Go proxy, OIDC):
-1. **The root `/catalog.json` has been permanently purged.**
+1. **The root `/catalog.json` and `/versions.json` have been permanently purged.**
 2. **The sole discovery manifest is hosted at `/.well-known/agent-skills/index.json`.**
 3. **The catalog coordinate declared in `SKILL.md` frontmatter and CLI flags is the clean base origin URL (e.g. `https://skills.danicat.dev`), with no hardcoded JSON filenames.**
 
@@ -29,7 +29,6 @@ When the KungFu CLI receives a registry coordinate (via `--registry`, `.kungfurc
 
 1. **Base Domain / Origin** (e.g., `https://skills.danicat.dev` or `skills.danicat.dev`):
    - Standard Discovery: `${origin}/.well-known/agent-skills/index.json`
-   - Fast-Sync Probing: `${origin}/.well-known/agent-skills/versions.json`
 2. **Explicit File URL** (e.g., `https://example.com/custom-manifest.json`):
    - Direct Ingestion: Fetch the supplied URL directly.
 
@@ -81,6 +80,6 @@ Strictly adheres to `https://schemas.agentskills.io/discovery/0.2.0/schema.json`
 
 ## 4. Verification & Readiness
 
-1. **Repository & Website Generator**: `scripts/build_site.mjs` has purged `catalog.json` and exclusively emits `/.well-known/agent-skills/index.json`.
+1. **Repository & Website Generator**: `scripts/build_site.mjs` has purged `catalog.json` and `versions.json`, and exclusively emits `/.well-known/agent-skills/index.json`.
 2. **All 28 Skills Standardized**: `SKILL.md` frontmatter across all skills declares `metadata.catalog: https://skills.danicat.dev`.
 3. **Validation Passed**: `scripts/validate_metadata.mjs` and `scripts/qa_audit.mjs` pass 100% green with 0 errors and 0 warnings.

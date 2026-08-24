@@ -55,4 +55,3 @@
 
 - [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 28 skill instructions in a single file for large-context models.
 - [Agent Skills Discovery Manifest](https://skills.danicat.dev/.well-known/agent-skills/index.json): Standard machine-readable discovery manifest conforming to the agentskills.io schema.
-- [Fast Versions JSON](https://skills.danicat.dev/.well-known/agent-skills/versions.json): Lightweight hash and version validation index for JIT agent cache synchronization.

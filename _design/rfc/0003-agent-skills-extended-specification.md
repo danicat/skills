@@ -21,7 +21,6 @@ This RFC establishes the **Agent Skills Extended Specification**:
 - Adoption of the **3-Tier Progressive Disclosure Model** recommended by `agentskills.io` (Tier 1 $\le 150$ tokens routing, Tier 2 $\le 5,000$ tokens core instructions, Tier 3 on-demand files).
 - A **100% Spec-Compliant Discovery Manifest** (`/.well-known/agent-skills/index.json`) conforming strictly to schema `v0.2.0` with **zero custom schema extensions**.
 - A **Base-Origin Master Provenance Model** (`metadata.catalog: https://skills.danicat.dev` in `SKILL.md` for registries/monorepos; `metadata.repository` for standalone polyrepos; `canonical` and duplicate JSON files purged).
-- A **Dual-Manifest Registry Architecture** establishing the discovery manifest as the normative standard and introducing `versions.json` as an optional fast-sync optimization.
 
 ---
 
@@ -36,7 +35,6 @@ All domain taxonomy, author attribution, and origin coordinates MUST reside insi
 In monorepos and registries (like `skills.danicat.dev`), declaring file extensions or multiple redundant URLs creates unnecessary maintenance friction. 
 - Declaring `metadata.catalog: https://skills.danicat.dev` points to the base origin.
 - Downstream tools resolve `https://skills.danicat.dev/.well-known/agent-skills/index.json` per IETF RFC 8615 well-known URI conventions.
-- Fast-sync CLIs probe `https://skills.danicat.dev/versions.json`.
 - Standalone solo skill authors who do not maintain a JSON catalog declare `metadata.repository: https://github.com/alice/my-skill` instead.
 
 ```
@@ -138,27 +136,6 @@ Adheres 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.
       "digest": "sha256:cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a"
     }
   ]
-}
-```
-
----
-
-### 3.4 Optional Fast-Sync Optimization (`/.well-known/agent-skills/versions.json`)
-
-For sub-millisecond client CLI differential synchronizations, registries MAY publish a compact key-value map:
-
-```json
-{
-  "updatedAt": "2026-08-23T00:00:00.000Z",
-  "totalSkills": 28,
-  "skills": {
-    "godoctor": {
-      "v": "0.2.0",
-      "h": "cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a",
-      "c": "coding",
-      "u": "https://skills.danicat.dev/coding/godoctor/SKILL.md"
-    }
-  }
 }
 ```
 

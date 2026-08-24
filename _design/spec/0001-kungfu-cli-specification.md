@@ -26,8 +26,8 @@
    - Eliminates cognitive friction and agent tool-calling hallucinations by unifying all content retrieval (root playbooks, references, scripts, assets) into a single verb: `kungfu load <skill>[/<relpath>]`.
 4. **Decentralized RFC 8615 Well-Known Resolution**:
    - Registries are addressed by their base origin (e.g. `https://skills.danicat.dev`). KungFu automatically completes the standard `/.well-known/agent-skills/index.json` discovery path.
-5. **Resilient Dual-Manifest Synchronization**:
-   - Probes lightweight `/.well-known/agent-skills/versions.json` ($< 2\text{ KB}$) for lightning-fast hash diffing; gracefully falls back to standard `/.well-known/agent-skills/index.json` with HTTP `ETag` conditional caching.
+5. **HTTP ETag Conditional Synchronization**:
+   - Employs HTTP `ETag` and `If-None-Match` conditional caching on `/.well-known/agent-skills/index.json` for zero-bandwidth `304 Not Modified` fast-sync validation.
 6. **Centralized 3-Way State Safety Gates**:
    - Central state manifest at `~/.config/kungfu/state.json` tracks package digests (SHA-256) and protects local developer modifications from accidental overwrites during batch updates.
 
@@ -315,8 +315,8 @@ Adheres 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.
 }
 ```
 
-#### RFC 8615 Base URL Resolution:
-When a registry URL is supplied without a path component (e.g. `https://skills.danicat.dev`), KungFu automatically appends `/.well-known/agent-skills/index.json` or `/.well-known/agent-skills/versions.json`.
+#### RFC 8615 Base URL Resolution & HTTP Conditional Caching:
+When a registry URL is supplied without a path component (e.g. `https://skills.danicat.dev`), KungFu automatically appends `/.well-known/agent-skills/index.json`.
 
 ```mermaid
 sequenceDiagram
@@ -325,21 +325,17 @@ sequenceDiagram
     participant Cache as Local Disk Cache (~/.cache/kungfu/)
     participant Remote as Remote Registry
 
-    CLI->>Cache: 1. Check cached versions.json (TTL = 1 hour)
-    alt Cache Valid
-        Cache-->>CLI: Return local versions.json
-    else Cache Expired / Missing
-        CLI->>Remote: 2. GET /.well-known/agent-skills/versions.json (If-None-Match: "<etag>")
+    CLI->>Cache: 1. Check cached index.json & saved ETag
+    alt Cache Valid (within TTL)
+        Cache-->>CLI: Return local cached index.json
+    else Cache Expired or Missing
+        CLI->>Remote: 2. GET /.well-known/agent-skills/index.json (If-None-Match: "<etag>")
         alt 304 Not Modified
             Remote-->>CLI: 304 Not Modified (0 bytes body)
-            CLI->>Cache: Touch cache TTL
+            CLI->>Cache: Touch cache TTL & reuse cached index.json
         else 200 OK
-            Remote-->>CLI: 200 OK + compact versions.json (< 2 KB)
-            CLI->>Cache: Write updated versions.json
-        else 404 Not Found (Fallback to Standard Discovery)
-            CLI->>Remote: GET /.well-known/agent-skills/index.json
-            Remote-->>CLI: 200 OK + standard discovery manifest (~12 KB)
-            CLI->>Cache: Synthesize local cache
+            Remote-->>CLI: 200 OK + updated index.json + new ETag
+            CLI->>Cache: Write updated index.json & record ETag
         end
     end
     CLI->>CLI: 3. Compute local SHA-256 and diff in-memory (< 1ms)

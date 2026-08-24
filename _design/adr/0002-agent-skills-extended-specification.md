@@ -71,7 +71,7 @@ metadata:
 ---
 ```
 
-1. **`metadata.catalog` (Base Origin Coordinate)**: Points directly to the authoritative registry base URL (`https://skills.danicat.dev`). Downstream tools automatically resolve `/.well-known/agent-skills/index.json` or `/versions.json`.
+1. **`metadata.catalog` (Base Origin Coordinate)**: Points directly to the authoritative registry base URL (`https://skills.danicat.dev`). Downstream tools automatically resolve `/.well-known/agent-skills/index.json`.
 2. **`metadata.repository` (Fallback for Standalone Skills)**: Used only when a skill author publishes an isolated repository without an associated catalog.
 3. **Purged Fields**: `homepage`, `canonical`, and redundant `repository` (in catalog-managed skills) are purged from `SKILL.md` frontmatter.
 
@@ -89,26 +89,6 @@ metadata:
 │ Tier 2 │ SKILL.md Markdown Body   │ <= 5,000 tokens │ On Skill Activation   │
 │ Tier 3 │ references/ & scripts/   │ Dynamic / Tools │ On-Demand Tool Calls  │
 └────────┴──────────────────────────┴─────────────────┴───────────────────────┘
-```
-
----
-
-### 2.4 Fast-Sync Optimization Manifest (`/.well-known/agent-skills/versions.json`)
-To enable sub-5ms CLI hash comparisons (`kungfu update` / `kungfu list --all`) without downloading large payloads, registries publish a separate, unpolluted key-value hash map:
-
-```json
-{
-  "updatedAt": "2026-08-23T00:00:00.000Z",
-  "totalSkills": 28,
-  "skills": {
-    "godoctor": {
-      "v": "0.2.0",
-      "h": "cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a",
-      "c": "coding",
-      "u": "https://skills.danicat.dev/coding/godoctor/SKILL.md"
-    }
-  }
-}
 ```
 
 ---
