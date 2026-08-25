@@ -93,6 +93,13 @@
       "digest": "sha256:16fc94d0a1d9a067e1f5141a8d53377a84d26e27643d64f7ec6c789cd280993e"
     },
     {
+      "name": "intercom",
+      "type": "skill-md",
+      "description": "Inter-session communication mesh connecting independent terminal sessions on the same host via Unix Domain Sockets and dedicated Comms Subagents. Features zero-config discovery, non-blocking duplex messaging, crash-resilient mailbox spooling, and automatic leader election via kernel advisory locks. Activate when coordinating multi-agent workflows across separate workspaces, delegating tasks between independent terminal sessions, relaying test failures or code diffs, or establishing a local agent mesh network.",
+      "url": "https://skills.danicat.dev/agents/intercom/SKILL.md",
+      "digest": "sha256:bd373029e78aed911cf80726574a2448c36be4315cac143f719eb58c9946963a"
+    },
+    {
       "name": "skill-optimizer",
       "type": "skill-md",
       "description": "Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.",
@@ -153,7 +160,7 @@
       "type": "skill-md",
       "description": "Editorial workflow and platform playbooks for drafting developer-native social media copy and campaigns. Extracts technical evidence via git log inspections or /grill-me interviews, establishes a canonical foundation narrative (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate when drafting social media posts, writing release announcements, authoring technical threads, or running developer campaigns.",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
-      "digest": "sha256:cce52acf87f9878a7df09d3324efdf8f6a7bdc54c3267325522f916acd440be2"
+      "digest": "sha256:b4e9ae71b450d86d835dfe4798ce06e54c18371e063d63e4f27ba5c37a462d93"
     },
     {
       "name": "buffer-analytics",

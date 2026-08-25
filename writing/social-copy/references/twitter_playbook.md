@@ -25,6 +25,11 @@ X's ranking engine utilizes transformer embeddings and graph clusters that rewar
 - **Hashtags are essentially obsolete for organic reach on X.** The algorithm indexes text via semantic NLP and embeddings.
 - Using 3+ hashtags triggers spam dampeners and looks amateurish. Use **0 hashtags** (or max 1 if participating in a recognized live event/conference).
 
+### Publishing Cadence & Spacing Buffers
+- **Early Engagement Velocity:** X heavily weights engagement signals (likes, reposts, and replies) that occur in the first 15–30 minutes after publishing.
+- **The 2-to-3 Hour Spacing Rule:** While high daily volume is effective (2–5 posts/day), standalone broadcast tweets must be separated by at least **2 to 3 hours**. Rapid clustering (posting multiple standalone tweets in minutes or under an hour) splits follower attention, causes subsequent tweets to miss the early velocity threshold, and leads to algorithmic suppression.
+- **Threads vs. Clustered Standalone Posts:** When publishing multiple related thoughts in the same sitting, package them as a connected **Thread** so all interaction signals aggregate into the parent post rather than competing against each other.
+
 ---
 
 ## 2. Formatting & Post Ergonomics

@@ -30,7 +30,6 @@ const ROOT_DOMAIN = 'https://danicat.dev';
 const SUB_DOMAIN = 'https://skills.danicat.dev';
 const REPO_URL = 'https://github.com/danicat/skills';
 const GA_MEASUREMENT_ID = 'G-8RHDQGEGZ2';
-const ENABLE_KUNGFU = process.env.ENABLE_KUNGFU === 'true' || false;
 
 const CATEGORIES = [
   { id: 'game-dev', name: 'Game Development', emoji: '🕹️', description: 'Design and build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD specifications.' },
@@ -884,7 +883,7 @@ const COMMON_CSS = `
       gap: 0.35rem;
       margin-bottom: -1px;
       position: relative;
-      z-index: 1;
+      z-index: 2;
       flex-wrap: wrap;
     }
 
@@ -893,8 +892,8 @@ const COMMON_CSS = `
       border: 1px solid var(--border);
       border-bottom: none;
       border-radius: 6px 6px 0 0;
-      padding: 0.35rem 0.75rem;
-      font-size: 0.8rem;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.85rem;
       font-weight: 600;
       font-family: var(--font-mono);
       color: var(--text-muted);
@@ -914,30 +913,75 @@ const COMMON_CSS = `
       border-bottom: 1px solid var(--code-bg);
     }
 
-    .install-tab-content {
+    .install-panel {
       display: none;
-    }
-
-    .install-tab-content.active {
-      display: block;
-    }
-
-    .install-tab-content .install-box {
-      border-top-left-radius: 0;
-      margin-bottom: 0;
-    }
-
-    .install-box {
-      display: flex;
-      align-items: center;
       background: var(--code-bg);
       border: 1px solid var(--code-border);
-      border-radius: 8px;
-      padding: 0.65rem 1rem;
+      border-radius: 0 8px 8px 8px;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .install-panel.active {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .cmd-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .cmd-row-label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cmd-box-row {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.85rem;
       font-family: var(--font-mono);
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       color: var(--text-heading);
-      margin-bottom: 1.25rem;
+    }
+
+    .cmd-box-row .cmd-text {
+      flex: 1;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .cmd-copy-btn {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem 0.65rem;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: 0.6rem;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .cmd-copy-btn:hover {
+      color: var(--primary);
+      border-color: var(--primary);
     }
 
     .install-cmd {
@@ -1591,7 +1635,7 @@ function renderSkillCard(s, options = { showCategoryBadge: true }) {
           </div>
 
           <div class="card-bottom">
-            <div class="cmd-box" ${ENABLE_KUNGFU ? `data-npx="${escapeHtml(s.installCommand)}" data-kungfu-load="${escapeHtml(s.kungfuLoadCommand)}" data-kungfu-learn="${escapeHtml(s.kungfuLearnCommand)}" data-raw-url="${escapeHtml(s.url)}"` : `data-npx="${escapeHtml(s.installCommand)}"`}>
+            <div class="cmd-box" data-npx="${escapeHtml(s.installCommand)}" data-kungfu="${escapeHtml(s.kungfuLoadCommand)}">
               <span class="cmd-text">${s.installCommand}</span>
               <button class="copy-button" onclick="handleCardCopy(this, '${s.category}', '${s.name.toLowerCase()}')" title="Copy install command">
                 <span>📋</span> Copy
@@ -2169,47 +2213,51 @@ ${COMMON_CSS}
         </div>
       </div>
 
-      <div class="install-widget">
+      <div class="install-widget tab-container">
         <div class="install-tabs">
-          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'tab-npx-add')">npx skills add</button>${ENABLE_KUNGFU ? `
-          <button type="button" class="install-tab-btn kungfu-tab" onclick="switchInstallTab(this, 'tab-kungfu-load')">kungfu load (JIT)</button>
-          <button type="button" class="install-tab-btn kungfu-tab" onclick="switchInstallTab(this, 'tab-kungfu-learn')">kungfu learn (Persist)</button>` : ''}
-          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'tab-raw-url')">Raw URL</button>
+          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'detail-tab-npx')">npx skills</button>
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'detail-tab-kungfu')">kungfu</button>
         </div>
 
-        <div id="tab-npx-add" class="install-tab-content active">
-          <div class="install-box">
-            <span class="install-cmd">${escapeHtml(skill.installCommand)}</span>
-            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand)}', this)" title="Copy command">
-              <span>📋</span> Copy
-            </button>
+        <div id="detail-tab-npx" class="install-panel active">
+          <div class="cmd-row">
+            <span class="cmd-row-label">Workspace Install</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">${escapeHtml(skill.installCommand)}</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand)}', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
           </div>
-        </div>${ENABLE_KUNGFU ? `
-
-        <div id="tab-kungfu-load" class="install-tab-content kungfu-pane">
-          <div class="install-box">
-            <span class="install-cmd">${escapeHtml(skill.kungfuLoadCommand)}</span>
-            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLoadCommand)}', this)" title="Copy command">
-              <span>📋</span> Copy
-            </button>
+          <div class="cmd-row">
+            <span class="cmd-row-label">Global Install</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">${escapeHtml(skill.installCommand.replace('add danicat/skills', 'add danicat/skills -g'))}</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.installCommand.replace('add danicat/skills', 'add danicat/skills -g'))}', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
           </div>
         </div>
 
-        <div id="tab-kungfu-learn" class="install-tab-content kungfu-pane">
-          <div class="install-box">
-            <span class="install-cmd">${escapeHtml(skill.kungfuLearnCommand)}</span>
-            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLearnCommand)}', this)" title="Copy command">
-              <span>📋</span> Copy
-            </button>
+        <div id="detail-tab-kungfu" class="install-panel">
+          <div class="cmd-row">
+            <span class="cmd-row-label">JIT Load (On-demand streaming into context)</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">${escapeHtml(skill.kungfuLoadCommand)}</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLoadCommand)}', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
           </div>
-        </div>` : ''}
-
-        <div id="tab-raw-url" class="install-tab-content">
-          <div class="install-box">
-            <span class="install-cmd">${escapeHtml(skill.url)}</span>
-            <button type="button" class="copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.url)}', this)" title="Copy URL">
-              <span>📋</span> Copy
-            </button>
+          <div class="cmd-row">
+            <span class="cmd-row-label">Learn (Persist locally or globally with -g)</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">${escapeHtml(skill.kungfuLearnCommand)}</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('${escapeHtml(skill.kungfuLearnCommand)}', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -2288,10 +2336,10 @@ ${COMMON_CSS}
     }
 
     function switchInstallTab(btn, targetId) {
-      const widget = btn.closest('.install-widget');
+      const widget = btn.closest('.tab-container') || btn.closest('.install-widget');
       if (!widget) return;
       widget.querySelectorAll('.install-tab-btn').forEach(b => b.classList.remove('active'));
-      widget.querySelectorAll('.install-tab-content').forEach(c => c.classList.remove('active'));
+      widget.querySelectorAll('.install-panel').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       const target = widget.querySelector('#' + targetId);
       if (target) target.classList.add('active');
@@ -2957,16 +3005,14 @@ ${COMMON_CSS}
         ${allCategories.map(c => `
           <a href="/${c.id}/" class="pill-btn ${c.id === category.id ? 'active' : ''}">${c.emoji} ${escapeHtml(c.name)} (${allSkills.filter(s => s.category === c.id).length})</a>
         `).join('')}
-      </div>${ENABLE_KUNGFU ? `
+      </div>
       <div class="cli-mode-bar" style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
         <span style="font-weight: 500;">CLI Mode:</span>
         <div class="cli-mode-pills" style="display: flex; gap: 0.35rem;">
           <button type="button" class="mode-pill active" onclick="setGlobalCliMode('npx', this)">npx skills</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-load', this)">kungfu load</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-learn', this)">kungfu learn</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('raw-url', this)">Raw URL</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu', this)">kungfu</button>
         </div>
-      </div>` : ''}
+      </div>
     </section>
 
     <main>
@@ -3052,7 +3098,7 @@ ${COMMON_CSS}
 
     hydrateCardsFromLocal();
     initFirestoreLiveMetrics();
-${ENABLE_KUNGFU ? `
+
     function setGlobalCliMode(mode, btn) {
       document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -3060,12 +3106,8 @@ ${ENABLE_KUNGFU ? `
       document.querySelectorAll('.cmd-box').forEach(box => {
         const textSpan = box.querySelector('.cmd-text');
         if (!textSpan) return;
-        if (mode === 'kungfu-load') {
-          textSpan.innerText = box.getAttribute('data-kungfu-load');
-        } else if (mode === 'kungfu-learn') {
-          textSpan.innerText = box.getAttribute('data-kungfu-learn');
-        } else if (mode === 'raw-url') {
-          textSpan.innerText = box.getAttribute('data-raw-url');
+        if (mode === 'kungfu') {
+          textSpan.innerText = box.getAttribute('data-kungfu');
         } else {
           textSpan.innerText = box.getAttribute('data-npx');
         }
@@ -3076,7 +3118,7 @@ ${ENABLE_KUNGFU ? `
     if (savedMode) {
       const modeBtn = document.querySelector('.mode-pill[onclick*="' + savedMode + '"]');
       if (modeBtn) setGlobalCliMode(savedMode, modeBtn);
-    }` : ''}
+    }
   </script>
 </body>
 </html>`;
@@ -3199,13 +3241,7 @@ async function build() {
   // 1. CNAME
   fs.writeFileSync(path.join(SITE_DIR, 'CNAME'), 'skills.danicat.dev\n');
 
-  // 2. Root SKILL.md (Catalog Gateway)
-  const rootSkillPath = path.join(ROOT_DIR, 'SKILL.md');
-  if (fs.existsSync(rootSkillPath)) {
-    fs.copyFileSync(rootSkillPath, path.join(SITE_DIR, 'SKILL.md'));
-  }
-
-  // 3. llms.txt
+  // 2. llms.txt
   let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.\n\n`;
   for (const cat of CATEGORIES) {
     const catSkills = skills.filter(s => s.category === cat.id);
@@ -3222,7 +3258,7 @@ async function build() {
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
-  // 4. llms-full.txt
+  // 3. llms-full.txt
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n\n`;
   for (const s of skills) {
     llmsFullTxt += `# Skill: ${s.name} (${s.category})\n\n> ${s.description}\n\n`;
@@ -3231,7 +3267,7 @@ async function build() {
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
 
-  // 5. Standard Discovery Manifest (.well-known/agent-skills/index.json)
+  // 4. Standard Discovery Manifest (.well-known/agent-skills/index.json)
   const discoveryManifest = {
     $schema: 'https://schemas.agentskills.io/discovery/0.2.0/schema.json',
     skills: skills.map(s => ({
@@ -3252,11 +3288,10 @@ async function build() {
   fs.mkdirSync(rootWellKnownDir, { recursive: true });
   fs.writeFileSync(path.join(rootWellKnownDir, 'index.json'), discoveryJson);
 
-  // 6. sitemap.xml
+  // 5. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/SKILL.md</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/index.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
@@ -3478,9 +3513,9 @@ ${COMMON_CSS}
       font-size: 0.82rem;
       color: var(--text-muted);
       margin: 0;
-    }${ENABLE_KUNGFU ? `
+    }
 
-    /* KungFu Home Feature Mode */
+    /* CLI Mode & Install Tab Styles */
     .mode-pill {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -3533,7 +3568,7 @@ ${COMMON_CSS}
       background: var(--code-bg);
       border-color: var(--code-border);
       border-bottom: 1px solid var(--code-bg);
-    }` : ''}
+    }
 
     /* Search & Filters */
     .search-filter-section {
@@ -3631,27 +3666,73 @@ ${COMMON_CSS}
       <h1>Agent Skills</h1>
       <p>A collection of focused skills for AI coding agents. Covers 2D Go games, Python tooling, engineering standards, technical writing, and generative media.</p>
 
-      <div class="gateway-banner">
+      <div class="gateway-banner tab-container">
         <div class="gateway-banner-header">
           <div class="gateway-title-wrap">
             <span>⚡</span>
-            <span>Get the complete catalog</span>
+            <span>Install &amp; Run Skills</span>
           </div>
-          <a href="/SKILL.md" class="gateway-link">View gateway SKILL.md →</a>
-        </div>${ENABLE_KUNGFU ? `
-        <div class="install-tabs">
-          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'npx skills add danicat/skills -y')">npx skills add</button>
-          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'kungfu load catalog')">kungfu load</button>
-          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'kungfu learn catalog')">kungfu learn</button>
-          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'https://skills.danicat.dev/SKILL.md')">Raw URL</button>
-        </div>` : ''}
-        <div class="gateway-install-box">
-          <span class="gateway-cmd" id="gatewayCmdText">npx skills add danicat/skills -y</span>
-          <button class="gateway-copy-btn" onclick="copyInstall(document.getElementById('gatewayCmdText').innerText, this)" title="Copy install command">
-            <span>📋</span> Copy
-          </button>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <a href="https://github.com/danicat/skills" target="_blank" rel="noopener" class="gateway-link">GitHub ↗</a>
+            <a href="https://github.com/danicat/kungfu" target="_blank" rel="noopener" class="gateway-link">KungFu CLI ↗</a>
+          </div>
         </div>
-        <p class="gateway-caption">Adds an on-demand router to your coding agent so it can fetch any skill in this collection as you work.</p>
+
+        <div class="install-tabs">
+          <button type="button" class="install-tab-btn active" onclick="switchInstallTab(this, 'home-tab-npx')">npx skills</button>
+          <button type="button" class="install-tab-btn" onclick="switchInstallTab(this, 'home-tab-kungfu')">kungfu</button>
+        </div>
+
+        <div id="home-tab-npx" class="install-panel active">
+          <div class="cmd-row">
+            <span class="cmd-row-label">Add a Specific Skill</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">npx skills add danicat/skills --skill &lt;skill-name&gt; -y</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyCommand('npx skills add danicat/skills --skill &lt;skill-name&gt; -y', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-row-label">Add All Skills</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">npx skills add danicat/skills -y</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyCommand('npx skills add danicat/skills -y', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-row-label">Add Globally (All Workspaces)</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">npx skills add danicat/skills -g -y</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyCommand('npx skills add danicat/skills -g -y', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="home-tab-kungfu" class="install-panel">
+          <div class="cmd-row">
+            <span class="cmd-row-label">JIT Load (Stream skill on-demand directly into agent context)</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">kungfu load &lt;skill-name&gt;</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyCommand('kungfu load &lt;skill-name&gt;', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+          <div class="cmd-row">
+            <span class="cmd-row-label">Learn / Persist (Download and register skill in workspace or globally with -g)</span>
+            <div class="cmd-box-row">
+              <span class="cmd-text">kungfu learn &lt;skill-name&gt;</span>
+              <button type="button" class="cmd-copy-btn" onclick="copyCommand('kungfu learn &lt;skill-name&gt;', this)" title="Copy command">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3663,16 +3744,14 @@ ${COMMON_CSS}
       <div class="category-pills" id="categoryFilters">
         <button class="pill-btn active" data-cat="all">All (${skills.length})</button>
         ${CATEGORIES.map(c => `<button class="pill-btn" data-cat="${c.id}">${c.emoji} ${c.name} (${skills.filter(s => s.category === c.id).length})</button>`).join('\n        ')}
-      </div>${ENABLE_KUNGFU ? `
+      </div>
       <div class="cli-mode-bar" style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-top: -0.25rem;">
         <span style="font-weight: 500;">CLI Mode:</span>
         <div class="cli-mode-pills" style="display: flex; gap: 0.35rem;">
           <button type="button" class="mode-pill active" onclick="setGlobalCliMode('npx', this)">npx skills</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-load', this)">kungfu load</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu-learn', this)">kungfu learn</button>
-          <button type="button" class="mode-pill" onclick="setGlobalCliMode('raw-url', this)">Raw URL</button>
+          <button type="button" class="mode-pill" onclick="setGlobalCliMode('kungfu', this)">kungfu</button>
         </div>
-      </div>` : ''}
+      </div>
     </section>
 
     <main>
@@ -3791,7 +3870,7 @@ ${COMMON_CSS}
     hydrateCardsFromLocal();
     initFirestoreLiveMetrics();
 
-    function copyInstall(cmd, btn) {
+    function copyCommand(cmd, btn) {
       navigator.clipboard.writeText(cmd).then(() => {
         const orig = btn.innerHTML;
         btn.innerHTML = '<span>✓</span> Copied';
@@ -3803,15 +3882,17 @@ ${COMMON_CSS}
           btn.style.color = '';
         }, 1500);
       });
-    }${ENABLE_KUNGFU ? `
-
-    function switchInstallTab(btn, cmd) {
-      btn.parentElement.querySelectorAll('.install-tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const cmdEl = document.getElementById('gatewayCmdText');
-      if (cmdEl) cmdEl.innerText = cmd;
     }
-    const switchGatewayTab = switchInstallTab;
+
+    function switchInstallTab(btn, targetId) {
+      const container = btn.closest('.tab-container');
+      if (!container) return;
+      container.querySelectorAll('.install-tab-btn').forEach(b => b.classList.remove('active'));
+      container.querySelectorAll('.install-panel').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const target = container.querySelector('#' + targetId);
+      if (target) target.classList.add('active');
+    }
 
     function setGlobalCliMode(mode, btn) {
       document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
@@ -3820,12 +3901,8 @@ ${COMMON_CSS}
       document.querySelectorAll('.cmd-box').forEach(box => {
         const textSpan = box.querySelector('.cmd-text');
         if (!textSpan) return;
-        if (mode === 'kungfu-load') {
-          textSpan.innerText = box.getAttribute('data-kungfu-load');
-        } else if (mode === 'kungfu-learn') {
-          textSpan.innerText = box.getAttribute('data-kungfu-learn');
-        } else if (mode === 'raw-url') {
-          textSpan.innerText = box.getAttribute('data-raw-url');
+        if (mode === 'kungfu') {
+          textSpan.innerText = box.getAttribute('data-kungfu');
         } else {
           textSpan.innerText = box.getAttribute('data-npx');
         }
@@ -3836,7 +3913,7 @@ ${COMMON_CSS}
     if (savedMode) {
       const modeBtn = document.querySelector('.mode-pill[onclick*="' + savedMode + '"]');
       if (modeBtn) setGlobalCliMode(savedMode, modeBtn);
-    }` : ''}
+    }
   </script>
 </body>
 </html>`;

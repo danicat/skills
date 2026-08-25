@@ -15,6 +15,11 @@ LinkedIn uses an **Interest & Authority Graph** that measures dwell time, techni
 - **Saves > Shares > Comments > Reactions:** Saves signal evergreen utility; shallow reactions ("Like") carry minimal algorithmic weight.
 - **Outbound Link Suppression (40–60% Penalty):** Links in the post body face severe reach throttling. Deliver 100% standalone value natively and place external URLs in the **first comment** (e.g. *"Full benchmarks & source code linked in the first comment 👇"*).
 
+### Publishing Cadence & Anti-Cannibalization Rules
+- **18–24 Hour Feed Lifecycle:** LinkedIn's algorithm operates on an extended 18–48 hour distribution cycle.
+- **Intra-Day Self-Cannibalization:** Publishing a second personal post within 18–24 hours causes LinkedIn's feed engine to throttle distribution across both posts (an estimated ~30% reach reduction for the first post and suppressed distribution for the second) to prevent multi-post flooding in follower feeds.
+- **Optimal Personal Cadence:** Maximum **1 post per 24 hours** (3 to 5 high-quality posts per week). Allow each post a full 24-hour window to cycle through its engagement runway.
+
 ---
 
 ## 2. Hook Window & Formatting Mechanics

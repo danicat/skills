@@ -27,12 +27,14 @@ Never use these generic filler words and phrases in developer copy:
 ## 2. Platform-Specific Anti-Patterns
 
 ### LinkedIn Anti-Patterns
+- **Intra-Day Multi-Posting (Self-Cannibalization):** Posting 2+ times in under 18–24 hours throttles both posts by ~30%+ due to feed diversity caps.
 - **"Broetry" & Fake Epiphanies:** Dramatic single-line staccato sentences linking mundane chores to system architecture (*"I watched my espresso drip this morning and realized Kafka partitions work the same way..."*).
 - **Unicode Bold / Italic Glyphs:** Formatting text with `𝗕𝗼𝗹𝗱` glyphs breaks screen readers (accessibility failure), destroys search indexing, and inflates character counts.
 - **Generic Hashtag Stuffing:** Using 5+ hashtags (`#tech #ai #software #coding #innovation`) flags posts as spam.
 - **In-Body Links Without Workaround:** Putting links directly in the post body cuts organic reach by 40–60%.
 
 ### Twitter / X Anti-Patterns
+- **Intra-Day Rapid Burst Posting:** Publishing multiple standalone tweets in a few minutes/hours without a 2–3 hour spacing buffer saturates follower feeds and kills early engagement velocity. Bundle related thoughts into a Thread instead.
 - **Hashtag Clutter:** Using multiple hashtags on X is obsolete and dampens reach under current semantic NLP indexing. Keep to 0 hashtags.
 - **Vague Curiosity Gaps:** *"10 tips senior engineers don't want you to know"* or *"I changed one line and you won't believe what happened"*.
 - **Code Walls Without Visuals:** Pasting unformatted monospaced text walls without syntax highlighting or Ray.so cards.

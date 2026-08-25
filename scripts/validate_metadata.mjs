@@ -44,8 +44,7 @@ const VALID_CATEGORIES = new Set([
   'agents',
   'writing',
   'analytics',
-  'standards',
-  'gateway'
+  'standards'
 ]);
 
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/;
@@ -251,15 +250,8 @@ export function validateAllSkills() {
 
   const results = [];
 
-  // 1. Root Gateway SKILL.md
-  const rootSkillPath = path.join(ROOT_DIR, 'SKILL.md');
-  if (fs.existsSync(rootSkillPath)) {
-    results.push(validateSkillFile(rootSkillPath, true));
-  }
-
-  // 2. All Category SKILL.md files
+  // All Category SKILL.md files
   for (const cat of VALID_CATEGORIES) {
-    if (cat === 'gateway') continue;
     const catDir = path.join(ROOT_DIR, cat);
     if (!fs.existsSync(catDir)) continue;
 

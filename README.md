@@ -57,8 +57,10 @@ Engineering workflow standards, compiler gates, package resolvers, and language-
 Frameworks, multi-agent swarm orchestration, and skill authoring tools.
 
 * **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
+* **[`intercom`](agents/intercom/SKILL.md)**: Inter-session communication mesh connecting independent terminal sessions via Unix Domain Sockets and dedicated Comms Subagents with zero network configuration, non-blocking duplex messaging, and crash-resilient mailbox spooling.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
+* **[`uno-reverse`](agents/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 
 ---
 

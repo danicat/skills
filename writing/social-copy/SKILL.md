@@ -13,7 +13,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -120,8 +120,12 @@ Review all drafts against [references/anti_patterns.md](references/anti_patterns
 When executing or automating campaign publication (e.g. via Buffer CLI):
 1. **Publishing Mode Confirmation Gate**:
    - Always ask the author whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule for a Specific Time** (`customScheduled`) before dispatching, unless explicitly commanded in the initial prompt.
-2. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
-3. **First-Comment Clipboard Pipeline (Free Tier Strategy)**:
+2. **Cadence & Spacing Buffer Enforcement**:
+   - **LinkedIn**: Enforce maximum 1 post per 24 hours to prevent intra-day self-cannibalization and algorithmic reach suppression.
+   - **Twitter / X**: Enforce a minimum 2-to-3 hour spacing buffer between standalone posts to protect early engagement velocity, or package same-sitting posts as a connected Thread.
+   - **Bluesky / Threads**: Maintain at least 1–2 hours between standalone broadcast posts.
+3. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
+4. **First-Comment Clipboard Pipeline (Free Tier Strategy)**:
    - For platforms where outbound links are placed in the first comment (such as LinkedIn) and the scheduler's automated comment API is restricted behind paid plans, dispatch the post with `mode: shareNow`.
    - **Immediately pipe the pre-formatted First Comment to the user's OS clipboard** (`pbcopy` on macOS, `xclip`/`wl-copy` on Linux).
    - Return the live post URL directly so the author can click the link and press `Cmd+V` / `Ctrl+V` immediately, avoiding forgotten comments and boosting the post's golden-hour engagement signal.
