@@ -11,7 +11,7 @@ description: >
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "ipc, mesh, multi-agent, subagents, sockets, comms"
+  tags: "ipc, mesh, multi-agent, subagents, sockets, comms, experimental"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
   catalog: https://skills.danicat.dev
@@ -23,12 +23,12 @@ metadata:
 
 ## Available scripts & assets
 
-- **`scripts/agy_ipc.py`** — Zero-dependency Unix Domain Socket transport, message router, auto-elected hub daemon, and sticky identity manager.
-- **`scripts/namegen.py`** — Sci-fi communications officer identity generator with sticky project persistence and channel collision protection.
-- **`scripts/test_ipc.py`** — Unit and integration test suite validating socket transport, leader election, NDJSON message framing, sticky identities, and clean restart lifecycles.
-- **`assets/agents/comms-officer.md`** — Dedicated subagent template for the Communications Officer.
-- **`references/comms-officer.md`** — Comprehensive guide to the Comms Officer subagent pattern and unblocked execution.
-- **`references/protocol.md`** — Low-level wire protocol, message envelope specification, socket framing, and persistence architecture.
+- **`scripts/agy_ipc.py`**: Zero-dependency Unix Domain Socket transport, message router, auto-elected hub daemon, and sticky identity manager.
+- **`scripts/namegen.py`**: Sci-fi communications officer identity generator with sticky project persistence and channel collision protection.
+- **`scripts/test_ipc.py`**: Unit and integration test suite validating socket transport, leader election, NDJSON message framing, sticky identities, and clean restart lifecycles.
+- **`assets/agents/comms-officer.md`**: Dedicated subagent template for the Communications Officer.
+- **`references/comms-officer.md`**: Comprehensive guide to the Comms Officer subagent pattern and unblocked execution.
+- **`references/protocol.md`**: Low-level wire protocol, message envelope specification, socket framing, and persistence architecture.
 
 ---
 

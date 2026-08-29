@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-08-29T16:40:22.414Z",
+  "updatedAt": "2026-08-29T16:44:38.223Z",
   "categories": [
     {
       "id": "game-dev",
@@ -287,13 +287,14 @@
         "multi-agent",
         "subagents",
         "sockets",
-        "comms"
+        "comms",
+        "experimental"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
       "version": "0.2.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/intercom/SKILL.md",
-      "digest": "sha256:4b02c8a24d165abec0347c64ef3ca7e74c3500d1daf16137b2269ae692ba2e38"
+      "digest": "sha256:2860c685bb9cc4327c9cbb1760769f084f40b417a32aea73340e6c9d51048a81"
     },
     {
       "name": "skill-optimizer",
