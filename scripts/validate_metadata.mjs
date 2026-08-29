@@ -229,7 +229,7 @@ function validateSkillFile(filePath, isGateway = false) {
   } else {
     if (!meta.catalog && !meta.repository) {
       errors.push("Missing required provenance field: either 'metadata.catalog' or 'metadata.repository' must be specified");
-    } else if (meta.catalog && meta.catalog !== DOMAIN && meta.catalog !== `${DOMAIN}/` && meta.catalog !== `${DOMAIN}/.well-known/agent-skills/index.json`) {
+    } else if (meta.catalog && meta.catalog !== DOMAIN && meta.catalog !== `${DOMAIN}/` && meta.catalog !== `${DOMAIN}/catalog.json` && meta.catalog !== `${DOMAIN}/.well-known/agent-skills/index.json`) {
       errors.push(`metadata.catalog mismatch: expected "${DOMAIN}", got "${meta.catalog}"`);
     }
   }

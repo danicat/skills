@@ -3254,7 +3254,7 @@ async function build() {
   }
   llmsTxt += `## Optional\n\n`;
   llmsTxt += `- [Full Instructions Catalog](${SUB_DOMAIN}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
-  llmsTxt += `- [Agent Skills Discovery Manifest](${SUB_DOMAIN}/.well-known/agent-skills/index.json): Standard machine-readable discovery manifest conforming to the agentskills.io schema.\n`;
+  llmsTxt += `- [Catalog Manifest](${SUB_DOMAIN}/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
   fs.writeFileSync(path.join(ROOT_DIR, 'llms.txt'), llmsTxt.trim() + '\n');
 
@@ -3267,32 +3267,42 @@ async function build() {
   }
   fs.writeFileSync(path.join(SITE_DIR, 'llms-full.txt'), llmsFullTxt.trim() + '\n');
 
-  // 4. Standard Discovery Manifest (.well-known/agent-skills/index.json)
-  const discoveryManifest = {
-    $schema: 'https://schemas.agentskills.io/discovery/0.2.0/schema.json',
+  // 4. Skills Catalog Manifest (catalog.json)
+  const catalogManifest = {
+    name: 'danicat/skills',
+    title: "Daniela's Agent Skills Catalog",
+    url: SUB_DOMAIN,
+    repository: REPO_URL,
+    totalSkills: skills.length,
+    updatedAt: new Date().toISOString(),
+    categories: CATEGORIES.map(c => ({
+      id: c.id,
+      name: c.name,
+      emoji: c.emoji,
+      description: c.description
+    })),
     skills: skills.map(s => ({
       name: s.name,
-      type: 'skill-md',
       description: s.description,
+      category: s.category,
+      tags: s.tags,
+      author: s.author,
+      version: s.version,
+      license: s.license,
       url: s.url,
-      digest: `sha256:${s.sha256}`
+      digest: s.digest
     }))
   };
-  const discoveryJson = JSON.stringify(discoveryManifest, null, 2);
+  const catalogJson = JSON.stringify(catalogManifest, null, 2);
 
-  const siteWellKnownDir = path.join(SITE_DIR, '.well-known', 'agent-skills');
-  fs.mkdirSync(siteWellKnownDir, { recursive: true });
-  fs.writeFileSync(path.join(siteWellKnownDir, 'index.json'), discoveryJson);
-
-  const rootWellKnownDir = path.join(ROOT_DIR, '.well-known', 'agent-skills');
-  fs.mkdirSync(rootWellKnownDir, { recursive: true });
-  fs.writeFileSync(path.join(rootWellKnownDir, 'index.json'), discoveryJson);
+  fs.writeFileSync(path.join(SITE_DIR, 'catalog.json'), catalogJson);
+  fs.writeFileSync(path.join(ROOT_DIR, 'catalog.json'), catalogJson);
 
   // 5. sitemap.xml
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   sitemapXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/.well-known/agent-skills/index.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+  sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/catalog.json</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   sitemapXml += `  <url>\n    <loc>${SUB_DOMAIN}/llms-full.txt</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
   for (const cat of CATEGORIES) {

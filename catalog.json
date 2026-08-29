@@ -1,206 +1,559 @@
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "name": "danicat/skills",
+  "title": "Daniela's Agent Skills Catalog",
+  "url": "https://skills.danicat.dev",
+  "repository": "https://github.com/danicat/skills",
+  "totalSkills": 29,
+  "updatedAt": "2026-08-29T16:40:22.414Z",
+  "categories": [
+    {
+      "id": "game-dev",
+      "name": "Game Development",
+      "emoji": "🕹️",
+      "description": "Design and build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD specifications."
+    },
+    {
+      "id": "media",
+      "name": "Generative Media",
+      "emoji": "🎨",
+      "description": "Synthesize high-fidelity stereo audio with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models."
+    },
+    {
+      "id": "coding",
+      "name": "Software Engineering",
+      "emoji": "💻",
+      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows."
+    },
+    {
+      "id": "agents",
+      "name": "AI Agents",
+      "emoji": "🤖",
+      "description": "Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, build A2UI streaming interfaces, and author verified Agent Skills."
+    },
+    {
+      "id": "writing",
+      "name": "Technical Writing",
+      "emoji": "✍️",
+      "description": "Author publication-grade engineering blogs, Google Codelabs tutorials, Inverted Pyramid documentation, anti-slop copy, and developer social copy."
+    },
+    {
+      "id": "analytics",
+      "name": "Data Analytics",
+      "emoji": "📊",
+      "description": "Ingest Google Analytics 4, Google Search Console, and Buffer metrics into local SQLite warehouses for deep SQL querying."
+    },
+    {
+      "id": "standards",
+      "name": "Engineering Standards",
+      "emoji": "📐",
+      "description": "Author immutable Architectural Decision Records (ADRs), collaborative Request for Comments (RFCs), and enforce Google open-source compliance."
+    }
+  ],
   "skills": [
     {
       "name": "ebitengineer",
-      "type": "skill-md",
       "description": "Engineering architecture and best practices for building 2D games in Go using Ebitengine (v2). Covers modular game architecture, scene state machines, virtual resolution scaling, delta-time physics, zero-allocation draw loops, Kage shaders, and WebAssembly audio synchronization. Activate when designing, building, optimizing, or debugging 2D games in Go, implementing game systems with Ebitengine, or compiling games to WebAssembly.",
+      "category": "game-dev",
+      "tags": [
+        "ebitengine",
+        "go",
+        "golang",
+        "game-dev",
+        "2d",
+        "wasm",
+        "shaders"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
       "digest": "sha256:a46fac4ab155ee6eec7b642e51e32687514b7d79fbd23f0b3a2b7197f6852194"
     },
     {
       "name": "game-design",
-      "type": "skill-md",
       "description": "Interactive game design workflow and Game Design Document (GDD) authoring guide for 2D games. Structures game ideation through interactive probing interviews, defining core gameplay loops, win and loss conditions, control schemes, visual asset pipelines, and audio strategies into a clean GDD.md. Activate when conceptualizing a new game, defining gameplay mechanics, conducting game design interviews (/grill-me), or authoring a Game Design Document.",
+      "category": "game-dev",
+      "tags": [
+        "gdd",
+        "mechanics",
+        "game-dev",
+        "prototyping"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/game-design/SKILL.md",
       "digest": "sha256:9c24f6789900777849dda51cd6897f2ab519e9566d9d0546205b4492abf5d5cc"
     },
     {
       "name": "procedural-art",
-      "type": "skill-md",
       "description": "Pure-code procedural graphics, sprite generation, and visual effects (VFX) guide for 2D games. Generates sprites, tilesets, particle systems, and vector shapes in memory without external image files, enforcing 2D matrix transformation order, sub-frame animation easing, and pre-allocated particle pools. Activate when creating procedural 2D sprites, building zero-asset games, designing particle effects, or implementing 2D matrix transformations.",
+      "category": "game-dev",
+      "tags": [
+        "game-dev",
+        "sprites",
+        "pixel-art",
+        "particles",
+        "vfx"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md",
       "digest": "sha256:30369dd1a96ea3be7bcb7ea12770d3c027eb63c4ff28ce66b1ff559ec17f65bd"
     },
     {
       "name": "procedural-composer",
-      "type": "skill-md",
       "description": "Pure-code procedural audio synthesis guide for sound effects (SFX) and polyphonic background music (BGM) in games. Generates 16-bit stereo PCM audio in memory without external audio files, featuring multi-channel polyphonic composition, ADSR envelopes, frequency modulation, and declarative JSON sound definitions with a CLI player and WAV exporter. Activate when synthesizing sound effects, composing chiptune background music, building zero-asset audio engines, or exporting procedural sounds to WAV.",
+      "category": "game-dev",
+      "tags": [
+        "procedural-audio",
+        "game-dev",
+        "chiptune",
+        "synth",
+        "sfx",
+        "bgm"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md",
       "digest": "sha256:79acfc87c486d85db571948f05d903bd0fe56e67d809abfa9d96b0bf4f4f0450"
     },
     {
       "name": "sprite-animation",
-      "type": "skill-md",
       "description": "2D sprite sheet management, frame animation sequencing, and Aseprite integration guide for games. Covers sprite grid slicing, animation state machines (idle, walk, attack, death), frame duration timing, tag loops, and Go animation controllers in Ebitengine. Activate when slicing sprite sheets, configuring character animations, integrating Aseprite files (.ase/.aseprite), or writing game animation controllers.",
+      "category": "game-dev",
+      "tags": [
+        "spritesheet",
+        "animation",
+        "keyframes",
+        "aseprite",
+        "game-dev",
+        "ebitengine"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md",
       "digest": "sha256:553fd2622e71890ad858fe751bc2721bfc3a01fda341b419538b037e0439f677"
     },
     {
       "name": "vibe-game-developer",
-      "type": "skill-md",
       "description": "Master orchestrator and workflow router for building 2D games in Go with Ebitengine. Coordinates the full game development lifecycle across concept design (GDD creation), engine architecture, asset pipelines (pure-code procedural vs. AI-generated media), animation controllers, and WebAssembly deployment. Activate when building a 2D game from scratch, planning game workflows, routing game asset requests, or managing end-to-end game projects.",
+      "category": "game-dev",
+      "tags": [
+        "game-dev",
+        "ebitengine",
+        "orchestrator",
+        "workflow",
+        "architecture",
+        "2d"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
       "digest": "sha256:5d23eae3734121ae8955773b936a991552d2281bc599f7d905a6a9f1d0b1bb99"
     },
     {
       "name": "lyria",
-      "type": "skill-md",
       "description": "Generative music and audio synthesis from text prompts or reference images using Google Lyria 3 models. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3-clip-preview and lyria-3-pro-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.",
+      "category": "media",
+      "tags": [
+        "music",
+        "audio",
+        "generative-ai",
+        "sound"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/lyria/SKILL.md",
       "digest": "sha256:1342bf7cefa092bd8927e85d78d5bed9930423835088fe7bfbfc78719d81366c"
     },
     {
       "name": "nano-banana",
-      "type": "skill-md",
       "description": "Conversational image generation and multimodal image editing tool using Google Nano Banana models. Generates high-resolution images (1K, 2K, 4K), performs style transfers and image edits (\"banana this\"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.",
+      "category": "media",
+      "tags": [
+        "image-generation",
+        "images",
+        "art",
+        "generative-ai"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/nano-banana/SKILL.md",
       "digest": "sha256:8bfc8c7d0dd443274cfcc0c9fc653273510f1bdaff61a7d255ca3b67153e4d36"
     },
     {
       "name": "engineering-flow",
-      "type": "skill-md",
       "description": "Engineering standards, decision pipelines, and code hygiene guidelines for software development. Covers architectural decision workflows (RFCs and ADRs), task prioritization, grounded technical research, semantic versioning, and clean code practices like explicit error handling and dead code removal. Activate when designing system architecture, planning releases, refactoring codebases, establishing project standards, or resolving technical uncertainty.",
+      "category": "coding",
+      "tags": [
+        "engineering",
+        "standards",
+        "architecture",
+        "workflow",
+        "quality",
+        "hygiene"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md",
       "digest": "sha256:efb5186721d66f5e74072194ade3f164094793a19bea93c3c09aff1edf3eca45"
     },
     {
       "name": "godoctor",
-      "type": "skill-md",
       "description": "Developer tooling and architectural safety rules for Go. Automatically validates AST integrity, guards against regressions with compiler rollback gates, eliminates blind spots via Selene mutation testing, and enables fast test and coverage analytics with TestQuery SQLite queries. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness with mutation testing, or enforcing idiomatic Go standards.",
+      "category": "coding",
+      "tags": [
+        "go",
+        "golang",
+        "testing",
+        "refactoring",
+        "quality",
+        "mutation-testing"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
       "digest": "sha256:a6c6f7c963f487c892e765f73444ca610932dd6843711e0932f39ad2164a4539"
     },
     {
       "name": "latest-version",
-      "type": "skill-md",
       "description": "Query and verify latest stable package versions from official registries (npm, PyPI, Go proxy, Cargo, RubyGems) and Gemini models. Resolves accurate version constraints, checks for deprecated or yanked packages, and prevents version guessing. Activate when adding or updating dependencies, initializing new projects, editing package manifests (such as package.json, go.mod, pyproject.toml, Cargo.toml), or selecting Gemini models.",
+      "category": "coding",
+      "tags": [
+        "dependencies",
+        "packages",
+        "versions",
+        "registry",
+        "optimization"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/latest-version/SKILL.md",
       "digest": "sha256:5a9d7521e51222570c1a8388fc8bd4f03271f5614dca328dc35ebb0f1899dc18"
     },
     {
       "name": "pyhd",
-      "type": "skill-md",
       "description": "Modern Python development workflow, project architecture, and code quality guidelines using uv, Ruff, and pytest. Enforces strict virtual environment isolation with uv, modern Python 3.10+ typing, AST-safe linting and formatting with Ruff, and automated pytest verification loops. Activate when creating, refactoring, testing, or building Python code, managing dependencies with uv, or configuring pyproject.toml.",
+      "category": "coding",
+      "tags": [
+        "python",
+        "uv",
+        "ruff",
+        "formatting",
+        "linting",
+        "testing"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/pyhd/SKILL.md",
       "digest": "sha256:5d7a2c641686dfd68ba95eec4cbd40854ad6a5fc6c199522001a2b4bbf752be4"
     },
     {
       "name": "double-diamond",
-      "type": "skill-md",
       "description": "Universal multi-agent orchestration workflow based on the Double Diamond framework (Inception -> Discovery -> Definition -> Development -> Delivery). Coordinates parallel subagents with context isolation to separate problem-space research from solution-space implementation. Activate for complex, high-ambiguity initiatives across software engineering, in-depth research, long-form writing, legal analysis, or product strategy requiring structured human alignment gates.",
+      "category": "agents",
+      "tags": [
+        "orchestration",
+        "workflow",
+        "research",
+        "planning",
+        "subagents",
+        "agile"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/double-diamond/SKILL.md",
       "digest": "sha256:16fc94d0a1d9a067e1f5141a8d53377a84d26e27643d64f7ec6c789cd280993e"
     },
     {
       "name": "intercom",
-      "type": "skill-md",
-      "description": "Inter-session communication mesh connecting independent terminal sessions on the same host via Unix Domain Sockets and dedicated Comms Subagents. Features zero-config discovery, non-blocking duplex messaging, crash-resilient mailbox spooling, and automatic leader election via kernel advisory locks. Activate when coordinating multi-agent workflows across separate workspaces, delegating tasks between independent terminal sessions, relaying test failures or code diffs, or establishing a local agent mesh network.",
+      "description": "Inter-session communication mesh connecting independent terminal sessions on the same host via Unix Domain Sockets and dedicated Comms Subagents. Features sticky project identities, zero impersonation, non-blocking duplex messaging, crash-resilient mailbox spooling, and automatic clean restart lifecycles. Activate when coordinating multi-agent workflows across separate workspaces, delegating tasks between independent terminal sessions, relaying test failures or code diffs, or establishing a local agent mesh network.",
+      "category": "agents",
+      "tags": [
+        "ipc",
+        "mesh",
+        "multi-agent",
+        "subagents",
+        "sockets",
+        "comms"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/intercom/SKILL.md",
-      "digest": "sha256:bd373029e78aed911cf80726574a2448c36be4315cac143f719eb58c9946963a"
+      "digest": "sha256:4b02c8a24d165abec0347c64ef3ca7e74c3500d1daf16137b2269ae692ba2e38"
     },
     {
       "name": "skill-optimizer",
-      "type": "skill-md",
       "description": "Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.",
+      "category": "agents",
+      "tags": [
+        "skills",
+        "agent-skills",
+        "optimization",
+        "standards"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.5.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
       "digest": "sha256:f58c45b1f42b2c1da077a27cb7f70b509841d7b6a55191657fa553c2098b2cbf"
     },
     {
       "name": "swarm-coding",
-      "type": "skill-md",
       "description": "Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, disjoint work allocations, and strict parent-child communication. Activate whenever the user mentions 'swarm', requests multi-agent team coordination, or needs context isolation across multiple technical domains.",
+      "category": "agents",
+      "tags": [
+        "swarm",
+        "subagents",
+        "parallel",
+        "orchestration",
+        "strategy",
+        "complexity",
+        "coordination"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md",
       "digest": "sha256:55a2fc6f2482272fe3f3cb1288854ea20e2b8074817aed3a9acf0e3894d6d40a"
     },
     {
       "name": "uno-reverse",
-      "type": "skill-md",
       "description": "Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.",
+      "category": "agents",
+      "tags": [
+        "simplification",
+        "red-team",
+        "architecture",
+        "occams-razor",
+        "minimalism",
+        "review",
+        "refactoring"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/uno-reverse/SKILL.md",
       "digest": "sha256:ebcbc0e6c021ee0b75db8f43933ae546c5880e94e2b64c6782c5262f423c3805"
     },
     {
       "name": "buffer",
-      "type": "skill-md",
       "description": "Manage, draft, schedule, and publish social media content across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) using the Buffer CLI (@bufferapp/cli). Covers account and channel inspection, queue scheduling with dry-run safety validation, draft ideas management, and GraphQL schema introspection. Activate when scheduling social media posts, inspecting Buffer channels, automating social publishing, or managing social queues.",
+      "category": "writing",
+      "tags": [
+        "social-media",
+        "publishing",
+        "automation",
+        "management"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
       "digest": "sha256:4c013f5f1706ca87994d052b4d6b6a21954608c7fe82ddc664d8825c3cf518f1"
     },
     {
       "name": "deslopify",
-      "type": "skill-md",
       "description": "Editorial guidelines and rewriting workflow for purging text of AI clichés, tropes, and formulaic filler. Identifies and removes overused AI vocabulary (such as delve, tapestry, seamlessly), negative parallelism, dramatic countdowns, and repetitive summaries to restore natural human cadence. Activate when rewriting text to remove AI tells, polishing drafts to sound authentically human, eliminating filler tropes, or auditing prose style.",
+      "category": "writing",
+      "tags": [
+        "writing",
+        "style",
+        "editing",
+        "quality"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/deslopify/SKILL.md",
       "digest": "sha256:00812fac37913982b253d096363883c974856a29718424b2a19c198d92ff61d5"
     },
     {
       "name": "google-blog-style",
-      "type": "skill-md",
       "description": "Style guide, legal compliance standards, and validation workflow for the Google Developers Blog. Enforces technical readability targets (Fog Index 12–15), professional tone, inclusive language, legal compliance, and style linting via Vale and Speedgrapher. Activate when drafting, editing, reviewing, or validating technical blog posts and articles for the Google Developers Blog.",
+      "category": "writing",
+      "tags": [
+        "google",
+        "blog",
+        "style-guide",
+        "writing",
+        "editorial",
+        "compliance"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/google-blog-style/SKILL.md",
       "digest": "sha256:e4e9520a26155eee3bcee3ae7e7776fcb9733498aacaa90585daab9140e8f376"
     },
     {
       "name": "inverted-pyramid",
-      "type": "skill-md",
       "description": "Structural guide and editorial model for organizing technical articles, developer documentation, and READMEs. Applies the Inverted Pyramid model to place high-value summaries and actionable quickstarts first, cascading down to usage workflows, architectural details, and compliance. Activate when structuring technical articles, writing or refactoring README files, organizing documentation hierarchy, or making technical guides scannable.",
+      "category": "writing",
+      "tags": [
+        "documentation",
+        "writing",
+        "structure",
+        "editorial",
+        "blog",
+        "style-guide"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md",
       "digest": "sha256:9dbd3322cbc15ea6b84e31298a4345993a98248df59377411e9615cddd16158f"
     },
     {
       "name": "seo-optimizer",
-      "type": "skill-md",
       "description": "Technical SEO and Generative Engine Optimization (GEO) guide for developer docs and engineering blogs. Optimizes content for search engines and AI answer engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from search description metadata, verifies JSON-LD structured data (TechArticle), and maintains llms.txt. Activate when auditing technical SEO, optimizing articles for AI answer engines (GEO), generating llms.txt, or structuring search metadata.",
+      "category": "writing",
+      "tags": [
+        "seo",
+        "geo",
+        "optimization",
+        "search-engines",
+        "blog",
+        "website",
+        "metadata"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md",
       "digest": "sha256:171505d71bcae67f9ba8a63009b075cd37f7416160f4b374d81091a51702e6ae"
     },
     {
       "name": "social-copy",
-      "type": "skill-md",
       "description": "Editorial workflow and platform playbooks for drafting developer-native social media copy and campaigns. Extracts technical evidence via git log inspections or /grill-me interviews, establishes a canonical foundation narrative (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate when drafting social media posts, writing release announcements, authoring technical threads, or running developer campaigns.",
+      "category": "writing",
+      "tags": [
+        "social-media",
+        "developer-marketing",
+        "writing",
+        "publishing",
+        "campaigns"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
       "digest": "sha256:b4e9ae71b450d86d835dfe4798ce06e54c18371e063d63e4f27ba5c37a462d93"
     },
     {
       "name": "buffer-analytics",
-      "type": "skill-md",
       "description": "Collect and analyze social media data from Buffer in a local SQLite database. Stores your full post history and metrics across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view reports on engagement, clicks, and views. Activate when you need to analyze social media performance, find the best days or times to post, identify top-performing content, or query Buffer data with SQL.",
+      "category": "analytics",
+      "tags": [
+        "buffer",
+        "social-media",
+        "analytics",
+        "sql",
+        "metrics",
+        "optimization"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/buffer-analytics/SKILL.md",
       "digest": "sha256:d165d7c7f0adb7865271c4980d722314c51252a8ee07bfe35f304872412545e4"
     },
     {
       "name": "google-analytics",
-      "type": "skill-md",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
+      "category": "analytics",
+      "tags": [
+        "ga4",
+        "analytics",
+        "traffic",
+        "metrics",
+        "optimization"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/google-analytics/SKILL.md",
       "digest": "sha256:b9120a1b7f0fbe85774567dad4093e10b7637def7e5d604a753d868e864fa46b"
     },
     {
       "name": "search-analytics",
-      "type": "skill-md",
       "description": "Collect and analyze Google Search Console organic search data in a local SQLite database. Stores clicks, impressions, click-through rates (CTR), average ranking positions, and landing pages so you can run SQL queries or view performance reports. Activate when analyzing Google Search traffic, tracking keyword rankings, finding SEO content optimization opportunities, or querying Search Console data with SQL.",
+      "category": "analytics",
+      "tags": [
+        "google-search",
+        "analytics",
+        "seo",
+        "geo",
+        "optimization"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/search-analytics/SKILL.md",
       "digest": "sha256:a7d67ca1611ccadb8ac39ff2f7cb6c07af0ec56f0ec7a8706b694a3240b433df"
     },
     {
       "name": "adr-template",
-      "type": "skill-md",
       "description": "Guide and template for authoring and maintaining Architecture Decision Records (ADRs). Captures structural decisions, background context, trade-offs, and compliance verification in lightweight, immutable markdown records to preserve engineering context. Activate when making significant architectural choices, documenting technical trade-offs, proposing major refactorings, or authoring ADRs.",
+      "category": "standards",
+      "tags": [
+        "adr",
+        "architecture",
+        "standards",
+        "documentation",
+        "design"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/standards/adr-template/SKILL.md",
       "digest": "sha256:b3c58d5e2a1e4850e9830c1bbbdc59588c11e4d327a6a9f7a1f917e935847c47"
     },
     {
       "name": "google-oss",
-      "type": "skill-md",
       "description": "Compliance and licensing guide for Google Open Source repositories and personal open-source projects published by Googlers. Enforces source file license headers (such as Apache-2.0) using addlicense, verifies license files, inserts required non-official product disclaimers, and audits pre-release compliance. Activate when preparing Google Open Source or Googler personal projects for release, applying copyright headers, or adding required disclaimers.",
+      "category": "standards",
+      "tags": [
+        "google",
+        "open-source",
+        "licensing",
+        "compliance",
+        "standards",
+        "copyright"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/standards/google-oss/SKILL.md",
       "digest": "sha256:2c2877f1125958ab2ea4daf2e77c10990010c0abe631a1fb6613dbaa59ad342f"
     },
     {
       "name": "rfc-template",
-      "type": "skill-md",
       "description": "Collaborative design proposal framework and template for Request for Comments (RFC) documents. Structures technical design proposals, explores alternative solutions, documents spikes and open questions, and tracks proposal lifecycle states before formalizing decisions into ADRs. Activate when proposing major features, exploring technical solutions under uncertainty, drafting design documents, or gathering engineering consensus.",
+      "category": "standards",
+      "tags": [
+        "rfc",
+        "design-docs",
+        "architecture",
+        "standards",
+        "proposals"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/standards/rfc-template/SKILL.md",
       "digest": "sha256:e124b5b0149a972c2509ffb3306e378a770db7ac3a6604e3006fa24dd1ba7a62"
     }

@@ -1,19 +1,19 @@
-# ADR-0002: Agent Skills Extended Specification — Progressive Disclosure, Intrinsic Provenance & 100% Spec-Compliant Discovery
+# ADR-0002: Agent Skills Extended Specification — Progressive Disclosure, Intrinsic Provenance & Standard Discovery
 
 - Status: Approved
 - Date: 2026-08-23
 - Author(s): Daniela Petruzalek (daniela@danicat.dev)
 - Deciders: Daniela Petruzalek (daniela@danicat.dev)
-- Target Standards: `agentskills.io` Discovery Specification v0.2.0, RFC-0003, SPEC-0001
+- Target Standards: RFC-0003, SPEC-0001
 - Supersedes: Portions of ADR-0001 relating to redundant frontmatter URLs (`homepage`, `canonical`, `repository`) and custom top-level catalog properties.
 
 ---
 
 ## 1. Context
 
-In ADR-0001, we established basic metadata conventions for Agent Skills (`SKILL.md`). However, as the ecosystem matured and third-party AI coding harnesses (Cursor, Claude Code, Codex, OpenDevin, Aider) introduced strict JSON schema validation, several critical architecture problems arose:
+In ADR-0001, we established basic metadata conventions for Agent Skills (`SKILL.md`). However, as the ecosystem matured and third-party AI coding harnesses (Cursor, Claude Code, Codex, OpenDevin, Aider) evolved, several critical architecture problems arose:
 
-1. **Schema Contamination in Discovery Manifests**: Adding non-standard custom fields (`categories[]`, `gateway`, `totalSkills`, `githubUrl`, `detailUrl`, `items[]`) to discovery manifests breaks downstream agent harnesses configured with strict validation (`additionalProperties: false`).
+1. **Schema Contamination in Discovery Manifests**: Adding non-standard custom fields (`categories[]`, `gateway`, `totalSkills`, `githubUrl`, `detailUrl`, `items[]`) to discovery manifests breaks downstream agent harnesses.
 2. **Redundant Provenance Triplication in Frontmatter**: Frontmatter in ADR-0001 required `homepage`, `canonical`, and `repository`. In monorepos and registries, all three URLs are mechanically derivable from the base catalog and the skill's category and name.
 3. **Duplicate Root Manifest Files**: Maintaining both `catalog.json` and `.well-known/agent-skills/index.json` created duplicate data files on disk.
 4. **Context Window Token Bloat**: Without explicit token accounting across progressive disclosure tiers, agent orchestrators risked saturating context windows during session startup.
@@ -25,17 +25,34 @@ In ADR-0001, we established basic metadata conventions for Agent Skills (`SKILL.
 
 We formally approve and enforce the **Agent Skills Extended Specification** across the repository and ecosystem:
 
-### 2.1 100% Spec-Compliant Discovery Manifest (`/.well-known/agent-skills/index.json`)
-The public discovery manifest MUST conform 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.json` with **zero custom top-level schema extensions**:
+### 2.1 Catalog Manifest (`/catalog.json`)
+The public catalog manifest publishes an essential `skills` array with search tags, origin coordinates, and cryptographic digests:
 
 ```json
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "name": "danicat/skills",
+  "title": "Daniela's Agent Skills Catalog",
+  "url": "https://skills.danicat.dev",
+  "repository": "https://github.com/danicat/skills",
+  "totalSkills": 29,
+  "updatedAt": "2026-08-29T16:27:31.877Z",
+  "categories": [
+    {
+      "id": "coding",
+      "name": "Software Engineering",
+      "emoji": "💻",
+      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows."
+    }
+  ],
   "skills": [
     {
       "name": "godoctor",
-      "type": "skill-md",
       "description": "Developer tooling and architectural safety rules for Go. Automatically validates AST integrity, guards against regressions with compiler rollback gates, eliminates blind spots via Selene mutation testing, and isolates test databases with TestQuery SQL transactions. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness with mutation testing, or enforcing idiomatic Go standards.",
+      "category": "coding",
+      "tags": ["go", "golang", "testing", "refactoring", "quality", "mutation-testing"],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
       "digest": "sha256:cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a"
     }
@@ -43,8 +60,8 @@ The public discovery manifest MUST conform 100% strictly to `https://schemas.age
 }
 ```
 
-- **RFC 8615 Standard Endpoint**: The manifest is published exclusively at `/.well-known/agent-skills/index.json`. Duplicate root `catalog.json` files are deleted.
-- **Zero Extraneous Fields**: All taxonomy, category metadata, and author details reside inside the individual `SKILL.md` files, keeping discovery manifests lean, fast, and universally parseable.
+- **Canonical Endpoint**: The manifest is published at `/catalog.json`.
+- **Search & Verification Metadata**: Category, tags, version, and digest information are exposed directly to empower high-speed offline search and update checks in client tools like `kungfu`.
 
 ---
 

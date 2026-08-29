@@ -24,10 +24,10 @@
    - Toolchain metadata (`catalog`, `repository`, `version`, `author`, `license`) is parsed by KungFu for management and **strictly stripped** when outputting prompts for AI context windows.
 3. **Primitive Collapsing & Universal Subpath Loading**:
    - Eliminates cognitive friction and agent tool-calling hallucinations by unifying all content retrieval (root playbooks, references, scripts, assets) into a single verb: `kungfu load <skill>[/<relpath>]`.
-4. **Decentralized RFC 8615 Well-Known Resolution**:
-   - Registries are addressed by their base origin (e.g. `https://skills.danicat.dev`). KungFu automatically completes the standard `/.well-known/agent-skills/index.json` discovery path.
+4. **Decentralized Catalog Resolution**:
+   - Registries are addressed by their base origin (e.g. `https://skills.danicat.dev`). KungFu automatically completes the standard `/catalog.json` discovery path.
 5. **HTTP ETag Conditional Synchronization**:
-   - Employs HTTP `ETag` and `If-None-Match` conditional caching on `/.well-known/agent-skills/index.json` for zero-bandwidth `304 Not Modified` fast-sync validation.
+   - Employs HTTP `ETag` and `If-None-Match` conditional caching on `/catalog.json` for zero-bandwidth `304 Not Modified` fast-sync validation.
 6. **Centralized 3-Way State Safety Gates**:
    - Central state manifest at `~/.config/kungfu/state.json` tracks package digests (SHA-256) and protects local developer modifications from accidental overwrites during batch updates.
 
@@ -208,7 +208,7 @@ kungfu learn godoctor --load
 ```
 
 #### Installation Flow:
-1. Resolves skill metadata and SHA-256 digest from remote discovery manifest (`/.well-known/agent-skills/index.json`) or local cache.
+1. Resolves skill metadata and SHA-256 digest from remote catalog manifest (`/catalog.json`) or local cache.
 2. Downloads `SKILL.md` (and any bundled companion files).
 3. Verifies SHA-256 digest (`digest: "sha256:<hex>"`) against registry manifest.
 4. Writes files atomically and updates `~/.config/kungfu/state.json` with the origin registry URL.
@@ -297,17 +297,34 @@ kungfu run pyhd validate_deps.py --strict
 
 ## 4. Registry Synchronization & State Architecture
 
-### 4.1 Normative Discovery Manifest (`/.well-known/agent-skills/index.json`)
-Adheres 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.json` with **zero custom schema extensions**:
+### 4.1 Catalog Manifest (`/catalog.json`)
+Standard catalog manifest format:
 
 ```json
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "name": "danicat/skills",
+  "title": "Daniela's Agent Skills Catalog",
+  "url": "https://skills.danicat.dev",
+  "repository": "https://github.com/danicat/skills",
+  "totalSkills": 29,
+  "updatedAt": "2026-08-29T16:27:31.877Z",
+  "categories": [
+    {
+      "id": "coding",
+      "name": "Software Engineering",
+      "emoji": "💻",
+      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows."
+    }
+  ],
   "skills": [
     {
       "name": "godoctor",
-      "type": "skill-md",
       "description": "Developer tooling and architectural safety rules for Go...",
+      "category": "coding",
+      "tags": ["go", "golang", "testing", "refactoring", "quality", "mutation-testing"],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
       "digest": "sha256:cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a"
     }
@@ -315,8 +332,8 @@ Adheres 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.
 }
 ```
 
-#### RFC 8615 Base URL Resolution & HTTP Conditional Caching:
-When a registry URL is supplied without a path component (e.g. `https://skills.danicat.dev`), KungFu automatically appends `/.well-known/agent-skills/index.json`.
+#### Base URL Resolution & HTTP Conditional Caching:
+When a registry URL is supplied without a path component (e.g. `https://skills.danicat.dev`), KungFu automatically appends `/catalog.json`.
 
 ```mermaid
 sequenceDiagram
@@ -325,17 +342,17 @@ sequenceDiagram
     participant Cache as Local Disk Cache (~/.cache/kungfu/)
     participant Remote as Remote Registry
 
-    CLI->>Cache: 1. Check cached index.json & saved ETag
+    CLI->>Cache: 1. Check cached catalog.json & saved ETag
     alt Cache Valid (within TTL)
-        Cache-->>CLI: Return local cached index.json
+        Cache-->>CLI: Return local cached catalog.json
     else Cache Expired or Missing
-        CLI->>Remote: 2. GET /.well-known/agent-skills/index.json (If-None-Match: "<etag>")
+        CLI->>Remote: 2. GET /catalog.json (If-None-Match: "<etag>")
         alt 304 Not Modified
             Remote-->>CLI: 304 Not Modified (0 bytes body)
-            CLI->>Cache: Touch cache TTL & reuse cached index.json
+            CLI->>Cache: Touch cache TTL & reuse cached catalog.json
         else 200 OK
-            Remote-->>CLI: 200 OK + updated index.json + new ETag
-            CLI->>Cache: Write updated index.json & record ETag
+            Remote-->>CLI: 200 OK + updated catalog.json + new ETag
+            CLI->>Cache: Write updated catalog.json & record ETag
         end
     end
     CLI->>CLI: 3. Compute local SHA-256 and diff in-memory (< 1ms)
@@ -379,7 +396,7 @@ Tracks package installation provenance, versioning, and origin registry base URL
 ## 6. Summary
 
 SPEC-0001 reflects the **100% spec-compliant, battle-tested architecture of KungFu v0.1**:
-1. **100% `agentskills.io` Discovery Compliance**: Direct consumption of `/.well-known/agent-skills/index.json` schema v0.2.0 via base origin URL resolution.
+1. **Decentralized Catalog Discovery**: Direct consumption of `/catalog.json` via base origin URL resolution.
 2. **Universal Subpath Loading with Symlink Security**: `kungfu load <skill>[/<relpath>]` with `os.Root` jail enforcement.
 3. **Multi-Registry Origin Pinning**: Central state manifest at `~/.config/kungfu/state.json` tracks the origin registry base domain for every installed skill.
 4. **9-Command Precision**: Complete lifecycle management (`list`, `find`, `show`, `load`, `learn`, `forget`, `update`, `status`, `run`).

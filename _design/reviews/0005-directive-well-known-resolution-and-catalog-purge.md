@@ -59,11 +59,10 @@ The `installed.<skill>.registry` field in `state.json` MUST store the clean base
 
 ## 3. Normative Discovery Manifest (`/.well-known/agent-skills/index.json`)
 
-Strictly adheres to `https://schemas.agentskills.io/discovery/0.2.0/schema.json` with **zero custom top-level fields**:
+Minimal manifest structure with **zero custom top-level fields**:
 
 ```json
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
       "name": "godoctor",

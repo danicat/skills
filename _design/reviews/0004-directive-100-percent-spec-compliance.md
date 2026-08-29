@@ -1,33 +1,30 @@
-# Architectural Directive: 100% agentskills.io Spec Compliance & Zero Schema Contamination
+# Architectural Directive: Clean Separation of Discovery Manifests & Metadata
 
 - Status: Mandatory / Non-Negotiable
 - Date: 2026-08-23
 - Author: Daniela Petruzalek (daniela@danicat.dev)
 - Target Audience: KungFu CLI Engineering Team & Catalog Compiler Maintainers
-- Normative Schema: `https://schemas.agentskills.io/discovery/0.2.0/schema.json`
 
 ---
 
 ## 1. Executive Directive
 
-**Business Directive: 100% SPEC COMPLIANCE.**
+**Business Directive: CLEAN DISCOVERY MANIFESTS.**
 
-The `agentskills.io` standard is an external, open specification. Modifying, extending, or introducing non-standard custom top-level fields into public discovery manifests (`catalog.json` / `index.json`) breaks third-party agent tools (Claude Code, Cursor, Codex, OpenDevin, Aider) that enforce strict JSON Schema validation (`additionalProperties: false`).
+Modifying, extending, or introducing non-standard custom top-level fields into public discovery manifests (`catalog.json` / `index.json`) creates unnecessary coupling and maintenance overhead.
 
-**Effective immediately, all catalog manifests published by this repository and consumed by the KungFu CLI must strictly adhere to the official specification with ZERO custom top-level schema fields.**
+**Effective immediately, all catalog manifests published by this repository and consumed by the KungFu CLI must remain minimal with ZERO custom top-level metadata fields.**
 
 ---
 
 ## 2. Normative Discovery Manifest Specification
 
-Discovery endpoints MUST be published at both:
+Discovery endpoints MUST be published at:
 1. `/.well-known/agent-skills/index.json` (Standard discovery path)
-2. `/catalog.json` (Canonical alias for backwards compatibility)
 
-### 2.1 Schema Definition
+### 2.1 Manifest Definition
 ```json
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
       "name": "godoctor",
@@ -41,14 +38,13 @@ Discovery endpoints MUST be published at both:
 ```
 
 ### 2.2 Field Invariants:
-1. **Root `$schema`**: Must be `"https://schemas.agentskills.io/discovery/0.2.0/schema.json"`.
-2. **Root `skills`**: Must be an array containing skill descriptor objects (renamed from legacy `items`).
-3. **`name`**: URL-safe slug (1–64 characters, lowercase alphanumeric and hyphens).
-4. **`type`**: String literal `"skill-md"`.
-5. **`description`**: Tier 1 routing description ($\le 1024$ characters).
-6. **`url`**: Direct HTTPS URI pointing to the target `SKILL.md`.
-7. **`digest`**: Cryptographic content hash prefixed with algorithm: `"sha256:<64-hex-characters>"`.
-8. **ZERO NON-STANDARD FIELDS**: Fields such as `category`, `tags`, `author`, `version`, `byteSize`, `tokenEstimate`, `detailUrl`, `githubUrl`, or `categories[]` MUST NOT be serialized into discovery manifests.
+1. **Root `skills`**: Must be an array containing skill descriptor objects (renamed from legacy `items`).
+2. **`name`**: URL-safe slug (1–64 characters, lowercase alphanumeric and hyphens).
+3. **`type`**: String literal `"skill-md"`.
+4. **`description`**: Tier 1 routing description ($\le 1024$ characters).
+5. **`url`**: Direct HTTPS URI pointing to the target `SKILL.md`.
+6. **`digest`**: Cryptographic content hash prefixed with algorithm: `"sha256:<64-hex-characters>"`.
+7. **ZERO NON-STANDARD FIELDS**: Fields such as `category`, `tags`, `author`, `version`, `byteSize`, `tokenEstimate`, `detailUrl`, `githubUrl`, or `categories[]` MUST NOT be serialized into discovery manifests.
 
 ---
 

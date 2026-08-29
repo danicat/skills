@@ -18,14 +18,22 @@
 # dependencies = []
 # ///
 """
-namegen.py — Legendary Comms Officers & Sci-Fi Agent Identity Generator
-Generates iconic, memorable codenames for inter-session multi-agent mesh communication.
+namegen.py: Legendary Comms Officers & Sticky Project Identity Generator
+Generates iconic, memorable codenames for inter-session multi-agent mesh communication,
+guaranteeing sticky project identities and zero-impersonation channel allocation.
 """
 
 import argparse
+import datetime
+import json
+import os
+import pathlib
 import random
 import sys
-from typing import Dict, List
+import uuid
+from typing import Any, Dict, List, Optional, Set
+
+DEFAULT_BASE_DIR = pathlib.Path(os.environ.get("AGY_IPC_DIR", "/tmp/agy-ipc"))
 
 # The Hall of Fame: Legendary Communications Officers, AI Runtimes & Tech Icons
 OFFICERS: List[Dict[str, str]] = [
@@ -144,17 +152,157 @@ OFFICERS: List[Dict[str, str]] = [
 ]
 
 
-def get_random_officer(include_uhura_boost: bool = True) -> Dict[str, str]:
-    """Select a random communications officer profile."""
-    if include_uhura_boost and random.random() < 0.25:
-        return OFFICERS[0]
-    return random.choice(OFFICERS)
+def find_officer_by_id(officer_id: str) -> Optional[Dict[str, str]]:
+    """Look up an officer profile by ID."""
+    for off in OFFICERS:
+        if off["id"] == officer_id:
+            return off.copy()
+    return None
+
+
+def get_random_officer(exclude_ids: Optional[Set[str]] = None, include_uhura_boost: bool = True) -> Dict[str, str]:
+    """Select a random communications officer profile, avoiding excluded IDs."""
+    available = [o for o in OFFICERS if not exclude_ids or o["id"] not in exclude_ids]
+    if not available:
+        # If all officers in roster are claimed, create a suffixed version of a random officer
+        base = random.choice(OFFICERS)
+        suffix = uuid.uuid4().hex[:4]
+        return {
+            "id": f"{base['id']}-{suffix}",
+            "name": f"{base['name']} ({suffix.upper()})",
+            "title": base["title"],
+            "ship": base["ship"],
+            "quote": base["quote"],
+        }
+
+    if include_uhura_boost and any(o["id"] == "nyota-uhura" for o in available) and random.random() < 0.25:
+        for o in available:
+            if o["id"] == "nyota-uhura":
+                return o.copy()
+
+    return random.choice(available).copy()
+
+
+def get_active_peers(channel: str, base_dir: pathlib.Path = DEFAULT_BASE_DIR) -> Set[str]:
+    """Retrieve active session IDs on a channel from peers.json."""
+    clean_channel = "".join(c for c in channel if c.isalnum() or c in ("-", "_")).lower()
+    if not clean_channel:
+        clean_channel = "default"
+    peers_path = base_dir / clean_channel / "peers.json"
+    if not peers_path.exists():
+        return set()
+    try:
+        with open(peers_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return set(data.get("active_sessions", []))
+    except Exception:
+        return set()
+
+
+def ensure_gitignore(project_dir: pathlib.Path) -> None:
+    """Ensure .intercom directory is ignored by git if git repository is present."""
+    git_dir = project_dir / ".git"
+    gitignore_path = project_dir / ".gitignore"
+    if not git_dir.exists() and not gitignore_path.exists():
+        return
+    try:
+        content = ""
+        if gitignore_path.exists():
+            with open(gitignore_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        lines = [line.strip() for line in content.splitlines()]
+        if ".intercom" not in lines and ".intercom/" not in lines:
+            with open(gitignore_path, "a", encoding="utf-8") as f:
+                if content and not content.endswith("\n"):
+                    f.write("\n")
+                f.write(".intercom/\n")
+    except Exception:
+        pass
+
+
+def resolve_sticky_identity(
+    project_dir: Optional[pathlib.Path] = None,
+    channel: str = "default",
+    base_dir: pathlib.Path = DEFAULT_BASE_DIR,
+    force_new: bool = False,
+) -> Dict[str, Any]:
+    """
+    Resolve or establish a sticky project communications identity.
+    Guarantees that:
+    1. A project retains one sticky Comms Officer identity across restarts.
+    2. The claimed identity does not collide with or impersonate an active peer on the channel.
+    """
+    if project_dir is None:
+        project_dir = pathlib.Path.cwd()
+    project_dir = project_dir.resolve()
+
+    intercom_dir = project_dir / ".intercom"
+    session_file = intercom_dir / "session.json"
+
+    active_peers = get_active_peers(channel, base_dir)
+
+    # 1. Check existing sticky configuration
+    if not force_new and session_file.exists():
+        try:
+            with open(session_file, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                saved_id = saved.get("session_id")
+                if saved_id:
+                    # If this saved identity is NOT currently active by another live session on the channel, reuse it!
+                    if saved_id not in active_peers:
+                        profile = find_officer_by_id(saved_id) or {
+                            "id": saved_id,
+                            "name": saved.get("name", saved_id),
+                            "title": saved.get("title", "Comms Officer"),
+                            "ship": saved.get("ship", "Project Hub"),
+                            "quote": saved.get("quote", "Online."),
+                        }
+                        profile["is_sticky"] = True
+                        profile["channel"] = channel
+                        profile["project_dir"] = str(project_dir)
+                        return profile
+        except Exception:
+            pass
+
+    # 2. Select a fresh officer avoiding active channel collisions
+    officer = get_random_officer(exclude_ids=active_peers)
+    officer_id = officer["id"]
+
+    # 3. Persist sticky configuration for project
+    try:
+        intercom_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        session_data = {
+            "session_id": officer_id,
+            "name": officer["name"],
+            "title": officer["title"],
+            "ship": officer["ship"],
+            "quote": officer["quote"],
+            "channel": channel,
+            "project_dir": str(project_dir),
+            "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        with open(session_file, "w", encoding="utf-8") as f:
+            json.dump(session_data, f, indent=2)
+        ensure_gitignore(project_dir)
+    except Exception:
+        pass
+
+    officer["is_sticky"] = True
+    officer["channel"] = channel
+    officer["project_dir"] = str(project_dir)
+    return officer
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate iconic sci-fi comms officer agent identities.")
+    parser = argparse.ArgumentParser(description="Generate iconic sci-fi comms officer agent identities with sticky project persistence.")
     parser.add_argument("--id-only", action="store_true", help="Output only the slug identifier (e.g. nyota-uhura)")
     parser.add_argument("--all", action="store_true", help="List all available officers in the roster")
+    parser.add_argument("--claim", action="store_true", help="Claim or retrieve sticky project identity without channel collisions")
+    parser.add_argument("--project-dir", default=None, help="Project directory root (defaults to current working directory)")
+    parser.add_argument("--channel", default="default", help="Channel name to verify peer collisions")
+    parser.add_argument("--dir", default=str(DEFAULT_BASE_DIR), help="Base IPC directory")
+    parser.add_argument("--json", action="store_true", help="Output identity metadata formatted as JSON")
+    parser.add_argument("--force-new", action="store_true", help="Force allocation of a new identity, bypassing existing sticky file")
     args = parser.parse_args()
 
     if args.all:
@@ -163,15 +311,34 @@ def main() -> None:
             print(f"  Quote: \"{off['quote']}\"\n")
         return
 
-    officer = get_random_officer()
+    base_dir = pathlib.Path(args.dir)
+    project_dir = pathlib.Path(args.project_dir) if args.project_dir else pathlib.Path.cwd()
+
+    if args.claim:
+        officer = resolve_sticky_identity(
+            project_dir=project_dir,
+            channel=args.channel,
+            base_dir=base_dir,
+            force_new=args.force_new,
+        )
+    else:
+        active_peers = get_active_peers(args.channel, base_dir)
+        officer = get_random_officer(exclude_ids=active_peers)
+
+    if args.json:
+        print(json.dumps(officer, indent=2))
+        return
 
     if args.id_only:
         print(officer["id"])
     else:
-        print(f"✨ Designated Comms Officer: {officer['name']} ({officer['title']})")
+        sticky_badge = " [Sticky Project Identity]" if officer.get("is_sticky") else ""
+        print(f"✨ Designated Comms Officer: {officer['name']} ({officer['title']}){sticky_badge}")
         print(f"📡 Assigned Vessel / Hub: {officer['ship']}")
         print(f"💬 \"{officer['quote']}\"")
         print(f"🔑 Session ID: {officer['id']}")
+        if officer.get("project_dir"):
+            print(f"📁 Project: {officer['project_dir']}")
 
 
 if __name__ == "__main__":

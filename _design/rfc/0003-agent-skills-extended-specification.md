@@ -3,7 +3,6 @@
 - Status: Approved
 - Date: 2026-08-23
 - Author(s): Daniela Petruzalek (daniela@danicat.dev)
-- Schema Reference: `https://schemas.agentskills.io/discovery/0.2.0/schema.json`
 - Target ADR: ADR-0002
 
 ---
@@ -19,22 +18,22 @@ The base **Agent Skills Specification** (`https://agentskills.io`) provides an o
 
 This RFC establishes the **Agent Skills Extended Specification**:
 - Adoption of the **3-Tier Progressive Disclosure Model** recommended by `agentskills.io` (Tier 1 $\le 150$ tokens routing, Tier 2 $\le 5,000$ tokens core instructions, Tier 3 on-demand files).
-- A **100% Spec-Compliant Discovery Manifest** (`/.well-known/agent-skills/index.json`) conforming strictly to schema `v0.2.0` with **zero custom schema extensions**.
+- A **Catalog Manifest** (`/catalog.json`) providing a standard `skills` array with metadata, search tags, and digests.
 - A **Base-Origin Master Provenance Model** (`metadata.catalog: https://skills.danicat.dev` in `SKILL.md` for registries/monorepos; `metadata.repository` for standalone polyrepos; `canonical` and duplicate JSON files purged).
 
 ---
 
 ## 2. Motivation & Architectural Principles
 
-### 2.1 100% Spec Compliance & Zero Schema Contamination
-The `agentskills.io` standard is an external open specification. Modifying or polluting public discovery manifests (`index.json`) with custom top-level fields (`category`, `tags`, `author`, `version`, `categories[]`) breaks third-party clients (Claude Code, Cursor, Codex, OpenDevin, Aider) that validate manifests against strict JSON schemas.
+### 2.1 Clean Separation of Discovery & Metadata
+The `agentskills.io` standard defines the core format for `SKILL.md` and recommends keeping Tier 1 discovery concise. Keeping public catalog manifests (`catalog.json`) predictable and structured provides immediate discoverability for CLIs like `kungfu`.
 
-All domain taxonomy, author attribution, and origin coordinates MUST reside inside the `metadata:` dictionary of `SKILL.md` frontmatter, where custom extensions are explicitly permitted.
+All domain taxonomy, author attribution, and origin coordinates reside inside the `metadata:` dictionary of `SKILL.md` frontmatter, where custom extensions are explicitly permitted by the Agent Skills specification.
 
-### 2.2 RFC 8615 Well-Known Base Origin Resolution
+### 2.2 Base Origin Resolution
 In monorepos and registries (like `skills.danicat.dev`), declaring file extensions or multiple redundant URLs creates unnecessary maintenance friction. 
 - Declaring `metadata.catalog: https://skills.danicat.dev` points to the base origin.
-- Downstream tools resolve `https://skills.danicat.dev/.well-known/agent-skills/index.json` per IETF RFC 8615 well-known URI conventions.
+- Downstream tools resolve `https://skills.danicat.dev/catalog.json`.
 - Standalone solo skill authors who do not maintain a JSON catalog declare `metadata.repository: https://github.com/alice/my-skill` instead.
 
 ```
@@ -115,23 +114,40 @@ metadata:
   - **`tags`** *(string, required)*: Comma-separated search keywords.
   - **`author`** *(string, required)*: Maintainer attribution identifier.
   - **`version`** *(string, required)*: Semantic Version string (`X.Y.Z`).
-  - **`catalog`** *(string, required for registries/monorepos)*: Base HTTPS origin URL (e.g. `https://skills.danicat.dev`). Downstream clients resolve `/.well-known/agent-skills/index.json` per RFC 8615.
+  - **`catalog`** *(string, required for registries/monorepos)*: Base HTTPS origin URL (e.g. `https://skills.danicat.dev`). Downstream clients resolve `/catalog.json`.
   - **`repository`** *(string, optional fallback for standalone polyrepos)*: Direct Git tree URL if no catalog is hosted.
 
 ---
 
-### 3.3 Normative Discovery Manifest (`/.well-known/agent-skills/index.json`)
+### 3.3 Catalog Manifest (`/catalog.json`)
 
-Adheres 100% strictly to `https://schemas.agentskills.io/discovery/0.2.0/schema.json` with **zero custom schema extensions**:
+Standard JSON manifest format:
 
 ```json
 {
-  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "name": "danicat/skills",
+  "title": "Daniela's Agent Skills Catalog",
+  "url": "https://skills.danicat.dev",
+  "repository": "https://github.com/danicat/skills",
+  "totalSkills": 29,
+  "updatedAt": "2026-08-29T16:27:31.877Z",
+  "categories": [
+    {
+      "id": "coding",
+      "name": "Software Engineering",
+      "emoji": "💻",
+      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows."
+    }
+  ],
   "skills": [
     {
       "name": "godoctor",
-      "type": "skill-md",
       "description": "Developer tooling and architectural safety rules for Go. Automatically validates AST integrity, guards against regressions with compiler rollback gates, eliminates blind spots via Selene mutation testing, and isolates test databases with TestQuery SQL transactions. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness with mutation testing, or enforcing idiomatic Go standards.",
+      "category": "coding",
+      "tags": ["go", "golang", "testing", "refactoring", "quality", "mutation-testing"],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.2.0",
+      "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
       "digest": "sha256:cb8f829d8d3ec1590408544a49c6d62884a2d8a571f0ffc9d6438069542a170a"
     }

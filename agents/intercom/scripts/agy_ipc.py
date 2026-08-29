@@ -18,8 +18,9 @@
 # dependencies = []
 # ///
 """
-agy_ipc.py — Inter-Session Multi-Agent IPC Transport Bridge
-Provides Unix Domain Socket routing, NDJSON framing, and persistent session mailboxes.
+agy_ipc.py: Inter-Session Multi-Agent IPC Transport Bridge
+Provides Unix Domain Socket routing, NDJSON framing, sticky project identities,
+zero-impersonation allocation, and clean restart lifecycles.
 
 Zero external dependencies. Works out-of-the-box on macOS and Linux.
 """
@@ -74,7 +75,7 @@ def make_envelope(
 
 
 class IPCSpool:
-    """Manages append-only NDJSON inbox/outbox spools with kernel advisory file locks."""
+    """Manages append-only NDJSON inbox spools with kernel advisory file locks."""
 
     def __init__(self, channel_dir: pathlib.Path, session_id: str) -> None:
         self.channel_dir = channel_dir
@@ -87,6 +88,24 @@ class IPCSpool:
         if not self.inbox_path.exists():
             with open(self.inbox_path, "a", encoding="utf-8"):
                 pass
+
+    def reset_inbox(self) -> None:
+        """Purge all prior messages from inbox and reset read offset to prevent stale context contamination."""
+        with open(self.inbox_path, "w", encoding="utf-8") as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            try:
+                f.truncate(0)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        with open(self.offset_path, "w", encoding="utf-8") as f:
+            json.dump({"offset": 0, "updated_at": time.time(), "reset_at": time.time()}, f)
+
+    def seek_to_end(self) -> None:
+        """Advance offset to current file size so only future incoming messages are delivered."""
+        self.ensure_inbox_exists()
+        size = self.inbox_path.stat().st_size
+        with open(self.offset_path, "w", encoding="utf-8") as f:
+            json.dump({"offset": size, "updated_at": time.time()}, f)
 
     def append_inbox(self, envelope: Dict[str, Any]) -> None:
         """Atomically append a message envelope to the session inbox file."""
@@ -211,8 +230,28 @@ class IPCHubServer:
 
                     if msg_type in ("announce", "register") or client_session is None:
                         client_session = from_sess
+                        # Check for collision with an existing active connection
+                        if client_session in self.clients and self.clients[client_session] is not writer:
+                            old_writer = self.clients[client_session]
+                            if not old_writer.is_closing():
+                                # Collision detected: Session ID is already actively in use
+                                collision_env = make_envelope(
+                                    "error",
+                                    "hub",
+                                    client_session,
+                                    self.channel_name,
+                                    {
+                                        "code": "SESSION_COLLISION",
+                                        "message": f"Session ID '{client_session}' is already actively connected on this channel.",
+                                    },
+                                )
+                                writer.write((json.dumps(collision_env) + "\n").encode("utf-8"))
+                                await writer.drain()
+                                writer.close()
+                                await writer.wait_closed()
+                                return
+
                         self.clients[client_session] = writer
-                        # Ensure session inbox exists
                         IPCSpool(self.channel_dir, client_session).ensure_inbox_exists()
                         self.update_peers_file()
                         welcome = make_envelope(
@@ -226,43 +265,41 @@ class IPCHubServer:
                         writer.write(raw)
                         await writer.drain()
 
-                    # Spool and route message
-                    if to_sess in ("*", "all"):
-                        target_sessions: Set[str] = set(self.clients.keys())
-                        for inbox_file in self.channel_dir.glob("inbox_*.ndjson"):
-                            sess_id = inbox_file.stem.replace("inbox_", "")
-                            target_sessions.add(sess_id)
-
-                        target_sessions.discard(from_sess)
-
-                        for target_sess in target_sessions:
-                            spool = IPCSpool(self.channel_dir, target_sess)
+                    # Route and spool message
+                    if msg_type == "chat":
+                        if to_sess in ("*", "all"):
+                            # Broadcast ONLY to currently active connected sessions to prevent zombie contamination
+                            target_sessions: Set[str] = set(self.clients.keys()) - {from_sess}
+                            for target_sess in target_sessions:
+                                spool = IPCSpool(self.channel_dir, target_sess)
+                                spool.append_inbox(envelope)
+                                if target_sess in self.clients:
+                                    try:
+                                        raw = (json.dumps(envelope) + "\n").encode("utf-8")
+                                        self.clients[target_sess].write(raw)
+                                        await self.clients[target_sess].drain()
+                                    except Exception:
+                                        pass
+                        else:
+                            # Direct Message
+                            spool = IPCSpool(self.channel_dir, to_sess)
                             spool.append_inbox(envelope)
-                            if target_sess in self.clients:
+                            if to_sess in self.clients:
+                                target_writer = self.clients[to_sess]
                                 try:
                                     raw = (json.dumps(envelope) + "\n").encode("utf-8")
-                                    self.clients[target_sess].write(raw)
-                                    await self.clients[target_sess].drain()
+                                    target_writer.write(raw)
+                                    await target_writer.drain()
                                 except Exception:
                                     pass
-                    else:
-                        spool = IPCSpool(self.channel_dir, to_sess)
-                        spool.append_inbox(envelope)
-                        if to_sess in self.clients:
-                            target_writer = self.clients[to_sess]
-                            try:
-                                raw = (json.dumps(envelope) + "\n").encode("utf-8")
-                                target_writer.write(raw)
-                                await target_writer.drain()
-                            except Exception:
-                                pass
 
         except (asyncio.CancelledError, ConnectionResetError):
             pass
         finally:
             if client_session and client_session in self.clients:
-                del self.clients[client_session]
-                self.update_peers_file()
+                if self.clients[client_session] is writer:
+                    del self.clients[client_session]
+                    self.update_peers_file()
             try:
                 writer.close()
                 await writer.wait_closed()
@@ -364,14 +401,8 @@ async def send_message_uds(
     sock_path = channel_dir / "hub.sock"
     if not sock_path.exists():
         # Fallback to direct spooling if hub is temporarily down
-        if to_session in ("*", "all"):
-            for inbox_file in channel_dir.glob("inbox_*.ndjson"):
-                sess_id = inbox_file.stem.replace("inbox_", "")
-                if sess_id != from_session:
-                    IPCSpool(channel_dir, sess_id).append_inbox(envelope)
-        else:
-            spool = IPCSpool(channel_dir, to_session)
-            spool.append_inbox(envelope)
+        spool = IPCSpool(channel_dir, to_session)
+        spool.append_inbox(envelope)
         return {"status": "spooled_offline", "envelope": envelope}
 
     try:
@@ -380,8 +411,17 @@ async def send_message_uds(
         writer.write((json.dumps(reg_env) + "\n").encode("utf-8"))
         await writer.drain()
 
-        # Read welcome
-        await asyncio.wait_for(reader.readline(), timeout=2.0)
+        # Read welcome or collision
+        welcome_raw = await asyncio.wait_for(reader.readline(), timeout=2.0)
+        if welcome_raw:
+            try:
+                resp = json.loads(welcome_raw.decode("utf-8").strip())
+                if resp.get("type") == "error" and resp.get("payload", {}).get("code") == "SESSION_COLLISION":
+                    writer.close()
+                    await writer.wait_closed()
+                    return {"status": "error", "error": "SESSION_COLLISION", "message": resp["payload"].get("message")}
+            except Exception:
+                pass
 
         # Write actual message
         writer.write((json.dumps(envelope) + "\n").encode("utf-8"))
@@ -392,28 +432,75 @@ async def send_message_uds(
         return {"status": "sent", "envelope": envelope}
     except Exception as err:
         # Fallback to direct spooling
-        if to_session in ("*", "all"):
-            for inbox_file in channel_dir.glob("inbox_*.ndjson"):
-                sess_id = inbox_file.stem.replace("inbox_", "")
-                if sess_id != from_session:
-                    IPCSpool(channel_dir, sess_id).append_inbox(envelope)
-        else:
-            spool = IPCSpool(channel_dir, to_session)
-            spool.append_inbox(envelope)
+        spool = IPCSpool(channel_dir, to_session)
+        spool.append_inbox(envelope)
         return {"status": "fallback_spooled", "error": str(err), "envelope": envelope}
 
 
-async def stream_listener(channel_dir: pathlib.Path, channel_name: str, session_id: str) -> None:
-    """Continuously stream incoming messages for session_id in real time to stdout."""
+async def stream_listener(
+    channel_dir: pathlib.Path,
+    channel_name: str,
+    session_id: str,
+    fresh: bool = True,
+) -> None:
+    """
+    Continuously stream incoming messages for session_id in real time to stdout.
+    Also listens on stdin to enable bidirectional background bridging without spawning separate shell processes.
+    """
     ensure_daemon_running(channel_dir, channel_name)
     sock_path = channel_dir / "hub.sock"
     spool = IPCSpool(channel_dir, session_id)
     spool.ensure_inbox_exists()
 
-    # First drain any unread spool
+    if fresh:
+        # Avoid reading stale context from previous runs
+        spool.seek_to_end()
+
+    # Drain any unread spool arriving during initialization
     unread = spool.read_unread(mark_read=True)
     for msg in unread:
         print(json.dumps(msg), flush=True)
+
+    async def handle_stdin(writer_ref: List[Optional[asyncio.StreamWriter]]) -> None:
+        """Read NDJSON commands from stdin to allow sending messages via running listener."""
+        loop = asyncio.get_running_loop()
+        reader = asyncio.StreamReader()
+        protocol = asyncio.StreamReaderProtocol(reader)
+        try:
+            await loop.connect_read_pipe(lambda: protocol, sys.stdin)
+        except Exception:
+            return
+
+        while True:
+            line_bytes = await reader.readline()
+            if not line_bytes:
+                break
+            line_str = line_bytes.decode("utf-8").strip()
+            if not line_str:
+                continue
+            try:
+                cmd_obj = json.loads(line_str)
+                action = cmd_obj.get("action")
+                if action == "send":
+                    to_target = cmd_obj.get("to", "*")
+                    text_val = cmd_obj.get("text", "")
+                    payload_val = cmd_obj.get("payload", {})
+                    await send_message_uds(
+                        channel_dir=channel_dir,
+                        channel_name=channel_name,
+                        from_session=session_id,
+                        to_session=to_target,
+                        text=text_val,
+                        payload=payload_val,
+                    )
+            except Exception as stdin_err:
+                print(json.dumps({"type": "stdin_error", "error": str(stdin_err)}), file=sys.stderr, flush=True)
+
+    stdin_task: Optional[asyncio.Task] = None
+    try:
+        stdin_task = asyncio.create_task(handle_stdin([None]))
+    except Exception:
+        pass
 
     while True:
         try:
@@ -442,7 +529,7 @@ async def stream_listener(channel_dir: pathlib.Path, channel_name: str, session_
                         continue
                     try:
                         env = json.loads(line)
-                        if env.get("type") != "welcome":
+                        if env.get("type") not in ("welcome", "heartbeat"):
                             print(json.dumps(env), flush=True)
                     except json.JSONDecodeError:
                         pass
@@ -462,6 +549,51 @@ def cmd_daemon(args: argparse.Namespace) -> None:
     except RuntimeError as e:
         print(f"[DAEMON INFO] {e}", file=sys.stderr)
         sys.exit(0)
+
+
+def cmd_init(args: argparse.Namespace) -> None:
+    """
+    Initialize sticky project comms identity, prune stale channel state,
+    and guarantee clean context on startup.
+    """
+    project_dir = pathlib.Path(args.project_dir) if args.project_dir else pathlib.Path.cwd()
+    chan_dir = get_channel_dir(args.channel, pathlib.Path(args.dir))
+
+    # Resolve sticky identity
+    script_dir = pathlib.Path(__file__).parent
+    if str(script_dir) not in sys.path:
+        sys.path.insert(0, str(script_dir))
+    from namegen import resolve_sticky_identity
+
+    identity = resolve_sticky_identity(
+        project_dir=project_dir,
+        channel=args.channel,
+        base_dir=pathlib.Path(args.dir),
+        force_new=args.force_new,
+    )
+    session_id = identity["id"]
+
+    # Ensure daemon is running
+    ensure_daemon_running(chan_dir, args.channel)
+
+    # Reset inbox spool if fresh requested
+    if args.fresh:
+        spool = IPCSpool(chan_dir, session_id)
+        spool.reset_inbox()
+
+    output = {
+        "status": "ready",
+        "channel": args.channel,
+        "session_id": session_id,
+        "name": identity.get("name"),
+        "title": identity.get("title"),
+        "ship": identity.get("ship"),
+        "quote": identity.get("quote"),
+        "is_sticky": identity.get("is_sticky", True),
+        "project_dir": str(project_dir.resolve()),
+        "inbox_reset": args.fresh,
+    }
+    print(json.dumps(output, indent=2))
 
 
 def cmd_send(args: argparse.Namespace) -> None:
@@ -508,7 +640,7 @@ def cmd_listen(args: argparse.Namespace) -> None:
     """Stream incoming NDJSON messages in real time."""
     chan_dir = get_channel_dir(args.channel, pathlib.Path(args.dir))
     try:
-        asyncio.run(stream_listener(chan_dir, args.channel, args.session))
+        asyncio.run(stream_listener(chan_dir, args.channel, args.session, fresh=args.fresh))
     except KeyboardInterrupt:
         pass
 
@@ -526,8 +658,36 @@ def cmd_peers(args: argparse.Namespace) -> None:
 
 
 def cmd_cleanup(args: argparse.Namespace) -> None:
-    """Purge channel directory, sockets, and inbox spools."""
+    """Purge channel directory, sockets, or stale artifacts."""
     chan_dir = get_channel_dir(args.channel, pathlib.Path(args.dir))
+    if args.stale:
+        # Clean only dead sockets, dead locks, and inactive inboxes
+        sock_path = chan_dir / "hub.sock"
+        if sock_path.exists():
+            try:
+                probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                probe.connect(str(sock_path))
+                probe.close()
+            except (ConnectionRefusedError, FileNotFoundError):
+                sock_path.unlink(missing_ok=True)
+
+        lock_path = chan_dir / "hub.lock"
+        if lock_path.exists():
+            try:
+                fd = os.open(lock_path, os.O_RDWR)
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    # If we acquired lock, no daemon is running; remove it
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+                    os.close(fd)
+                    lock_path.unlink(missing_ok=True)
+                except (BlockingIOError, OSError):
+                    os.close(fd)
+            except Exception:
+                pass
+        print(json.dumps({"status": "stale_cleaned", "channel": args.channel}))
+        return
+
     for f in chan_dir.glob("*"):
         try:
             f.unlink()
@@ -536,17 +696,23 @@ def cmd_cleanup(args: argparse.Namespace) -> None:
     print(json.dumps({"status": "cleaned", "channel": args.channel}))
 
 
-def resolve_session_id(session_arg: Optional[str]) -> str:
-    """Resolve session identifier or generate a random communications officer identity."""
-    if session_arg and session_arg != "auto":
+def resolve_session_id(
+    session_arg: Optional[str],
+    project_dir: Optional[pathlib.Path] = None,
+    channel: str = "default",
+    base_dir: pathlib.Path = DEFAULT_BASE_DIR,
+) -> str:
+    """Resolve sticky session identifier or generate a non-colliding identity."""
+    if session_arg and session_arg not in ("auto", ""):
         return session_arg
     try:
         script_dir = pathlib.Path(__file__).parent
         if str(script_dir) not in sys.path:
             sys.path.insert(0, str(script_dir))
-        from namegen import get_random_officer
+        from namegen import resolve_sticky_identity
 
-        return get_random_officer()["id"]
+        identity = resolve_sticky_identity(project_dir=project_dir, channel=channel, base_dir=base_dir)
+        return identity["id"]
     except Exception:
         pass
     return f"officer-{uuid.uuid4().hex[:6]}"
@@ -556,40 +722,63 @@ def main() -> None:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--dir", default=argparse.SUPPRESS, help="Base IPC root directory")
     common.add_argument("--channel", default=argparse.SUPPRESS, help="Channel name")
+    common.add_argument("--project-dir", default=argparse.SUPPRESS, help="Project directory root")
 
     parser = argparse.ArgumentParser(description="Multi-Agent Inter-Session IPC Bridge", parents=[common])
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("daemon", help="Run background IPC hub daemon", parents=[common])
 
+    # init command
+    i_parser = sub.add_parser("init", help="Initialize sticky project comms identity and mesh hub", parents=[common])
+    i_parser.add_argument("--fresh", action="store_true", default=True, help="Reset session mailbox to prevent stale context contamination")
+    i_parser.add_argument("--no-fresh", dest="fresh", action="store_false", help="Preserve unread messages in mailbox")
+    i_parser.add_argument("--force-new", action="store_true", help="Force new identity allocation")
+
+    # send command
     s_parser = sub.add_parser("send", help="Send a message to a session or channel", parents=[common])
-    s_parser.add_argument("--session", default=None, help="Sender session ID (defaults to a random Comms Officer codename)")
+    s_parser.add_argument("--session", default=None, help="Sender session ID (defaults to sticky project Comms Officer)")
     s_parser.add_argument("--to", default="*", help="Target session ID or '*' for broadcast")
     s_parser.add_argument("--text", default="", help="Message text content")
     s_parser.add_argument("--json-payload", help="Optional extra JSON dictionary string")
 
+    # poll command
     p_parser = sub.add_parser("poll", help="Poll unread messages from session inbox", parents=[common])
     p_parser.add_argument("--session", default=None, help="Current session ID")
     p_parser.add_argument("--wait", type=float, default=0.0, help="Seconds to wait for new messages")
     p_parser.add_argument("--peek", action="store_true", help="Do not advance unread offset")
 
+    # listen command
     l_parser = sub.add_parser("listen", help="Stream incoming NDJSON messages to stdout", parents=[common])
     l_parser.add_argument("--session", default=None, help="Current session ID")
+    l_parser.add_argument("--fresh", action="store_true", default=True, help="Do not replay old unread messages from prior runs")
+    l_parser.add_argument("--no-fresh", dest="fresh", action="store_false", help="Replay unread messages from inbox backlog")
 
+    # peers command
     sub.add_parser("peers", help="List active sessions on channel", parents=[common])
-    sub.add_parser("cleanup", help="Remove channel socket and lock artifacts", parents=[common])
+
+    # cleanup command
+    c_parser = sub.add_parser("cleanup", help="Remove channel socket, lock artifacts, or stale state", parents=[common])
+    c_parser.add_argument("--stale", action="store_true", help="Clean only dead sockets and locks without purging live channel")
 
     args = parser.parse_args()
 
     # Resolve default values if not explicitly provided
     args.dir = getattr(args, "dir", str(DEFAULT_BASE_DIR))
     args.channel = getattr(args, "channel", "default")
+    project_dir = pathlib.Path(args.project_dir) if getattr(args, "project_dir", None) else pathlib.Path.cwd()
 
     if hasattr(args, "session"):
-        args.session = resolve_session_id(args.session)
+        args.session = resolve_session_id(
+            session_arg=args.session,
+            project_dir=project_dir,
+            channel=args.channel,
+            base_dir=pathlib.Path(args.dir),
+        )
 
     dispatch = {
         "daemon": cmd_daemon,
+        "init": cmd_init,
         "send": cmd_send,
         "poll": cmd_poll,
         "listen": cmd_listen,
