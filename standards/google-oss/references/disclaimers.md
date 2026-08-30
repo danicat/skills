@@ -18,16 +18,16 @@ This is not an officially supported Google product.
 
 ---
 
-## 2. Experimental / Community Port Disclaimer
+## 2. Experimental / Educational Project Disclaimer
 
-Use when publishing experimental tooling, ports, research prototypes, or agent workflows:
+Use when publishing experimental tooling, research prototypes, or educational resources:
 
 ```markdown
 ---
 
 ## Disclaimer
 
-This is not an officially supported Google product. It is a community-driven, experimental port created for educational and development purposes.
+This is not an officially supported Google product. It is an experimental project created for educational and development purposes.
 ```
 
 ---

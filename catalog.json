@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-08-29T16:44:38.223Z",
+  "updatedAt": "2026-08-30T03:39:54.139Z",
   "categories": [
     {
       "id": "game-dev",
@@ -536,10 +536,10 @@
         "copyright"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/standards/google-oss/SKILL.md",
-      "digest": "sha256:2c2877f1125958ab2ea4daf2e77c10990010c0abe631a1fb6613dbaa59ad342f"
+      "digest": "sha256:7157d815b24dd57fc106ec621a9bacfd9597d9735defa747c7cb09754bb29c08"
     },
     {
       "name": "rfc-template",

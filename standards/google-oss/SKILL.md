@@ -13,7 +13,7 @@ metadata:
   category: standards
   tags: "google, open-source, licensing, compliance, standards, copyright"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.1.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -68,14 +68,14 @@ Every repository published by Googlers or under Google open source that is not a
 This is not an officially supported Google product.
 ```
 
-#### Community / Experimental Port Disclaimer:
+#### Experimental / Educational Project Disclaimer:
 
 ```markdown
 ---
 
 ## Disclaimer
 
-This is not an officially supported Google product. It is a community-driven, experimental port created for educational and development purposes.
+This is not an officially supported Google product. It is an experimental project created for educational and development purposes.
 ```
 
 ---
