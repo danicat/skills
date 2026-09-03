@@ -3124,6 +3124,168 @@ ${COMMON_CSS}
 </html>`;
 }
 
+function generateNotFoundHtml() {
+  const title = `Page Not Found (404) · danicat.dev`;
+  const canonicalUrl = `${SUB_DOMAIN}/404.html`;
+
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(title)}</title>
+  <meta name="description" content="The requested page could not be found. Return to the danicat.dev Agent Skills catalog.">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="dark light">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="${ROOT_DOMAIN}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="${ROOT_DOMAIN}/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="${ROOT_DOMAIN}/apple-touch-icon.png">
+
+  <style>
+${COMMON_CSS}
+
+    .not-found-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      margin: 3rem auto 2rem;
+      max-width: 640px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .not-found-img {
+      max-width: 220px;
+      height: auto;
+      margin: 0 auto 1.5rem;
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    }
+
+    .not-found-code {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: -0.05em;
+    }
+
+    .not-found-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 0.75rem;
+    }
+
+    .not-found-text {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .not-found-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .cta-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .cta-btn.secondary {
+      background: var(--surface-hover);
+      color: var(--text-heading);
+      border: 1px solid var(--border);
+    }
+
+    .cta-btn.secondary:hover {
+      background: var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${renderHeader('Skills')}
+
+    <main>
+      <div class="not-found-card">
+        <img src="/assets/chibi_dani_oops.png" alt="Oops! Skill Not Found" class="not-found-img" width="220" height="220">
+        <div class="not-found-code">404</div>
+        <h1 class="not-found-title">Page Not Found</h1>
+        <p class="not-found-text">
+          The requested page or skill could not be found. It may have been moved, renamed, or retired from the catalog.
+        </p>
+        <div class="not-found-actions">
+          <a href="/" class="cta-btn">← Back to Skills Catalog</a>
+          <a href="${ROOT_DOMAIN}" class="cta-btn secondary">danicat.dev Home</a>
+        </div>
+      </div>
+    </main>
+
+    ${renderFooter()}
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        htmlEl.classList.add('dark');
+        htmlEl.setAttribute('data-theme', 'dark');
+      } else {
+        htmlEl.classList.remove('dark');
+        htmlEl.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('appearance', theme);
+    }
+
+    const savedTheme = localStorage.getItem('appearance') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = htmlEl.classList.contains('dark') || htmlEl.getAttribute('data-theme') === 'dark';
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+    }
+  </script>
+</body>
+</html>`;
+}
+
 async function build() {
   console.log('Building skills catalog with detail pages, sitemap.xml, robots.txt, and SEO...');
 
@@ -3140,6 +3302,11 @@ async function build() {
     fs.rmSync(SITE_DIR, { recursive: true, force: true });
   }
   fs.mkdirSync(SITE_DIR, { recursive: true });
+
+  const globalAssetsDir = path.join(ROOT_DIR, 'assets');
+  if (fs.existsSync(globalAssetsDir)) {
+    copyRecursive(globalAssetsDir, path.join(SITE_DIR, 'assets'));
+  }
 
   const skills = [];
 
@@ -3928,8 +4095,9 @@ ${COMMON_CSS}
 </body>
 </html>`;
 
+  fs.writeFileSync(path.join(SITE_DIR, '404.html'), generateNotFoundHtml());
   fs.writeFileSync(path.join(SITE_DIR, 'index.html'), homeHtml);
-  console.log(`Site build complete! Generated ${skills.length} skills detail pages, sitemap.xml, robots.txt, and assets in _site/.`);
+  console.log(`Site build complete! Generated ${skills.length} skills detail pages, 404.html, sitemap.xml, robots.txt, and assets in _site/.`);
 
   runAudit();
 }
