@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-09-03T04:43:08.044Z",
+  "updatedAt": "2026-09-21T15:56:51.090Z",
   "categories": [
     {
       "id": "game-dev",
@@ -158,7 +158,7 @@
     },
     {
       "name": "lyria",
-      "description": "Generative music and audio synthesis from text prompts or reference images using Google Lyria 3 models. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3-clip-preview and lyria-3-pro-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.",
+      "description": "Generative music and audio synthesis from text prompts or reference images using Google Lyria models. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3.5 and lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.",
       "category": "media",
       "tags": [
         "music",
@@ -167,10 +167,10 @@
         "sound"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/lyria/SKILL.md",
-      "digest": "sha256:1342bf7cefa092bd8927e85d78d5bed9930423835088fe7bfbfc78719d81366c"
+      "digest": "sha256:6bb818591385159439c87402bb8104ca4920dd8b206513f8470d4dded4914060"
     },
     {
       "name": "nano-banana",
@@ -361,10 +361,10 @@
         "management"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
-      "digest": "sha256:4c013f5f1706ca87994d052b4d6b6a21954608c7fe82ddc664d8825c3cf518f1"
+      "digest": "sha256:c81acf43aad9f936ce525c7fedcca3ca5b3e762a50778c05799518c204cee196"
     },
     {
       "name": "deslopify",
@@ -449,10 +449,10 @@
         "campaigns"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
-      "digest": "sha256:b4e9ae71b450d86d835dfe4798ce06e54c18371e063d63e4f27ba5c37a462d93"
+      "digest": "sha256:9bff7d0c39ce6c7ec43375b65392340c3ca7352a8cd3d9fcd57be5256b59701e"
     },
     {
       "name": "buffer-analytics",

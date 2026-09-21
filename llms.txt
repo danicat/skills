@@ -13,7 +13,7 @@
 
 ## Generative Media
 
-- [lyria](https://skills.danicat.dev/media/lyria/SKILL.md): Generative music and audio synthesis from text prompts or reference images using Google Lyria 3 models. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3-clip-preview and lyria-3-pro-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.
+- [lyria](https://skills.danicat.dev/media/lyria/SKILL.md): Generative music and audio synthesis from text prompts or reference images using Google Lyria models. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3.5 and lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.
 - [nano-banana](https://skills.danicat.dev/media/nano-banana/SKILL.md): Conversational image generation and multimodal image editing tool using Google Nano Banana models. Generates high-resolution images (1K, 2K, 4K), performs style transfers and image edits ("banana this"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.
 
 ## Software Engineering

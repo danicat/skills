@@ -69,3 +69,4 @@ Before publishing any social copy, verify:
 - [ ] Are version numbers, language syntax, and command-line flags accurate for the current stable releases?
 - [ ] Are architecture trade-offs explicitly acknowledged (what is sacrificed in memory, CPU, or complexity)?
 - [ ] Is there zero reliance on unsubstantiated hyperbole?
+- [ ] **Mandatory Media Item**: Does the post include at least one media item (diagram, screenshot, video, or graphic card)? Naked text-only posts are strictly prohibited.

@@ -31,6 +31,8 @@ from google import genai
 from google.genai.errors import APIError
 
 MODEL_MAP = {
+    "lyria-3.5": "lyria-3.5",
+    "3.5": "lyria-3.5",
     "lyria-3-clip-preview": "lyria-3-clip-preview",
     "lyria-3-pro-preview": "lyria-3-pro-preview",
     "clip": "lyria-3-clip-preview",
@@ -92,8 +94,8 @@ def main():
     parser.add_argument(
         "-m", "--model",
         choices=list(MODEL_MAP.keys()),
-        default="pro",
-        help="Model selection ('clip' / 'lyria-3-clip-preview' or 'pro' / 'lyria-3-pro-preview', default: pro)"
+        default="lyria-3.5",
+        help="Model selection ('lyria-3.5' / '3.5', 'clip' / 'lyria-3-clip-preview', or 'pro' / 'lyria-3-pro-preview', default: lyria-3.5)"
     )
     parser.add_argument(
         "-i", "--input-image",

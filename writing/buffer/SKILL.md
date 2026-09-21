@@ -12,7 +12,7 @@ metadata:
   category: writing
   tags: "social-media, publishing, automation, management"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -24,9 +24,8 @@ Procedures, command workflows, and safety gates for scheduling social media post
 
 ## Architecture & Progressive Disclosure
 
-To minimize context consumption, `SKILL.md` contains core operational commands and safety rules. Load specialized references on demand:
+To minimize context consumption, `SKILL.md` contains core operational commands, critical pitfalls, and safety rules directly in the body. Load specialized references on demand:
 
-- **Pitfalls & Service Schemas**: Read [references/pitfalls.md](references/pitfalls.md) before composing payloads for complex networks (Instagram, Pinterest, YouTube, Twitter Threads).
 - **Automation Workflows**: Read [references/workflows.md](references/workflows.md) for shell scripting patterns, timezone math, and Relay cursor pagination.
 - **Rate Limits & Idempotency**: Read [references/rate_limits.md](references/rate_limits.md) for 429 backoff algorithms, retry matrices, and duplicate-post prevention.
 
@@ -118,17 +117,69 @@ buffer posts create \
   --output json
 ```
 
+#### Media Hosting Requirement (No File Upload Attachments)
+
+> [!WARNING]
+> **Buffer Does Not Support Direct File Uploads / Attachments**: Buffer's API and CLI do not accept raw binary file uploads or local file paths (such as `path/to/image.png`).
+> **To add media (images or videos) to a post, the files MUST be hosted somewhere publicly accessible via HTTP/HTTPS** (e.g. S3 bucket, Cloud Storage, GitHub raw content, CDN, or image hosting service) so Buffer can ingest them via their public URLs.
+
+Pass hosted media URLs via the `assets` array in a JSON payload:
+
+```json
+{
+  "channelId": "channel_123",
+  "schedulingType": "automatic",
+  "mode": "addToQueue",
+  "text": "Announcing our new open-source release! 🚀",
+  "assets": [
+    {
+      "image": {
+        "url": "https://cdn.example.com/images/architecture-diagram.png",
+        "metadata": {
+          "altText": "Architecture diagram illustrating worker pool"
+        }
+      }
+    }
+  ]
+}
+```
+
+For videos, provide the public video URL:
+```json
+{
+  "channelId": "channel_123",
+  "schedulingType": "automatic",
+  "mode": "addToQueue",
+  "text": "Watch the terminal recording in action:",
+  "assets": [
+    {
+      "video": {
+        "url": "https://cdn.example.com/videos/demo.mp4"
+      }
+    }
+  ]
+}
+```
+
 #### Passing Payloads via JSON or File
 
 For complex multi-line text, media attachments, or structured objects:
 
 ```bash
-# Inline JSON payload
+# Inline JSON payload with hosted media
 buffer posts create --json '{
   "channelId": "channel_123",
   "schedulingType": "automatic",
   "mode": "addToQueue",
-  "text": "Line 1\n\nLine 2 with links"
+  "text": "Line 1\n\nLine 2 with links",
+  "assets": [
+    {
+      "image": {
+        "url": "https://cdn.example.com/diagram.png",
+        "metadata": { "altText": "Architecture diagram" }
+      }
+    }
+  ]
 }' --output json
 
 # Read payload from file
@@ -224,3 +275,48 @@ buffer schema describe posts create
 | **`2`** | Usage / Validation Error | Missing required flags, invalid JSON, or schema mismatch. Run `buffer schema describe <group> <cmd>`. |
 | **`3`** | API Error | GraphQL upstream error or rate limit exhaustion. Inspect returned error details. |
 | **`4`** | Authentication Error | Missing or invalid token. Run `buffer doctor` or export `BUFFER_API_KEY`. |
+
+---
+
+## 6. Critical Pitfalls & Payload Rules
+
+Review these high-risk failure modes before composing commands and JSON payloads:
+
+### 1. Media Hosting & File Attachments
+- **Buffer Does Not Support Local Attachments**: You cannot upload local file paths. All media (`assets[].image.url` or `assets[].video.url`) **must be hosted publicly via HTTP/HTTPS** (e.g. S3, GCS, CDN, or raw GitHub link).
+- **Empty `text` without assets is rejected**: Most channels require text or at least one image/video asset.
+
+### 2. Scheduling Modes & Notification Traps
+- **`mode: addToQueue` is queued, not immediate**: Use `mode: shareNow` to publish immediately. `mode: shareNext` jumps to the front of the queue. `mode: customScheduled` requires `dueAt`.
+- **`schedulingType: notification` does not auto-publish**: It only sends a push notification to the user's mobile app. Always use `schedulingType: automatic` for hands-off publishing.
+- **`addToQueue` on a channel with no schedule**: Silently lands in an empty queue slot without scheduling. Check the schedule with `buffer channels get --id <id>` first.
+- **All times must be ISO-8601 with offset**: `dueAt` requires a timezone offset (e.g. `2026-05-06T17:00:00-05:00`). Obtain the offset from `buffer config get timezone` or `buffer account --fields timezone`. Never assume UTC.
+
+### 3. Identifier Integrity
+- **Never guess channel IDs**: Always fetch with `buffer channels list --output json`. Invalid IDs will be accepted initially and fail on execution with vague upstream errors.
+- **IDs are not portable across organizations**: A `channelId` from Organization A cannot be used while authenticated against Organization B.
+
+### 4. Input & Formatting Constraints
+- **`--json` overrides flags entirely**: When both `--json` and individual flags are supplied, individual flags are ignored. Use either flags or `--json`, never mix.
+- **Nested objects need `--json`**: Per-service `metadata.*` and `assets.*` cannot be set via flat CLI flags. Always use `--json` or `--input <file>`.
+- **Strip control characters**: ASCII control characters (`U+0000`–`U+001F` except whitespace) cause payload rejections.
+
+### 5. Per-Service Minimum Requirements & Threading
+- **Twitter / X, Threads, Bluesky, Mastodon**: Require `text` only.
+- **LinkedIn**: `text` or `assets`; documents require `metadata.linkedin.linkAttachment`.
+- **Instagram**: Image or video asset required; must specify `metadata.instagram.type` and `metadata.instagram.shouldShareToFeed`.
+- **Twitter / X Threads**: When chaining posts via `metadata.twitter.thread`, the top-level `text` **MUST** match the first thread item's `text`:
+  ```json
+  {
+    "channelId": "ch_123",
+    "text": "First tweet in thread",
+    "metadata": {
+      "twitter": {
+        "thread": [
+          { "text": "First tweet in thread" },
+          { "text": "Second tweet in thread" }
+        ]
+      }
+    }
+  }
+  ```

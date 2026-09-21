@@ -9,11 +9,15 @@ description: >
   when drafting social media posts, writing release announcements, authoring
   technical threads, or running developer campaigns.
 license: Apache-2.0
+compatibility:
+  skills:
+    - buffer
+    - deslopify
 metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -52,16 +56,47 @@ Every post should provide actionable insight directly in the timeline. Readers s
 
 ---
 
+## Frontmatter & Metadata Standards for Copy Files
+
+All campaign artifacts—the canonical foundation narrative (`CANONICAL.md`) and every individual platform copy file (`linkedin.md`, `twitter.md`, `bluesky.md`, `threads.md`, `instagram.md`, `reddit.md`)—**MUST use YAML frontmatter for metadata followed by Markdown content**.
+
+### Standard Frontmatter Schema
+
+```markdown
+---
+title: "Title or Working Headline"
+platform: canonical | linkedin | twitter | bluesky | threads | instagram | reddit
+status: draft | review | ready | scheduled | published
+target_audience: "Target developer persona or subreddit"
+character_count: 1420
+media:
+  - type: image | video
+    path: "assets/diagram.png"
+    alt: "Architecture diagram showing event pipeline"
+    description: "Dark-mode sequence diagram illustrating worker queues"
+---
+
+# Post Content Begins Here (Markdown)
+```
+
+Frontmatter rules:
+- **`status`**: Current lifecycle state (`draft`, `review`, `ready`, `scheduled`, `published`).
+- **`media`**: Required array detailing media attachments (type, path/url, alt text, description).
+- **`character_count`**: Character, grapheme, or word count to verify platform constraints.
+
+---
+
 ## Campaign Lifecycle States
 
-Every social campaign follows a strict 4-state lifecycle tracked explicitly in its `CANONICAL.md` header (`- **Status**: <state>`):
+Every social campaign follows a strict 5-state lifecycle tracked explicitly in the YAML frontmatter of `CANONICAL.md` and all derivative files:
 
 | State | Definition & Trigger | Required Artifacts |
 | :--- | :--- | :--- |
-| `Draft` | Initial research, deep git inspection, `/grill-me` extraction, and `CANONICAL.md` authoring. Channel derivatives are being drafted. | `CANONICAL.md` |
-| `Ready` | Copy audited against anti-patterns, character budgets verified, and derivatives finalized. Awaiting author publishing gate. | `CANONICAL.md`, channel files (`linkedin.md`, `twitter.md`, etc.) |
-| `Scheduled` | Dispatched to a queue or scheduled for a specific timestamp (via Buffer CLI or native scheduler). | `CANONICAL.md`, scheduled date/time, optional `.ics` reminder |
-| `Published / Live` | Dispatched live (`shareNow`) or confirmed live on external channels. | Live post URLs recorded, workspace backlog updated |
+| `draft` | Initial research, deep git inspection, `/grill-me` extraction, and authoring `CANONICAL.md`. **Zero derivative posts allowed in this state.** | `CANONICAL.md` |
+| `review` | Canonical copy or individual derivative draft presented to author for review. Awaiting explicit user approval. | `CANONICAL.md` or platform copy files |
+| `ready` | Explicit human approval granted, copy deslopified, character budget verified, and media attached. | Approved `CANONICAL.md` and platform files |
+| `scheduled` | Dispatched to a queue or scheduled for a specific timestamp (via Buffer CLI or native scheduler). | Platform files with scheduled date/time |
+| `published` | Dispatched live (`shareNow`) or confirmed live on external channels. | Live post URLs recorded in frontmatter & body |
 
 ---
 
@@ -75,8 +110,8 @@ Never hallucinate features, metrics, or claims.
    - **No Shallow Summaries / No One-Line Shortcuts**: Never rely on `git log --oneline` or brief commit titles alone. One-line summaries hide critical architectural nuance, structural refactors, and behavioral details.
    - Always run full `git log` with commit bodies, inspect diff statistics (`git show --stat`), check architecture decision records (ADRs), and inspect source documentation directly across all referenced repositories.
 2. **Interview via `/grill-me`**: If the source is an open-ended topic or raw idea, recommend `/grill-me` or conduct an interactive interview to extract the author's real friction points, unexpected discoveries, and authentic engineering voice.
-3. **Draft & Continuously Sync the Canonical Foundation Narrative (`CANONICAL.md`)**:
-   Author a comprehensive, unconstrained master document with `- **Status**: Draft` covering:
+3. **Draft the Canonical Foundation Narrative (`CANONICAL.md`)**:
+   Author a comprehensive, unconstrained master document using YAML frontmatter followed by Markdown content:
    - Core premise & real motivation.
    - Exact repositories and what was specifically built/refactored in each.
    - Concrete performance observations (time-to-first-token, reasoning depth, compile times).
@@ -85,39 +120,44 @@ Never hallucinate features, metrics, or claims.
    > [!IMPORTANT]
    > **Continuous Master Synchronization**: Whenever new evidence is collected (whether through proactive deep git inspection or after user feedback/pushback), immediately update `CANONICAL.md` before adjusting derivative platform posts.
 
-### Stage 2: Target Channel Selection & Playbook Routing
+### Stage 2: Canonical Approval Gate (Mandatory Human-in-the-Loop)
+> [!CAUTION]
+> **STRICT STOPPING GATE**: No individual post or platform copy (`linkedin.md`, `twitter.md`, `bluesky.md`, etc.) may be generated until the user has explicitly reviewed and approved `CANONICAL.md`.
+1. Present `CANONICAL.md` to the user for explicit review.
+2. Incorporate revisions until the user gives clear, unambiguous approval (e.g., *"approved"*, *"canonical looks great"*, *"proceed with platform posts"*).
+3. Update `CANONICAL.md` frontmatter status to `status: ready`.
+4. Only after this approval is received, proceed to Stage 3 and Stage 4.
+
+### Stage 3: Target Channel Selection & Playbook Routing
 1. Identify target platform(s) for the campaign.
 2. Load matching platform references (`references/<platform>_playbook.md`).
 
-### Stage 3: Hook Engineering & Character Budgeting
-Extract the sharpest tension, metric, or discovery from the Foundation Narrative to lead above the fold on each platform:
-- **LinkedIn**: < 140 characters (Mobile fold).
-- **Twitter / X**: < 280 characters (`Show more` fold).
-- **Bluesky**: Total post < 300 graphemes per post (or multi-post thread).
-- **Instagram**: < 125 characters (`...more` fold).
-- **Reddit**: Descriptive title specifying `[Tech Stack] + [Problem Solved] + [Metric/Trade-off]`.
-- **Threads**: Total post < 500 characters.
-
 ### Stage 4: Channel-Specific Distillation & Format Assembly
-Cut and reformat the Foundation Narrative into the appropriate archetype for each channel:
-- **LinkedIn**: Architectural deep-dive (1,300–2,000 chars) with first-comment link.
-- **Twitter / X**: Native long-form post (800–2,500 chars) with direct links or micro-thread.
-- **Bluesky**: Multi-post thread where every post is strictly $\le 300$ graphemes.
-- **Instagram**: 4:5 multi-slide carousel outline + micro-blog caption with DM automation hook.
-- **Reddit**: Value-first Markdown self-post (300–800 words, 4-space code indents for Old Reddit).
-- **Threads**: Casual, builder-centric post (<500 chars) with strictly 1 `#topic` tag.
+Cut and reformat the approved Foundation Narrative into the appropriate archetype for each channel. Each file MUST use YAML frontmatter followed by Markdown content:
+- **LinkedIn** (`linkedin.md`): Architectural deep-dive (1,300–2,000 chars) with first-comment link.
+- **Twitter / X** (`twitter.md`): Native long-form post (800–2,500 chars) with direct links or micro-thread.
+- **Bluesky** (`bluesky.md`): Multi-post thread where every post is strictly $\le 300$ graphemes.
+- **Instagram** (`instagram.md`): 4:5 multi-slide carousel outline + micro-blog caption with DM automation hook.
+- **Reddit** (`reddit.md`): Value-first Markdown self-post (300–800 words, 4-space code indents for Old Reddit).
+- **Threads** (`threads.md`): Casual, builder-centric post (<500 chars) with strictly 1 `#topic` tag.
+
+> [!IMPORTANT]
+> **Mandatory Media Requirement**: Every single social post MUST include at least one media item (picture or video)—such as an architectural diagram, Ray.so/Carbon dark-mode code card, terminal recording, benchmark plot, carousel slide, or demo clip. Naked, text-only posts are strictly prohibited across all platforms. Specify media details in the file's YAML frontmatter `media:` array.
 
 ### Stage 5: Anti-Pattern & Deslopification Audit
-Review all drafts against [references/anti_patterns.md](references/anti_patterns.md):
+Review all drafts against [references/anti_patterns.md](references/anti_patterns.md) and execute anti-slop checks (leveraging the `deslopify` skill):
 - [ ] No banned AI words (*"delve", "game-changer", "revolutionary", "testament"*).
 - [ ] No mathematical unicode bolding (`𝗕𝗼𝗹𝗱` fonts).
 - [ ] Links positioned according to platform rules (1st comment for LinkedIn, direct in-body for X/Bluesky/Threads/Reddit).
 - [ ] Hashtags strictly match platform limits (0 for X, 1 for Threads, 0-1 for Bluesky, 1-3 for LinkedIn, 3-5 for Instagram).
 - [ ] Technical claims, metrics, and commands verified against reality.
-- Once verified, update header: `- **Status**: Ready`.
+- [ ] **At least one media item (image or video) is attached and documented in frontmatter.**
 
-### Stage 6: Dispatch & Frictionless Clipboard Pipeline
-When executing or automating campaign publication (e.g. via Buffer CLI):
+### Stage 6: Individual Copy Human-in-the-Loop Approval Gate & Dispatch
+> [!CAUTION]
+> **STRICT HUMAN-IN-THE-LOOP APPROVAL FOR EVERY COPY**: Every individual platform post draft MUST be presented to the user and receive explicit human-in-the-loop approval before submitting, dispatching, or scheduling. Never publish or schedule unapproved drafts.
+
+When human approval is granted and dispatching/automating publication (e.g. via Buffer CLI):
 1. **Publishing Mode Confirmation Gate**:
    - Always ask the author whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule for a Specific Time** (`customScheduled`) before dispatching, unless explicitly commanded in the initial prompt.
 2. **Cadence & Spacing Buffer Enforcement**:
@@ -132,11 +172,11 @@ When executing or automating campaign publication (e.g. via Buffer CLI):
 
 ### Stage 7: Post-Dispatch Lifecycle Synchronization & Status Marking
 As soon as posts are published or confirmed live:
-1. **Mark Campaign as `Published / Live`**:
-   - Update `CANONICAL.md` header to `- **Status**: Published / Live` (or `- **Status**: Scheduled` if scheduled for a future milestone).
+1. **Mark Campaign as `published`**:
+   - Update frontmatter `status: published` in `CANONICAL.md` and channel copy files.
    - Record publication timestamp.
 2. **Record Live URLs**:
-   - Append the live post URLs (LinkedIn, Twitter/X, Bluesky, Medium, etc.) directly to `CANONICAL.md` or a `## Live Links` section.
+   - Append live post URLs (LinkedIn, Twitter/X, Bluesky, Reddit, etc.) directly into `CANONICAL.md` and the respective copy file.
 3. **Synchronize Workspace Backlog / Task Trackers**:
    - In repositories tracking active tasks (such as `TODOs.md`), move the campaign to the **`## ✅ Completed Tasks`** section tagged `[DONE - PUBLISHED]`.
    - Remove or resolve the corresponding item from the active backlog.

@@ -2,9 +2,9 @@
 name: lyria
 description: >
   Generative music and audio synthesis from text prompts or reference images
-  using Google Lyria 3 models. Generates 44.1 kHz stereo music clips, full songs
-  with custom lyrics, and instrumental soundtracks using lyria-3-clip-preview
-  and lyria-3-pro-preview, with support for multimodal image inputs and MP3/WAV
+  using Google Lyria models. Generates 44.1 kHz stereo music clips, full songs
+  with custom lyrics, and instrumental soundtracks using lyria-3.5 and
+  lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV
   export. Activate when composing background music, generating songs, creating
   soundtracks from images, or producing AI audio clips.
 license: Apache-2.0
@@ -12,13 +12,13 @@ metadata:
   category: media
   tags: "music, audio, generative-ai, sound"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
 # Lyria Music Generation Skill
 
-Generate high-fidelity **44.1 kHz stereo audio**, full songs with structured lyrics, instrumental soundtracks, and thematic compositions from text prompts or visual reference images using Google's **Lyria 3** foundation models (`lyria-3-clip-preview` and `lyria-3-pro-preview`).
+Generate high-fidelity **44.1 kHz stereo audio**, full songs with structured lyrics, instrumental soundtracks, and thematic compositions from text prompts or visual reference images using Google's **Lyria** foundation models (`lyria-3.5` and `lyria-3-clip-preview`).
 
 ---
 
@@ -42,12 +42,13 @@ Activate this skill whenever the user asks to:
 
 | Model | Model ID | CLI Name | Primary Use Case | Duration | Audio Format | Reference Guide |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lyria 3.5** | `lyria-3.5` | `lyria-3.5` / `3.5` | Flagship: full songs, expressive vocals, multi-section arrangements | Controllable (up to ~3m) | MP3, WAV | [lyria-3-5.md](references/lyria-3-5.md) |
 | **Lyria 3 Clip** | `lyria-3-clip-preview` | `clip` | Short clips, loops, previews, rapid style testing | Exactly 30s | MP3, WAV | [lyria-3-clip.md](references/lyria-3-clip.md) |
-| **Lyria 3 Pro** | `lyria-3-pro-preview` | `pro` | Full songs, multi-section arrangements, film scoring | Up to 184s | MP3, WAV | [lyria-3-pro.md](references/lyria-3-pro.md) |
+| **Lyria 3 Pro** | `lyria-3-pro-preview` | `pro` | Legacy preview: multi-section arrangements, film scoring | Up to 184s | MP3, WAV | [lyria-3-pro.md](references/lyria-3-pro.md) |
 
 ### Model Selection Guide
-- **Rapid Prototyping**: Start with **Lyria 3 Clip** (`clip`) to iterate quickly on genre combinations, tempos, and instrumentation.
-- **Full Song Production**: Select **Lyria 3 Pro** (`pro`) when requiring timestamped transitions (`[0:00 - 0:15] Intro...`), multi-verse vocal delivery, or multi-minute thematic development.
+- **Full Song Production**: Use **Lyria 3.5** (`lyria-3.5`, default) for complete tracks with timestamped transitions (`[0:00 - 0:15] Intro...`), multi-verse vocal delivery, or cinematic thematic development.
+- **Rapid Prototyping & Loops**: Start with **Lyria 3 Clip** (`clip`) to iterate quickly on genre combinations, tempos, and 30-second seamless loops.
 
 ---
 
@@ -55,8 +56,9 @@ Activate this skill whenever the user asks to:
 
 Consult dedicated reference cards in `references/` for detailed audio parameters, timing controls, and API schemas:
 
+- **[references/lyria-3-5.md](references/lyria-3-5.md)**: Flagship specifications for full-length songs, rich vocal synthesis, and arrangements.
 - **[references/lyria-3-clip.md](references/lyria-3-clip.md)**: Specifications for 30-second clips, loops, and rapid prototyping.
-- **[references/lyria-3-pro.md](references/lyria-3-pro.md)**: Specifications for full-length song arrangement, timestamp controls, and multimodal scoring.
+- **[references/lyria-3-pro.md](references/lyria-3-pro.md)**: Specifications for legacy full-length preview model, timestamp controls, and scoring.
 - **[references/README.md](references/README.md)**: Musical composition prompt reference and index.
 
 ---
@@ -68,31 +70,31 @@ Consult dedicated reference cards in `references/` for detailed audio parameters
 Execute `scripts/lyria.py` with `uv run`:
 
 ```bash
+# Generate a full song with Lyria 3.5 (default model)
+uv run scripts/lyria.py \
+  -p "An energetic pop-rock song with driving drums and upbeat vocals" \
+  -f "song.mp3" \
+  -m "lyria-3.5" \
+  --lyrics-file "lyrics.txt"
+
 # Generate a 30-second chiptune arcade loop with Lyria 3 Clip
 uv run scripts/lyria.py \
   -p "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only." \
   -f "chiptune.mp3" \
   -m "clip"
 
-# Generate a full orchestral soundtrack with Lyria 3 Pro
-uv run scripts/lyria.py \
-  -p "An epic cinematic orchestral theme building from quiet strings to a triumphant brass finale" \
-  -f "soundtrack.mp3" \
-  -m "pro" \
-  --lyrics-file "structure.txt"
-
 # Multimodal Image-to-Music (compose music inspired by an image)
 uv run scripts/lyria.py \
   -p "Ambient relaxing soundscape matching the mood of this landscape. Instrumental only." \
   -i "landscape.jpg" \
   -f "landscape_theme.mp3" \
-  -m "pro"
+  -m "lyria-3.5"
 ```
 
 #### CLI Argument Reference
 - `-p`, `--prompt`: Text prompt describing style, genre, instruments, BPM, and structure (required).
 - `-f`, `--filename`: Output audio file path (default: `music.mp3`).
-- `-m`, `--model`: `clip` / `lyria-3-clip-preview` or `pro` / `lyria-3-pro-preview` (default: `pro`).
+- `-m`, `--model`: `lyria-3.5` / `3.5` (default), `clip` / `lyria-3-clip-preview`, or `pro` / `lyria-3-pro-preview`.
 - `-i`, `--input-image`: Path to input image(s) for visual mood inspiration (up to 10).
 - `--format`: Audio container format (`mp3` or `wav`).
 - `--lyrics-file`: Optional path to write generated lyric transcription / structure text.
@@ -120,7 +122,7 @@ An atmospheric lo-fi beat in D Minor at 80 BPM:
 """
 
 interaction = client.interactions.create(
-    model="lyria-3-pro-preview",
+    model="lyria-3.5",
     input=prompt,
 )
 
@@ -144,7 +146,7 @@ with open("art_concept.png", "rb") as f:
     img_b64 = base64.b64encode(f.read()).decode("utf-8")
 
 interaction = client.interactions.create(
-    model="lyria-3-pro-preview",
+    model="lyria-3.5",
     input=[
         {"type": "image", "data": img_b64, "mime_type": "image/png"},
         {"type": "text", "text": "Compose an ethereal cyberpunk synth soundtrack matching this neon cityscape. Instrumental only."},
