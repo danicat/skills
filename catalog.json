@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-09-21T15:56:51.090Z",
+  "updatedAt": "2026-09-21T20:59:50.729Z",
   "categories": [
     {
       "id": "game-dev",
@@ -449,10 +449,10 @@
         "campaigns"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
-      "digest": "sha256:9bff7d0c39ce6c7ec43375b65392340c3ca7352a8cd3d9fcd57be5256b59701e"
+      "digest": "sha256:65d76f0daca2e7e6e1b7cd6ee1ccc108855ce6bfa70635f869ac96f03c4ebb27"
     },
     {
       "name": "buffer-analytics",

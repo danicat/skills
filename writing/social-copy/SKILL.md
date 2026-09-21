@@ -17,7 +17,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.4.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -54,13 +54,19 @@ Write like a **senior engineer or architect speaking to peers**:
 ### 2. The "Value-First" / "Zero-Click" Principle
 Every post should provide actionable insight directly in the timeline. Readers should learn something valuable even if they never click an external link.
 
+### 3. Voice Preservation & User Narrative Copyediting
+To ensure genuine author authenticity:
+- **Preserve User Quotes 1:1 in Canonical**: Any live comments, raw reflections, and spoken quotes from the author must be recorded verbatim (1:1) in a dedicated `## References / Sources` section inside `CANONICAL.md`.
+- **Infuse the Author's Voice into Derivative Copy**: These 1:1 remarks are the primary source for the author's authentic cadence, idioms, and engineering perspective.
+- **Copyedit for Final Polish**: While preserving the narrative spirit, tone, and specific turns of phrase as originally typed, apply professional copyediting during the final draft to ensure clean syntax, grammar, and publication-grade polish.
+
 ---
 
 ## Frontmatter & Metadata Standards for Copy Files
 
 All campaign artifacts—the canonical foundation narrative (`CANONICAL.md`) and every individual platform copy file (`linkedin.md`, `twitter.md`, `bluesky.md`, `threads.md`, `instagram.md`, `reddit.md`)—**MUST use YAML frontmatter for metadata followed by Markdown content**.
 
-### Standard Frontmatter Schema
+### Standard Frontmatter Schema & Canonical Layout
 
 ```markdown
 ---
@@ -76,7 +82,19 @@ media:
     description: "Dark-mode sequence diagram illustrating worker queues"
 ---
 
-# Post Content Begins Here (Markdown)
+# Post Content / Narrative Begins Here (Markdown)
+
+## Core Narrative & Technical Breakdown
+...
+
+## References / Sources
+### Live User Comments & Voice Log (Verbatim 1:1)
+- "Actual unedited quote from the user during chat/interview..."
+- "Another raw observation about the bug or performance tradeoff..."
+
+### Technical & Git References
+- Repo: `owner/repo` (commit `<hash>`)
+- PR: `#123`
 ```
 
 Frontmatter rules:
@@ -109,7 +127,9 @@ Never hallucinate features, metrics, or claims.
 1. **Inspect Deep Git & Source References**:
    - **No Shallow Summaries / No One-Line Shortcuts**: Never rely on `git log --oneline` or brief commit titles alone. One-line summaries hide critical architectural nuance, structural refactors, and behavioral details.
    - Always run full `git log` with commit bodies, inspect diff statistics (`git show --stat`), check architecture decision records (ADRs), and inspect source documentation directly across all referenced repositories.
-2. **Interview via `/grill-me`**: If the source is an open-ended topic or raw idea, recommend `/grill-me` or conduct an interactive interview to extract the author's real friction points, unexpected discoveries, and authentic engineering voice.
+2. **Interview via `/grill-me` & Live User Log**:
+   - If the source is an open-ended topic or raw idea, conduct an interactive interview or recommend `/grill-me` to extract the author's real friction points, unexpected discoveries, and authentic engineering voice.
+   - **Capture Live Comments 1:1**: Every raw remark, feedback note, or chat input from the user must be logged verbatim into the `## References / Sources` section of `CANONICAL.md`.
 3. **Draft the Canonical Foundation Narrative (`CANONICAL.md`)**:
    Author a comprehensive, unconstrained master document using YAML frontmatter followed by Markdown content:
    - Core premise & real motivation.
@@ -117,8 +137,9 @@ Never hallucinate features, metrics, or claims.
    - Concrete performance observations (time-to-first-token, reasoning depth, compile times).
    - Architectural breakthroughs, failure modes, and trade-offs.
    - Philosophical takeaways and references to published writing.
+   - **Mandatory `## References / Sources` section**: Houses all verbatim 1:1 user comments and technical source links.
    > [!IMPORTANT]
-   > **Continuous Master Synchronization**: Whenever new evidence is collected (whether through proactive deep git inspection or after user feedback/pushback), immediately update `CANONICAL.md` before adjusting derivative platform posts.
+   > **Continuous Master Synchronization**: Whenever new evidence is collected (whether through proactive deep git inspection or after user feedback/pushback), immediately update `CANONICAL.md`—including appending any new user comments—before adjusting derivative platform posts.
 
 ### Stage 2: Canonical Approval Gate (Mandatory Human-in-the-Loop)
 > [!CAUTION]
@@ -140,6 +161,9 @@ Cut and reformat the approved Foundation Narrative into the appropriate archetyp
 - **Instagram** (`instagram.md`): 4:5 multi-slide carousel outline + micro-blog caption with DM automation hook.
 - **Reddit** (`reddit.md`): Value-first Markdown self-post (300–800 words, 4-space code indents for Old Reddit).
 - **Threads** (`threads.md`): Casual, builder-centric post (<500 chars) with strictly 1 `#topic` tag.
+
+> [!NOTE]
+> **Infusing User Voice with Copyediting**: Draw heavily on the 1:1 user comments captured in the Canonical's `## References / Sources` section to infuse the author's personality, perspective, and phrasing into each channel post. Preserve the author's authentic narrative while applying professional copyediting to ensure a polished appearance.
 
 > [!IMPORTANT]
 > **Mandatory Media Requirement**: Every single social post MUST include at least one media item (picture or video)—such as an architectural diagram, Ray.so/Carbon dark-mode code card, terminal recording, benchmark plot, carousel slide, or demo clip. Naked, text-only posts are strictly prohibited across all platforms. Specify media details in the file's YAML frontmatter `media:` array.
