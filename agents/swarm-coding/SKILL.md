@@ -64,20 +64,20 @@ Swarm Coding divides complex engineering objectives among multiple specialized s
 flowchart TD
     Budget["Agent Budget (DOP)"] --> Check{"Agent Budget"}
 
-    Check -->|"< 10"| Flat["Flat Structure\n- Coordinator &rarr; Specialists directly\n- Break down tasks to prevent overlap\n- Assign one task per specialist agent"]
+    Check -->|"Under 10"| Flat["Flat Structure\n• Coordinator → Specialists directly\n• Disjoint tasks to prevent overlap\n• One task per specialist agent"]
 
-    Check -->|">= 10"| ShapeCheck{"Team Topology"}
+    Check -->|"10 or more"| ShapeCheck{"Team Topology"}
 
-    ShapeCheck -->|"Uniform Domains"| Nested["Nested Structure\n- Assign Tech Leads per domain\n- Allocate budget slices (Leads count towards budget)\n- Coordinator gives epics to Leads\n- Leads recursively break down epics to specialists"]
+    ShapeCheck -->|"Uniform Domains"| Nested["Nested Structure\n• Tech Leads per domain\n• Budget slices (Leads count towards budget)\n• Epics to Leads; Leads recurse to specialists"]
 
-    ShapeCheck -->|"Mixed Domains + Standalone Tasks"| Hybrid["Hybrid Structure\n- Combines Nested domain teams with Flat direct Specialists\n- Standalone tasks report directly to Coordinator"]
+    ShapeCheck -->|"Mixed Domains + Standalone"| Hybrid["Hybrid Structure\n• Combines Nested domain teams with Flat direct Specialists\n• Standalone tasks report directly to Coordinator"]
 
-    Nested --> Depth{"Nesting Level (Max Depth)"}
+    Nested --> Depth{"Max Nesting Depth"}
     Hybrid --> Depth
 
-    Depth -->|"Budget < 20 (10–19)"| D1["Max Depth = 1\nCoordinator &rarr; Domain Leads &rarr; Specialists"]
-    Depth -->|"Budget 20–49"| D2["Max Depth = 2\nCoordinator &rarr; Leads &rarr; Sub-Leads &rarr; Specialists"]
-    Depth -->|"Budget >= 50"| D3["Max Depth = 3\nCoordinator &rarr; Leads &rarr; Sub-Leads &rarr; Component Leads &rarr; Specialists"]
+    Depth -->|"Budget 10–19"| D1["Max Depth = 1\nCoordinator → Domain Leads → Specialists"]
+    Depth -->|"Budget 20–49"| D2["Max Depth = 2\nCoordinator → Leads → Sub-Leads → Specialists"]
+    Depth -->|"Budget 50+"| D3["Max Depth = 3\nCoordinator → Leads → Sub-Leads → Component Leads → Specialists"]
 ```
 
 #### Decision Rules:
@@ -123,23 +123,23 @@ The Swarm Coordinator is the primary user interface and top-level organizational
 Swarm Coding operates as a two-stage **Map-Reduce** engineering pipeline:
 
 ```mermaid
-graph TD
-    subgraph Map Phase [1. Map Phase: Parallel Stream Execution]
+flowchart TD
+    subgraph MAP["1. Map Phase: Parallel Stream Execution"]
         direction TB
-        L1[Tech Lead Backend] --> S1[Specialist: Core API]
-        L1 --> S2[Specialist: Database Models]
-        L2[Tech Lead Frontend] --> S3[Specialist: UI Components]
+        L1["Tech Lead Backend"] --> S1["Specialist: Core API"]
+        L1 --> S2["Specialist: Database Models"]
+        L2["Tech Lead Frontend"] --> S3["Specialist: UI Components"]
     end
 
-    subgraph Reduce Phase [2. Reduce Phase: Reconciliation & Final Verification]
+    subgraph REDUCE["2. Reduce Phase: Reconciliation & Final Verification"]
         direction TB
-        AUD[Audit Boundaries & Scan Placeholders] --> WIRE[Task QA/Integration Specialist to Wire Real Components]
-        WIRE --> PURGE[Purge Temporary Stubs & Mock Adapters]
-        PURGE --> E2E[Run End-to-End Integration Test Suite]
-        E2E --> PROOF[Deliver Verified Evidence Log to Coordinator]
+        AUD["Audit Boundaries & Scan Placeholders"] --> WIRE["Task QA/Integration Specialist to Wire Real Components"]
+        WIRE --> PURGE["Purge Temporary Stubs & Mock Adapters"]
+        PURGE --> E2E["Run End-to-End Integration Test Suite"]
+        E2E --> PROOF["Deliver Verified Evidence Log to Coordinator"]
     end
 
-    Map Phase --> Reduce Phase
+    MAP --> REDUCE
 ```
 
 ### 1. Map Phase (Parallel Development & Collision Avoidance)
