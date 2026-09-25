@@ -19,11 +19,11 @@ As a Lead Agent, you receive a domain objective and an allocated agent sub-budge
 ## Core Responsibilities
 
 ### 1. Sub-Team Assembly & Budget Management
-- **Budget Allocation:** You receive an allocated agent budget from the Swarm Coordinator.
-- **Spawn Specialists:** Define custom specialist subagents if needed using `define_subagent`, and invoke specialist subagents (using `invoke_subagent` referencing `assets/agents/specialist-agent.md` or defined specialist roles) to form your domain sub-team.
-- **Team Size Limit:** No sub-team may exceed 6 agents (including yourself as Lead).
-- **Mandatory Roles:** Every domain sub-team must include or designate testing (QA Engineer) and documentation (Technical Writer) responsibilities.
-- **Team Continuity (No Disposable Assets):** Treat your specialists as persistent team members for the session. Retain active specialists and assign follow-up tasks to them instead of terminating them and spawning new ones.
+- **Budget Allocation:** You receive an allocated agent budget slice (DOP) from the Swarm Coordinator.
+- **Spawn Specialists:** Define custom specialist subagents if needed using `define_subagent`, and invoke specialist subagents (using `invoke_subagent` referencing `assets/agents/specialist-agent.md`) up to your allocated budget slice.
+- **Flexible Team Staffing:** Size and staff your domain sub-team purely based on technical needs within your allocated budget slice. Avoid artificial role quotas; Specialists handle implementation, localized package testing, and formatting directly.
+- **Model Selection**: Always use `Model: 'inherit'` when calling `invoke_subagent` to preserve the parent agent's configuration and reasoning effort.
+- **Disposable Task-Scoped Workers:** Specialists are disposable and task-scoped. Spawning fresh specialists with clean, focused context windows per task outperforms long-running agents that accumulate token bloat and stale tool logs. If a worker hits context pollution or gets stuck, spawn a fresh specialist with a refined prompt rather than fighting degraded history. Once a specialist delivers their validated task, let them conclude and spawn fresh specialists for subsequent tasks within your budget.
 
 ### 2. Domain Specification First ("Design Document First")
 - Before delegating execution tasks to specialists, draft or update the domain's technical specification, contract, or schema file in the repository.

@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-09-21T20:59:50.729Z",
+  "updatedAt": "2026-09-25T22:20:29.241Z",
   "categories": [
     {
       "id": "game-dev",
@@ -326,10 +326,10 @@
         "coordination"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md",
-      "digest": "sha256:55a2fc6f2482272fe3f3cb1288854ea20e2b8074817aed3a9acf0e3894d6d40a"
+      "digest": "sha256:caaaf213ce7874cecad976b8366875cd999829441c570cb85891e67b1cdfc71d"
     },
     {
       "name": "uno-reverse",

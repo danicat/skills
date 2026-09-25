@@ -9,11 +9,14 @@ description: >
   multi-agent team coordination, or needs context isolation across multiple
   technical domains.
 license: Apache-2.0
+compatibility:
+  agents:
+    - Antigravity
 metadata:
   category: agents
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -37,11 +40,10 @@ Swarm Coding divides complex engineering objectives among multiple specialized s
    - **Lead Agent:** Attributed to domain or system leads (Multiplicity: N, one per system/domain). Receives an allocated sub-budget from the Swarm Coordinator, assembles a specialist team, writes domain specifications, delegates tasks, and integrates domain deliverables.
 4. **Specialist Role:** Attributed to task executors. Designs and implements narrowly-scoped components within a single domain, adhering to domain specs and running operational validation loops.
 5. **Strict Communication Hierarchy (No Lateral Messaging):**
-   - **Allowed:** Messaging between immediate parents and children ONLY (Swarm Coordinator $\leftrightarrow$ Lead Agent, Lead Agent $\leftrightarrow$ Specialist).
-   - **Forbidden:** Direct communication between agents on the SAME layer (Lead Agent $\leftrightarrow$ Lead Agent, Specialist $\leftrightarrow$ Specialist) or direct escalation (Specialist $\leftrightarrow$ Swarm Coordinator) is strictly forbidden.
+   - **Allowed:** Messaging between immediate parents and children ONLY (Swarm Coordinator $\leftrightarrow$ Lead Agent, Lead Agent $\leftrightarrow$ Specialist; or Swarm Coordinator $\leftrightarrow$ Specialist in flat/hybrid structures).
+   - **Forbidden:** Direct communication between agents on the SAME layer (Lead Agent $\leftrightarrow$ Lead Agent, Specialist $\leftrightarrow$ Specialist) or direct escalation (Specialist $\leftrightarrow$ Swarm Coordinator bypassing an intermediate Lead Agent) is strictly forbidden.
    - **Design Document First:** Inter-domain or cross-layer coordination MUST be handled by writing or updating shared design documents first, then notifying parent/child agents via hierarchical messaging.
-6. **Team Continuity & Semi-Permanent Hierarchy (No Disposable Assets):** Treat agents as persistent team members, not disposable assets. Do not prematurely terminate subagents and spawn new ones. Retain and aggressively reuse active Lead Agents and Specialists across task iterations to preserve accumulated context.
-7. **Fine-Grained Targeted Testing (No Broad Root Sweeps):** Specialists MUST execute fine-grained, package-scoped unit tests (e.g., `go test ./internal/physics/...`) strictly targeting their assigned task. Running broad project-root test commands (e.g., `go test ./...`) is strictly forbidden for Specialists unless explicitly requested by the Swarm Coordinator, preventing cross-task contamination and false failures while parallel agents work concurrently.
+6. **Fine-Grained Targeted Testing (No Broad Root Sweeps):** Specialists MUST execute fine-grained, package-scoped unit tests (e.g., `go test ./internal/physics/...`) strictly targeting their assigned task. Running broad project-root test commands (e.g., `go test ./...`) is strictly forbidden for Specialists unless explicitly requested by the Swarm Coordinator, preventing cross-task contamination and false failures while parallel agents work concurrently.
 
 ---
 
@@ -50,23 +52,52 @@ Swarm Coding divides complex engineering objectives among multiple specialized s
 * **Definition**: **Agent Budget** is synonymous with **Degree of Parallelism (DOP)**. It defines the maximum number of **active, concurrent subagents** allowed to execute at the exact same time across the entire swarm hierarchy.
 * **Active vs. Past Capacity**: Completed or terminated subagents do **not** consume budget. The budget applies strictly to currently running subagents. When a subagent completes its work, its concurrency slot is immediately freed.
 * **Default Concurrency**: Assumes a default budget of **10** active concurrent agents if omitted by the user.
-* **Low Budget Guard ($\le 1$):** If the user explicitly specifies an `agent budget <= 1`:
-  - **HALT immediately** and do NOT spawn subagents or start implementation.
-  - Trigger an interactive conversation with the user using `ask_question`.
-  - Explain that multi-agent swarm orchestration requires budget $> 1$ (recommended 10). Present choices: (1) Increase budget to 10 (Recommended), (2) Specify a custom budget $> 1$, or (3) Fall back to single-agent execution.
-* **Adaptive Team Hierarchy**:
-  - **Focused ($\text{DOP} \le 4$)**: Flat structure (Coordinator $\rightarrow$ Specialists directly).
-  - **Standard / Multi-Domain ($\text{DOP} \ge 6$)**: Hierarchical structure (Coordinator $\rightarrow$ Domain Tech Leads $\rightarrow$ Specialists).
-  - **Massive Swarms ($\text{DOP} \ge 20\text{--}50+$)**: Subagents act as focused micro-probes, returning dense, high-signal structured findings ($\le 150$ words) to enable crisp synthesis without context dilution.
+* **Low Budget Guard ($\le 1$):** If the user specifies an `agent budget <= 1`, multi-agent orchestration is disabled. Automatically fall back to direct single-agent execution without spawning subagents, notifying the user: *"Agent budget is set to $\le 1$; running in direct single-agent execution mode. To enable swarm parallelism, specify an agent budget $> 1$ (default: 10)."*
+* **Swarm Shapes (Flat, Nested, Hybrid)**:
+  - **Flat**: Swarm Coordinator coordinates Specialists directly (no intermediate Tech Leads). Used when agent budget $< 10$.
+  - **Nested**: Swarm Coordinator assigns Tech Leads per domain and allocates each a slice of the agent budget. Leads recursively break down epics into specialist tasks. Used when agent budget $\ge 10$.
+  - **Hybrid**: Combines nested domain teams with flat direct specialists reporting to the Coordinator for standalone or cross-cutting tasks.
 
-### Concurrency Sizing Matrix:
+### 🌲 Swarm Sizing Decision Tree
 
-| Initiative Scale | Agent Budget ($\text{DOP}$) | Structure Type | Domain Tech Leads | Specialists per Lead | Typical Scope |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **Focused** | **2–4** | Flat | None (Direct Coordinator) | 2–4 Specialists | Targeted dual-subsystem or focused feature |
-| **Standard (Default)** | **10** | Hierarchical | 2–3 (e.g., Backend, Frontend, QA) | 2–3 per domain | Full-stack application, multi-package service |
-| **Complex Platform** | **16–20+** | Hierarchical | 4–5 (API, Core Engine, UI, Infra, QA) | 3–4 per domain | Distributed microservices, full platform build |
-| **Massive Swarm** | **20–50+** | Elastic Micro-Probes | Distributed Leads / Probes | Micro-probes ($\le 150$w) | Wide ecosystem sweeps, multi-file migrations |
+```mermaid
+flowchart TD
+    Budget["Agent Budget (DOP)"] --> Check{"Agent Budget"}
+
+    Check -->|"< 10"| Flat["Flat Structure\n- Coordinator &rarr; Specialists directly\n- Break down tasks to prevent overlap\n- Assign one task per specialist agent"]
+
+    Check -->|">= 10"| ShapeCheck{"Team Topology"}
+
+    ShapeCheck -->|"Uniform Domains"| Nested["Nested Structure\n- Assign Tech Leads per domain\n- Allocate budget slices (Leads count towards budget)\n- Coordinator gives epics to Leads\n- Leads recursively break down epics to specialists"]
+
+    ShapeCheck -->|"Mixed Domains + Standalone Tasks"| Hybrid["Hybrid Structure\n- Combines Nested domain teams with Flat direct Specialists\n- Standalone tasks report directly to Coordinator"]
+
+    Nested --> Depth{"Nesting Level (Max Depth)"}
+    Hybrid --> Depth
+
+    Depth -->|"Budget < 20 (10–19)"| D1["Max Depth = 1\nCoordinator &rarr; Domain Leads &rarr; Specialists"]
+    Depth -->|"Budget 20–49"| D2["Max Depth = 2\nCoordinator &rarr; Leads &rarr; Sub-Leads &rarr; Specialists"]
+    Depth -->|"Budget >= 50"| D3["Max Depth = 3\nCoordinator &rarr; Leads &rarr; Sub-Leads &rarr; Component Leads &rarr; Specialists"]
+```
+
+#### Decision Rules:
+
+1. **Agent Budget $< 10 \rightarrow$ Flat Structure**:
+   - Coordinator coordinates Specialists directly (all specialists, no intermediate Tech Leads).
+   - Break down tasks so that agents do not step on each other, and assign one task to each agent.
+2. **Agent Budget $\ge 10 \rightarrow$ Nested Structure**:
+   - Assign Tech Leads per domain and give them a slice of the agent budget (**Tech Leads also count towards the budget**).
+   - Break down the task into "epics" and give them to the Leads.
+   - Leads recursively break down epics into granular tasks for specialists (or subordinate leads).
+   - **Nesting Level (Max Depth below Coordinator)**:
+     - **Budget $< 20$** ($10\text{--}19$): `max depth == 1` (Coordinator $\rightarrow$ Domain Tech Leads $\rightarrow$ Specialists).
+     - **Budget between 20 and 49**: `max depth == 2` (Coordinator $\rightarrow$ Domain Tech Leads $\rightarrow$ Sub-Leads $\rightarrow$ Specialists).
+     - **Budget $\ge 50$** (or $> 50$): `max depth == 3` (Coordinator $\rightarrow$ Domain Tech Leads $\rightarrow$ Sub-Leads $\rightarrow$ Component Leads $\rightarrow$ Specialists).
+     > [!NOTE]
+     > The tree does not need to be perfectly balanced; different branches can have different depths based on domain complexity.
+3. **Hybrid Structure (Mixed Workloads)**:
+   - Use when an initiative contains both complex multi-agent domains requiring Tech Leads and focused, standalone, or cross-cutting tasks (e.g., dedicated QA/Integration, architecture spike, or isolated single-task component) that report directly to the Swarm Coordinator without an intermediate Tech Lead.
+   - Nested branches follow the depth rules above, while direct specialists consume 1 concurrency slot each.
 
 ---
 
@@ -139,8 +170,21 @@ Subagents in a Swarm Coding session assume one of three roles:
    - Assembles a Specialist team within their allocated sub-budget, writes domain specs ("Design Document First"), deconstructs domain tasks, arbitrates collisions, and integrates deliverables.
    - **Tool Restrictions:** Command/script execution is disabled (`commandExecutionPolicy: off`). Delegates execution to Specialists and routes user questions up to the Swarm Coordinator via `send_message`.
 3. **Specialist (Task Implementer / QA)** [Multiplicity: N]
-   - Executes narrowly-scoped technical tasks within their assigned domain.
-   - Follows domain specifications, executes the operational validation loop (build, test, lint, format), replaces stubs, and provides proof-of-validation logs to their parent Lead Agent.
+   - Ephemeral and task-scoped (disposable worker). Operates with a clean, focused context window dedicated strictly to its assigned task.
+   - Follows domain specifications, executes the operational validation loop (build, test, lint, format), replaces stubs, and provides proof-of-validation logs to their parent Lead Agent, then completes.
+
+### 🛠️ Modern Subagent Configuration & Inheritance
+
+When defining subagents (`agent.md` or via `define_subagent`), adhere to modern Antigravity configuration standards:
+* **Customization & Skill Inheritance (`inheritCustomizations: true`)**:
+  Subagents should declare `inheritCustomizations: true`. This ensures the subagent seamlessly adopts all parent and workspace customizations (skills like `kungfu` and domain linters, rules, plugins, and custom configurations) without synchronization drift.
+* **MCP Integration (`inheritMcp: true`)**:
+  Passes through external MCP tool servers (e.g., database tools, devtools, knowledge servers) so subagents have access to necessary development tools.
+* **Model Configuration (`model: inherit`)**:
+  Always use `inherit` (in agent definitions and `invoke_subagent`). Subagents automatically adopt the parent session's model configuration and reasoning effort (`/effort`), ensuring complete behavioral consistency across the swarm hierarchy without model-routing overhead.
+* **Execution Boundary (`commandExecutionPolicy`)**:
+  - `commandExecutionPolicy: off`: Applied to Lead Agents to enforce a pure orchestration posture.
+  - `commandExecutionPolicy: sandbox`: Applied to Specialists to permit safe build, test, and formatting execution.
 
 ---
 
@@ -174,9 +218,9 @@ graph TD
 
 1. **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
 2. **Leftover Placeholder Trap:** Delivering code where temporary stubs or mocks survive into the final codebase. Always execute the Reduce phase to purge stubs and wire real implementations.
-3. **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart when budget $\ge 6$.
+3. **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart when budget $\ge 10$.
 4. **Sibling Messaging Trap:** Attempting to send direct messages between peer Lead Agents or peer Specialists. Always route cross-component updates through shared design documents and hierarchical parent-child messages.
-5. **Disposable Asset Pitfall (Context Loss):** Terminating subagents prematurely and spawning fresh ones for related tasks. Active subagents should be retained and reused across domain task iterations.
+5. **The Long-Running Agent Context-Pollution Trap:** Retaining subagents indefinitely across multiple distinct tasks accumulates noisy tool logs, failed attempts, and token bloat. Specialists should be disposable and task-scoped—spawn fresh workers with clean context windows per task for maximum precision and speed.
 6. **The Root Test Contamination Trap:** Running broad project-root test commands (e.g., `go test ./...`) while parallel agents are modifying other packages causes false test failures. Specialists must scope test commands strictly to their assigned package until the final Reduce step.
 7. **Passive Polling Loops:** Coordinator and Lead agents must never poll subagent statuses in a tight loop; rely on automatic reactive wakeup upon subagent task completion.
 
