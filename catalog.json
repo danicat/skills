@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 29,
-  "updatedAt": "2026-09-25T22:28:57.028Z",
+  "updatedAt": "2026-09-25T23:35:26.629Z",
   "categories": [
     {
       "id": "game-dev",
@@ -64,10 +64,10 @@
         "shaders"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
-      "digest": "sha256:a46fac4ab155ee6eec7b642e51e32687514b7d79fbd23f0b3a2b7197f6852194"
+      "digest": "sha256:71e2271fe31d4af3feb8f3e65123fe8c0814a3ff91f9d7a1f8d3c3d964fad0f6"
     },
     {
       "name": "game-design",
@@ -80,10 +80,10 @@
         "prototyping"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/game-design/SKILL.md",
-      "digest": "sha256:9c24f6789900777849dda51cd6897f2ab519e9566d9d0546205b4492abf5d5cc"
+      "digest": "sha256:f52a256aa92dceb17f2b4d4cf3b524f08a40f35ff877b9be453ba4c6d25490dc"
     },
     {
       "name": "procedural-art",
@@ -97,10 +97,10 @@
         "vfx"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md",
-      "digest": "sha256:30369dd1a96ea3be7bcb7ea12770d3c027eb63c4ff28ce66b1ff559ec17f65bd"
+      "digest": "sha256:75b16a1af2fb2a4ba42f6faa316e58160b6089f13124624dbc1521f3e388aabd"
     },
     {
       "name": "procedural-composer",
@@ -115,10 +115,10 @@
         "bgm"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md",
-      "digest": "sha256:79acfc87c486d85db571948f05d903bd0fe56e67d809abfa9d96b0bf4f4f0450"
+      "digest": "sha256:c8b1613473a06002d6a411b70890b1dbdfafcd5b289246168bc358fd99ee71ea"
     },
     {
       "name": "sprite-animation",
@@ -133,10 +133,10 @@
         "ebitengine"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md",
-      "digest": "sha256:553fd2622e71890ad858fe751bc2721bfc3a01fda341b419538b037e0439f677"
+      "digest": "sha256:171cf458db9c1a82c0dc5f6522eef9e1c8cce3c48092e19947f7c9b3c117c451"
     },
     {
       "name": "vibe-game-developer",
@@ -151,10 +151,10 @@
         "2d"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
-      "digest": "sha256:5d23eae3734121ae8955773b936a991552d2281bc599f7d905a6a9f1d0b1bb99"
+      "digest": "sha256:ef7f43a83b33c0947d077613fc7a62e95d8c7ef0250967537b46c73feba1b9c4"
     },
     {
       "name": "lyria",
@@ -272,10 +272,10 @@
         "agile"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/double-diamond/SKILL.md",
-      "digest": "sha256:16fc94d0a1d9a067e1f5141a8d53377a84d26e27643d64f7ec6c789cd280993e"
+      "digest": "sha256:6ce547811bde99d41ad6882de65cba3f0fc9b75bbd23382aab9ea434debae6cf"
     },
     {
       "name": "intercom",
@@ -307,10 +307,10 @@
         "standards"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
-      "digest": "sha256:f58c45b1f42b2c1da077a27cb7f70b509841d7b6a55191657fa553c2098b2cbf"
+      "digest": "sha256:1ed31033256dd583d9e1306f3fe23c9bc4f63108eeb8bdc7ea1bd07185b5a3cf"
     },
     {
       "name": "swarm-coding",
@@ -326,10 +326,10 @@
         "coordination"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/swarm-coding/SKILL.md",
-      "digest": "sha256:9c82a5923ba0e3c1aad57a7c1f466793eeece64d6cbb96ffee9fc54f688deb59"
+      "digest": "sha256:01c5557f7ea3bb9edb8265ada8ce28db259bc71f3cd10fd3deee042e12398216"
     },
     {
       "name": "uno-reverse",
@@ -345,10 +345,10 @@
         "refactoring"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/uno-reverse/SKILL.md",
-      "digest": "sha256:ebcbc0e6c021ee0b75db8f43933ae546c5880e94e2b64c6782c5262f423c3805"
+      "digest": "sha256:9216f0f2aa7a7568d931c049753974652f285808b9fc30421d1ad787e378d27a"
     },
     {
       "name": "buffer",
@@ -432,10 +432,10 @@
         "metadata"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md",
-      "digest": "sha256:171505d71bcae67f9ba8a63009b075cd37f7416160f4b374d81091a51702e6ae"
+      "digest": "sha256:81245d26e1ca6913a9706574aff53a99c22d1d01645792a10d618bea4ecc31e3"
     },
     {
       "name": "social-copy",
@@ -449,10 +449,10 @@
         "campaigns"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
-      "digest": "sha256:65d76f0daca2e7e6e1b7cd6ee1ccc108855ce6bfa70635f869ac96f03c4ebb27"
+      "digest": "sha256:cdcfc7310690ff1f1410f5bd6d6a5e65186279632dfba157ad7c21f226956cb4"
     },
     {
       "name": "buffer-analytics",
@@ -484,10 +484,10 @@
         "optimization"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/google-analytics/SKILL.md",
-      "digest": "sha256:b9120a1b7f0fbe85774567dad4093e10b7637def7e5d604a753d868e864fa46b"
+      "digest": "sha256:2a0e5efcddee001b40c06f21b113482c78e0c0f6812b7abd5e730326ad514b32"
     },
     {
       "name": "search-analytics",

@@ -31,7 +31,7 @@ gcloud services enable analyticsadmin.googleapis.com analyticsdata.googleapis.co
 ## 3. Granting GA4 Property Access
 
 1. Open [Google Analytics](https://analytics.google.com).
-2. Go to **Admin** (gear icon) $\rightarrow$ **Property Access Management**.
+2. Go to **Admin** (gear icon) -> **Property Access Management**.
 3. Add the email address associated with your Google Cloud account as a **Viewer** or **Administrator**.
 4. Note your numeric **Property ID** under **Property Details** (e.g. `123456789`).
 

@@ -75,7 +75,7 @@ When managing $N > 100$ moving entities, naive pair-wise checks require $O(N^2)$
 
 ### 2.1 Spatial Hash Grid Pattern
 
-Divide the world into a grid of uniform cell size (e.g. $64\times64$ pixels):
+Divide the world into a grid of uniform cell size (e.g. 64x64 pixels):
 
 ```go
 type SpatialHash struct {

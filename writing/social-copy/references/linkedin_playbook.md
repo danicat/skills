@@ -35,7 +35,7 @@ The feed truncates copy with `...see more`:
 
 ### Formatting Rules
 - **Paragraphs:** 1–3 short sentences per paragraph with generous whitespace.
-- **Bullet Glyphs:** Use standard unicode markers (`•`, `→`, `-`, `1.`, `2.`). Avoid chaotic emoji walls.
+- **Bullet Glyphs:** Use standard unicode markers (`•`, `->`, `-`, `1.`, `2.`). Avoid chaotic emoji walls.
 - **Section Headers:** Use short uppercase labels (`THE PROBLEM:`, `THE FIX:`, `THE TRADE-OFF:`).
 - **NO Unicode Bolding:** Do not use mathematical unicode bold fonts (e.g., `𝗕𝗼𝗹𝗱`). They break screen readers, fail semantic search indexing, and inflate byte counts.
 
@@ -113,7 +113,7 @@ Carousels capture the highest dwell times on LinkedIn.
 - **Slide Count:** 6 to 10 slides (sweet spot for completion).
 - **Format:** Multi-page PDF document under 100MB.
 - **Typography:** Sans-serif (Inter, Roboto), minimum 24–32pt body, 48–60pt headers. Keep text 60–80px away from edges.
-- **Slide Structure:** Cover hook (Slide 1) → Problem & baseline (2–3) → Diagrams & code diffs (4–7) → Summary & CTA (Slide 8).
+- **Slide Structure:** Cover hook (Slide 1) -> Problem & baseline (2-3) -> Diagrams & code diffs (4-7) -> Summary & CTA (Slide 8).
 
 ---
 

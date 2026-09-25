@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "game-dev, ebitengine, orchestrator, workflow, architecture, 2d"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -82,12 +82,12 @@ A critical responsibility of this master skill is determining whether an asset r
 When guiding the user through building a complete 2D game from scratch:
 
 1. **Game Concept & GDD**: Activate `game-design` (`/grill-me`) to probe player vision, define core mechanics, controls, art/audio strategy, and save `GDD.md`.
-2. **Architecture & Scope**: Activate `ebitengineer` to set up package structure (`internal/`), 16:9 virtual pixel canvas, delta time ($dt$) 60 FPS timing, and FSM scene progression.
+2. **Architecture & Scope**: Activate `ebitengineer` to set up package structure (`internal/`), 16:9 virtual pixel canvas, delta time (dt) 60 FPS timing, and FSM scene progression.
 3. **Visual Art & Sprites**:
-   - For UI/particle FX/vector geometry $\rightarrow$ Activate `procedural-art`.
-   - For character concept art / AI pixel sprite sheets $\rightarrow$ Activate `nano-banana` + `sprite-animation`.
+   - For UI/particle FX/vector geometry -> Activate `procedural-art`.
+   - For character concept art / AI pixel sprite sheets -> Activate `nano-banana` + `sprite-animation`.
 4. **Sound Effects & Music**:
-   - For retro SFX & synthesized chiptunes $\rightarrow$ Activate `procedural-composer`.
-   - For high-fidelity background music beds $\rightarrow$ Activate `lyria`.
+   - For retro SFX & synthesized chiptunes -> Activate `procedural-composer`.
+   - For high-fidelity background music beds -> Activate `lyria`.
 5. **Code Review & Quality Gate**: Activate `godoctor` (`smart_build`, unit testing, Selene mutation testing) to ensure code correctness and test coverage.
 6. **Deployment**: Activate `ebitengineer` to compile to WebAssembly and configure Google Cloud Run deployment with multi-stage Docker builds.

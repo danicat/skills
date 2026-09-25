@@ -6,10 +6,10 @@ A systematic procedure for diagnosing organic search decay, refreshing legacy hi
 
 ## 1. Diagnosing Content Decay
 
-Technical content naturally decays over 6–18 months as APIs evolve, CLI tool names change (e.g. `gemini` $\rightarrow$ `agy`), and SDK syntax advances.
+Technical content naturally decays over 6–18 months as APIs evolve, CLI tool names change (e.g. `gemini` -> `agy`), and SDK syntax advances.
 
 ### Signs of Decay in Search Analytics:
-- **Impression Cliff**: Search impressions drop $>40\%$ over 90 days.
+- **Impression Cliff**: Search impressions drop >40% over 90 days.
 - **Position Slip**: Average rank drops from Top 3 to Positions 8–15.
 - **CTR Decay**: High impressions but low CTR due to outdated year in title (e.g., "in 2024").
 

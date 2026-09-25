@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "game-dev, sprites, pixel-art, particles, vfx"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -57,31 +57,35 @@ In 2D graphics programming (e.g., Ebitengine `ebiten.GeoM`), **the order in whic
 
 ### 3.1 Why Order of Operations Matters
 
-* **Correct Sequence: Pivot $\rightarrow$ Scale $\rightarrow$ Rotate $\rightarrow$ World Translation**:
-  $$\mathbf{M}_{\text{correct}} = \mathbf{T}(X + O_x, Y + O_y) \cdot \mathbf{R}(\theta) \cdot \mathbf{S}(S_x, S_y) \cdot \mathbf{T}(-O_x, -O_y)$$
-  1. Translate sprite origin to center pivot $(-O_x, -O_y)$.
-  2. Scale dimensions relative to the pivot $(S_x, S_y)$.
-  3. Rotate around the pivot $(\theta)$.
-  4. Translate the scaled and rotated sprite to world coordinate $(X, Y)$.
+* **Correct Sequence: Pivot -> Scale -> Rotate -> World Translation**:
+  ```
+  M_correct = T(X + Ox, Y + Oy) * R(theta) * S(Sx, Sy) * T(-Ox, -Oy)
+  ```
+  1. Translate sprite origin to center pivot `(-Ox, -Oy)`.
+  2. Scale dimensions relative to the pivot `(Sx, Sy)`.
+  3. Rotate around the pivot `(theta)`.
+  4. Translate the scaled and rotated sprite to world coordinate `(X, Y)`.
 
-* **Incorrect Sequence: World Translation $\rightarrow$ Scale**:
-  $$\mathbf{M}_{\text{wrong}} = \mathbf{S}(S_x, S_y) \cdot \mathbf{T}(X, Y)$$
-  Translating to $(X, Y)$ *before* scaling causes the scaling matrix to multiply the translation vector itself ($X' = X \cdot S_x, Y' = Y \cdot S_y$), flinging the sprite away from its intended position on screen!
+* **Incorrect Sequence: World Translation -> Scale**:
+  ```
+  M_wrong = S(Sx, Sy) * T(X, Y)
+  ```
+  Translating to `(X, Y)` *before* scaling causes the scaling matrix to multiply the translation vector itself (`X' = X * Sx, Y' = Y * Sy`), flinging the sprite away from its intended position on screen!
 
 ---
 
 ## 4. Animations, Fluid Motion & Sub-Frame Interpolation
 
-Fluid animations require sub-frame delta time ($dt$) integration and non-linear easing curves rather than linear step jumps.
+Fluid animations require sub-frame delta time (dt) integration and non-linear easing curves rather than linear step jumps.
 
 ### 4.1 Transition Frames & Easing Functions
 
 Always use easing functions to model physical weight, momentum, and elasticity:
-* **Linear**: $f(t) = t$ (Constant motion; suitable for conveyor belts or UI tickers).
-* **Ease-In Quadratic**: $f(t) = t^2$ (Slow start, accelerating; falling under gravity).
-* **Ease-Out Quadratic**: $f(t) = t(2 - t)$ (Fast start, decelerating; sliding friction).
-* **Ease-InOut Cubic**: $f(t) = 4t^3 \text{ if } t < 0.5 \text{ else } 1 - \frac{(-2t+2)^3}{2}$ (Smooth natural organic motion).
-* **Elastic Overshoot**: $f(t) = 2^{-10t} \sin\left(\frac{(t - 0.075) \cdot 2\pi}{0.3}\right) + 1$ (Springy UI pop-ups, sword swings).
+* **Linear**: `f(t) = t` (Constant motion; suitable for conveyor belts or UI tickers).
+* **Ease-In Quadratic**: `f(t) = t^2` (Slow start, accelerating; falling under gravity).
+* **Ease-Out Quadratic**: `f(t) = t * (2 - t)` (Fast start, decelerating; sliding friction).
+* **Ease-InOut Cubic**: `f(t) = 4 * t^3 if t < 0.5 else 1 - (-2*t + 2)^3 / 2` (Smooth natural organic motion).
+* **Elastic Overshoot**: `f(t) = 2^(-10*t) * sin((t - 0.075) * 2 * pi / 0.3) + 1` (Springy UI pop-ups, sword swings).
 
 ---
 
@@ -98,12 +102,12 @@ To generate fluid, professional character animations, AI models must produce com
 
 | Animation State | Required Frames / Dir | Keyframes & Pose Progression | Easing / Timing Guidelines |
 | :--- | :--- | :--- | :--- |
-| **Idle / Breathing** | $4 - 8\text{ frames}$ | Subtle chest rise, shoulder dip, weapon idle shimmer. | Slow, smooth Ease-InOut Cubic ($1.2\text{s} - 1.8\text{s}$ cycle). |
-| **Walk / Run Cycle** | $8 - 12\text{ frames}$ | Contact $\rightarrow$ Recoil $\rightarrow$ Passing $\rightarrow$ High Point (both left & right legs). | Rhythmic, continuous loop ($0.6\text{s} - 0.9\text{s}$ cycle). |
-| **Attack / Strike** | $6 - 10\text{ frames}$ | 1. Wind-up/Anticipation (pull back) $\rightarrow$ 2. Fast Strike/Impact $\rightarrow$ 3. Follow-through $\rightarrow$ 4. Recovery. | **Fast Ease-In to Impact** ($1-2\text{ frames}$), then Ease-Out Recovery ($3-4\text{ frames}$). |
-| **Hurt / Hit Recoil** | $3 - 5\text{ frames}$ | Sharp backward tilt, flash white/red frame, recovery. | High speed ($0.15\text{s} - 0.25\text{s}$ total). |
-| **Death / Collapse** | $6 - 10\text{ frames}$ | Stagger back $\rightarrow$ Knees buckle $\rightarrow$ Ground impact $\rightarrow$ Dissolve/Settle. | Heavy Ease-In gravity drop, non-looping final resting frame. |
-| **Cast / Special Skill**| $8 - 12\text{ frames}$ | Energy gather (glow aura) $\rightarrow$ Power release pose $\rightarrow$ Dissipation hold. | Pulse aura w/ additive particles, smooth hold pose. |
+| **Idle / Breathing** | 4-8 frames | Subtle chest rise, shoulder dip, weapon idle shimmer. | Slow, smooth Ease-InOut Cubic (1.2s - 1.8s cycle). |
+| **Walk / Run Cycle** | 8-12 frames | Contact -> Recoil -> Passing -> High Point (both left & right legs). | Rhythmic, continuous loop (0.6s - 0.9s cycle). |
+| **Attack / Strike** | 6-10 frames | 1. Wind-up/Anticipation (pull back) -> 2. Fast Strike/Impact -> 3. Follow-through -> 4. Recovery. | **Fast Ease-In to Impact** (1-2 frames), then Ease-Out Recovery (3-4 frames). |
+| **Hurt / Hit Recoil** | 3-5 frames | Sharp backward tilt, flash white/red frame, recovery. | High speed (0.15s - 0.25s total). |
+| **Death / Collapse** | 6-10 frames | Stagger back -> Knees buckle -> Ground impact -> Dissolve/Settle. | Heavy Ease-In gravity drop, non-looping final resting frame. |
+| **Cast / Special Skill**| 8-12 frames | Energy gather (glow aura) -> Power release pose -> Dissipation hold. | Pulse aura w/ additive particles, smooth hold pose. |
 
 ---
 
@@ -169,7 +173,7 @@ When procedural vector drawing is insufficient, craft pixel textures directly in
 When an AI agent uses this skill to generate procedural graphics or sprite rendering code:
 
 1. **MANDATORY Full Sprite Sheet Frame Sets**:
-   * Character generators MUST output complete frame sets ($8\text{--}12\text{ frames}$ for walk/run, $6\text{--}10\text{ frames}$ for attack, $4\text{--}8\text{ frames}$ for idle) across all required directions.
+   * Character generators MUST output complete frame sets (8-12 frames for walk/run, 6-10 frames for attack, 4-8 frames for idle) across all required directions.
 2. **MANDATORY Correct Matrix Transformation Order**:
    * Transformations MUST execute in order: `Translate(-pivot) -> Scale -> Rotate -> Translate(+pivot + pos)`.
 3. **MANDATORY Pre-Allocated Particle Pools**:
@@ -177,21 +181,21 @@ When an AI agent uses this skill to generate procedural graphics or sprite rende
 4. **MANDATORY Retro-HD Color Ramps**:
    * Sprites MUST use 32-bit truecolor RGBA with 4-step material shading ramps and cool shadow / warm highlight shifts.
 5. **MANDATORY Non-Linear Motion Easing**:
-   * Animations MUST integrate delta time ($dt$) and easing curves (Ease-Out, Elastic) for fluid sub-frame movement.
+   * Animations MUST integrate delta time (dt) and easing curves (Ease-Out, Elastic) for fluid sub-frame movement.
 
 ---
 
 ## 9. Gotchas & Engineering Best Practices
 
 * **Allocation Spikes in Render Loop**: Calling `image.NewRGBA` or `ebiten.NewImage` inside `Draw()` or `Update()` causes massive GC frame drops. Always pre-render textures into a persistent cache at boot.
-* **Premultiplied Alpha Artifacts**: In Ebitengine, custom RGBA pixel buffers drawn with alpha must properly premultiply color channels ($R' = R \cdot A / 255$) to avoid dark fringe borders around semi-transparent pixels.
+* **Premultiplied Alpha Artifacts**: In Ebitengine, custom RGBA pixel buffers drawn with alpha must properly premultiply color channels (`R' = R * A / 255`) to avoid dark fringe borders around semi-transparent pixels.
 * **Matrix Order Flaws**: Scaling after world translation multiplies world coordinates, causing sprites to fly off-screen. Always scale before translating!
 
 ---
 
 ## 10. Summary Checklist for Procedural Art Quality
 
-1. **Pre-render Full Animation Frame Sheets at Boot**: Pre-generate all Idle ($4-8\text{f}$), Walk ($8-12\text{f}$), Attack ($6-10\text{f}$), and Death ($6-10\text{f}$) frame sets across cardinal directions.
+1. **Pre-render Full Animation Frame Sheets at Boot**: Pre-generate all Idle (4-8f), Walk (8-12f), Attack (6-10f), and Death (6-10f) frame sets across cardinal directions.
 2. **Apply Retro-HD Truecolor Shading**: Use 32-bit RGBA color ramps with cool shadow / warm highlight shifts.
 3. **Verify Matrix Order**: Enforce `Pivot -> Scale -> Rotate -> World Translation` on every `ebiten.GeoM` call.
 4. **Pre-allocate VFX Particle Pools**: Use fixed particle arrays with zero heap allocations during frame updates.
@@ -202,4 +206,4 @@ When an AI agent uses this skill to generate procedural graphics or sprite rende
 ## 📚 Progressive Disclosure & References
 
 - **Procedural Art Driver**: [`references/art.go`](references/art.go) — In-memory sprite rasterization, 32-bit RGBA color palettes, SDF shapes, and particle systems.
-- **Matrix Order & Easing Tests**: [`references/art_test.go`](references/art_test.go) — Mathematical unit test suite verifying transformation order ($T \cdot R \cdot S \cdot T_{pivot}$) and non-linear easing functions.
+- **Matrix Order & Easing Tests**: [`references/art_test.go`](references/art_test.go) — Mathematical unit test suite verifying transformation order (`T * R * S * T_pivot`) and non-linear easing functions.

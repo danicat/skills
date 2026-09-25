@@ -13,7 +13,7 @@ metadata:
   category: agents
   tags: "orchestration, workflow, research, planning, subagents, agile"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -81,12 +81,12 @@ Double Diamond adapts seamlessly across technical, creative, and analytical doma
 
 * **Definition**: **Agent Budget** is synonymous with **Degree of Parallelism (DOP)**. It defines the maximum number of **active, concurrent subagents** allowed to execute at the exact same time.
 * **Active vs. Past Capacity**: Completed or terminated subagents do **not** consume budget. The budget applies strictly to currently running subagents. When a subagent completes its work, its concurrency slot is immediately freed.
-* **Elastic Scaling**: While the baseline default is $\text{DOP} = 4$, the framework scales elastically to any user-requested budget (e.g., $\text{DOP} = 10, 20, 50+$) for massive parallel surveys, parameter sweeps, or multi-module initiatives.
-* **High-DOP High-Signal Mandate (Micro-Probe Rule)**: When operating with elevated concurrency ($\text{DOP} \ge 8$), subagents must act as focused micro-probes. The Coordinator instructs subagents to return dense, high-signal, structured summaries ($\le 150$ words or tabular format) rather than verbose essays, enabling clean Map-Reduce synthesis without context dilution.
+* **Elastic Scaling**: While the baseline default is DOP = 4, the framework scales elastically to any user-requested budget (e.g., DOP = 10, 20, 50+) for massive parallel surveys, parameter sweeps, or multi-module initiatives.
+* **High-DOP High-Signal Mandate (Micro-Probe Rule)**: When operating with elevated concurrency (DOP >= 8), subagents must act as focused micro-probes. The Coordinator instructs subagents to return dense, high-signal, structured summaries (<= 150 words or tabular format) rather than verbose essays, enabling clean Map-Reduce synthesis without context dilution.
 
 ### Recommended Baseline Sizing:
 
-| Initiative Scale | Agent Budget ($\text{DOP}$) | Active Discovery Workers | Active Creation Workers | Typical Scope |
+| Initiative Scale | Agent Budget (DOP) | Active Discovery Workers | Active Creation Workers | Typical Scope |
 | :--- | :---: | :---: | :---: | :--- |
 | **Focused / Targeted** | **2** | **2** (Landscape + Standards) | **2** (Core + Surface) | Single module, short article, targeted feature |
 | **Standard (Default)** | **4** | **4** (Landscape, Standards, Edge Cases, Comparative) | **4** (WPs 1–4 disjoint modules/sections) | Multi-module service, comprehensive whitepaper, PRD |

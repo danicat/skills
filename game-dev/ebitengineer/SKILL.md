@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "ebitengine, go, golang, game-dev, 2d, wasm, shaders"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 

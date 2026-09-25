@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "spritesheet, animation, keyframes, aseprite, game-dev, ebitengine"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -26,7 +26,7 @@ This skill equips AI agents acting in the **Animator Agent Role** with the tools
 
 In a game development team, the **Animator Agent** owns all 2D sprite animation pipelines:
 1. **Asset Validation & Format Verification**: Inspects sprite sheet images (from `nano-banana` or artist files) using file identification tools (`file`, `mimetype`, `http.DetectContentType`) to verify binary integrity and grid dimensions before slicing.
-2. **Animation Tag & State Specification**: Defines animation tags (`idle`, `walk`, `run`, `attack`, `hurt`, `death`, `cast`), frame duration timings ($50\text{ms} - 200\text{ms}$), and loop directions (`LoopForward`, `LoopReverse`, `LoopPingPong`, `LoopOnce`).
+2. **Animation Tag & State Specification**: Defines animation tags (`idle`, `walk`, `run`, `attack`, `hurt`, `death`, `cast`), frame duration timings (50ms - 200ms), and loop directions (`LoopForward`, `LoopReverse`, `LoopPingPong`, `LoopOnce`).
 3. **Aseprite Integration & Slicing**: Loads Aseprite files (`.ase` / `.aseprite` / `.json`) using recommended Go libraries ([`SolarLune/goaseprite`](https://github.com/SolarLune/goaseprite)) or pure-code Ebitengine `SubImage` grid slicing.
 4. **Animation Controller Code Generation**: Authors clean, GC-friendly Ebitengine animation controllers that manage frame timers, state switches, directional flips, and completion callbacks (`OnComplete`).
 
@@ -39,7 +39,7 @@ For complete binary format specifications, GIMP RGBA palette specifications, and
 | Module | Reference File | Key Topics Covered |
 | :--- | :--- | :--- |
 | **Aseprite Binary Format & GPL** | [`references/aseprite_format.md`](references/aseprite_format.md) | Header, frame headers, cel chunks (`0x2005`), tag chunks (`0x2018`), 9-patch slices (`0x2022`), and GIMP `.gpl` RGBA palette format extension. |
-| **Go Animation Controller** | [`references/animation_controller.go`](references/animation_controller.go) | Complete, production-grade Ebitengine `AnimationController` and `GridSpriteSheet` implementation with delta time ($dt$) updating and horizontal flipping. |
+| **Go Animation Controller** | [`references/animation_controller.go`](references/animation_controller.go) | Complete, production-grade Ebitengine `AnimationController` and `GridSpriteSheet` implementation with delta time (dt) updating and horizontal flipping. |
 
 ---
 
@@ -63,12 +63,12 @@ When authoring animation sequences for characters and entities, enforce standard
 
 | Animation Tag | Frame Range / Count | Frame Duration | Loop Mode | Gameplay Trigger / Transition |
 | :--- | :--- | :--- | :--- | :--- |
-| **`idle`** | $4 - 8\text{ frames}$ | $120\text{ms} - 180\text{ms}$ | `LoopForward` | Default state when velocity is zero ($VX=0, VY=0$). |
-| **`walk` / `run`** | $8 - 12\text{ frames}$ | $60\text{ms} - 100\text{ms}$ | `LoopForward` | Active when moving horizontally ($VX \neq 0$). |
-| **`jump` / `fall`** | $2 - 4\text{ frames}$ | $100\text{ms}$ | `LoopOnce` / Hold | Triggered on jump start; holds final frame during airborne fall. |
-| **`attack`** | $6 - 10\text{ frames}$ | $40\text{ms} - 80\text{ms}$ | `LoopOnce` | Triggered on attack keypress. Invokes `OnComplete` callback back to `idle`. |
-| **`hurt`** | $3 - 5\text{ frames}$ | $50\text{ms}$ | `LoopOnce` | Triggered on damage hit. Flash red/white overlay. |
-| **`death`** | $6 - 10\text{ frames}$ | $100\text{ms}$ | `LoopOnce` | Triggered on zero health. Holds final collapse frame without looping. |
+| **`idle`** | 4-8 frames | 120ms - 180ms | `LoopForward` | Default state when velocity is zero (`VX=0, VY=0`). |
+| **`walk` / `run`** | 8-12 frames | 60ms - 100ms | `LoopForward` | Active when moving horizontally (`VX != 0`). |
+| **`jump` / `fall`** | 2-4 frames | 100ms | `LoopOnce` / Hold | Triggered on jump start; holds final frame during airborne fall. |
+| **`attack`** | 6-10 frames | 40ms - 80ms | `LoopOnce` | Triggered on attack keypress. Invokes `OnComplete` callback back to `idle`. |
+| **`hurt`** | 3-5 frames | 50ms | `LoopOnce` | Triggered on damage hit. Flash red/white overlay. |
+| **`death`** | 6-10 frames | 100ms | `LoopOnce` | Triggered on zero health. Holds final collapse frame without looping. |
 
 ---
 
@@ -128,4 +128,4 @@ Before confirming animation code or sprite assets:
 - [ ] **Grid Math Verified**: Image width and height are exact integer multiples of frame width and height.
 - [ ] **All Animation Tags Defined**: Included `idle`, `run`/`walk`, `attack`, and `death` states.
 - [ ] **No Allocation in `Draw()`**: `SubImage` bounds calculations use pre-computed rectangles or persistent `DrawImageOptions`.
-- [ ] **Horizontal Flipping Handled**: Configured negative matrix scale ($Scale(-1, 1)$) for left-facing direction without duplicating sprite assets.
+- [ ] **Horizontal Flipping Handled**: Configured negative matrix scale (`Scale(-1, 1)`) for left-facing direction without duplicating sprite assets.

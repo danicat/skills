@@ -300,7 +300,7 @@ Sitelinks are algorithmic sub-links that appear beneath a main search result, pr
   - [Verification & Testing](#verification)
   ```
 - **Descriptive Anchor Text**: Avoid generic links ("Section 1", "click here"). Use descriptive keywords matching user search intent.
-- **Hierarchical Headings**: Follow strict heading structure without skipping levels (`H1` → `H2` → `H3`).
+- **Hierarchical Headings**: Follow strict heading structure without skipping levels (`H1` -> `H2` -> `H3`).
 
 ---
 
@@ -380,6 +380,6 @@ Use this operational checklist before publishing or updating technical content:
 | **Featured Snippet** | Direct answer formula applied under target `H2` (40–60 word paragraph, list, or table). | `[ ]` |
 | **Date Parity** | Visible date matches JSON-LD `datePublished` and `dateModified` (ISO 8601). | `[ ]` |
 | **Date Integrity** | `dateModified` is updated only for substantial content revisions. | `[ ]` |
-| **Discover** | Hero image is $\ge 1200\text{px}$ wide with `max-image-preview:large` enabled. | `[ ]` |
+| **Discover** | Hero image is >= 1200px wide with `max-image-preview:large` enabled. | `[ ]` |
 | **Sitelinks** | Headings have explicit, human-readable anchor IDs (`id="slug"`). | `[ ]` |
 | **Paywall** | If gated, `isAccessibleForFree: false` and `hasPart` CSS selectors are configured. | `[ ]` |

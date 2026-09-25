@@ -11,7 +11,7 @@ metadata:
   category: agents
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.0"
+  version: "0.5.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -29,15 +29,15 @@ Procedures, authoring principles, and quality standards for creating, auditing, 
 
 Skills use a 3-tier progressive disclosure model to minimize token consumption:
 
-1. **Tier 1 — Routing & Discovery Metadata** (~50–100 words / $\le 150$ tokens):
+1. **Tier 1 — Routing & Discovery Metadata** (~50–100 words / <= 150 tokens):
    - **Fields**: `name` (1–64 characters) and `description` (1–1024 characters).
    - **Runtime behavior**: Injected into the model's system prompt at startup for all available skills so the orchestrator can route tasks accurately.
-   - **Budget limit**: Keep routing tokens $\le 150$ (ideal ~100 tokens). Keep description $\le 1024$ characters.
+   - **Budget limit**: Keep routing tokens <= 150 (ideal ~100 tokens). Keep description <= 1024 characters.
 
 2. **Tier 2 — Skill Instructions & Body** (< 5,000 tokens / < 500 lines):
    - **Scope**: The main `SKILL.md` body (excluding frontmatter).
    - **Runtime behavior**: Loaded into active context only when the skill is explicitly activated.
-   - **Budget limit**: Strict limit of $\le 5,000$ tokens and $\le 500$ lines. Move detailed API tables, expansive guides, and catalogs into Tier 3.
+   - **Budget limit**: Strict limit of <= 5,000 tokens and <= 500 lines. Move detailed API tables, expansive guides, and catalogs into Tier 3.
 
 3. **Tier 3 — On-Demand Resources & References**:
    - **Scope**: Subdirectories loaded only when explicitly requested by instructions:
@@ -119,7 +119,7 @@ Follow this procedure when creating, reviewing, or refining skills:
 
 ### Stage 1: Structure & File Layout
 - **Name Alignment**: Confirm `name` in frontmatter matches the directory name exactly.
-- **Tier 1 & Tier 2 Limits**: Verify routing budget ($\le 150$ tokens, $\le 1024$ chars) and body budget ($\le 5,000$ tokens, $\le 500$ lines) using `scripts/count_tokens.py`.
+- **Tier 1 & Tier 2 Limits**: Verify routing budget (<= 150 tokens, <= 1024 chars) and body budget (<= 5,000 tokens, <= 500 lines) using `scripts/count_tokens.py`.
 - **Progressive Disclosure**: Move extensive documentation (> 100 lines), schemas, or static data into `references/` or `assets/`.
 - **Clean Relative Paths from Skill Root**: All internal file and script references in `SKILL.md` MUST use relative paths starting from the skill root directory (e.g., `scripts/process.py`, `references/guide.md`, `assets/template.md`).
   - **No category prefixes**: Use `scripts/tool.py`, never `category/skill-name/scripts/tool.py`.

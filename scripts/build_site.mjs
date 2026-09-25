@@ -187,18 +187,50 @@ function parseInlineFormatting(text) {
   return res;
 }
 
+function renderMathToHtml(math) {
+  if (!math) return '';
+  let out = math;
+  out = out.replace(/\\text\{([^}]+)\}/g, '$1');
+  out = out.replace(/\\rightarrow|\\to/g, '→');
+  out = out.replace(/\\leftarrow|\\gets/g, '←');
+  out = out.replace(/\\leftrightarrow/g, '↔');
+  out = out.replace(/\\Rightarrow/g, '⇒');
+  out = out.replace(/\\Leftarrow/g, '⇐');
+  out = out.replace(/\\Leftrightarrow/g, '⇔');
+  out = out.replace(/\\ge(q)?\b/g, '≥');
+  out = out.replace(/\\le(q)?\b/g, '≤');
+  out = out.replace(/\\ne(q)?\b/g, '≠');
+  out = out.replace(/\\approx/g, '≈');
+  out = out.replace(/\\pm/g, '±');
+  out = out.replace(/\\times/g, '×');
+  out = out.replace(/\\cdot/g, '·');
+  out = out.replace(/\\in\b/g, '∈');
+  out = out.replace(/\\notin\b/g, '∉');
+  out = out.replace(/\\subset\b/g, '⊂');
+  out = out.replace(/\\subseteq\b/g, '⊆');
+  out = out.replace(/\\cup\b/g, '∪');
+  out = out.replace(/\\cap\b/g, '∩');
+  out = out.replace(/\\forall\b/g, '∀');
+  out = out.replace(/\\exists\b/g, '∃');
+  out = out.replace(/\\infty\b/g, '∞');
+  out = out.replace(/\\sum\b/g, '∑');
+  out = out.replace(/\\prod\b/g, '∏');
+  out = out.replace(/--/g, '–');
+  return escapeHtml(out);
+}
+
 function parseInline(text) {
   if (!text) return '';
 
   const mathTokens = [];
   let s = text.replace(/\$\$([\s\S]*?)\$\$/g, (m, math) => {
     const token = `%%MATH_BLOCK_${mathTokens.length}%%`;
-    mathTokens.push(`<span class="math-display">${escapeHtml(math)}</span>`);
+    mathTokens.push(`<span class="math-display">${renderMathToHtml(math)}</span>`);
     return token;
   });
   s = s.replace(/\$([^\$\n]+)\$/g, (m, math) => {
     const token = `%%MATH_BLOCK_${mathTokens.length}%%`;
-    mathTokens.push(`<span class="math-inline">${escapeHtml(math)}</span>`);
+    mathTokens.push(`<span class="math-inline">${renderMathToHtml(math)}</span>`);
     return token;
   });
 

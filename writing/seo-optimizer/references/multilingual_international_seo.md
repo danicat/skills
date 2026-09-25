@@ -352,7 +352,7 @@ When targeting specific regional variants (e.g., `en-us`, `en-gb`, `en-ca`, `en-
 ```
 
 ### 6. Partial / Asymmetric Expansion Priority
-When rolling out new languages incrementally across large web properties, maintaining a complete $N \times N$ link matrix across all historical content can be challenging.
+When rolling out new languages incrementally across large web properties, maintaining a complete N x N link matrix across all historical content can be challenging.
 - **Priority Rule**: Ensure newly expanded language pages are bidirectionally linked to the **originating/dominant language** first.
 - *Example*: If your site originated in French (`.fr`), link new Mexican (`.mx`) and Spanish (`.es`) pages bidirectionally to `.fr` first, rather than prioritizing bidirectional links between `.mx` and `.es`.
 

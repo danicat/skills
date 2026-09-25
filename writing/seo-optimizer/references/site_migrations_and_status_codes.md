@@ -266,11 +266,11 @@ Multi-page articles and list feeds must render accessible navigation blocks:
 
 ```html
 <nav class="pagination" aria-label="Pagination Navigation">
-  <a href="/posts/page/1/" rel="prev" class="pagination-prev">← Previous Page</a>
+  <a href="/posts/page/1/" rel="prev" class="pagination-prev">&lt;- Previous Page</a>
   <a href="/posts/page/1/">1</a>
   <span class="pagination-current" aria-current="page">2</span>
   <a href="/posts/page/3/">3</a>
-  <a href="/posts/page/3/" rel="next" class="pagination-next">Next Page →</a>
+  <a href="/posts/page/3/" rel="next" class="pagination-next">Next Page -&gt;</a>
 </nav>
 ```
 

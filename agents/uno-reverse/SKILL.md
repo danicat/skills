@@ -13,7 +13,7 @@ metadata:
   category: agents
   tags: "simplification, red-team, architecture, occams-razor, minimalism, review, refactoring"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -126,11 +126,11 @@ Collapse multiple flags, commands, or data structures into single composable pri
 ### Step 3: The Cache & State Invalidation Probe
 Whenever a proposal introduces caching, local state files, or background workers:
 - **Calculate the Cache Paradox**: Measure the cost of on-the-fly computation vs. cache serialization, disk I/O, hash verification, and invalidation race conditions.
-- **Enforce Ephemeral Execution**: If in-memory computation takes $< 1\text{ ms}$, **strictly forbid persistent caching layers**.
+- **Enforce Ephemeral Execution**: If in-memory computation takes < 1 ms, **strictly forbid persistent caching layers**.
 
 ### Step 4: The 10% Minimum Viable Proposal (MVP)
 Draft an alternative "Uno-Reverse Specification" that:
-- Achieves the core objective in $\le 20\%$ of the proposed lines of code.
+- Achieves the core objective in <= 20% of the proposed lines of code.
 - Uses zero external dependencies or heavy frameworks.
 - Requires zero background daemons, zero state migrations, and zero cache management.
 

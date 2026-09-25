@@ -38,7 +38,7 @@ func (tm *Tilemap) GetTile(layer LayerType, x, y int) int {
 
 ## 2. Camera Frustum Tile Culling
 
-To maintain 60 FPS on large maps ($1000\times1000$ tiles), only iterate over tiles visible within the camera's viewport:
+To maintain 60 FPS on large maps (1000x1000 tiles), only iterate over tiles visible within the camera's viewport:
 
 ```go
 func (tm *Tilemap) DrawLayer(screen *ebiten.Image, layer LayerType, camX, camY, screenW, screenH float64) {
@@ -85,10 +85,10 @@ Autotiling automatically selects the correct terrain edge/corner graphic based o
 
 ### 3.1 Bitmask Directional Values
 Assign powers of 2 to cardinal directions:
-* **North (Top)** = $1$
-* **West (Left)** = $2$
-* **East (Right)** = $4$
-* **South (Bottom)** = $8$
+* **North (Top)** = 1
+* **West (Left)** = 2
+* **East (Right)** = 4
+* **South (Bottom)** = 8
 
 ```go
 func (tm *Tilemap) CalculateAutotileMask(x, y int, terrainID int) int {
@@ -102,7 +102,7 @@ func (tm *Tilemap) CalculateAutotileMask(x, y int, terrainID int) int {
 ```
 
 ### 3.2 16-Value Autotile Mapping Table
-Map calculated mask values ($0\text{--}15$) to tileset column/row offsets:
+Map calculated mask values (0-15) to tileset column/row offsets:
 
 | Mask Value | Neighbors Present | Autotile Tile Type |
 | :--- | :--- | :--- |

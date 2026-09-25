@@ -16,7 +16,7 @@
 ---
 
 ## 2. Core Gameplay Loop & Mechanics
-- **Primary Gameplay Loop**: [Step-by-step description of player action $\rightarrow$ challenge $\rightarrow$ reward/feedback cycle]
+- **Primary Gameplay Loop**: [Step-by-step description of player action -> challenge -> reward/feedback cycle]
 - **Core Mechanics**:
   - **Player Abilities / Actions**: [e.g., Move, Jump, Shoot, Dash, Rotate Tile, Swap Gem]
   - **Interactions / Hazards**: [e.g., Enemy AI, Falling Obstacles, Timer Pressure, Spikes]
@@ -43,7 +43,7 @@
   - **Procedural Pure-Code (`procedural-art`)**: [e.g., UI panels, particle systems, Kage shaders, vector shapes]
   - **Generative AI Assets (`nano-banana`)**: [e.g., Character sprite sheets, background concept art, item icons]
 - **Animation Sequence Needs**:
-  - Character States: `idle` ($6\text{f}$), `run` ($8\text{f}$), `attack` ($8\text{f}$), `death` ($6\text{f}$)
+  - Character States: `idle` (6f), `run` (8f), `attack` (8f), `death` (6f)
 
 ---
 
@@ -58,7 +58,7 @@
 ---
 
 ## 6. Game State Sequence & HUD Layout
-- **Scene Flow**: `Boot` (Logo) $\rightarrow$ `Intro` $\rightarrow$ `Title Screen` (w/ Attract Demo Mode) $\rightarrow$ `Gameplay` $\rightarrow$ `Game Over / Victory`
+- **Scene Flow**: `Boot` (Logo) -> `Intro` -> `Title Screen` (w/ Attract Demo Mode) -> `Gameplay` -> `Game Over / Victory`
 - **HUD & UI Overlay**:
   - Displayed Metrics: [e.g. Score counter, timer, health bar, level indicator]
   - Layout Anchoring: Top-Left (Score/Lives), Top-Right (Timer), Center (Game Over Modal)

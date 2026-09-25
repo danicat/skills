@@ -33,7 +33,7 @@ AI systems prioritize content that adds unique, non-redundant value beyond commo
 
 ### Pillar 2: The Direct Answer Block (Inverted Pyramid)
 When a search query triggers an AI summary, the system retrieves the most semantically relevant paragraph:
-- **Formula**: Heading (Question/Topic) $\rightarrow$ 1-to-2 sentence direct answer $\rightarrow$ Code/Table $\rightarrow$ In-depth explanation.
+- **Formula**: Heading (Question/Topic) -> 1-to-2 sentence direct answer -> Code/Table -> In-depth explanation.
 - **Example**:
   ```markdown
   ## How does SQLite WAL mode prevent database locks in concurrent agent swarms?

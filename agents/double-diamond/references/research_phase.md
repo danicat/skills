@@ -46,7 +46,7 @@ The Coordinator invokes subagents using `invoke_subagent` with the `research` su
 }
 ```
 
-#### High-DOP Micro-Probe Template ($\text{DOP} \ge 8$):
+#### High-DOP Micro-Probe Template (DOP >= 8):
 When operating with large agent budgets, enforce high-density, concise reporting to streamline map-reduce synthesis:
 
 ```json

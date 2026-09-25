@@ -13,7 +13,7 @@ metadata:
   category: game-dev
   tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -41,9 +41,9 @@ Procedural audio synthesizes audio samples on-the-fly or bakes them into PCM buf
 
 ### 1.2 Output Format Standard
 Standard audio output uses 16-bit signed Little-Endian PCM stereo at 44,100 Hz (or 48,000 Hz):
-* **Sample Rate ($f_s$)**: $44,100 \text{ Hz}$ (44,100 samples per second per channel).
+* **Sample Rate (fs)**: 44,100 Hz (44,100 samples per second per channel).
 * **Channels**: 2 (Stereo: Left [bytes 0–1], Right [bytes 2–3]).
-* **Bits Per Sample**: 16-bit signed integer range $[-32,768 \text{ to } +32,767]$.
+* **Bits Per Sample**: 16-bit signed integer range `[-32,768 to +32,767]`.
 
 ---
 
@@ -78,21 +78,23 @@ The audio playback subsystem (`SoundSystem` in [`scripts/sound.go`](scripts/soun
 Tempo (BPM) and track length are **heavily dictated by game style, genre, narrative mood, and scene context** (e.g., bullet-hell shmup vs. ambient puzzle vs. epic RPG). The table below offers flexible reference baselines rather than rigid rules:
 
 #### BPM to Note Duration Calculation
-$$t_{\text{beat}} = \frac{60}{\text{BPM}}$$
-* **Quarter Note ($1/4$)**: $t_{\text{beat}}$
-* **Eighth Note ($1/8$)**: $t_{\text{beat}} / 2$
-* **Sixteenth Note ($1/16$)**: $t_{\text{beat}} / 4$
-* **Measure ($4/4$ time)**: $240 / \text{BPM}$ seconds
+```
+t_beat = 60 / BPM
+```
+* **Quarter Note (1/4)**: `t_beat`
+* **Eighth Note (1/8)**: `t_beat / 2`
+* **Sixteenth Note (1/16)**: `t_beat / 4`
+* **Measure (4/4 time)**: `240 / BPM` seconds
 
 #### Flexible Scene Reference Table
 
 | Scene / Event Type | Playback Mode | Typical Duration Baseline | Typical BPM Range | Composition Style & Musical Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Stage / Gameplay** | **Looped** | $60\text{s} - 180\text{s}+$ | $100 - 160\text{ BPM}$ | Multi-part structure (*Intro $\rightarrow$ Theme A $\rightarrow$ Theme B $\rightarrow$ Climax $\rightarrow$ Loop*) to prevent loop fatigue during long play sessions. |
-| **Boss Battle** | **Looped** | $45\text{s} - 120\text{s}$ | $140 - 180+\text{ BPM}$ | Fast-paced, driving syncopation, diminished/phrygian modes, aggressive YM2612-style FM leads. |
-| **Title / Menu** | **Looped** | $20\text{s} - 60\text{s}$ | $80 - 130\text{ BPM}$ | Catchy theme or ambient melody setting the game atmosphere. |
-| **Game Over** | **One-Off** | $4\text{s} - 15\text{s}$ | $60 - 90\text{ BPM}$ | **Non-looping single play**. Sad descending chromatic slide or minor chord resolution. Keeps restart friction low. |
-| **Stage Clear / Fanfare** | **One-Off** | $5\text{s} - 15\text{s}$ | $120 - 160\text{ BPM}$ | **Non-looping single play**. Triumphant ascending major arpeggio fanfare celebrating completion. |
+| **Stage / Gameplay** | **Looped** | 60s - 180s+ | 100 - 160 BPM | Multi-part structure (*Intro -> Theme A -> Theme B -> Climax -> Loop*) to prevent loop fatigue during long play sessions. |
+| **Boss Battle** | **Looped** | 45s - 120s | 140 - 180+ BPM | Fast-paced, driving syncopation, diminished/phrygian modes, aggressive YM2612-style FM leads. |
+| **Title / Menu** | **Looped** | 20s - 60s | 80 - 130 BPM | Catchy theme or ambient melody setting the game atmosphere. |
+| **Game Over** | **One-Off** | 4s - 15s | 60 - 90 BPM | **Non-looping single play**. Sad descending chromatic slide or minor chord resolution. Keeps restart friction low. |
+| **Stage Clear / Fanfare** | **One-Off** | 5s - 15s | 120 - 160 BPM | **Non-looping single play**. Triumphant ascending major arpeggio fanfare celebrating completion. |
 
 ---
 
@@ -206,7 +208,7 @@ When an AI agent uses this skill to compose audio or generate sound driver code:
 2. **MANDATORY 6-Channel Polyphony**:
    * Every background soundtrack MUST feature at least **6 distinct polyphonic instrument tracks** (Lead, Counter-Melody, Harmony Pad, Bass, Arpeggiator, Drums/Percussion).
 3. **MANDATORY Expressive Parameterization**:
-   * Every note/track MUST specify tailored `DutyCycle` ($0.125 - 0.5$), `Pan` (stereo field distribution), `VibratoFreq`/`VibratoDepth` for lead instruments, and distinct ADSR envelope ramps.
+   * Every note/track MUST specify tailored `DutyCycle` (0.125 - 0.5), `Pan` (stereo field distribution), `VibratoFreq`/`VibratoDepth` for lead instruments, and distinct ADSR envelope ramps.
 4. **MANDATORY 32-Bit Summation & Clamping**:
    * Multi-track audio mixing MUST sum in 32-bit integers (`int32`) and hard-clamp to `[-32768, +32767]` to eliminate wrap-around distortion.
 5. **No Monophonic Beeps**:
@@ -217,9 +219,9 @@ When an AI agent uses this skill to compose audio or generate sound driver code:
 ## 5. Gotchas & Engineering Best Practices
 
 * **Integer Overflow Wrap-Around**: Summing track samples directly in `int16` causes violent digital clipping and speaker crackle. Always sum tracks in `int32` and hard-clamp to `[-32768, +32767]`.
-* **Audio Popping & Clicks**: Instantly stopping a waveform oscillator creates a steep DC offset jump that sounds like a loud "pop" or click. Always apply a release envelope ramp (at least $5\text{--}10\text{ ms}$).
+* **Audio Popping & Clicks**: Instantly stopping a waveform oscillator creates a steep DC offset jump that sounds like a loud "pop" or click. Always apply a release envelope ramp (at least 5-10 ms).
 * **Memory & Frame GC Spikes**: Avoid instantiating or generating PCM slices inside main frame rendering functions (`Update`/`Draw`). Pre-render all audio buffers during system initialization.
-* **Audio Channel Choking**: High-frequency user events (e.g. clicking 50 times/sec) will choke audio players. Implement cooldown rate limiters ($30\text{--}50\text{ ms}$) on interactive triggers.
+* **Audio Channel Choking**: High-frequency user events (e.g. clicking 50 times/sec) will choke audio players. Implement cooldown rate limiters (30-50 ms) on interactive triggers.
 
 ---
 
@@ -237,6 +239,6 @@ When an AI agent uses this skill to compose audio or generate sound driver code:
 ## 7. State-Based Adaptive BGM Composition Rules
 
 When composing code-synthesized multi-track audio for dynamic game states:
-- **Exploration / Ambient**: Low BPM ($60\text{--}90$), sparse instrumentation, soft pads, subtle woodwinds, key of C Major.
-- **Tension / Stealth**: Medium BPM ($90\text{--}110$), staccato strings, muted sub-bass, ticking percussion.
-- **Combat / Action / Boss**: High BPM ($120\text{--}160+$), driving drums, heavy bassline, intense brass/synths, key of D minor.
+- **Exploration / Ambient**: Low BPM (60-90), sparse instrumentation, soft pads, subtle woodwinds, key of C Major.
+- **Tension / Stealth**: Medium BPM (90-110), staccato strings, muted sub-bass, ticking percussion.
+- **Combat / Action / Boss**: High BPM (120-160+), driving drums, heavy bassline, intense brass/synths, key of D minor.

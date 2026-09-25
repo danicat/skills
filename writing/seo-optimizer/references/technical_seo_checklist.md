@@ -193,9 +193,9 @@ Page experience and responsive performance metrics serve as baseline ranking and
 | :--- | :--- | :--- |
 | **Document Structure** | Single `H1`, no unclosed head tags, UTF-8 in first 1KB | W3C Validator / Lighthouse |
 | **Titles & Descriptions** | Title: 40–60 chars, Desc: 120–160 chars, Split Summary | `scripts/audit_seo.py` |
-| **Attribution & Images** | Favicon $\ge 48\text{px}$, Discover Hero $\ge 1200\text{px}$, `max-image-preview:large` | Lighthouse / Chrome DevTools |
+| **Attribution & Images** | Favicon >= 48px, Discover Hero >= 1200px, `max-image-preview:large` | Lighthouse / Chrome DevTools |
 | **Link Architecture** | Crawlable `<a href>`, `rel="sponsored"`, `rel="ugc"`, no internal `nofollow` | Google Search Console |
 | **Redirect Hygiene** | 301 server redirects, true 404/410 status codes, self-referencing canonical | `curl -I <URL>` |
 | **Multilingual Parity** | Bidirectional `hreflang`, ISO 639-1 / 3166-1, no `es-419`, no IP auto-redirects | `hreflang` Testing Tool |
 | **Structured Data** | Valid JSON-LD, `TechArticle`, `ProfilePage`, IPTC AI image metadata | Google Rich Results Test |
-| **Core Web Vitals** | LCP $< 2.5\text{s}$, INP $< 200\text{ms}$, CLS $< 0.1$, 100% Mobile DOM Parity | PageSpeed Insights / CrUX |
+| **Core Web Vitals** | LCP < 2.5s, INP < 200ms, CLS < 0.1, 100% Mobile DOM Parity | PageSpeed Insights / CrUX |

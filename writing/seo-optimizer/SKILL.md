@@ -13,7 +13,7 @@ metadata:
   category: writing
   tags: "seo, geo, optimization, search-engines, blog, website, metadata"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.1.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -122,7 +122,7 @@ Execute the bundled audit tools and iterate until all issues are resolved:
 1. **If Speedgrapher MCP is available**:
    - Run `speedgrapher.analyze_seo` on the target URL or Markdown draft.
    - Run `speedgrapher.fog` to ensure technical readability index is between **11.0 and 15.0**.
-   - Run `speedgrapher.slop` to ensure AI cliché score is $< 25$.
+   - Run `speedgrapher.slop` to ensure AI cliché score is < 25.
 
 2. **Run Bundled SEO Audit Script**:
    ```bash

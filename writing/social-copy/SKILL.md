@@ -17,7 +17,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.0"
+  version: "0.4.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -157,7 +157,7 @@ Never hallucinate features, metrics, or claims.
 Cut and reformat the approved Foundation Narrative into the appropriate archetype for each channel. Each file MUST use YAML frontmatter followed by Markdown content:
 - **LinkedIn** (`linkedin.md`): Architectural deep-dive (1,300–2,000 chars) with first-comment link.
 - **Twitter / X** (`twitter.md`): Native long-form post (800–2,500 chars) with direct links or micro-thread.
-- **Bluesky** (`bluesky.md`): Multi-post thread where every post is strictly $\le 300$ graphemes.
+- **Bluesky** (`bluesky.md`): Multi-post thread where every post is strictly <= 300 graphemes.
 - **Instagram** (`instagram.md`): 4:5 multi-slide carousel outline + micro-blog caption with DM automation hook.
 - **Reddit** (`reddit.md`): Value-first Markdown self-post (300–800 words, 4-space code indents for Old Reddit).
 - **Threads** (`threads.md`): Casual, builder-centric post (<500 chars) with strictly 1 `#topic` tag.

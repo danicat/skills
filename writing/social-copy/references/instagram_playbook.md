@@ -9,7 +9,9 @@ Comprehensive guide for writing technical, architectural, and design copy on Ins
 Instagram's discovery engine indexes visual OCR, caption semantics, and active user intent signals.
 
 ### Ranking Signal Weights
-$$\text{Sends (DM Shares)} > \text{Saves} > \text{Comments} > \text{Likes}$$
+```
+Sends (DM Shares) > Saves > Comments > Likes
+```
 - **Sends (DMs):** The highest algorithmic signal for Explore feed distribution. Triggered by relatable engineering pains, anti-patterns, and breakthrough tools.
 - **Saves:** Signals evergreen utility. Triggered by cheat sheets, system design blueprints, and code refactorings.
 - **Comments:** Driven by polarizing technical trade-offs and comment automation keywords.
@@ -20,7 +22,7 @@ $$\text{Sends (DM Shares)} > \text{Saves} > \text{Comments} > \text{Likes}$$
 
 ### Post Formats
 - **Carousel (Multi-Slide 4:5):** The highest-performing format for technical content.
-  - Aspect Ratio: **4:5 ($1080 \times 1350\text{ px}$)** for maximum vertical feed real estate.
+  - Aspect Ratio: **4:5 (1080 x 1350 px)** for maximum vertical feed real estate.
   - Optimal Length: **6 to 10 slides**.
   - Re-serving loop: Instagram re-serves unengaged carousels on the next session starting at Slide 2.
 - **Single Infographic (4:5):** High-density architecture diagrams that stop scroll inertia and force saves.
@@ -71,8 +73,8 @@ Query refactor:
 
 ### The Comment-to-DM Growth Loop
 "Link in bio" has heavy drop-off. Use single-word comment automation triggers (e.g., *"Comment 'CODE'"*):
-1. User comments keyword → Spikes post engagement velocity.
-2. Direct message sends link directly to the user's inbox → 10x higher conversion rate.
+1. User comments keyword -> Spikes post engagement velocity.
+2. Direct message sends link directly to the user's inbox -> 10x higher conversion rate.
 
 ### Hashtags (3–5 Target Tags)
 - Limit to **3 to 5 hyper-targeted niche tags** placed at the very end of the caption:
