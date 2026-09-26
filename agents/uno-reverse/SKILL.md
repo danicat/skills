@@ -5,15 +5,19 @@ description: >
   software architecture, PRDs, agent workflows, and technical designs.
   Challenges feature creep, speculative abstractions, and bloated specifications
   by proposing minimum viable primitives that deliver 90% of value with 10% of
-  moving parts. Activate when reviewing complex technical proposals, pruning
-  bloated architectures, red-teaming design docs, eliminating speculative
-  features, or seeking the simplest possible path to production.
+  moving parts. Prefers impartial dedicated subagent delegation to prevent context
+  contamination and confirmation bias. Activate when reviewing complex technical
+  proposals, pruning bloated architectures, red-teaming design docs, eliminating
+  speculative features, or seeking the simplest possible path to production.
 license: Apache-2.0
+compatibility:
+  agents:
+    - Antigravity
 metadata:
   category: agents
   tags: "simplification, red-team, architecture, occams-razor, minimalism, review, refactoring"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.1.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -22,6 +26,52 @@ metadata:
 > *"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away."* — Antoine de Saint-Exupéry
 
 The `uno-reverse` skill provides a rigorous **contrarian simplification and red-teaming framework**. While standard engineering processes naturally drift toward feature accretion, defensive layering, and speculative generalization, `uno-reverse` forces the opposite trajectory: **aggressive subtraction, primitive collapsing, and minimum viable execution**.
+
+---
+
+## 🎭 Impartial Review: Dedicated Subagent Delegation (Default)
+
+To guarantee the integrity and rigor of an Occam's Razor red-team assessment, **uno-reverse reviews must be conducted by a dedicated, isolated subagent rather than within the invoking agent's active conversation context**.
+
+### 1. Rationale: Why In-Context Audits Fail
+
+When an agent that designed, brainstormed, or iteratively implemented a solution attempts to evaluate its own work inline, the review suffers from three critical failure modes:
+
+1. **Confirmation Bias & Sunk-Cost Defense**: An agent that spent multiple conversation turns proposing abstractions, schemas, microservices, or config flags naturally rationalizes their existence. A dedicated subagent has zero psychological or conversational investment in prior proposals.
+2. **Context Contamination**: Long-running conversation contexts contain discarded ideas, exploratory reasoning, edge-case anxieties, and premature compromises. This cognitive residue biases the evaluation toward maintaining accidental complexity. A fresh subagent receives only the target specification and the audit mandate, evaluating it with a clean slate.
+3. **Preserving Impartiality & Objective Distance**: Genuine red-teaming requires contrarian detachment. An isolated subagent is uninhibited by politeness or conversational continuity—it can objectively propose deleting 90% of a specification without defending earlier dialogue.
+
+### 2. Default Delegation Policy & User Override
+
+* **DEFAULT Behaviour**: When `uno-reverse` is activated (via slash command `//uno-reverse`, skill loading, or prompt directive), the parent agent **MUST spawn a dedicated `uno-reverse` subagent** using `invoke_subagent` and immediately yield execution.
+* **Inline Override**: Subagent delegation is bypassed **ONLY** if the user explicitly requests an inline review (e.g., *"review inline"*, *"run uno-reverse in this session"*, or *"do not use subagents"*). In that case, the parent agent executes the 4-step workflow directly in the current context.
+
+### 3. Delegation Pattern & Subagent Invocation
+
+When delegating, select the subagent type:
+- **`research` (Default)**: Ideal for read-only audits of design documents, PRDs, architectural RFCs, and codebases.
+- **`self`**: Use when the audit also requires writing code, refactoring files, or generating alternative implementations directly on disk.
+- **`Model: 'inherit'`**: Preserve the parent session's reasoning effort and model capabilities.
+
+#### Antigravity `invoke_subagent` Pattern:
+
+```json
+{
+  "Subagents": [
+    {
+      "TypeName": "research",
+      "Role": "Uno-Reverse Auditor",
+      "Model": "inherit",
+      "Prompt": "You are an impartial, contrarian Uno-Reverse Auditor tasked with radical simplification and red-teaming.\n\n### Target of Audit:\n[FILE_PATH_OR_TARGET_DESCRIPTION]\n\n### Mandate & Mindset:\n- You have ZERO investment in prior discussions, earlier decisions, or existing abstractions.\n- Challenge every moving part, configuration flag, caching layer, and speculative interface.\n- Treat complexity as a liability: Reliability = 1 / (Moving Parts ^ 2).\n- Apply the 4 Inversion Principles (Subtraction Before Addition, Primitive Collapsing, Zero-Speculation YAGNI, Failure-Surface Inversion).\n- Respect Chesterton's Fence: understand the failure mode before eliminating essential safety.\n\n### Instructions:\n1. Execute the 4-Step Uno-Reverse Audit Workflow (Subtraction Test, Primitive Collapsing, Cache & State Probe, 10% MVP).\n2. Format your complete findings strictly as the 'Simplification Audit Scorecard':\n   - Executive Inversion Summary (Proposed Complexity, Verdict, Code Reduction %)\n   - The Cut List (Items to eliminate, rationale, what happens without it)\n   - Collapsed Primitives (Disparate mechanisms -> Single primitive)\n   - Minimalist Reference Design (10% MVP spec / code)\n   - Chesterton Boundary Assessment (Essential complexity kept vs. pruned)\n3. Report your findings back using send_message."
+    }
+  ]
+}
+```
+
+#### Lifecycle & Non-Blocking Coordination:
+1. **Dispatch & Yield**: The parent agent invokes the subagent and **immediately halts tool calls to end its turn**. It never polls, sleeps, or busy-waits.
+2. **Report Reception**: When the subagent completes the audit and sends its report, the parent agent wakes up reactively.
+3. **Synthesis & Presentation**: The parent agent delivers the unvarnished scorecard to the user or uses the minimalist reference design to guide subsequent implementation.
 
 ---
 
@@ -42,7 +92,9 @@ The `uno-reverse` skill provides a rigorous **contrarian simplification and red-
 2. **Primitive Collapsing**: Engineers frequently add flags, endpoints, and micro-abstractions for every sub-case. Identify the single underlying mathematical or conceptual primitive that subsumes all sub-cases without bespoke code.
 3. **Zero-Speculation (Strict YAGNI)**: Reject all "future-proofing", pluggable abstraction layers for single implementations, and configurable policies where a single sensible constant or deterministic convention works.
 4. **Failure-Surface Inversion**: Evaluate a system by its total attack, bug, and maintenance surface:
-   $$\text{Reliability} \propto \frac{1}{\text{Moving Parts}^2}$$
+   ```
+   Reliability = 1 / (Moving Parts ^ 2)
+   ```
    Every added cache, lock, daemon, state file, and flag represents a new failure mode and cognitive tax.
 
 ---
@@ -76,7 +128,7 @@ When reviewing code, actively hunt down and prune these structural anti-patterns
    * *Smell*: A 7-state lifecycle machine (`PENDING_APPROVAL`, `READY_FOR_QUEUE`, `QUEUED`, ...) with 15 transition validation functions.
    * *Fix*: Collapse to 2 boolean flags or an active/done state.
 4. **Relational Over-Normalization for Small Datasets**:
-   * *Smell*: A 6-table normalized schema with foreign keys and joins for $< 10,000$ total records.
+   * *Smell*: A 6-table normalized schema with foreign keys and joins for < 10,000 total records.
    * *Fix*: Store as a single flat SQLite table, JSON document, or in-memory map.
 
 ---
@@ -91,6 +143,9 @@ AI systems are especially prone to multi-agent and prompt bloat. Apply these rul
 | **Intermediate Summarizer Agents** | Direct downstream consumption | "Telephone game" summarization strips critical nuance. |
 | **Micro-Tool Sprawl (10 single-action tools)** | 1 Polymorphic Tool with clear args | Decreases tool selection entropy and LLM routing hallucinations. |
 | **Autonomous Loop without Guardrails** | Deterministic script + LLM leaf node | Use code for control flow and LLMs only for fuzzy transformation. |
+
+> [!NOTE]
+> **Subagent Delegation vs. Swarm Bloat**: While multi-agent swarms for linear tasks are an anti-pattern, **delegating an assessment to a single, isolated subagent for red-teaming** is essential. The subagent boundary provides clean context isolation, eliminating confirmation bias and conversational anchoring without adding orchestrational sprawl.
 
 ---
 
@@ -195,7 +250,7 @@ Deliver all audit results in this standardized, high-signal markdown format:
 2. **"We might support other backends later" (Premature Extensibility)**:
    - *Uno-Reverse Response*: "Implement the concrete backend directly. Refactoring clean concrete code is 10x faster than maintaining unused abstractions."
 3. **"Let's add a cache for performance" (Unbenchmarked Caching)**:
-   - *Uno-Reverse Response*: "Benchmark the raw in-memory operation first. If it takes $< 5\text{ ms}$, a cache is tech debt, not an optimization."
+   - *Uno-Reverse Response*: "Benchmark the raw in-memory operation first. If it takes < 5 ms, a cache is tech debt, not an optimization."
 4. **"Let's add a configuration flag" (Passing Design Decisions to Users)**:
    - *Uno-Reverse Response*: "Make the right design decision in the code. Every configuration flag is an abdication of architectural responsibility."
 5. **"Let's spawn an agent swarm for this" (Multi-Agent Vanity)**:

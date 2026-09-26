@@ -3,8 +3,8 @@
   "title": "Daniela's Agent Skills Catalog",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 29,
-  "updatedAt": "2026-09-25T23:35:26.629Z",
+  "totalSkills": 30,
+  "updatedAt": "2026-09-25T23:50:11.765Z",
   "categories": [
     {
       "id": "game-dev",
@@ -297,6 +297,25 @@
       "digest": "sha256:2860c685bb9cc4327c9cbb1760769f084f40b417a32aea73340e6c9d51048a81"
     },
     {
+      "name": "parallel",
+      "description": "General-purpose task parallelization and agent scaling engine. Orchestrates concurrent subagents for ANY task (research, analysis, writing, coding, planning, evaluation) across arbitrary parallel budgets. Enforces immediate main session unblocking, flat orthogonal task partitioning, and agent racing / tournament comparisons. Activate whenever the user invokes /parallel, requests parallel execution, specifies a DOP/budget, or wants concurrent agent swarms.",
+      "category": "agents",
+      "tags": [
+        "parallel",
+        "concurrency",
+        "subagents",
+        "scaling",
+        "orchestration",
+        "racing",
+        "dop"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.0",
+      "license": "Apache-2.0",
+      "url": "https://skills.danicat.dev/agents/parallel/SKILL.md",
+      "digest": "sha256:c70d85096accff3746abc26f0afc2518530ecc102d4b2ac11869a7b14677063e"
+    },
+    {
       "name": "skill-optimizer",
       "description": "Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.",
       "category": "agents",
@@ -333,7 +352,7 @@
     },
     {
       "name": "uno-reverse",
-      "description": "Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.",
+      "description": "Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Prefers impartial dedicated subagent delegation to prevent context contamination and confirmation bias. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.",
       "category": "agents",
       "tags": [
         "simplification",
@@ -345,10 +364,10 @@
         "refactoring"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/uno-reverse/SKILL.md",
-      "digest": "sha256:9216f0f2aa7a7568d931c049753974652f285808b9fc30421d1ad787e378d27a"
+      "digest": "sha256:96a47fad47298364e979a12b162a811f9c559c1a4f5f73925f1dadac65d46567"
     },
     {
       "name": "buffer",
