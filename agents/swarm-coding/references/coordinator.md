@@ -33,17 +33,61 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
   - **Hybrid Shape:** Combines nested domain teams for complex areas with flat direct specialists reporting to the Coordinator for standalone or cross-cutting tasks.
 - **Identify Technical Domains / Systems:** Analyze the project scope and break it down into high-level systems or domains (e.g. `Backend Domain`, `Frontend Domain`, `Database Domain`, `QA & Documentation`).
 - **Name Lead Agents:** Assign a **Lead Agent** to each domain (e.g. `Lead Backend Engineer`, `Lead Frontend Engineer`).
-- **Distribute Agent Budget:** Allocate a sensible sub-budget to each Lead Agent based on domain complexity.
+- **Distribute Agent Budget (DOP Arithmetic):** Allocate a sensible sub-budget to each Lead Agent based on domain complexity.
+  - Explain the slot arithmetic explicitly: `Lead Agent consumes 1 slot; leaves (DOP - 1) active concurrent specialist slots`.
+  - Explain slot recycling: terminated specialists release their slot immediately back to the pool.
+  - Explain backlog drip-feeding: if an epic has more tasks than concurrent slots, the Lead must maintain a backlog and launch new workers as previous ones finish.
 
-### 2. Top-Level Architectural Specifications ("Document First")
+### 2. Spawning & Briefing Lead Agents (Propagating Swarm Awareness)
+
+> [!CRITICAL]
+> **Zero Ambient Swarm Knowledge:**
+> Subagents start with a completely blank conversational context. Simply telling an agent *"you are a swarm coding lead"* or *"you have a budget of 8"* provides zero understanding of swarm protocols, DOP mechanics, non-execution posture, or boundary isolation.
+>
+> If you give a Lead Agent an individual coding prompt like *"Install library X, implement function Y, verify and report proof"*, the Lead will attempt to write code and run commands itself, breaking the swarm hierarchy!
+
+#### A. Subagent Configuration & Tool Rules
+When creating or defining a Lead Agent (via `assets/agents/lead-agent.md` or `define_subagent`):
+- **Model**: Always `model: inherit`.
+- **Customizations**: Always `inheritCustomizations: true`. Setting this to false strips the subagent of project rules (like fail-fast / no-fallbacks) and the `kungfu` gateway.
+- **MCP**: Always `inheritMcp: true`.
+- **Execution Policy & Tools**: Set `commandExecutionPolicy: off`. **NEVER include `run_command` in a Lead Agent's tools.** A Lead Agent is strictly an orchestrator, spec author, dispatcher, and reviewer.
+
+#### B. Canonical Lead Agent Briefing Template
+When invoking a Lead Agent via `invoke_subagent`, the `Prompt` MUST follow this structured briefing format:
+
+```markdown
+You are the Lead [Domain] Engineer in a hierarchical Swarm Coding session.
+
+### Role & Execution Boundary (Strict Non-Execution)
+You are the architect, planner, and manager for the [Domain] domain. You are strictly forbidden from writing production code or running terminal commands yourself. All implementation, dependency installations, and validation runs MUST be delegated to Specialist subagents that you spawn.
+
+### Agent Budget & Concurrency Mechanics (DOP: [N])
+- Your allocated domain budget is [N] concurrent agents.
+- You occupy 1 concurrency slot, leaving [N - 1] active concurrent Specialist slots.
+- Concurrency slots are ephemeral and freed immediately when a Specialist finishes and exits.
+- If your epic has more tasks than [N - 1], maintain a domain task backlog and drip-feed tasks to new Specialists as prior workers conclude.
+
+### Domain Epic & Specifications
+[Detailed domain objective, referencing workspace specification files or top-level architecture specs in docs/]
+
+### Your Swarm Protocol
+1. Specification First: Draft or update domain API/data contracts before assigning tasks.
+2. Task Deconstruction: Break the epic into independent, non-overlapping tasks with disjoint file boundaries.
+3. Spawn & Steer Specialists: Define/invoke Specialist workers (model: inherit, commandExecutionPolicy: sandbox). Supply each with explicit file boundaries, localized test commands, and fail-fast rules.
+4. Domain Reconciliation: Verify that Specialists replace all temporary stubs/mocks with real implementations, review validation logs, and message completion to your parent (Swarm Coordinator).
+5. User Escalation: You do not have ask_question. Send any requirement ambiguities to the Swarm Coordinator via send_message.
+```
+
+### 3. Top-Level Architectural Specifications ("Document First")
 - Write top-level system architecture documents, API contracts, or schema specifications in the repository before spawning Lead Agents.
 - Design clear system boundaries so each Lead Agent has an isolated domain scope.
 
-### 3. Dynamic Lifecycle & Clean Context Management
+### 4. Dynamic Lifecycle & Clean Context Management
 - Treat workers as task-scoped and disposable. Spawning fresh agents with clean context windows outperforms long-running agents that suffer from context bloat and cognitive drift.
 - When subagents complete their assigned deliverables or if a path dead-ends, let them conclude to immediately release concurrency budget back to the pool for subsequent tasks.
 
-### 4. Strict Hierarchical Communication & User Escalation
+### 5. Strict Hierarchical Communication & User Escalation
 - **Allowed Communication:** Message your child agents (the Lead Agents, or Specialists in flat/hybrid mode) directly via `send_message`.
 - **Forbidden Communication:** Do NOT bypass Lead Agents to message individual Specialists in nested mode.
 - **User Clarification Handling:** When a Lead Agent messages you with a question or ambiguity requiring user input:
@@ -52,17 +96,18 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
   3. Send a direct message to the Lead Agent with the user's response.
 - **Cross-Domain Coordination:** When updating top-level contracts or resolving inter-domain dependencies, update the design document first, then notify the affected Lead Agents via direct messages.
 
-### 5. Swarm Coordinator Setup Checklist
+### 6. Swarm Coordinator Setup Checklist
 - [ ] **Enforce Root Coordinator Role**: Confirm you strictly remain in the Swarm Coordinator role.
 - [ ] **Evaluate Budget**: Default to **10** if omitted. If budget <= 1, auto-fallback to single-agent execution.
 - [ ] **Define Org Chart & Sizing**: Document the top-level Org Chart (flat if < 10, nested with Lead Agents if >= 10, or hybrid).
-- [ ] **Allocate Budget to Streams**: Divide the active budget across domains based on complexity.
+- [ ] **Allocate Budget to Streams**: Divide the active budget across domains based on complexity (remembering Leads count towards the budget).
 - [ ] **Write Architectural Contracts**: Draft top-level design specs and save them to the repository.
-- [ ] **Spawn Lead / Specialist Agents**: Invoke subagents using `invoke_subagent` and immediately yield turn.
+- [ ] **Spawn & Brief Lead Agents**: Ensure Lead Agent definitions have `commandExecutionPolicy: off`, `inheritCustomizations: true`, and supply the canonical Lead Agent briefing prompt detailing budget arithmetic and delegation rules.
+- [ ] **Fire-and-Yield Turn**: Invoke subagents using `invoke_subagent` and immediately yield execution.
 - [ ] **Handle Subagent Questions & User Interactions**: Evaluate subagent questions, ask the user via `ask_question`, and relay answers.
 - [ ] **Coordinate & Integrate**: Monitor progress via design docs and parent-child messages.
 
-### 6. The "Reduce" Phase (Integration & Placeholder Purge)
+### 7. The "Reduce" Phase (Integration & Placeholder Purge)
 Once all streams complete their parallel tasks, the Swarm Coordinator orchestrates the final Reduce step:
 1. **Placeholder & Stub Audit**: Verify that no temporary mocks, dummy return values, or dangling `TODO` items remain in the code.
 2. **Component Wiring**: Task a designated **QA/Integration Specialist** to wire all modules together into a unified system.

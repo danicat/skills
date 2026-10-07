@@ -16,7 +16,7 @@ metadata:
   category: agents
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.1"
+  version: "0.4.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -44,13 +44,22 @@ Swarm Coding divides complex engineering objectives among multiple specialized s
    - **Forbidden:** Direct communication between agents on the SAME layer (Lead Agent <-> Lead Agent, Specialist <-> Specialist) or direct escalation (Specialist <-> Swarm Coordinator bypassing an intermediate Lead Agent) is strictly forbidden.
    - **Design Document First:** Inter-domain or cross-layer coordination MUST be handled by writing or updating shared design documents first, then notifying parent/child agents via hierarchical messaging.
 6. **Fine-Grained Targeted Testing (No Broad Root Sweeps):** Specialists MUST execute fine-grained, package-scoped unit tests (e.g., `go test ./internal/physics/...`) strictly targeting their assigned task. Running broad project-root test commands (e.g., `go test ./...`) is strictly forbidden for Specialists unless explicitly requested by the Swarm Coordinator, preventing cross-task contamination and false failures while parallel agents work concurrently.
+7. **Swarm Awareness Propagation (Zero Ambient Knowledge):**
+   - Subagents are spawned with blank context and have **zero ambient understanding** of swarm protocols, DOP mechanics, non-execution posture, or boundary isolation.
+   - Merely stating *"you are a swarm coding agent"* or *"you have a budget of X"* is strictly insufficient and forbidden as a standalone instruction.
+   - **Coordinator -> Lead Propagation**: The Coordinator MUST explicitly define the Lead's system role (non-executing architect), equip it with `commandExecutionPolicy: off` (never `run_command`), preserve customizations (`inheritCustomizations: true`), and provide an operational briefing detailing its exact budget arithmetic (1 slot for lead, DOP - 1 concurrent workers, slot recycling, and backlog drip-feeding).
+   - **Lead -> Specialist Propagation**: The Lead MUST explicitly define the Specialist's scope (strict file boundaries, localized test commands only, fail-fast without fallbacks, evidence-based reporting, and immediate termination to free concurrency slots).
 
 ---
 
 ## 🎯 Agent Budget & Degree of Parallelism (DOP)
 
 * **Definition**: **Agent Budget** is synonymous with **Degree of Parallelism (DOP)**. It defines the maximum number of **active, concurrent subagents** allowed to execute at the exact same time across the entire swarm hierarchy.
-* **Active vs. Past Capacity**: Completed or terminated subagents do **not** consume budget. The budget applies strictly to currently running subagents. When a subagent completes its work, its concurrency slot is immediately freed.
+* **Budget Arithmetic & Slot Accounting**:
+  - `Domain Budget (DOP) = 1 (Lead Agent) + N (Concurrent Specialists)`.
+  - The Lead Agent consumes 1 concurrency slot. For example, if a Lead is allocated a budget slice of 8, it occupies 1 slot and can run up to **7 concurrent Specialists** simultaneously.
+* **Active vs. Past Capacity (Slot Recycling)**: Completed or terminated subagents do **not** consume budget. The budget applies strictly to currently running subagents. When a subagent completes its work and terminates, its concurrency slot is immediately freed.
+* **Backlog Drip-Feeding**: When domain tasks exceed available specialist slots ($N$), the Lead Agent maintains a domain task backlog and drip-feeds tasks to fresh Specialists as prior workers conclude.
 * **Default Concurrency**: Assumes a default budget of **10** active concurrent agents if omitted by the user.
 * **Low Budget Guard (<= 1):** If the user specifies an `agent budget <= 1`, multi-agent orchestration is disabled. Automatically fall back to direct single-agent execution without spawning subagents, notifying the user: *"Agent budget is set to <= 1; running in direct single-agent execution mode. To enable swarm parallelism, specify an agent budget > 1 (default: 10)."*
 * **Swarm Shapes (Flat, Nested, Hybrid)**:
@@ -177,14 +186,65 @@ Subagents in a Swarm Coding session assume one of three roles:
 
 When defining subagents (`agent.md` or via `define_subagent`), adhere to modern Antigravity configuration standards:
 * **Customization & Skill Inheritance (`inheritCustomizations: true`)**:
-  Subagents should declare `inheritCustomizations: true`. This ensures the subagent seamlessly adopts all parent and workspace customizations (skills like `kungfu` and domain linters, rules, plugins, and custom configurations) without synchronization drift.
+  Subagents MUST declare `inheritCustomizations: true`. This ensures the subagent seamlessly adopts all parent and workspace customizations (skills like `kungfu` and domain linters, rules, plugins, and custom configurations) without synchronization drift. Setting this to false strips the subagent of project rules and capabilities.
 * **MCP Integration (`inheritMcp: true`)**:
   Passes through external MCP tool servers (e.g., database tools, devtools, knowledge servers) so subagents have access to necessary development tools.
 * **Model Configuration (`model: inherit`)**:
   Always use `inherit` (in agent definitions and `invoke_subagent`). Subagents automatically adopt the parent session's model configuration and reasoning effort (`/effort`), ensuring complete behavioral consistency across the swarm hierarchy without model-routing overhead.
-* **Execution Boundary (`commandExecutionPolicy`)**:
-  - `commandExecutionPolicy: off`: Applied to Lead Agents to enforce a pure orchestration posture.
-  - `commandExecutionPolicy: sandbox`: Applied to Specialists to permit safe build, test, and formatting execution.
+* **Execution Boundary & Tool Assignment (`commandExecutionPolicy`)**:
+  - **Lead Agents**: MUST have `commandExecutionPolicy: off`. When defining tools for a Lead, **NEVER include `run_command`**. Lead Agents are strictly prohibited from compiling, executing scripts, or running terminal commands.
+  - **Specialists**: MUST have `commandExecutionPolicy: sandbox`. Equipped with file and terminal execution tools (`run_command`), but delegation tools (`define_subagent`, `invoke_subagent`, `manage_subagents`) and user prompting (`ask_question`) are strictly disabled.
+
+---
+
+## 📋 Swarm Briefing Protocols & Canonical Prompt Templates
+
+Subagents start with blank conversational context. Simply telling an agent *"you are a swarm coding agent"* or *"you have a budget of 8"* provides zero understanding of swarm protocols, DOP mechanics, non-execution posture, or boundary isolation. Coordinators and Leads must feed complete definitions and structured initial briefings.
+
+### 1. Coordinator -> Lead Agent Briefing Protocol
+
+When the Swarm Coordinator spawns a Lead Agent via `invoke_subagent` (referencing `assets/agents/lead-agent.md` or defined via `define_subagent`), the Coordinator MUST supply a prompt conforming to this structure:
+
+```markdown
+You are the Lead [Domain] Engineer in a hierarchical Swarm Coding session.
+
+### Role & Execution Boundary (Strict Non-Execution)
+You are an architect, planner, and manager for your domain. You are strictly forbidden from writing production code or running terminal commands yourself. All implementation, package installations, and validation runs MUST be delegated to Specialist subagents.
+
+### Agent Budget & Concurrency Mechanics (DOP: [N])
+- Your allocated domain budget is [N] concurrent agents.
+- You occupy 1 concurrency slot, leaving [N - 1] active concurrent Specialist slots.
+- Concurrency slots are ephemeral and freed immediately when a Specialist finishes and exits.
+- If your epic has more tasks than [N - 1], maintain a domain task backlog and drip-feed tasks to new Specialists as prior workers conclude.
+
+### Domain Epic & Specifications
+[Detailed domain objective, referencing workspace specification files or top-level architecture specs in docs/]
+
+### Your Swarm Protocol
+1. Specification First: Draft or update domain API/data contracts before assigning tasks.
+2. Task Deconstruction: Break the epic into independent, non-overlapping tasks with disjoint file boundaries.
+3. Spawn & Steer Specialists: Define/invoke Specialist workers (model: inherit, commandExecutionPolicy: sandbox). Supply each with explicit file boundaries, localized test commands, and fail-fast rules.
+4. Domain Reconciliation: Verify that Specialists replace all temporary stubs/mocks with real implementations, review validation logs, and message completion to your parent (Swarm Coordinator).
+5. User Escalation: You do not have ask_question. Send any requirement ambiguities to the Swarm Coordinator via send_message.
+```
+
+### 2. Lead Agent -> Specialist Briefing Protocol
+
+When a Lead Agent spawns a Specialist via `invoke_subagent` (referencing `assets/agents/specialist-agent.md`), the Lead MUST provide a prompt conforming to this structure:
+
+```markdown
+You are a [Domain] Specialist worker in a Swarm Coding session reporting to the Lead [Domain] Engineer.
+
+### Assigned Scope & File Boundaries
+- Task: [Explicit description of the granular task]
+- Target Files: [Explicit list of allowed files to create/edit]
+- Forbidden Boundaries: Do NOT touch files outside your assigned list. If you depend on contracts from other modules, use the agreed interfaces in [spec path].
+
+### Execution & Validation Rules
+1. Scoped Validation: Run ONLY localized package/file tests (e.g., `npm test path/to/test` or `go test ./pkg/...`). NEVER run full-repository root commands like `npm test` or `go test ./...` which pollute other concurrent workers.
+2. Fail Fast & No Fallbacks: Never introduce fallback mechanisms, mock modes for live data, or silent error suppression. Always fail fast with rich diagnostics.
+3. Proof & Completion: Once implementation passes tests and linters, send your terminal validation output to your parent (Lead [Domain] Engineer) via send_message, then terminate to release your concurrency slot.
+```
 
 ---
 
@@ -216,13 +276,17 @@ graph TD
 
 ## ⚠️ Gotchas & Antipatterns
 
-1. **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
-2. **Leftover Placeholder Trap:** Delivering code where temporary stubs or mocks survive into the final codebase. Always execute the Reduce phase to purge stubs and wire real implementations.
-3. **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart when budget >= 10.
-4. **Sibling Messaging Trap:** Attempting to send direct messages between peer Lead Agents or peer Specialists. Always route cross-component updates through shared design documents and hierarchical parent-child messages.
-5. **The Long-Running Agent Context-Pollution Trap:** Retaining subagents indefinitely across multiple distinct tasks accumulates noisy tool logs, failed attempts, and token bloat. Specialists should be disposable and task-scoped—spawn fresh workers with clean context windows per task for maximum precision and speed.
-6. **The Root Test Contamination Trap:** Running broad project-root test commands (e.g., `go test ./...`) while parallel agents are modifying other packages causes false test failures. Specialists must scope test commands strictly to their assigned package until the final Reduce step.
-7. **Passive Polling Loops:** Coordinator and Lead agents must never poll subagent statuses in a tight loop; rely on automatic reactive wakeup upon subagent task completion.
+1. **The Ambient Swarm Assumption Trap:** Assuming spawned subagents inherently understand they are in a swarm or know what "budget" means. Without injecting system definitions and using the canonical briefing templates, subagents will act like solo coders.
+2. **The Lead-As-Coder Prompting Trap:** Prompting a Lead Agent with individual coding commands ("Install library X, implement function Y, verify endpoints") instead of an epic and delegation instructions. This directly causes the Lead to act as an executor.
+3. **The Lead Executor Toolset Trap:** Equipping a Lead Agent with `run_command` or setting `commandExecutionPolicy` to anything other than `off`. If a Lead Agent has terminal execution tools, it will bypass its team and code itself.
+4. **The Customization Stripping Trap:** Setting `inheritCustomizations: false` or `inheritMcp: false` on subagents. This strips away project rules (fail-fast, no fallbacks), linters, and the `kungfu` gateway.
+5. **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
+6. **Leftover Placeholder Trap:** Delivering code where temporary stubs or mocks survive into the final codebase. Always execute the Reduce phase to purge stubs and wire real implementations.
+7. **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart when budget >= 10.
+8. **Sibling Messaging Trap:** Attempting to send direct messages between peer Lead Agents or peer Specialists. Always route cross-component updates through shared design documents and hierarchical parent-child messages.
+9. **The Long-Running Agent Context-Pollution Trap:** Retaining subagents indefinitely across multiple distinct tasks accumulates noisy tool logs, failed attempts, and token bloat. Specialists should be disposable and task-scoped—spawn fresh workers with clean context windows per task for maximum precision and speed.
+10. **The Root Test Contamination Trap:** Running broad project-root test commands (e.g., `go test ./...`) while parallel agents are modifying other packages causes false test failures. Specialists must scope test commands strictly to their assigned package until the final Reduce step.
+11. **Passive Polling Loops:** Coordinator and Lead agents must never poll subagent statuses in a tight loop; rely on automatic reactive wakeup upon subagent task completion.
 
 ---
 

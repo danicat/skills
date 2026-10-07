@@ -56,10 +56,10 @@ graph TD
 
 ## Definition of Done (DoD) Checklist
 
-Before submitting your task to your Lead Agent, verify:
-
 - [ ] **Validation Loop Completed**: Operational validation cycle ran with zero errors.
 - [ ] **Local Build & Tests Pass**: Targeted package builds pass and unit tests succeed.
+- [ ] **No Fallbacks**: No fallback mechanisms, mock modes for live data, or silent error suppression used.
 - [ ] **Zero Lingering Placeholders**: All temporary stubs, dummy return values, and `TODO` comments in assigned code are replaced with real implementations.
-- [ ] **Evidence Log Attached**: Actual terminal logs attached to completion report.
+- [ ] **Evidence Log Attached**: Actual terminal logs attached to completion report sent via `send_message`.
 - [ ] **No Scope Creep**: Only files within assigned task scope were modified.
+- [ ] **Conclude & Free Slot**: Immediately conclude and terminate upon task completion to return the concurrency slot to the swarm budget.
