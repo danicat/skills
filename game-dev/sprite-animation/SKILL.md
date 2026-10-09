@@ -12,120 +12,135 @@ metadata:
   category: game-dev
   tags: "spritesheet, animation, keyframes, aseprite, game-dev, ebitengine"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
 # 2D Sprite Animation & Aseprite Integration Guide (Animator Role)
 
-This skill equips AI agents acting in the **Animator Agent Role** with the tools, specifications, and Go controllers required to design, validate, slice, and manage 2D character sprite sheets, animation frame sequences, tag loops, and Aseprite files (`.ase` / `.aseprite`) for Ebitengine v2 games.
+This skill equips AI agents acting in the **Animator Agent Role** with the specifications, deterministic CLI slicing tools, and fail-fast Ebitengine v2 Go controllers required to design, validate, slice, and manage 2D character sprite sheets, animation frame sequences, tag loops, and Aseprite files (`.ase` / `.aseprite` / `.json`).
 
 ---
 
 ## 1. Animator Agent Role & Core Responsibilities
 
-In a game development team, the **Animator Agent** owns all 2D sprite animation pipelines:
-1. **Asset Validation & Format Verification**: Inspects sprite sheet images (from `nano-banana` or artist files) using file identification tools (`file`, `mimetype`, `http.DetectContentType`) to verify binary integrity and grid dimensions before slicing.
-2. **Animation Tag & State Specification**: Defines animation tags (`idle`, `walk`, `run`, `attack`, `hurt`, `death`, `cast`), frame duration timings (50ms - 200ms), and loop directions (`LoopForward`, `LoopReverse`, `LoopPingPong`, `LoopOnce`).
-3. **Aseprite Integration & Slicing**: Loads Aseprite files (`.ase` / `.aseprite` / `.json`) using recommended Go libraries ([`SolarLune/goaseprite`](https://github.com/SolarLune/goaseprite)) or pure-code Ebitengine `SubImage` grid slicing.
-4. **Animation Controller Code Generation**: Authors clean, GC-friendly Ebitengine animation controllers that manage frame timers, state switches, directional flips, and completion callbacks (`OnComplete`).
+In a game development workflow, the **Animator Agent** owns all 2D sprite animation pipelines:
+1. **Fail-Fast Asset Validation & Grid Slicing**: Validates sprite sheet images (from `nano-banana` or artist files) using `file` / `mimetype` and [`scripts/slice_spritesheet.py`](scripts/slice_spritesheet.py) to verify binary integrity and exact frame grid divisibility before loading.
+2. **Animation Tag & State Specification**: Defines animation tags (`idle`, `walk`, `run`, `attack`, `hurt`, `death`, `cast`), positive frame durations (`40ms–200ms`), and loop modes (`LoopForward`, `LoopReverse`, `LoopPingPong`, `LoopOnce`).
+3. **Zero-Allocation Frame Pre-Slicing**: Pre-slices all `ebiten.Image.SubImage` frame references at load time (`NewGridSpriteSheet`) and reuses a persistent `ebiten.DrawImageOptions` field (`ac.drawOp`) so `Draw()` performs **zero** heap allocations.
+4. **Fail-Fast State Transitions**: Rejects corrupt sprite sheet dimensions, non-positive frame durations, out-of-bounds tag ranges, and unknown animation tag names with rich `fmt.Errorf` diagnostics.
 
 ---
 
-## 2. Technical Reference Standards & Specifications
+## 2. Technical Reference Standards & Companion Scripts
 
-For complete binary format specifications, GIMP RGBA palette specifications, and production Go code implementations, consult:
-
-| Module | Reference File | Key Topics Covered |
+| Module | Path | Key Topics Covered |
 | :--- | :--- | :--- |
-| **Aseprite Binary Format & GPL** | [`references/aseprite_format.md`](references/aseprite_format.md) | Header, frame headers, cel chunks (`0x2005`), tag chunks (`0x2018`), 9-patch slices (`0x2022`), and GIMP `.gpl` RGBA palette format extension. |
-| **Go Animation Controller** | [`references/animation_controller.go`](references/animation_controller.go) | Complete, production-grade Ebitengine `AnimationController` and `GridSpriteSheet` implementation with delta time (dt) updating and horizontal flipping. |
+| **Go Animation Controller** | [`references/animation_controller.go`](references/animation_controller.go) | Fail-fast `GridSpriteSheet` (load-time `SubImage` pre-slicing) and zero-allocation `AnimationController` with delta-time (`dt`) accumulation and horizontal flipping. |
+| **Aseprite Binary Format & GPL** | [`references/aseprite_format.md`](references/aseprite_format.md) | Header, frame headers, cel chunks (`0x2005`), tag chunks (`0x2018`), 9-patch slices (`0x2022`), GIMP `.gpl` RGBA palettes, and zero-alloc `goaseprite` wrapper. |
+| **Deterministic Grid Slicer CLI** | [`scripts/slice_spritesheet.py`](scripts/slice_spritesheet.py) | PEP 723 (`pillow>=10.0.0`) CLI script that validates PNG dimensions against `--frame-width` / `--frame-height`, slices grid cells, and exports an Aseprite-compatible JSON manifest + optional frame PNGs. |
 
 ---
 
-## 3. Asset Validation & Grid Slicing Workflow
+## 3. Deterministic Sprite Sheet Validation & Slicing (`scripts/slice_spritesheet.py`)
 
-Never assume a generated image is a valid PNG or has correct dimensions based solely on filename extension:
+Never assume an image is a valid PNG or has evenly divisible grid dimensions based on its filename. Always validate the binary format and run `scripts/slice_spritesheet.py`:
 
 ```bash
-# 1. Validate actual file type using file identification tools
+# 1. Verify actual binary MIME/file type
 file assets/sprites/player_sheet.png
-# Expected output: PNG image data, 256 x 128, 8-bit/color RGBA
+# Expected: PNG image data, 256 x 128, 8-bit/color RGBA
 
-# 2. Verify grid dimensions (e.g. 256x128 image with 32x32 frames = 8 columns x 4 rows = 32 frames)
+# 2. Validate grid divisibility, define animation tags, and export Aseprite JSON manifest
+uv run scripts/slice_spritesheet.py assets/sprites/player_sheet.png \
+  --frame-width 32 \
+  --frame-height 32 \
+  --duration-ms 100 \
+  --tag idle:0:5:150:forward \
+  --tag run:8:15:80:forward \
+  --tag attack:16:21:60:forward \
+  --tag death:24:31:100:forward \
+  --output-json assets/sprites/player_sheet.json \
+  --export-frames-dir build/frames/player
 ```
+
+If `player_sheet.png` is not an exact integer multiple of `--frame-width` and `--frame-height`, `slice_spritesheet.py` fails fast with a non-zero exit code and reports the exact pixel remainder to `stderr`.
 
 ---
 
 ## 4. Animation State Machine Benchmark Table
 
-When authoring animation sequences for characters and entities, enforce standard frame count and duration benchmarks:
-
 | Animation Tag | Frame Range / Count | Frame Duration | Loop Mode | Gameplay Trigger / Transition |
 | :--- | :--- | :--- | :--- | :--- |
-| **`idle`** | 4-8 frames | 120ms - 180ms | `LoopForward` | Default state when velocity is zero (`VX=0, VY=0`). |
-| **`walk` / `run`** | 8-12 frames | 60ms - 100ms | `LoopForward` | Active when moving horizontally (`VX != 0`). |
-| **`jump` / `fall`** | 2-4 frames | 100ms | `LoopOnce` / Hold | Triggered on jump start; holds final frame during airborne fall. |
-| **`attack`** | 6-10 frames | 40ms - 80ms | `LoopOnce` | Triggered on attack keypress. Invokes `OnComplete` callback back to `idle`. |
-| **`hurt`** | 3-5 frames | 50ms | `LoopOnce` | Triggered on damage hit. Flash red/white overlay. |
-| **`death`** | 6-10 frames | 100ms | `LoopOnce` | Triggered on zero health. Holds final collapse frame without looping. |
+| **`idle`** | 4–8 frames | 120ms–180ms | `LoopForward` | Default state when velocity is zero (`VX=0, VY=0`). |
+| **`walk` / `run`** | 8–12 frames | 60ms–100ms | `LoopForward` | Active when moving (`VX != 0` or `VY != 0`). |
+| **`jump` / `fall`** | 2–4 frames | 100ms | `LoopOnce` | Triggered on airborne launch; holds final frame until landing. |
+| **`attack`** | 6–10 frames | 40ms–80ms | `LoopOnce` | Triggered on attack action. Invokes `OnComplete` callback back to `idle`. |
+| **`hurt`** | 3–5 frames | 50ms | `LoopOnce` | Triggered on damage hit alongside Kage hit-flash shader. |
+| **`death`** | 6–10 frames | 100ms | `LoopOnce` | Triggered on zero health. Holds final collapse frame without looping. |
 
 ---
 
-## 5. Integration Patterns in Ebitengine
+## 5. Fail-Fast Integration Patterns in Ebitengine
 
-### 5.1 Using SolarLune's `goaseprite` Library
+### 5.1 Pre-Sliced Grid Sprite Sheet & Controller (`references/animation_controller.go`)
 ```go
-import "github.com/SolarLune/goaseprite"
-
-type Player struct {
-	Anim *goaseprite.File
-	X, Y float32
+sheet, err := NewGridSpriteSheet(embeddedSpriteImage, 32, 32)
+if err != nil {
+	return fmt.Errorf("load player sprite sheet: %w", err)
 }
 
-func NewPlayer() *Player {
-	return &Player{
-		Anim: goaseprite.New("assets/player.json"),
-	}
+controller, err := NewAnimationController(sheet)
+if err != nil {
+	return fmt.Errorf("init player animation controller: %w", err)
 }
 
-func (p *Player) Update(dt float32) {
-	p.Anim.Update(dt)
+if err := controller.AddTag(AnimationTag{
+	Name:          "idle",
+	StartFrame:    0,
+	EndFrame:      5,
+	FrameDuration: 150 * time.Millisecond,
+	Loop:          LoopForward,
+}); err != nil {
+	return err
 }
 
-func (p *Player) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(p.X), float64(p.Y))
+if err := controller.AddTag(AnimationTag{
+	Name:          "run",
+	StartFrame:    8,
+	EndFrame:      15,
+	FrameDuration: 80 * time.Millisecond,
+	Loop:          LoopForward,
+}); err != nil {
+	return err
+}
 
-	// Draw current frame sub-image from Aseprite atlas
-	sub := p.Anim.Image.SubImage(p.Anim.CurrentFrameBounds()).(*ebiten.Image)
-	screen.DrawImage(sub, op)
+if err := controller.Play("run"); err != nil {
+	return err
 }
 ```
 
-### 5.2 Using Pure-Code Grid Slicing Controller
+### 5.2 Zero-Allocation `Update` and `Draw` Usage
 ```go
-sheet := &GridSpriteSheet{
-	Image:       embeddedSpriteImage,
-	FrameWidth:  32,
-	FrameHeight: 32,
-	Columns:     8,
-	TotalFrames: 32,
+// In Update():
+if err := p.Controller.Update(dt); err != nil {
+	return err
 }
 
-controller := NewAnimationController(sheet)
-controller.AddTag(AnimationTag{Name: "idle", StartFrame: 0, EndFrame: 5, FrameDuration: 150 * time.Millisecond, Loop: LoopForward})
-controller.AddTag(AnimationTag{Name: "run", StartFrame: 8, EndFrame: 15, FrameDuration: 80 * time.Millisecond, Loop: LoopForward})
-controller.Play("run")
+// In Draw(screen *ebiten.Image):
+// Uses pre-sliced sheet.Frames[currentFrame] and persistent controller.drawOp (0 allocs/op)
+if err := p.Controller.Draw(screen, p.X, p.Y, p.FacingLeft); err != nil {
+	panic(err)
+}
 ```
 
 ---
 
 ## 6. Animator Agent Pre-Flight Checklist
 
-Before confirming animation code or sprite assets:
-- [ ] **Validated File Format**: Verified image using `file` CLI tool (ensuring RGBA format and no corrupted/misnamed extensions).
-- [ ] **Grid Math Verified**: Image width and height are exact integer multiples of frame width and height.
-- [ ] **All Animation Tags Defined**: Included `idle`, `run`/`walk`, `attack`, and `death` states.
-- [ ] **No Allocation in `Draw()`**: `SubImage` bounds calculations use pre-computed rectangles or persistent `DrawImageOptions`.
-- [ ] **Horizontal Flipping Handled**: Configured negative matrix scale (`Scale(-1, 1)`) for left-facing direction without duplicating sprite assets.
+Before completing animation code or sprite assets:
+- [ ] **Validated File Format**: Verified image using `file` CLI tool (ensuring valid RGBA PNG and no misnamed JPEG/WebP headers).
+- [ ] **Grid Math Verified**: Verified exact divisibility via `scripts/slice_spritesheet.py` and `NewGridSpriteSheet`.
+- [ ] **All Animation Tags Validated**: Checked that `StartFrame <= EndFrame < TotalFrames` and `FrameDuration > 0`.
+- [ ] **Pre-Sliced `SubImage` Frames at Load Time**: Never call `SubImage` or allocate `ebiten.DrawImageOptions` inside `Draw()`.
+- [ ] **Horizontal Flipping Handled**: Configured negative matrix scale (`Scale(-1, 1)` + `Translate(FrameWidth, 0)`) for left-facing orientation without duplicating sprite sheets.

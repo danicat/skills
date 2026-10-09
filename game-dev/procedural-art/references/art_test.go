@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	"math"
 	"testing"
 )
@@ -66,6 +67,57 @@ func (m MatrixGeoM) Apply(x, y float64) (float64, float64) {
 	return x*m.sx + m.tx, y*m.sy + m.ty
 }
 
+// TestPremultiplyRGBA verifies the premultiplied alpha invariant R, G, B <= A.
+func TestPremultiplyRGBA(t *testing.T) {
+	c := PremultiplyRGBA(255, 128, 0, 100)
+	if err := ValidatePremultipliedRGBA(c); err != nil {
+		t.Fatalf("expected valid premultiplied color, got error: %v", err)
+	}
+	if c.R != 100 || c.A != 100 {
+		t.Fatalf("expected R=100, A=100, got R=%d, A=%d", c.R, c.A)
+	}
+
+	invalid := color.RGBA{R: 255, G: 0, B: 0, A: 100}
+	if err := ValidatePremultipliedRGBA(invalid); err == nil {
+		t.Fatalf("expected error for non-premultiplied color.RGBA{255, 0, 0, 100}")
+	}
+}
+
+// TestSDFPrimitives verifies SDFCircle, SDFBox, SDFCapsule, and SDFSmoothMin.
+func TestSDFPrimitives(t *testing.T) {
+	if d := SDFCircle(10, 10, 10, 10, 5); d != -5.0 {
+		t.Fatalf("expected SDFCircle center distance -5.0, got %f", d)
+	}
+	if d := SDFBox(10, 10, 10, 10, 4, 4, 1); d >= 0 {
+		t.Fatalf("expected interior point of SDFBox to be negative, got %f", d)
+	}
+	if d := SDFCapsule(5, 0, 0, 0, 10, 0, 2); math.Abs(d+2.0) > 1e-6 {
+		t.Fatalf("expected midpoint of SDFCapsule to have distance -2.0, got %f", d)
+	}
+	smin := SDFSmoothMin(0.2, 0.2, 1.0)
+	if smin >= 0.2 {
+		t.Fatalf("expected SDFSmoothMin to blend below 0.2, got %f", smin)
+	}
+}
+
+// TestMaterialRampShading verifies 4-step material ramp sampling.
+func TestMaterialRampShading(t *testing.T) {
+	pal := NewGenesisPalette()
+	ramp := pal.Ramps["steel"]
+	if SampleMaterialRamp(ramp, 0.1) != ramp[0] {
+		t.Fatalf("expected step 0 (Deep Shadow)")
+	}
+	if SampleMaterialRamp(ramp, 0.4) != ramp[1] {
+		t.Fatalf("expected step 1 (Base Tone)")
+	}
+	if SampleMaterialRamp(ramp, 0.8) != ramp[2] {
+		t.Fatalf("expected step 2 (Light Highlight)")
+	}
+	if SampleMaterialRamp(ramp, 0.95) != ramp[3] {
+		t.Fatalf("expected step 3 (High Specular)")
+	}
+}
+
 // TestEasingMathematics verifies easing functions.
 func TestEasingMathematics(t *testing.T) {
 	if math.Abs(EaseInOutCubic(0.5)-0.5) > 0.001 {
@@ -85,6 +137,12 @@ func TestParticleSystemPool(t *testing.T) {
 	for i := range ps.pool {
 		if ps.pool[i].Active {
 			activeCount++
+			if err := ValidatePremultipliedRGBA(ps.pool[i].StartColor); err != nil {
+				t.Fatalf("StartColor invalid: %v", err)
+			}
+			if err := ValidatePremultipliedRGBA(ps.pool[i].EndColor); err != nil {
+				t.Fatalf("EndColor invalid: %v", err)
+			}
 		}
 	}
 

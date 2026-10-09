@@ -15,8 +15,11 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -35,21 +38,25 @@ func main() {
 	case "play":
 		playCmd := flag.NewFlagSet("play", flag.ExitOnError)
 		loopFlag := playCmd.Bool("loop", false, "Loop BGM audio playback")
-		playCmd.Parse(os.Args[2:])
+		if err := playCmd.Parse(os.Args[2:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing play flags: %v\n", err)
+			os.Exit(1)
+		}
 
 		if playCmd.NArg() < 1 {
-			fmt.Println("Error: Missing JSON audio definition file.")
-			fmt.Println("Usage: play play [-loop] <sound.json>")
+			fmt.Fprintln(os.Stderr, "Error: Missing JSON audio definition file.")
+			fmt.Fprintln(os.Stderr, "Usage: play play [-loop] <sound.json>")
 			os.Exit(1)
 		}
 		jsonFile := playCmd.Arg(0)
 		def, err := LoadAudioDefJSON(jsonFile)
 		if err != nil {
-			fmt.Printf("Error loading JSON file '%s': %v\n", jsonFile, err)
+			fmt.Fprintf(os.Stderr, "Error loading JSON file '%s': %v\n", jsonFile, err)
 			os.Exit(1)
 		}
 
 		pcm := SynthesizeAudio(def)
+		pcm = pcm[:len(pcm)&^3]
 		fmt.Printf("Playing audio: '%s' (%s, %.2fs duration, loop=%v)...\n",
 			def.Title, def.Type, float64(len(pcm))/176400.0, *loopFlag)
 		playAudio(pcm, *loopFlag)
@@ -57,10 +64,14 @@ func main() {
 	case "demo":
 		demoCmd := flag.NewFlagSet("demo", flag.ExitOnError)
 		loopFlag := demoCmd.Bool("loop", false, "Loop BGM audio playback")
-		demoCmd.Parse(os.Args[2:])
+		if err := demoCmd.Parse(os.Args[2:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing demo flags: %v\n", err)
+			os.Exit(1)
+		}
 
 		def := getDemoSoundtrack()
 		pcm := SynthesizeAudio(def)
+		pcm = pcm[:len(pcm)&^3]
 
 		fmt.Printf("Playing Demo Soundtrack: '%s' (6-Channel Genesis Style, %.2fs duration, loop=%v)...\n",
 			def.Title, float64(len(pcm))/176400.0, *loopFlag)
@@ -68,11 +79,14 @@ func main() {
 
 	case "export":
 		exportCmd := flag.NewFlagSet("export", flag.ExitOnError)
-		exportCmd.Parse(os.Args[2:])
+		if err := exportCmd.Parse(os.Args[2:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing export flags: %v\n", err)
+			os.Exit(1)
+		}
 
 		if exportCmd.NArg() < 2 {
-			fmt.Println("Error: Missing arguments.")
-			fmt.Println("Usage: play export <sound.json> <output.wav>")
+			fmt.Fprintln(os.Stderr, "Error: Missing arguments.")
+			fmt.Fprintln(os.Stderr, "Usage: play export <sound.json> <output.wav>")
 			os.Exit(1)
 		}
 		jsonFile := exportCmd.Arg(0)
@@ -80,14 +94,15 @@ func main() {
 
 		def, err := LoadAudioDefJSON(jsonFile)
 		if err != nil {
-			fmt.Printf("Error loading JSON file '%s': %v\n", jsonFile, err)
+			fmt.Fprintf(os.Stderr, "Error loading JSON file '%s': %v\n", jsonFile, err)
 			os.Exit(1)
 		}
 
 		pcm := SynthesizeAudio(def)
+		pcm = pcm[:len(pcm)&^3]
 		err = ExportWAV(wavFile, pcm)
 		if err != nil {
-			fmt.Printf("Error exporting WAV: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error exporting WAV: %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Printf("Successfully exported '%s' (%.2fs duration) to '%s'\n",
@@ -109,22 +124,33 @@ func printUsage() {
 }
 
 func playAudio(pcm []byte, loop bool) {
+	alignedLen := len(pcm) &^ 3
+	if alignedLen == 0 {
+		fmt.Fprintf(os.Stderr, "Playback error: PCM buffer is empty or smaller than 4-byte stereo frame (%d bytes)\n", len(pcm))
+		os.Exit(1)
+	}
+	pcm = pcm[:alignedLen]
+
 	audioCtx := audio.NewContext(44100)
 	sys := NewSoundSystem(audioCtx)
 	err := sys.Play(pcm, loop)
 	if err != nil {
-		fmt.Printf("Playback error: %v\n", err)
-		return
+		fmt.Fprintf(os.Stderr, "Playback error: %v\n", err)
+		os.Exit(1)
 	}
 
 	if loop {
 		fmt.Println("Looping playback active. Press ENTER to stop...")
-		var input string
-		fmt.Scanln(&input)
+		reader := bufio.NewReader(os.Stdin)
+		if _, err := reader.ReadString('\n'); err != nil && !errors.Is(err, io.EOF) {
+			sys.Stop()
+			fmt.Fprintf(os.Stderr, "Error reading stdin: %v\n", err)
+			os.Exit(1)
+		}
 		sys.Stop()
 	} else {
 		// Wait for one-off playback duration to finish
-		duration := time.Duration(float64(len(pcm))/176400.0*1000) * time.Millisecond
+		duration := time.Duration(float64(alignedLen)/176400.0*1000) * time.Millisecond
 		time.Sleep(duration + 100*time.Millisecond)
 	}
 }

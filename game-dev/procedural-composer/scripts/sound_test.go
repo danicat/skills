@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"testing"
 )
 
 // ExampleSynthesizeAudio_stageBGM demonstrates composing a 16-bar, 6-channel 16-bit Genesis-style stage theme.
@@ -313,12 +314,71 @@ func ExampleExportWAV() {
 	}
 	pcm := SynthesizeAudio(def)
 	tmpFile := "/tmp/coin_test.wav"
-	err := ExportWAV(tmpFile, pcm)
-	if err == nil {
-		fmt.Printf("Exported WAV successfully: %s\n", tmpFile)
-		os.Remove(tmpFile)
+	if err := ExportWAV(tmpFile, pcm); err != nil {
+		panic(err)
+	}
+	fmt.Printf("Exported WAV successfully: %s\n", tmpFile)
+	if err := os.Remove(tmpFile); err != nil {
+		panic(err)
 	}
 
 	// Output:
 	// Exported WAV successfully: /tmp/coin_test.wav
+}
+
+func TestPCMAlignmentAndDSPPostProcessing(t *testing.T) {
+	if got := AlignPCMBytes(103); got != 100 {
+		t.Fatalf("AlignPCMBytes(103) = %d, want 100", got)
+	}
+	if got := AlignPCMOffset(107); got != 104 {
+		t.Fatalf("AlignPCMOffset(107) = %d, want 104", got)
+	}
+
+	// Verify MixTracksPCM enforces 4-byte alignment even on unaligned input slices
+	unalignedA := []byte{1, 2, 3, 4, 5, 6, 7}
+	unalignedB := []byte{10, 0, 20, 0, 30}
+	mixed := MixTracksPCM([][]byte{unalignedA, unalignedB})
+	if len(mixed)%4 != 0 || len(mixed) != 4 {
+		t.Fatalf("MixTracksPCM length = %d, want 4-byte aligned length 4", len(mixed))
+	}
+
+	// Synthesize a 0.25s test tone and test loop slicing + DSP post-processing
+	note := NoteJSON{
+		WaveType:  "sawtooth",
+		Duration:  0.25,
+		StartFreq: 440.0,
+		EndFreq:   440.0,
+		Volume:    0.5,
+		Attack:    0.01,
+		Decay:     0.04,
+		Sustain:   0.8,
+		Release:   0.05,
+	}
+	rawPCM := GenerateNotePCM(note)
+	if len(rawPCM)%4 != 0 {
+		t.Fatalf("GenerateNotePCM length %d is not 4-byte aligned", len(rawPCM))
+	}
+
+	sliced, err := SliceLoopPCM(rawPCM, 0.05, 0.20)
+	if err != nil {
+		t.Fatalf("SliceLoopPCM failed: %v", err)
+	}
+	if len(sliced) == 0 || len(sliced)%4 != 0 {
+		t.Fatalf("SliceLoopPCM returned unaligned or empty slice (%d bytes)", len(sliced))
+	}
+
+	lpf := ApplyLowPassFilter(sliced, 0.25)
+	if len(lpf) != len(sliced) || len(lpf)%4 != 0 {
+		t.Fatalf("ApplyLowPassFilter length = %d, want %d", len(lpf), len(sliced))
+	}
+
+	hpf := ApplyHighPassFilter(sliced, 0.85)
+	if len(hpf) != len(sliced) || len(hpf)%4 != 0 {
+		t.Fatalf("ApplyHighPassFilter length = %d, want %d", len(hpf), len(sliced))
+	}
+
+	crushed := ApplyBitcrush(sliced, 4, 4)
+	if len(crushed) != len(sliced) || len(crushed)%4 != 0 {
+		t.Fatalf("ApplyBitcrush length = %d, want %d", len(crushed), len(sliced))
+	}
 }

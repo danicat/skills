@@ -32,11 +32,12 @@ from google.genai import types
 from google.genai.errors import APIError
 
 MODEL_MAP = {
+    "nano-banana-2.1": "gemini-nano-banana-2.1",
+    "nano-banana-2-1": "gemini-nano-banana-2.1",
+    "nano-banana-2": "gemini-3.1-flash-image",
     "nano-banana-2-lite": "gemini-3.1-flash-lite-image",
     "nano-banana-lite": "gemini-3.1-flash-lite-image",
-    "nano-banana-2": "gemini-3.1-flash-image",
     "nano-banana-pro": "gemini-3-pro-image",
-    "nano-banana": "gemini-2.5-flash-image",
 }
 
 VALID_ASPECT_RATIOS = [
@@ -53,58 +54,57 @@ def validate_capabilities(args, model_id):
         print("Error: Maximum of 14 input/reference images allowed.", file=sys.stderr)
         sys.exit(1)
 
-    if model_id == "gemini-2.5-flash-image" and len(args.input_image) > 3:
-        print("Error: Nano Banana 1 (Legacy) supports a maximum of 3 input images.", file=sys.stderr)
-        sys.exit(1)
-
     # Resolution validation
     if args.resolution in ["2K", "4K"]:
-        if model_id in ["gemini-3.1-flash-lite-image", "gemini-2.5-flash-image"]:
+        if model_id == "gemini-3.1-flash-lite-image":
             print(
                 f"Error: Resolution '{args.resolution}' is not supported by {args.model}. "
-                "2K and 4K output requires 'nano-banana-2' or 'nano-banana-pro'.",
+                "2K and 4K output requires 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro'.",
                 file=sys.stderr
             )
             sys.exit(1)
 
-    if args.resolution == "512px" and model_id != "gemini-3.1-flash-image":
+    if args.resolution == "512px" and model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image"]:
         print(
-            f"Error: Resolution '512px' is only supported by 'nano-banana-2' (gemini-3.1-flash-image).",
+            "Error: Resolution '512px' is only supported by 'nano-banana-2.1' (gemini-nano-banana-2.1) "
+            "and 'nano-banana-2' (gemini-3.1-flash-image).",
             file=sys.stderr
         )
         sys.exit(1)
 
     # Aspect ratio validation
     if args.aspect_ratio in EXTENDED_ASPECT_RATIOS:
-        if model_id not in ["gemini-3.1-flash-image", "gemini-3.1-flash-lite-image"]:
+        if model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image", "gemini-3.1-flash-lite-image"]:
             print(
-                f"Error: Aspect ratio '{args.aspect_ratio}' is only supported by 'nano-banana-2' and 'nano-banana-2-lite'.",
+                f"Error: Aspect ratio '{args.aspect_ratio}' is only supported by "
+                "'nano-banana-2.1', 'nano-banana-2', and 'nano-banana-2-lite'.",
                 file=sys.stderr
             )
             sys.exit(1)
 
     # Search Grounding validation
     if args.search or args.image_search:
-        if model_id in ["gemini-3.1-flash-lite-image", "gemini-2.5-flash-image"]:
+        if model_id == "gemini-3.1-flash-lite-image":
             print(
                 f"Error: Search grounding is not supported by {args.model}. "
-                "Use 'nano-banana-2' or 'nano-banana-pro' for Google Search grounding.",
+                "Use 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro' for Google Search grounding.",
                 file=sys.stderr
             )
             sys.exit(1)
 
-    if args.image_search and model_id != "gemini-3.1-flash-image":
+    if args.image_search and model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image"]:
         print(
-            f"Error: Google Image Search Grounding (--image-search) is only supported by 'nano-banana-2'.",
+            "Error: Google Image Search Grounding (--image-search) is only supported by "
+            "'nano-banana-2.1' and 'nano-banana-2'.",
             file=sys.stderr
         )
         sys.exit(1)
 
     # Thinking level validation
-    if args.thinking_level and model_id == "gemini-2.5-flash-image":
+    if args.thinking_level == "medium" and model_id != "gemini-nano-banana-2.1":
         print(
-            "Error: Thinking mode is not supported by 'nano-banana' (gemini-2.5-flash-image). "
-            "Use 'nano-banana-2', 'nano-banana-2-lite', or 'nano-banana-pro'.",
+            f"Error: Thinking level 'medium' is only supported by 'nano-banana-2.1' (gemini-nano-banana-2.1), "
+            f"not {args.model}.",
             file=sys.stderr
         )
         sys.exit(1)
@@ -119,12 +119,7 @@ def init_client(args):
     )
 
     if use_vertex:
-        try:
-            credentials, default_project = google.auth.default()
-        except Exception:
-            credentials = None
-            default_project = None
-
+        credentials, default_project = google.auth.default()
         project = (
             args.project
             or os.environ.get("GOOGLE_CLOUD_PROJECT")
@@ -142,17 +137,16 @@ def init_client(args):
             sys.exit(1)
 
         return genai.Client(vertexai=True, project=project, location=location, credentials=credentials)
-    else:
-        if not api_key:
-            # Fallback to check default auth if available
-            try:
-                credentials, default_project = google.auth.default()
-                if default_project:
-                    return genai.Client(vertexai=True, project=default_project, location=args.location or "us-central1", credentials=credentials)
-            except Exception:
-                pass
 
-        return genai.Client(api_key=api_key)
+    if not api_key:
+        print(
+            "Error: GEMINI_API_KEY environment variable is not set and Vertex AI is not configured. "
+            "Set GEMINI_API_KEY or pass --project / GOOGLE_CLOUD_PROJECT for Vertex AI.",
+            file=sys.stderr
+        )
+        sys.exit(1)
+
+    return genai.Client(api_key=api_key)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -163,9 +157,16 @@ def main():
     parser.add_argument("-i", "--input-image", action="append", default=[], help="Path to input/reference image(s) (up to 14)")
     parser.add_argument(
         "-m", "--model",
-        choices=["nano-banana-2-lite", "nano-banana-lite", "nano-banana-2", "nano-banana-pro", "nano-banana"],
-        default="nano-banana-2-lite",
-        help="Model selection (default: nano-banana-2-lite)"
+        choices=[
+            "nano-banana-2.1",
+            "nano-banana-2-1",
+            "nano-banana-2",
+            "nano-banana-2-lite",
+            "nano-banana-lite",
+            "nano-banana-pro",
+        ],
+        default="nano-banana-2.1",
+        help="Model selection (default: nano-banana-2.1)"
     )
     parser.add_argument(
         "-r", "--resolution",
@@ -181,24 +182,29 @@ def main():
     )
     parser.add_argument(
         "--thinking-level",
-        choices=["minimal", "high"],
-        help="Thinking process level (supported on Banana 2 and Banana 2 Lite)"
+        choices=["minimal", "medium", "high"],
+        help="Thinking process level: minimal, medium (Nano Banana 2.1 only), or high"
     )
     parser.add_argument(
         "--search",
         action="store_true",
-        help="Enable Google Search grounding (Banana 2 and Banana Pro)"
+        help="Enable Google Search grounding (Banana 2.1, Banana 2, and Banana Pro)"
     )
     parser.add_argument(
         "--image-search",
         action="store_true",
-        help="Enable Google Image Search grounding (Banana 2 only)"
+        help="Enable Google Image Search grounding (Banana 2.1 and Banana 2)"
     )
     parser.add_argument(
         "--api",
         choices=["interactions", "models"],
         default="interactions",
         help="Underlying API method: 'interactions' (Interactions API, default) or 'models' (generate_content)"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate model capabilities and configuration without calling the API"
     )
     parser.add_argument("--project", help="GCP Project ID for Vertex AI")
     parser.add_argument("--location", default="us-central1", help="GCP Location for Vertex AI (default: us-central1)")
@@ -207,13 +213,18 @@ def main():
     model_id = MODEL_MAP[args.model]
 
     validate_capabilities(args, model_id)
-    client = init_client(args)
 
     print(f"Model: {model_id} ({args.model})")
     print(f"Resolution: {args.resolution} | Aspect Ratio: {args.aspect_ratio}")
     if args.input_image:
         print(f"Reference Images ({len(args.input_image)}): {args.input_image}")
     print(f"Output: {args.filename}")
+
+    if args.dry_run:
+        print("Dry run validation succeeded.")
+        return
+
+    client = init_client(args)
 
     try:
         if args.api == "interactions":
@@ -267,7 +278,6 @@ def main():
             if interaction.output_image and interaction.output_image.data:
                 img_bytes = base64.b64decode(interaction.output_image.data)
             else:
-                # Fallback: traverse steps
                 for step in getattr(interaction, "steps", []):
                     if step.type == "model_output":
                         for block in getattr(step, "content", []):

@@ -13,7 +13,7 @@ metadata:
   category: game-dev
   tags: "procedural-audio, game-dev, chiptune, synth, sfx, bgm"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -25,7 +25,7 @@ This skill provides complete mathematical, musical, and software architecture pa
 
 ## Available scripts
 
-- `scripts/sound.go`: Sound engine driver and declarative JSON audio definition parser.
+- `scripts/sound.go`: Sound engine driver, 4-byte aligned PCM synthesizer, DSP post-processing pipeline (`SliceLoopPCM`, `ApplyLowPassFilter`, `ApplyHighPassFilter`, `ApplyBitcrush`), and declarative JSON audio definition parser.
 - `scripts/sound_test.go`: Go unit tests and example BGM/SFX composition recipes.
 - `scripts/play.go`: CLI audio player and WAV export utility.
 
@@ -39,11 +39,32 @@ Procedural audio synthesizes audio samples on-the-fly or bakes them into PCM buf
 * **Minimal footprint**: Thousands of sounds and complex soundtracks require only kilobytes of code.
 * **Dynamic runtime control**: Real-time manipulation of pitch, tempo, filter cutoff, vibrato, and volume based on game state.
 
-### 1.2 Output Format Standard
+### 1.2 Output Format Standard & Mandatory 4-Byte PCM Frame Alignment (`&^ 3`)
 Standard audio output uses 16-bit signed Little-Endian PCM stereo at 44,100 Hz (or 48,000 Hz):
-* **Sample Rate (fs)**: 44,100 Hz (44,100 samples per second per channel).
-* **Channels**: 2 (Stereo: Left [bytes 0–1], Right [bytes 2–3]).
+* **Sample Rate ($f_s$)**: 44,100 Hz (44,100 stereo frames per second; `176,400` bytes/sec).
+* **Channels**: 2 (Stereo: Left `[bytes 0–1]`, Right `[bytes 2–3]`).
 * **Bits Per Sample**: 16-bit signed integer range `[-32,768 to +32,767]`.
+* **Mandatory 4-Byte Alignment (`&^ 3`)**: Every stereo sample frame occupies exactly 4 bytes (2 bytes Left + 2 bytes Right). Ebitengine's `audio.Context`, `audio.NewInfiniteLoop`, `audio.NewInfiniteLoopWithIntro`, and stream `Seek` operations **panic at runtime** if given a buffer length or byte seek offset that is not a multiple of 4. Always mask lengths and offsets with bitwise AND-NOT 3 (`&^ 3`):
+  ```go
+  alignedLen := len(pcm) &^ 3
+  alignedOffset := seekBytes &^ 3
+  ```
+
+### 1.3 Procedural DSP Post-Processing Pipeline
+Beyond raw oscillator synthesis, [`scripts/sound.go`](scripts/sound.go) provides a pure-Go DSP post-processing pipeline for shaping synthesized or decoded 16-bit stereo PCM buffers:
+
+1. **Loop Slicing (`SliceLoopPCM`)**:
+   - Extracts a sample-accurate, 4-byte aligned sub-region `[startSec, endSec]` from a PCM buffer using `bytes.NewReader`, aligned `Seek(int64(startByte)&^3, io.SeekStart)`, and checked `io.ReadFull(reader, out)`.
+   - Essential for trimming intro/outro silence or isolating seamless loop bars before passing the buffer to `audio.NewInfiniteLoop`.
+2. **ADSR Amplitude Envelopes (`getEnvelope`)**:
+   - Shapes note contour across four stages: **Attack** ($0 \to 1.0$ linear ramp over $t_A$), **Decay** ($1.0 \to S$ ramp over $t_D$), **Sustain** (constant amplitude $S$ while held), and **Release** ($S \to 0.0$ ramp over $t_R$).
+   - Prevents DC-offset speaker clicks at note boundaries and distinguishes plucked arpeggios from swelling string pads.
+3. **Single-Pole IIR Low-Pass & High-Pass Filtering (`ApplyLowPassFilter`, `ApplyHighPassFilter`)**:
+   - **Low-Pass Filter (LPF)**: Attenuates harsh high-frequency harmonics via $y[n] = y[n-1] + \alpha (x[n] - y[n-1])$ where $\alpha \in (0, 1]$ controls cutoff warmth (useful for underwater muffling, warm synth pads, and explosion rumbles).
+   - **High-Pass Filter (HPF)**: Removes DC offset and sub-bass mud via $y[n] = \alpha (y[n-1] + x[n] - x[n-1])$ where $\alpha \in (0, 1)$ isolates crisp transients (useful for hi-hats, radio comms, and UI clicks).
+4. **Bitcrushing & Sample-Rate Decimation (`ApplyBitcrush`)**:
+   - **Bit-Depth Quantization**: Right-shifts and left-shifts 16-bit samples (`(sample >> shift) << shift` where `shift = 16 - bitDepth`) to emulate gritty 4-bit or 8-bit DAC crunch.
+   - **Downsampling (Sample-and-Hold)**: Holds each stereo frame for `downsample` consecutive frames to create classic retro aliasing and lo-fi metallic textures.
 
 ---
 

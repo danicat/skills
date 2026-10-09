@@ -1,14 +1,21 @@
 # Pathfinding & Enemy AI Reference (A* Grid & Steering Behaviors)
 
-This module covers A* (A-Star) grid pathfinding, Breadth-First Search (BFS), Steering Behaviors, and AI Decision State Machines for Ebitengine games.
+This module covers A* (A-Star) grid pathfinding, Steering Behaviors (Seek/Arrive), and AI Decision State Machines for Ebitengine games across top-down, tactics, tower defense, isometric, and action genres.
 
 ---
 
 ## 1. A* (A-Star) Grid Pathfinding
 
-A* calculates the shortest path on a tile grid using heuristic distance ($f = g + h$):
+A* calculates the shortest path on a tile grid using heuristic distance ($f = g + h$) and fails fast with rich errors if the grid or coordinates are invalid:
 
 ```go
+package ai
+
+import (
+	"fmt"
+	"math"
+)
+
 type Node struct {
 	X, Y   int
 	G, H   float64 // G = cost from start, H = heuristic to goal
@@ -20,24 +27,35 @@ func HeuristicManhattan(x1, y1, x2, y2 int) float64 {
 	return math.Abs(float64(x1-x2)) + math.Abs(float64(y1-y2))
 }
 
-func FindPathAStar(grid [][]bool, startX, startY, goalX, goalY int) [][2]int {
-	width := len(grid[0])
+// FindPathAStar computes a 4-directional path from (startX, startY) to (goalX, goalY) on a blocked-cell grid.
+// Returns (nil, nil) if both endpoints are valid but no walkable path exists, or a rich error on invalid inputs.
+func FindPathAStar(grid [][]bool, startX, startY, goalX, goalY int) ([][2]int, error) {
 	height := len(grid)
+	if height == 0 || len(grid[0]) == 0 {
+		return nil, fmt.Errorf("ai: pathfinding grid must have non-zero dimensions")
+	}
+	width := len(grid[0])
 
-	if startX < 0 || startX >= width || startY < 0 || startY >= height ||
-		goalX < 0 || goalX >= width || goalY < 0 || goalY >= height {
-		return nil
+	if startX < 0 || startX >= width || startY < 0 || startY >= height {
+		return nil, fmt.Errorf("ai: start coordinates (%d, %d) out of grid bounds (%dx%d)", startX, startY, width, height)
+	}
+	if goalX < 0 || goalX >= width || goalY < 0 || goalY >= height {
+		return nil, fmt.Errorf("ai: goal coordinates (%d, %d) out of grid bounds (%dx%d)", goalX, goalY, width, height)
+	}
+	if grid[startY][startX] {
+		return nil, fmt.Errorf("ai: start cell (%d, %d) is blocked", startX, startY)
+	}
+	if grid[goalY][goalX] {
+		return nil, fmt.Errorf("ai: goal cell (%d, %d) is blocked", goalX, goalY)
 	}
 
-	openSet := []*Node{{X: startX, Y: startY, G: 0, H: HeuristicManhattan(startX, startY, goalX, goalY)}}
-	openSet[0].F = openSet[0].G + openSet[0].H
+	h0 := HeuristicManhattan(startX, startY, goalX, goalY)
+	openSet := []*Node{{X: startX, Y: startY, G: 0, H: h0, F: h0}}
+	closedSet := make(map[int]bool, width*height/4)
 
-	closedSet := make(map[int]bool)
-
-	dirs := [][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} // 4-directional cardinal movement
+	dirs := [4][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
 
 	for len(openSet) > 0 {
-		// Find node with lowest F score
 		bestIdx := 0
 		for i := 1; i < len(openSet); i++ {
 			if openSet[i].F < openSet[bestIdx].F {
@@ -47,35 +65,34 @@ func FindPathAStar(grid [][]bool, startX, startY, goalX, goalY int) [][2]int {
 
 		current := openSet[bestIdx]
 
-		// Reached goal? Reconstruct path
 		if current.X == goalX && current.Y == goalY {
-			path := [][2]int{}
-			curr := current
-			for curr != nil {
-				path = append([][2]int{{curr.X, curr.Y}}, path...)
-				curr = curr.Parent
+			var path [][2]int
+			for curr := current; curr != nil; curr = curr.Parent {
+				path = append(path, [2]int{curr.X, curr.Y})
 			}
-			return path
+			// Reverse path in-place to avoid quadratic prepend allocations
+			for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+				path[i], path[j] = path[j], path[i]
+			}
+			return path, nil
 		}
 
-		// Remove current from openSet and add to closedSet
 		openSet = append(openSet[:bestIdx], openSet[bestIdx+1:]...)
-		key := current.Y*width + current.X
-		closedSet[key] = true
+		closedSet[current.Y*width+current.X] = true
 
 		for _, d := range dirs {
 			nx, ny := current.X+d[0], current.Y+d[1]
-
 			if nx < 0 || nx >= width || ny < 0 || ny >= height || grid[ny][nx] {
-				continue // Walkable check
+				continue
 			}
 
 			nKey := ny*width + nx
-			if closedSet[nKey] { continue }
+			if closedSet[nKey] {
+				continue
+			}
 
 			gScore := current.G + 1.0
 
-			// Check if neighbor in openSet
 			var neighbor *Node
 			for _, node := range openSet {
 				if node.X == nx && node.Y == ny {
@@ -85,14 +102,15 @@ func FindPathAStar(grid [][]bool, startX, startY, goalX, goalY int) [][2]int {
 			}
 
 			if neighbor == nil {
-				neighbor = &Node{
-					X: nx, Y: ny,
-					G: gScore,
-					H: HeuristicManhattan(nx, ny, goalX, goalY),
+				h := HeuristicManhattan(nx, ny, goalX, goalY)
+				openSet = append(openSet, &Node{
+					X:      nx,
+					Y:      ny,
+					G:      gScore,
+					H:      h,
+					F:      gScore + h,
 					Parent: current,
-				}
-				neighbor.F = neighbor.G + neighbor.H
-				openSet = append(openSet, neighbor)
+				})
 			} else if gScore < neighbor.G {
 				neighbor.G = gScore
 				neighbor.F = neighbor.G + neighbor.H
@@ -101,47 +119,52 @@ func FindPathAStar(grid [][]bool, startX, startY, goalX, goalY int) [][2]int {
 		}
 	}
 
-	return nil // No path found
+	return nil, nil // Unreachable goal
 }
 ```
 
 ---
 
-## 2. Steering Behaviors (Seek, Arrive, Wander)
+## 2. Steering Behaviors (Seek & Arrive)
 
 Steering behaviors calculate smooth continuous acceleration vectors:
 
-### 2.1 Seek & Arrive (Deceleration)
-
 ```go
-func Seek(posX, posY, targetX, targetY, currentVX, currentVY, maxSpeed float64) (float64, float64) {
+func Seek(posX, posY, targetX, targetY, currentVX, currentVY, maxSpeed float64) (float64, float64, error) {
+	if maxSpeed <= 0 {
+		return 0, 0, fmt.Errorf("ai: Seek maxSpeed must be > 0, got %f", maxSpeed)
+	}
 	dx := targetX - posX
 	dy := targetY - posY
-	dist := math.Sqrt(dx*dx + dy*dy)
-	if dist == 0 { return 0, 0 }
+	dist := math.Hypot(dx, dy)
+	if dist == 0 {
+		return 0, 0, nil
+	}
 
 	desiredVX := (dx / dist) * maxSpeed
 	desiredVY := (dy / dist) * maxSpeed
-
-	// Steering force = Desired Velocity - Current Velocity
-	return desiredVX - currentVX, desiredVY - currentVY
+	return desiredVX - currentVX, desiredVY - currentVY, nil
 }
 
-func Arrive(posX, posY, targetX, targetY, currentVX, currentVY, maxSpeed, slowRadius float64) (float64, float64) {
+func Arrive(posX, posY, targetX, targetY, currentVX, currentVY, maxSpeed, slowRadius float64) (float64, float64, error) {
+	if maxSpeed <= 0 || slowRadius <= 0 {
+		return 0, 0, fmt.Errorf("ai: Arrive maxSpeed (%f) and slowRadius (%f) must be > 0", maxSpeed, slowRadius)
+	}
 	dx := targetX - posX
 	dy := targetY - posY
-	dist := math.Sqrt(dx*dx + dy*dy)
-	if dist == 0 { return 0, 0 }
+	dist := math.Hypot(dx, dy)
+	if dist == 0 {
+		return 0, 0, nil
+	}
 
 	targetSpeed := maxSpeed
 	if dist < slowRadius {
-		targetSpeed = maxSpeed * (dist / slowRadius) // Smooth deceleration
+		targetSpeed = maxSpeed * (dist / slowRadius)
 	}
 
 	desiredVX := (dx / dist) * targetSpeed
 	desiredVY := (dy / dist) * targetSpeed
-
-	return desiredVX - currentVX, desiredVY - currentVY
+	return desiredVX - currentVX, desiredVY - currentVY, nil
 }
 ```
 
@@ -149,7 +172,7 @@ func Arrive(posX, posY, targetX, targetY, currentVX, currentVY, maxSpeed, slowRa
 
 ## 3. Enemy AI Decision State Machine
 
-Model enemy states (Patrol, Chase, Attack, Flee) with perception range checks:
+Model enemy states (`StatePatrol`, `StateChase`, `StateAttack`, `StateFlee`) with explicit perception range checks:
 
 ```go
 type AIState int
@@ -169,13 +192,16 @@ type EnemyAI struct {
 	AttackDist    float64
 }
 
-func (ai *EnemyAI) Update(enemyX, enemyY, playerX, playerY, hpPercent float64) AIState {
+func (ai *EnemyAI) Update(enemyX, enemyY, playerX, playerY, hpPercent float64) (AIState, error) {
+	if ai.DetectionDist <= 0 || ai.AttackDist <= 0 || ai.AttackDist > ai.DetectionDist {
+		return ai.State, fmt.Errorf("ai: invalid distance thresholds (attack=%.1f, detect=%.1f)", ai.AttackDist, ai.DetectionDist)
+	}
+
 	dist := math.Hypot(playerX-enemyX, playerY-enemyY)
 
-	// Flee if HP critically low (< 20%)
 	if hpPercent < 0.20 {
 		ai.State = StateFlee
-		return ai.State
+		return ai.State, nil
 	}
 
 	switch ai.State {
@@ -194,9 +220,13 @@ func (ai *EnemyAI) Update(enemyX, enemyY, playerX, playerY, hpPercent float64) A
 			ai.State = StateChase
 		}
 	case StateFlee:
-		// Flee logic
+		if hpPercent >= 0.50 {
+			ai.State = StatePatrol
+		}
+	default:
+		return ai.State, fmt.Errorf("ai: unknown AIState %d", ai.State)
 	}
 
-	return ai.State
+	return ai.State, nil
 }
 ```

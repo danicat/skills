@@ -12,20 +12,20 @@ metadata:
   category: media
   tags: "music, audio, generative-ai, sound"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.3.1"
   catalog: https://skills.danicat.dev
 ---
 
 # Lyria Music Generation Skill
 
-Generate high-fidelity **44.1 kHz stereo audio**, full songs with structured lyrics, instrumental soundtracks, and thematic compositions from text prompts or visual reference images using Google's **Lyria** foundation models (`lyria-3.5` and `lyria-3-clip-preview`).
+Generate high-fidelity **44.1 kHz stereo audio**, full songs with structured lyrics, instrumental soundtracks, and thematic compositions from text prompts or visual reference images using Google's **Lyria** foundation models (`lyria-3.5` / `lyria-3-pro-preview` and `lyria-3-clip` / `lyria-3-clip-preview`).
 
 ---
 
 ## Available scripts
 
 - `scripts/lyria.py`: CLI tool for text-to-music and image-to-music generation, lyric export, and audio format conversion.
-- `scripts/test_lyria.py`: Test suite verifying Lyria argument parsing and multimodal input limit enforcement.
+- `scripts/test_lyria.py`: Test suite verifying Lyria argument parsing, model aliases, fail-fast credential checks, and multimodal input limit enforcement.
 
 ---
 
@@ -40,15 +40,15 @@ Activate this skill whenever the user asks to:
 
 ## Model Selection & Comparison Matrix
 
-| Model | Model ID | CLI Name | Primary Use Case | Duration | Audio Format | Reference Guide |
+| Model | Model ID | CLI Name / Aliases | Primary Use Case | Duration | Audio Format | Reference Guide |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Lyria 3.5** | `lyria-3.5` | `lyria-3.5` / `3.5` | Flagship: full songs, expressive vocals, multi-section arrangements | Controllable (up to ~3m) | MP3, WAV | [lyria-3-5.md](references/lyria-3-5.md) |
-| **Lyria 3 Clip** | `lyria-3-clip-preview` | `clip` | Short clips, loops, previews, rapid style testing | Exactly 30s | MP3, WAV | [lyria-3-clip.md](references/lyria-3-clip.md) |
-| **Lyria 3 Pro** | `lyria-3-pro-preview` | `pro` | Legacy preview: multi-section arrangements, film scoring | Up to 184s | MP3, WAV | [lyria-3-pro.md](references/lyria-3-pro.md) |
+| **Lyria 3.5** | `lyria-3.5` (`lyria-3-pro-preview`) | `lyria-3.5`, `3.5`, `pro`, `lyria-pro`, `lyria-3-pro-preview` | Flagship: full songs, expressive vocals, multi-section arrangements, film/game scoring | Controllable (up to ~3m / 184s) | MP3, WAV | [lyria-3-5.md](references/lyria-3-5.md), [lyria-3-pro.md](references/lyria-3-pro.md) |
+| **Lyria 3 Clip** | `lyria-3-clip-preview` | `lyria-3-clip`, `clip`, `lyria-clip`, `lyria-3-clip-preview` | Short clips, seamless 30s loops, previews, rapid style testing | Exactly 30s | MP3, WAV | [lyria-3-clip.md](references/lyria-3-clip.md) |
 
-### Model Selection Guide
-- **Full Song Production**: Use **Lyria 3.5** (`lyria-3.5`, default) for complete tracks with timestamped transitions (`[0:00 - 0:15] Intro...`), multi-verse vocal delivery, or cinematic thematic development.
-- **Rapid Prototyping & Loops**: Start with **Lyria 3 Clip** (`clip`) to iterate quickly on genre combinations, tempos, and 30-second seamless loops.
+### Model Selection & Fail-Fast Policy
+- **Full Song Production**: Use **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`, default) for complete tracks with timestamped transitions (`[0:00 - 0:15] Intro...`), multi-verse vocal delivery, or cinematic thematic development.
+- **Rapid Prototyping & Loops**: Start with **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`) to iterate quickly on genre combinations, tempos, and 30-second loops.
+- **Zero Silent Fallbacks**: `scripts/lyria.py` never silently falls back between models, API endpoints, or authentication providers. Missing `GEMINI_API_KEY` (when Vertex AI is not explicitly requested via `--project` or `GOOGLE_GENAI_USE_VERTEXAI=true`), invalid model names, >10 reference images, or empty audio responses fail immediately with descriptive `stderr` diagnostics and a non-zero exit code.
 
 ---
 
@@ -56,9 +56,9 @@ Activate this skill whenever the user asks to:
 
 Consult dedicated reference cards in `references/` for detailed audio parameters, timing controls, and API schemas:
 
-- **[references/lyria-3-5.md](references/lyria-3-5.md)**: Flagship specifications for full-length songs, rich vocal synthesis, and arrangements.
-- **[references/lyria-3-clip.md](references/lyria-3-clip.md)**: Specifications for 30-second clips, loops, and rapid prototyping.
-- **[references/lyria-3-pro.md](references/lyria-3-pro.md)**: Specifications for legacy full-length preview model, timestamp controls, and scoring.
+- **[references/lyria-3-5.md](references/lyria-3-5.md)**: Flagship specifications for full-length songs, rich vocal synthesis, and arrangements (`lyria-3.5`).
+- **[references/lyria-3-clip.md](references/lyria-3-clip.md)**: Specifications for 30-second clips, loops, and rapid prototyping (`lyria-3-clip-preview`).
+- **[references/lyria-3-pro.md](references/lyria-3-pro.md)**: Specifications for full-length preview endpoint (`lyria-3-pro-preview`), timestamp controls, and scoring.
 - **[references/README.md](references/README.md)**: Musical composition prompt reference and index.
 
 ---
@@ -81,7 +81,7 @@ uv run scripts/lyria.py \
 uv run scripts/lyria.py \
   -p "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only." \
   -f "chiptune.mp3" \
-  -m "clip"
+  -m "lyria-3-clip"
 
 # Multimodal Image-to-Music (compose music inspired by an image)
 uv run scripts/lyria.py \
@@ -94,7 +94,7 @@ uv run scripts/lyria.py \
 #### CLI Argument Reference
 - `-p`, `--prompt`: Text prompt describing style, genre, instruments, BPM, and structure (required).
 - `-f`, `--filename`: Output audio file path (default: `music.mp3`).
-- `-m`, `--model`: `lyria-3.5` / `3.5` (default), `clip` / `lyria-3-clip-preview`, or `pro` / `lyria-3-pro-preview`.
+- `-m`, `--model`: `lyria-3.5` / `3.5` (default), `lyria-3-clip` / `clip` / `lyria-3-clip-preview`, or `pro` / `lyria-3-pro-preview`.
 - `-i`, `--input-image`: Path to input image(s) for visual mood inspiration (up to 10).
 - `--format`: Audio container format (`mp3` or `wav`).
 - `--lyrics-file`: Optional path to write generated lyric transcription / structure text.

@@ -17,7 +17,7 @@ Google Cloud Run is the primary target for hosting Ebitengine WASM applications 
 
 ## 2. Server Implementation (`cmd/server/main.go`)
 
-Cloud Run injects a `PORT` environment variable (default `8080`). The Go server binds to `:$PORT` and serves embedded public web assets alongside REST API endpoints:
+Cloud Run injects a `PORT` environment variable (default `8080`). The Go server binds to `:$PORT` and serves embedded public web assets alongside fail-fast REST API endpoints:
 
 ```go
 package main
@@ -49,12 +49,14 @@ type HighScoreStore struct {
 }
 
 func main() {
-	store := &HighScoreStore{}
+	store := &HighScoreStore{
+		scores: make([]ScoreEntry, 0, 64),
+	}
 
 	// Sub-filesystem for embedded public WASM web assets
 	staticFS, err := fs.Sub(publicFS, "public")
 	if err != nil {
-		log.Fatalf("Failed to initialize static filesystem: %v", err)
+		log.Fatalf("server: initialize static filesystem: %v", err)
 	}
 
 	http.Handle("/", http.FileServer(http.FS(staticFS)))
@@ -65,16 +67,27 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			store.mu.RLock()
-			defer store.mu.RUnlock()
-			json.NewEncoder(w).Encode(store.scores)
+			payload, err := json.Marshal(store.scores)
+			store.mu.RUnlock()
+			if err != nil {
+				http.Error(w, fmt.Sprintf("server: marshal scores: %v", err), http.StatusInternalServerError)
+				return
+			}
+			if _, err := w.Write(payload); err != nil {
+				log.Printf("server: write scores response: %v", err)
+			}
 
 		case http.MethodPost:
 			var entry ScoreEntry
 			if err := json.NewDecoder(r.Body).Decode(&entry); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, fmt.Sprintf("server: invalid score JSON: %v", err), http.StatusBadRequest)
 				return
 			}
-			entry.Timestamp = time.Now()
+			if entry.PlayerName == "" || entry.Score < 0 {
+				http.Error(w, "server: player_name required and score must be >= 0", http.StatusBadRequest)
+				return
+			}
+			entry.Timestamp = time.Now().UTC()
 
 			store.mu.Lock()
 			store.scores = append(store.scores, entry)
@@ -86,7 +99,6 @@ func main() {
 		}
 	})
 
-	// Cloud Run dynamic PORT binding
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -94,7 +106,7 @@ func main() {
 
 	log.Printf("Server starting on port %s...", port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
-		log.Fatal(err)
+		log.Fatalf("server: ListenAndServe failed: %v", err)
 	}
 }
 ```

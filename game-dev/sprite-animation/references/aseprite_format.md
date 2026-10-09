@@ -137,29 +137,65 @@ Header MUST specify `Channels: RGBA`, and each palette entry contains `Red Green
 
 ---
 
-## 7. Recommended Ebitengine Library: `goaseprite`
+## 7. Zero-Allocation `goaseprite` Integration Pattern
 
-For Ebitengine applications, use [SolarLune/goaseprite](https://github.com/SolarLune/goaseprite) to load exported Aseprite JSON manifests and sprite sheet images seamlessly:
+When using [SolarLune/goaseprite](https://github.com/SolarLune/goaseprite) with Ebitengine, pre-slice all frame sub-images at initialization time and reuse a persistent `ebiten.DrawImageOptions` field so `Draw()` performs zero heap allocations:
 
-```bash
-go get github.com/SolarLune/goaseprite
-```
-
-Example integration:
 ```go
-import "github.com/SolarLune/goaseprite"
+package entity
 
-// Load Aseprite JSON definition
-anim := goaseprite.New("assets/player.json")
+import (
+	"fmt"
+	"image"
 
-// Update animation state in Ebiten Update(dt)
-anim.Update(float32(dt))
+	"github.com/SolarLune/goaseprite"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
-// Play specific animation tag
-anim.Play("run")
+type AsepriteActor struct {
+	File   *goaseprite.File
+	Frames []*ebiten.Image
+	X, Y   float64
+	drawOp ebiten.DrawImageOptions
+}
 
-// Draw current animation frame in Ebiten Draw()
-op := &ebiten.DrawImageOptions{}
-op.GeoM.Translate(x, y)
-screen.DrawImage(anim.Image.SubImage(anim.CurrentFrameBounds()).(*ebiten.Image), op)
+func NewAsepriteActor(jsonBytes []byte, atlas *ebiten.Image) (*AsepriteActor, error) {
+	if len(jsonBytes) == 0 {
+		return nil, fmt.Errorf("sprite-animation: empty Aseprite JSON manifest")
+	}
+	if atlas == nil {
+		return nil, fmt.Errorf("sprite-animation: nil atlas image")
+	}
+	file := goaseprite.Read(jsonBytes)
+	if file == nil || len(file.Frames) == 0 {
+		return nil, fmt.Errorf("sprite-animation: failed to parse Aseprite frames from JSON")
+	}
+
+	// Pre-slice every frame at load time (zero SubImage calls in Draw)
+	frames := make([]*ebiten.Image, len(file.Frames))
+	for i, f := range file.Frames {
+		rect := image.Rect(f.X, f.Y, f.X+f.Width, f.Y+f.Height)
+		frames[i] = atlas.SubImage(rect).(*ebiten.Image)
+	}
+
+	return &AsepriteActor{
+		File:   file,
+		Frames: frames,
+	}, nil
+}
+
+func (a *AsepriteActor) Update(dt float32) {
+	a.File.Update(dt)
+}
+
+func (a *AsepriteActor) Draw(screen *ebiten.Image) error {
+	idx := a.File.CurrentFrame
+	if idx < 0 || idx >= len(a.Frames) {
+		return fmt.Errorf("sprite-animation: frame index %d out of bounds [0, %d)", idx, len(a.Frames))
+	}
+	a.drawOp.GeoM.Reset()
+	a.drawOp.GeoM.Translate(a.X, a.Y)
+	screen.DrawImage(a.Frames[idx], &a.drawOp)
+	return nil
+}
 ```

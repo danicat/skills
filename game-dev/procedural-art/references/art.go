@@ -15,6 +15,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -24,55 +25,174 @@ import (
 )
 
 // ============================================================================
-// 1. COLOR PALETTES & TONAL CONSISTENCY
+// 1. PREMULTIPLIED ALPHA & 4-STEP MATERIAL COLOR RAMPS
 // ============================================================================
 
-// Palette represents a curated set of colors for consistent game art styling.
+// MaterialRamp defines a 4-step Retro-HD shading ramp:
+// [0] Deep Shadow (cool shift), [1] Base Tone, [2] Light Highlight (warm shift), [3] High Specular.
+type MaterialRamp [4]color.RGBA
+
+// Palette represents a curated set of premultiplied RGBA colors and 4-step material ramps.
 type Palette struct {
 	Name    string
+	Outline color.RGBA
 	Colors  []color.RGBA
-	Ramps   map[string][]color.RGBA
+	Ramps   map[string]MaterialRamp
 }
 
-// NewGenesisPalette returns a 16-bit retro arcade color palette.
+// PremultiplyRGBA converts straight (non-premultiplied) 8-bit RGB + Alpha into a valid
+// alpha-premultiplied color.RGBA where R, G, B <= A.
+// In Go's image/color and Ebitengine, image.RGBA pixels MUST be alpha-premultiplied.
+func PremultiplyRGBA(r, g, b, a uint8) color.RGBA {
+	alpha := uint16(a)
+	return color.RGBA{
+		R: uint8((uint16(r)*alpha + 127) / 255),
+		G: uint8((uint16(g)*alpha + 127) / 255),
+		B: uint8((uint16(b)*alpha + 127) / 255),
+		A: a,
+	}
+}
+
+// ValidatePremultipliedRGBA fails fast if a color.RGBA violates the R, G, B <= A invariant.
+func ValidatePremultipliedRGBA(c color.RGBA) error {
+	if c.R > c.A || c.G > c.A || c.B > c.A {
+		return fmt.Errorf("procedural-art: invalid premultiplied color.RGBA{%d, %d, %d, %d}: RGB channels must not exceed A (%d)", c.R, c.G, c.B, c.A, c.A)
+	}
+	return nil
+}
+
+// SampleMaterialRamp selects one of the 4 material shading steps based on normalized illumination
+// intensity in [0.0, 1.0] (0 = Deep Shadow, 1 = High Specular).
+func SampleMaterialRamp(ramp MaterialRamp, illumination float64) color.RGBA {
+	switch {
+	case illumination < 0.25:
+		return ramp[0] // Step 0: Deep Shadow
+	case illumination < 0.65:
+		return ramp[1] // Step 1: Base Tone
+	case illumination < 0.90:
+		return ramp[2] // Step 2: Light Highlight
+	default:
+		return ramp[3] // Step 3: High Specular
+	}
+}
+
+// NewGenesisPalette returns a 32-bit Retro-HD palette with 4-step material ramps.
 func NewGenesisPalette() Palette {
+	colors := []color.RGBA{
+		{15, 12, 28, 255},    // 0: Dark Obsidian Outline
+		{48, 44, 72, 255},    // 1: Deep Shadow
+		{85, 78, 115, 255},   // 2: Slate Grey
+		{140, 130, 180, 255}, // 3: Light Slate
+		{215, 210, 240, 255}, // 4: High Highlight
+		{180, 35, 45, 255},   // 5: Crimson Red
+		{240, 85, 40, 255},   // 6: Fiery Orange
+		{255, 195, 50, 255},  // 7: Golden Yellow
+		{35, 120, 60, 255},   // 8: Deep Forest Green
+		{75, 190, 95, 255},   // 9: Bright Emerald Green
+		{30, 80, 160, 255},   // 10: Deep Royal Blue
+		{70, 160, 230, 255},  // 11: Sky Blue
+		{180, 235, 255, 255}, // 12: Ice White
+		{110, 65, 35, 255},   // 13: Dark Leather Brown
+		{170, 115, 60, 255},  // 14: Warm Wood Tan
+		{240, 220, 180, 255}, // 15: Soft Flesh Tan
+	}
+
 	return Palette{
-		Name: "Retro Genesis 16",
-		Colors: []color.RGBA{
-			{15, 12, 28, 255},   // 0: Dark Obsidian Outline
-			{48, 44, 72, 255},   // 1: Deep Shadow
-			{85, 78, 115, 255},  // 2: Slate Grey
-			{140, 130, 180, 255},// 3: Light Slate
-			{215, 210, 240, 255},// 4: High Highlight
-			{180, 35, 45, 255},  // 5: Crimson Red
-			{240, 85, 40, 255},  // 6: Fiery Orange
-			{255, 195, 50, 255}, // 7: Golden Yellow
-			{35, 120, 60, 255},  // 8: Deep Forest Green
-			{75, 190, 95, 255},  // 9: Bright Emerald Green
-			{30, 80, 160, 255},  // 10: Deep Royal Blue
-			{70, 160, 230, 255}, // 11: Sky Blue
-			{180, 235, 255, 255},// 12: Ice White
-			{110, 65, 35, 255},  // 13: Dark Leather Brown
-			{170, 115, 60, 255}, // 14: Warm Wood Tan
-			{240, 220, 180, 255},// 15: Soft Flesh Tan
+		Name:    "Retro Genesis 16",
+		Outline: colors[0],
+		Colors:  colors,
+		Ramps: map[string]MaterialRamp{
+			"steel": {
+				colors[1], // Deep Shadow
+				colors[2], // Base Tone
+				colors[3], // Light Highlight
+				colors[4], // High Specular
+			},
+			"crimson": {
+				{95, 20, 45, 255}, // Cool purple-red shadow
+				colors[5],         // Base Crimson
+				colors[6],         // Warm fiery highlight
+				colors[7],         // Specular gold edge
+			},
+			"flesh": {
+				colors[13],           // Deep warm shadow
+				colors[14],           // Mid tone
+				colors[15],           // Light highlight
+				{255, 245, 225, 255}, // Specular brow/nose
+			},
 		},
 	}
 }
 
-// LerpColor linearly interpolates between two RGBA colors.
+// LerpColor linearly interpolates between two premultiplied RGBA colors while preserving R, G, B <= A.
 func LerpColor(c1, c2 color.RGBA, t float64) color.RGBA {
-	if t <= 0 { return c1 }
-	if t >= 1 { return c2 }
-	return color.RGBA{
-		R: uint8(float64(c1.R) + t*(float64(c2.R)-float64(c1.R))),
-		G: uint8(float64(c1.G) + t*(float64(c2.G)-float64(c1.G))),
-		B: uint8(float64(c1.B) + t*(float64(c2.B)-float64(c1.B))),
-		A: uint8(float64(c1.A) + t*(float64(c2.A)-float64(c1.A))),
+	if t <= 0 {
+		return c1
 	}
+	if t >= 1 {
+		return c2
+	}
+	r := uint8(float64(c1.R) + t*(float64(c2.R)-float64(c1.R)))
+	g := uint8(float64(c1.G) + t*(float64(c2.G)-float64(c1.G)))
+	b := uint8(float64(c1.B) + t*(float64(c2.B)-float64(c1.B)))
+	a := uint8(float64(c1.A) + t*(float64(c2.A)-float64(c1.A)))
+	if r > a {
+		r = a
+	}
+	if g > a {
+		g = a
+	}
+	if b > a {
+		b = a
+	}
+	return color.RGBA{R: r, G: g, B: b, A: a}
 }
 
 // ============================================================================
-// 2. EASING & INTERPOLATION MATHEMATICS
+// 2. 2D SIGNED DISTANCE FIELD (SDF) PRIMITIVES
+// ============================================================================
+
+// SDFCircle returns the signed distance from point (px, py) to a circle at (cx, cy) with radius r.
+// Negative values are inside the circle; positive values are outside.
+func SDFCircle(px, py, cx, cy, radius float64) float64 {
+	return math.Hypot(px-cx, py-cy) - radius
+}
+
+// SDFBox returns the signed distance from (px, py) to a rounded box centered at (cx, cy)
+// with half-extents (halfW, halfH) and corner rounding radius r.
+func SDFBox(px, py, cx, cy, halfW, halfH, cornerRadius float64) float64 {
+	dx := math.Abs(px-cx) - (halfW - cornerRadius)
+	dy := math.Abs(py-cy) - (halfH - cornerRadius)
+	outDist := math.Hypot(math.Max(dx, 0), math.Max(dy, 0))
+	inDist := math.Min(math.Max(dx, dy), 0)
+	return outDist + inDist - cornerRadius
+}
+
+// SDFCapsule returns the signed distance from (px, py) to a line segment capsule from (ax, ay) to (bx, by)
+// with thickness radius r.
+func SDFCapsule(px, py, ax, ay, bx, by, radius float64) float64 {
+	pax, pay := px-ax, py-ay
+	bax, bay := bx-ax, by-ay
+	lenSq := bax*bax + bay*bay
+	var h float64
+	if lenSq > 0 {
+		h = math.Max(0, math.Min(1, (pax*bax+pay*bay)/lenSq))
+	}
+	return math.Hypot(pax-bax*h, pay-bay*h) - radius
+}
+
+// SDFSmoothMin computes a polynomial smooth minimum between two SDF distances d1 and d2
+// with smoothing factor k > 0 for organic metaball and limb blending.
+func SDFSmoothMin(d1, d2, k float64) float64 {
+	if k <= 0 {
+		return math.Min(d1, d2)
+	}
+	h := math.Max(k-math.Abs(d1-d2), 0.0) / k
+	return math.Min(d1, d2) - h*h*k*0.25
+}
+
+// ============================================================================
+// 3. EASING & INTERPOLATION MATHEMATICS
 // ============================================================================
 
 // EaseLinear returns standard linear interpolation.
@@ -94,14 +214,18 @@ func EaseInOutCubic(t float64) float64 {
 
 // EaseElasticOut returns an elastic spring overshoot effect.
 func EaseElasticOut(t float64) float64 {
-	if t <= 0 { return 0 }
-	if t >= 1 { return 1 }
+	if t <= 0 {
+		return 0
+	}
+	if t >= 1 {
+		return 1
+	}
 	p := 0.3
 	return math.Pow(2.0, -10.0*t)*math.Sin((t-p/4.0)*(2.0*math.Pi)/p) + 1.0
 }
 
 // ============================================================================
-// 3. TRANSFORMATION MATRIX & ORDER OF OPERATIONS PIPELINE
+// 4. TRANSFORMATION MATRIX & ORDER OF OPERATIONS PIPELINE
 // ============================================================================
 
 // Transform2D demonstrates correct 2D matrix transformation ordering.
@@ -115,7 +239,7 @@ type Transform2D struct {
 }
 
 // GetGeoM computes the exact transformation matrix.
-// CRITICAL MATHEMETICAL RULE:
+// CRITICAL MATHEMATICAL RULE:
 // Order of matrix operations MUST be:
 // 1. Translate to Pivot (-OriginX, -OriginY)
 // 2. Scale (ScaleX, ScaleY)
@@ -140,7 +264,7 @@ func (t Transform2D) GetGeoM() ebiten.GeoM {
 }
 
 // ============================================================================
-// 4. PARTICLE SYSTEM & VISUAL EFFECTS
+// 5. ZERO-ALLOCATION PARTICLE SYSTEM & VISUAL EFFECTS
 // ============================================================================
 
 // Particle represents a single dynamic visual effect element.
@@ -158,27 +282,30 @@ type Particle struct {
 	Active     bool
 }
 
-// ParticleSystem manages a pre-allocated pool of particles to prevent GC frame spikes.
+// ParticleSystem manages a pre-allocated pool of particles and a reusable DrawImageOptions
+// struct to guarantee zero heap allocations inside Draw().
 type ParticleSystem struct {
 	pool    []Particle
 	texture *ebiten.Image
+	drawOp  ebiten.DrawImageOptions
 }
 
-// NewParticleSystem creates a particle system with a pre-allocated pool.
+// NewParticleSystem creates a particle system with a pre-allocated pool and premultiplied glow texture.
 func NewParticleSystem(maxParticles int) *ParticleSystem {
+	if maxParticles <= 0 {
+		panic("procedural-art: maxParticles must be > 0")
+	}
 	ps := &ParticleSystem{
 		pool: make([]Particle, maxParticles),
 	}
-	// Create a procedural soft radial glow particle texture
+	// Create a procedural soft radial glow particle texture using SDFCircle + PremultiplyRGBA
 	img := image.NewRGBA(image.Rect(0, 0, 16, 16))
 	for y := 0; y < 16; y++ {
 		for x := 0; x < 16; x++ {
-			dx := float64(x - 8)
-			dy := float64(y - 8)
-			dist := math.Sqrt(dx*dx + dy*dy)
-			if dist < 8.0 {
-				alpha := uint8((1.0 - dist/8.0) * 255.0)
-				img.Set(x, y, color.RGBA{255, 255, 255, alpha})
+			d := SDFCircle(float64(x)+0.5, float64(y)+0.5, 8.0, 8.0, 8.0)
+			if d < 0 {
+				alpha := uint8(math.Min(255.0, math.Max(0.0, (-d/8.0)*255.0)))
+				img.SetRGBA(x, y, PremultiplyRGBA(255, 255, 255, alpha))
 			}
 		}
 	}
@@ -186,7 +313,7 @@ func NewParticleSystem(maxParticles int) *ParticleSystem {
 	return ps
 }
 
-// EmitExplosion spawns an explosive burst of particles.
+// EmitExplosion spawns an explosive burst of particles using premultiplied RGBA endpoints.
 func (ps *ParticleSystem) EmitExplosion(x, y float64, count int) {
 	spawned := 0
 	for i := range ps.pool {
@@ -205,8 +332,8 @@ func (ps *ParticleSystem) EmitExplosion(x, y float64, count int) {
 			p.Age = 0
 			p.StartSize = 1.2 + rand.Float64()*0.8
 			p.EndSize = 0.1
-			p.StartColor = color.RGBA{255, 200, 50, 255}
-			p.EndColor = color.RGBA{200, 30, 10, 0}
+			p.StartColor = PremultiplyRGBA(255, 200, 50, 255)
+			p.EndColor = PremultiplyRGBA(200, 30, 10, 0) // Valid premultiplied {0, 0, 0, 0}
 			p.Additive = true
 
 			spawned++
@@ -217,7 +344,7 @@ func (ps *ParticleSystem) EmitExplosion(x, y float64, count int) {
 	}
 }
 
-// Update updates all active particles by dt seconds.
+// Update advances all active particles by dt seconds.
 func (ps *ParticleSystem) Update(dt float64) {
 	for i := range ps.pool {
 		p := &ps.pool[i]
@@ -235,7 +362,7 @@ func (ps *ParticleSystem) Update(dt float64) {
 	}
 }
 
-// Draw renders all active particles onto the target image.
+// Draw renders all active particles onto the target image reusing ps.drawOp (zero heap allocations).
 func (ps *ParticleSystem) Draw(screen *ebiten.Image) {
 	for i := range ps.pool {
 		p := &ps.pool[i]
@@ -246,109 +373,108 @@ func (ps *ParticleSystem) Draw(screen *ebiten.Image) {
 		size := p.StartSize + progress*(p.EndSize-p.StartSize)
 		curColor := LerpColor(p.StartColor, p.EndColor, progress)
 
-		var op ebiten.DrawImageOptions
-		op.GeoM.Translate(-8, -8) // Pivot center
-		op.GeoM.Scale(size, size)
-		op.GeoM.Translate(p.X, p.Y)
+		ps.drawOp.GeoM.Reset()
+		ps.drawOp.GeoM.Translate(-8, -8) // Pivot center
+		ps.drawOp.GeoM.Scale(size, size)
+		ps.drawOp.GeoM.Translate(p.X, p.Y)
 
-		op.ColorScale.Scale(
-			float32(curColor.R)/255.0,
-			float32(curColor.G)/255.0,
-			float32(curColor.B)/255.0,
-			float32(curColor.A)/255.0,
-		)
+		ps.drawOp.ColorScale.Reset()
+		ps.drawOp.ColorScale.ScaleWithColor(curColor)
 
 		if p.Additive {
-			op.Blend = ebiten.BlendLighter
+			ps.drawOp.Blend = ebiten.BlendLighter
+		} else {
+			ps.drawOp.Blend = ebiten.BlendSourceOver
 		}
 
-		screen.DrawImage(ps.texture, &op)
+		screen.DrawImage(ps.texture, &ps.drawOp)
 	}
 }
 
 // ============================================================================
-// 5. DIRECT BITMAP PIXEL CRAFTING & RASTERIZATION
+// 6. DIRECT BITMAP PIXEL CRAFTING WITH SDFs & 4-STEP MATERIAL RAMPS
 // ============================================================================
 
-// GenerateCharacterSprite crafts a detailed 32x32 character frame in memory.
-func GenerateCharacterSprite(frameIndex int, pal Palette) *ebiten.Image {
+// GenerateCharacterSprite crafts a 32x32 character frame in memory using SDF primitives
+// and 4-step material ramp shading.
+func GenerateCharacterSprite(frameIndex int, pal Palette) (*ebiten.Image, error) {
+	crimsonRamp, ok := pal.Ramps["crimson"]
+	if !ok {
+		return nil, fmt.Errorf("procedural-art: palette %q missing required 'crimson' material ramp", pal.Name)
+	}
+	fleshRamp, ok := pal.Ramps["flesh"]
+	if !ok {
+		return nil, fmt.Errorf("procedural-art: palette %q missing required 'flesh' material ramp", pal.Name)
+	}
+	steelRamp, ok := pal.Ramps["steel"]
+	if !ok {
+		return nil, fmt.Errorf("procedural-art: palette %q missing required 'steel' material ramp", pal.Name)
+	}
+
 	img := image.NewRGBA(image.Rect(0, 0, 32, 32))
+	bobY := math.Sin(float64(frameIndex)*math.Pi/4.0) * 1.5
 
-	outlineCol := pal.Colors[0]
-	clothCol := pal.Colors[5]  // Crimson
-	shadowCol := pal.Colors[1]
-	lightCol := pal.Colors[6]  // Orange
-	fleshCol := pal.Colors[15]
+	// Directional light source vector (top-right-front)
+	const lightX, lightY = 0.6, -0.8
 
-	// Bobbing animation offset
-	bobY := int(math.Sin(float64(frameIndex)*math.Pi/4.0) * 1.5)
+	for y := 0; y < 32; y++ {
+		for x := 0; x < 32; x++ {
+			px, py := float64(x)+0.5, float64(y)+0.5
 
-	// Draw Torso Armor
-	for y := 12; y < 24; y++ {
-		for x := 10; x < 22; x++ {
-			sy := y + bobY
-			if sy < 0 || sy >= 32 { continue }
+			// 1. Torso + Shoulder Pauldrons blended smoothly via SDFBox & SDFCapsule & SDFSmoothMin
+			torsoDist := SDFBox(px, py, 16.0, 18.0+bobY, 5.5, 6.0, 2.0)
+			shouldersDist := SDFCapsule(px, py, 10.0, 14.0+bobY, 22.0, 14.0+bobY, 2.2)
+			bodyDist := SDFSmoothMin(torsoDist, shouldersDist, 1.5)
 
-			// 2D Signed Distance Field (SDF) Rounded Box check
-			dx := float64(x - 16)
-			dy := float64(sy - 18)
-			if (dx*dx)/25.0+(dy*dy)/36.0 <= 1.0 {
-				c := clothCol
-				if dx < -2 {
-					c = shadowCol
-				} else if dx > 2 {
-					c = lightCol
+			if bodyDist <= 0 {
+				nx := (px - 16.0) / 6.0
+				ny := (py - (18.0 + bobY)) / 6.0
+				illum := math.Max(0.0, math.Min(1.0, 0.5+0.5*(nx*lightX+ny*lightY)))
+				if py < 15.0+bobY {
+					img.SetRGBA(x, y, SampleMaterialRamp(steelRamp, illum))
+				} else {
+					img.SetRGBA(x, y, SampleMaterialRamp(crimsonRamp, illum))
 				}
-				img.Set(x, sy, c)
+			}
+
+			// 2. Head sculpted via SDFCircle + 4-step flesh ramp
+			headCY := 9.0 + bobY
+			headDist := SDFCircle(px, py, 16.0, headCY, 4.2)
+			if headDist <= 0 {
+				nx := (px - 16.0) / 4.2
+				ny := (py - headCY) / 4.2
+				illum := math.Max(0.0, math.Min(1.0, 0.55+0.45*(nx*lightX+ny*lightY)))
+				img.SetRGBA(x, y, SampleMaterialRamp(fleshRamp, illum))
 			}
 		}
 	}
 
-	// Draw Head
-	headY := 8 + bobY
-	for y := headY - 4; y <= headY+4; y++ {
-		for x := 12; x <= 20; x++ {
-			dx := float64(x - 16)
-			dy := float64(y - headY)
-			if dx*dx+dy*dy <= 16.0 {
-				img.Set(x, y, fleshCol)
-			}
-		}
-	}
-
-	// Apply dark pixel outline
-	ApplyPixelOutline(img, outlineCol)
-
-	return ebiten.NewImageFromImage(img)
+	ApplyPixelOutline(img, pal.Outline)
+	return ebiten.NewImageFromImage(img), nil
 }
 
 // ApplyPixelOutline iterates over pixels and applies a 1px dark border around solid pixels.
 func ApplyPixelOutline(img *image.RGBA, borderCol color.RGBA) {
 	bounds := img.Bounds()
 	w, h := bounds.Dx(), bounds.Dy()
-	solid := make([][]bool, w)
-	for x := 0; x < w; x++ {
-		solid[x] = make([]bool, h)
-		for y := 0; y < h; y++ {
-			_, _, _, a := img.At(x, y).RGBA()
-			if a > 0 {
-				solid[x][y] = true
+	solid := make([]bool, w*h)
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			if img.RGBAAt(x, y).A > 0 {
+				solid[y*w+x] = true
 			}
 		}
 	}
 
-	for x := 0; x < w; x++ {
-		for y := 0; y < h; y++ {
-			if !solid[x][y] {
-				// Check 4-neighbor adjacency
-				hasNeighbor := false
-				if x > 0 && solid[x-1][y] { hasNeighbor = true }
-				if x < w-1 && solid[x+1][y] { hasNeighbor = true }
-				if y > 0 && solid[x][y-1] { hasNeighbor = true }
-				if y < h-1 && solid[x][y+1] { hasNeighbor = true }
-
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			if !solid[y*w+x] {
+				hasNeighbor := (x > 0 && solid[y*w+(x-1)]) ||
+					(x < w-1 && solid[y*w+(x+1)]) ||
+					(y > 0 && solid[(y-1)*w+x]) ||
+					(y < h-1 && solid[(y+1)*w+x])
 				if hasNeighbor {
-					img.Set(x, y, borderCol)
+					img.SetRGBA(x, y, borderCol)
 				}
 			}
 		}

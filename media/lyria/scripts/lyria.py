@@ -33,6 +33,7 @@ from google.genai.errors import APIError
 MODEL_MAP = {
     "lyria-3.5": "lyria-3.5",
     "3.5": "lyria-3.5",
+    "lyria-3-clip": "lyria-3-clip-preview",
     "lyria-3-clip-preview": "lyria-3-clip-preview",
     "lyria-3-pro-preview": "lyria-3-pro-preview",
     "clip": "lyria-3-clip-preview",
@@ -42,20 +43,23 @@ MODEL_MAP = {
 }
 
 def init_client(args):
-    """Initialize Google GenAI Client with ADC or API Key."""
+    """Initialize Google GenAI Client with explicit API Key or Vertex AI ADC (fail-fast, no silent fallbacks)."""
     api_key = os.environ.get("GEMINI_API_KEY")
     use_vertex = (
         args.project is not None
         or os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() in ("true", "1")
-        or (not api_key and os.environ.get("GOOGLE_CLOUD_PROJECT"))
     )
 
     if use_vertex:
         try:
             credentials, default_project = google.auth.default()
-        except Exception:
-            credentials = None
-            default_project = None
+        except Exception as e:
+            print(
+                f"Error: Failed to load Google Cloud Application Default Credentials for Vertex AI: {e}\n"
+                "Run 'gcloud auth application-default login' or set GEMINI_API_KEY for the Gemini Developer API.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
         project = (
             args.project
@@ -67,27 +71,27 @@ def init_client(args):
 
         if not project:
             print(
-                "Error: Vertex AI requested or inferred, but no GCP Project ID found. "
-                "Set GEMINI_API_KEY for Google AI Studio, or configure ADC via 'gcloud auth application-default login'.",
-                file=sys.stderr
+                "Error: Vertex AI requested (--project or GOOGLE_GENAI_USE_VERTEXAI=true), but no GCP Project ID was found. "
+                "Pass --project <PROJECT_ID> or set GOOGLE_CLOUD_PROJECT.",
+                file=sys.stderr,
             )
             sys.exit(1)
 
         return genai.Client(vertexai=True, project=project, location=location, credentials=credentials)
-    else:
-        if not api_key:
-            try:
-                credentials, default_project = google.auth.default()
-                if default_project:
-                    return genai.Client(vertexai=True, project=default_project, location=args.location or "us-central1", credentials=credentials)
-            except Exception:
-                pass
 
-        return genai.Client(api_key=api_key)
+    if not api_key:
+        print(
+            "Error: GEMINI_API_KEY environment variable is not set. "
+            "Export GEMINI_API_KEY for the Gemini Developer API, or explicitly enable Vertex AI with --project / GOOGLE_GENAI_USE_VERTEXAI=true.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    return genai.Client(api_key=api_key)
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate music, soundtrack themes, and songs using Google Lyria 3 foundation models."
+        description="Generate music, soundtrack themes, and songs using Google Lyria foundation models."
     )
     parser.add_argument("-p", "--prompt", required=True, help="Text prompt describing the music to generate")
     parser.add_argument("-f", "--filename", default="music.mp3", help="Output audio filename (default: music.mp3)")
@@ -95,7 +99,7 @@ def main():
         "-m", "--model",
         choices=list(MODEL_MAP.keys()),
         default="lyria-3.5",
-        help="Model selection ('lyria-3.5' / '3.5', 'clip' / 'lyria-3-clip-preview', or 'pro' / 'lyria-3-pro-preview', default: lyria-3.5)"
+        help="Model selection ('lyria-3.5' / '3.5', 'lyria-3-clip' / 'clip' / 'lyria-3-clip-preview', or 'pro' / 'lyria-3-pro-preview', default: lyria-3.5)"
     )
     parser.add_argument(
         "-i", "--input-image",

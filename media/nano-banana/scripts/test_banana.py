@@ -12,50 +12,97 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import shutil
 import subprocess
 import sys
-import os
+
+SCRIPT_PATH = os.path.join(os.path.dirname(__file__), "banana.py")
+CMD_BASE = ["uv", "run", SCRIPT_PATH] if shutil.which("uv") else [sys.executable, SCRIPT_PATH]
+
+
+def run_cli(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(CMD_BASE + list(args), capture_output=True, text=True)
+
 
 def test_banana_help():
-    script_path = os.path.join(os.path.dirname(__file__), "banana.py")
-    cmd = ["uv", "run", script_path, "--help"] if os.system("which uv > /dev/null 2>&1") == 0 else [sys.executable, script_path, "--help"]
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        assert "--prompt" in result.stdout or "-p" in result.stdout
-        assert "--aspect-ratio" in result.stdout or "-a" in result.stdout
-        assert "--resolution" in result.stdout or "-r" in result.stdout
-        assert "--thinking-level" in result.stdout
-        assert "--search" in result.stdout
-        assert "--image-search" in result.stdout
-        assert "--api" in result.stdout
-        print("Test passed: banana.py --help includes all expected flags.")
-    except Exception as e:
-        print(f"Test failed: {e}")
-        sys.exit(1)
+    result = run_cli("--help")
+    assert result.returncode == 0
+    assert "--prompt" in result.stdout or "-p" in result.stdout
+    assert "--aspect-ratio" in result.stdout or "-a" in result.stdout
+    assert "--resolution" in result.stdout or "-r" in result.stdout
+    assert "--thinking-level" in result.stdout
+    assert "--search" in result.stdout
+    assert "--image-search" in result.stdout
+    assert "--api" in result.stdout
+    assert "nano-banana-2.1" in result.stdout
+    assert "nano-banana-2-1" in result.stdout
+    assert "medium" in result.stdout
 
-def test_capability_validation():
-    script_path = os.path.join(os.path.dirname(__file__), "banana.py")
-    cmd_base = ["uv", "run", script_path] if os.system("which uv > /dev/null 2>&1") == 0 else [sys.executable, script_path]
 
-    # Test 1: Nano Banana 2 Lite rejecting 4K resolution
-    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "-r", "4K"], capture_output=True, text=True)
-    assert res.returncode != 0
-    assert "Resolution '4K' is not supported by nano-banana-2-lite" in res.stderr
-    print("Test passed: 4K rejected on nano-banana-2-lite.")
+def test_nano_banana_2_1_capabilities():
+    # Test nano-banana-2.1 (and alias nano-banana-2-1) mapping to gemini-nano-banana-2.1
+    # across 512px, 2K, 4K resolutions, 1:4 and 8:1 aspect ratios, --image-search, and --thinking-level medium
+    for alias in ("nano-banana-2.1", "nano-banana-2-1"):
+        for res, ratio in (("512px", "1:4"), ("2K", "8:1"), ("4K", "16:9")):
+            result = run_cli(
+                "-p", "test prompt",
+                "-f", "out.png",
+                "-m", alias,
+                "-r", res,
+                "-a", ratio,
+                "--image-search",
+                "--thinking-level", "medium",
+                "--dry-run",
+            )
+            assert result.returncode == 0, f"Unexpected failure for {alias} {res} {ratio}: {result.stderr}"
+            assert f"Model: gemini-nano-banana-2.1 ({alias})" in result.stdout
+            assert f"Resolution: {res} | Aspect Ratio: {ratio}" in result.stdout
 
-    # Test 2: Search grounding rejected on nano-banana-2-lite
-    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "--search"], capture_output=True, text=True)
+
+def test_capability_validation_guards():
+    # 1. Nano Banana 2 Lite rejecting 2K and 4K resolutions and 512px
+    for invalid_res in ("2K", "4K", "512px"):
+        res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "-r", invalid_res, "--dry-run")
+        assert res.returncode != 0
+        assert invalid_res in res.stderr
+
+    # 2. Search grounding and Image Search rejected on nano-banana-2-lite
+    res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "--search", "--dry-run")
     assert res.returncode != 0
     assert "Search grounding is not supported by nano-banana-2-lite" in res.stderr
-    print("Test passed: Search grounding rejected on nano-banana-2-lite.")
 
-    # Test 3: Thinking level rejected on nano-banana
-    res = subprocess.run(cmd_base + ["-p", "test", "-f", "out.png", "-m", "nano-banana", "--thinking-level", "high"], capture_output=True, text=True)
+    res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "--image-search", "--dry-run")
     assert res.returncode != 0
-    assert "Thinking mode is not supported by 'nano-banana'" in res.stderr
-    print("Test passed: Thinking level rejected on nano-banana.")
+    assert "Search grounding is not supported by nano-banana-2-lite" in res.stderr
+
+    # 3. Thinking level 'medium' rejected on nano-banana-2-lite and nano-banana-2
+    for model in ("nano-banana-2-lite", "nano-banana-2"):
+        res = run_cli("-p", "test", "-f", "out.png", "-m", model, "--thinking-level", "medium", "--dry-run")
+        assert res.returncode != 0
+        assert "Thinking level 'medium' is only supported by 'nano-banana-2.1'" in res.stderr
+
+    # 4. Extended aspect ratios (1:4, 8:1) and --image-search rejected on nano-banana-pro
+    for ratio in ("1:4", "8:1"):
+        res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-pro", "-a", ratio, "--dry-run")
+        assert res.returncode != 0
+        assert f"Aspect ratio '{ratio}' is only supported by" in res.stderr
+
+    res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-pro", "--image-search", "--dry-run")
+    assert res.returncode != 0
+    assert "Google Image Search Grounding (--image-search) is only supported by" in res.stderr
+
+
+def test_deprecated_nano_banana_v1_removed():
+    # Legacy 'nano-banana' (gemini-2.5-flash-image) must be rejected immediately
+    res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana", "--dry-run")
+    assert res.returncode != 0
+    assert "invalid choice: 'nano-banana'" in res.stderr
+
 
 if __name__ == "__main__":
     test_banana_help()
-    test_capability_validation()
-    print("All banana CLI tests passed successfully!")
+    test_nano_banana_2_1_capabilities()
+    test_capability_validation_guards()
+    test_deprecated_nano_banana_v1_removed()
+    print("All banana CLI v0.3.0 tests passed successfully!")
