@@ -10,7 +10,7 @@ description: >
   disclaimers.
 license: Apache-2.0
 metadata:
-  category: standards
+  category: coding
   tags: "google, open-source, licensing, compliance, standards, copyright"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.2"

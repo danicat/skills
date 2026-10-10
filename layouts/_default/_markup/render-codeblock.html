@@ -1,0 +1,10 @@
+{{- $lang := .Type | default "text" -}}
+<div class="code-block-card">
+  <div class="code-block-header">
+    <span class="code-lang-label">{{ $lang }}</span>
+    <button type="button" class="copy-code-btn" onclick="copySnippet(this)" title="Copy code">
+      <span class="copy-btn-icon">📋</span> <span class="copy-btn-text">Copy</span>
+    </button>
+  </div>
+  <pre class="code-pre"><code class="language-{{ $lang }}">{{ .Inner | htmlEscape | safeHTML }}</code></pre>
+</div>

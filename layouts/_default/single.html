@@ -1,0 +1,477 @@
+{{ define "main" }}
+{{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
+{{- $isCompanion := .Params.isCompanion | default false -}}
+{{- $catId := .Params.category -}}
+{{- $catName := .Params.categoryName -}}
+{{- $catEmoji := .Params.categoryEmoji -}}
+
+{{- if not $isCompanion -}}
+  {{- $skillName := .Params.skillName | default .Title -}}
+  {{- $skillId := lower $skillName -}}
+
+  {{/* Clean, lightweight top bar: Breadcrumb on left, Star / Views / Copy as Markdown / GitHub on right */}}
+  <div class="flex items-center justify-between flex-wrap gap-3 mt-4 mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-700">
+    <nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumbs">
+      <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
+      <span class="opacity-50">/</span>
+      <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
+      <span class="opacity-50">/</span>
+      <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $skillName }}</span>
+    </nav>
+
+    <div class="flex items-center flex-wrap gap-2">
+      <button type="button"
+              class="metric-pill star-btn"
+              id="detailStarBtn"
+              data-action="star"
+              aria-label="Star this skill"
+              title="Star this skill"
+              onclick="handleStarToggle(this, '{{ $catId }}', '{{ $skillId }}')">
+        <svg class="star-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span class="metric-val star-count" id="detailStarCount">0</span>
+      </button>
+
+      <div class="metric-pill view-pill" title="Total Views">
+        <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span class="metric-val view-count" id="detailViewCount">0</span>
+      </div>
+
+      <button
+        type="button"
+        onclick="copyDetailMarkdown(this, '{{ $t.ui.copyAsMarkdown }}')"
+        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-primary-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+        title="Copy full SKILL.md as Markdown">
+        <span>📋</span>
+        <span class="copy-md-label">{{ $t.ui.copyAsMarkdown }}</span>
+      </button>
+
+      <a href="{{ .Params.githubUrl }}"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="inline-flex items-center justify-center p-1.5 text-neutral-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400 transition-colors no-underline"
+         aria-label="GitHub"
+         title="View on GitHub">
+        <span class="w-4 h-4 flex items-center justify-center">{{ partial "icon.html" "github" }}</span>
+      </a>
+    </div>
+    <script type="application/json" id="detail-markdown-payload">{{ .Params.rawMarkdown | jsonify | safeJS }}</script>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
+    <main class="lg:col-span-8 min-w-0">
+      <article class="prose dark:prose-invert max-w-none skill-prose">
+        {{ .Content }}
+      </article>
+    </main>
+
+    <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+      {{/* Single-Box Compact Install Card */}}
+      <div class="danicat-card p-4 tab-container">
+        <div class="flex items-center justify-between gap-2 mb-2.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Install</span>
+          <div class="flex items-center gap-1">
+            <button type="button" class="mode-pill install-tab-btn active" onclick="switchInstallTab(this, 'detail-tab-kungfu')">kungfu</button>
+            <button type="button" class="mode-pill install-tab-btn" onclick="switchInstallTab(this, 'detail-tab-npx')">npx skills</button>
+          </div>
+        </div>
+
+        <div id="detail-tab-kungfu" class="install-panel-flat active">
+          <div class="cmd-box-row">
+            <span class="cmd-text">{{ .Params.kungfuLearnCommand }}</span>
+            <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('{{ .Params.kungfuLearnCommand }}', this)" title="Copy command">
+              {{ $t.ui.copyBtn }}
+            </button>
+          </div>
+        </div>
+
+        <div id="detail-tab-npx" class="install-panel-flat">
+          <div class="cmd-box-row">
+            <span class="cmd-text">{{ .Params.installCommand }}</span>
+            <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('{{ .Params.installCommand }}', this)" title="Copy command">
+              {{ $t.ui.copyBtn }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {{- $headings := .Fragments.Headings -}}
+      {{- if gt (len $headings) 0 -}}
+        <div class="danicat-card p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{{ $t.ui.onThisPage }}</div>
+          <ul class="space-y-1.5 text-xs list-none p-0 m-0">
+            {{- range $h1 := $headings -}}
+              {{- if $h1.ID -}}
+                <li>
+                  <a href="{{ printf "#%s" $h1.ID | safeURL }}" class="text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h1.Title | plainify }}</a>
+                </li>
+              {{- end -}}
+              {{- range $h2 := $h1.Headings -}}
+                {{- if $h2.ID -}}
+                  <li class="pl-3">
+                    <a href="{{ printf "#%s" $h2.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h2.Title | plainify }}</a>
+                  </li>
+                {{- end -}}
+                {{- range $h3 := $h2.Headings -}}
+                  {{- if $h3.ID -}}
+                    <li class="pl-6">
+                      <a href="{{ printf "#%s" $h3.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h3.Title | plainify }}</a>
+                    </li>
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          </ul>
+        </div>
+      {{- end -}}
+
+      {{- with .Params.bundledResources -}}
+        {{- if gt (len .) 0 -}}
+          <div class="danicat-card p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{{ $t.ui.bundledFiles }}</div>
+            <ul class="space-y-2 text-xs font-mono list-none p-0 m-0">
+              {{- range $r := . -}}
+                {{- $icon := "📁" -}}
+                {{- if $r.isMarkdown -}}
+                  {{- $icon = "📄" -}}
+                {{- else if strings.HasSuffix $r.name ".py" -}}
+                  {{- $icon = "🐍" -}}
+                {{- else if strings.HasSuffix $r.name ".sh" -}}
+                  {{- $icon = "📜" -}}
+                {{- else if strings.HasSuffix $r.name ".json" -}}
+                  {{- $icon = "📋" -}}
+                {{- end -}}
+                {{- $targetUrl := $r.relPath -}}
+                {{- if $r.isMarkdown -}}
+                  {{- $targetUrl = replaceRE "\\.md$" ".html" $r.relPath -}}
+                {{- end -}}
+                <li>
+                  <a href="/{{ $catId }}/{{ $.Params.folder }}/{{ $targetUrl }}" class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline break-all">
+                    <span>{{ $icon }}</span>
+                    <span>{{ $r.relPath }}</span>
+                  </a>
+                </li>
+              {{- end -}}
+            </ul>
+          </div>
+        {{- end -}}
+      {{- end -}}
+    </aside>
+  </div>
+
+{{- else -}}
+  {{- $skillName := .Params.skillName -}}
+  {{- $skillFolder := .Params.skillFolder -}}
+  {{- $relPath := .Params.relPath -}}
+
+  <div class="flex items-center justify-between flex-wrap gap-3 mt-4 mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-700">
+    <nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumbs">
+      <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
+      <span class="opacity-50">/</span>
+      <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
+      <span class="opacity-50">/</span>
+      <a href="/{{ $catId }}/{{ $skillFolder }}/" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $skillName }}</a>
+      <span class="opacity-50">/</span>
+      <span class="font-semibold text-neutral-800 dark:text-neutral-200 font-mono">{{ $relPath }}</span>
+    </nav>
+
+    <button
+      type="button"
+      onclick="copyDetailMarkdown(this, '{{ $t.ui.copyAsMarkdown }}')"
+      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-primary-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+      title="Copy reference document as Markdown">
+      <span>📋</span>
+      <span class="copy-md-label">{{ $t.ui.copyAsMarkdown }}</span>
+    </button>
+    <script type="application/json" id="detail-markdown-payload">{{ .Params.rawMarkdown | jsonify | safeJS }}</script>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
+    <main class="lg:col-span-8 min-w-0">
+      <article class="prose dark:prose-invert max-w-none skill-prose">
+        {{ .Content }}
+      </article>
+    </main>
+
+    <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+      {{- $headings := .Fragments.Headings -}}
+      {{- if gt (len $headings) 0 -}}
+        <div class="danicat-card p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{{ $t.ui.onThisPage }}</div>
+          <ul class="space-y-1.5 text-xs list-none p-0 m-0">
+            {{- range $h1 := $headings -}}
+              {{- if $h1.ID -}}
+                <li>
+                  <a href="{{ printf "#%s" $h1.ID | safeURL }}" class="text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h1.Title | plainify }}</a>
+                </li>
+              {{- end -}}
+              {{- range $h2 := $h1.Headings -}}
+                {{- if $h2.ID -}}
+                  <li class="pl-3">
+                    <a href="{{ printf "#%s" $h2.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h2.Title | plainify }}</a>
+                  </li>
+                {{- end -}}
+                {{- range $h3 := $h2.Headings -}}
+                  {{- if $h3.ID -}}
+                    <li class="pl-6">
+                      <a href="{{ printf "#%s" $h3.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h3.Title | plainify }}</a>
+                    </li>
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          </ul>
+        </div>
+      {{- end -}}
+
+      <div class="danicat-card p-5">
+        <a href="/{{ $catId }}/{{ $skillFolder }}/" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $t.ui.backToSkill }} {{ $skillName }}</a>
+      </div>
+    </aside>
+  </div>
+{{- end -}}
+
+<script>
+  function switchInstallTab(btn, targetId) {
+    var widget = btn.closest('.tab-container') || btn.closest('.install-widget');
+    if (!widget) return;
+    widget.querySelectorAll('.install-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    widget.querySelectorAll('.install-panel, .install-panel-flat').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    var target = widget.querySelector('#' + targetId);
+    if (target) target.classList.add('active');
+  }
+
+  function copyDetailMarkdown(btn, defaultLabel) {
+    var payloadEl = document.getElementById('detail-markdown-payload');
+    if (!payloadEl) return;
+    try {
+      var md = JSON.parse(payloadEl.textContent);
+      navigator.clipboard.writeText(md).then(function() {
+        var labelEl = btn.querySelector('.copy-md-label') || btn;
+        labelEl.textContent = '{{ $t.ui.copiedMarkdown }}';
+        setTimeout(function() {
+          labelEl.textContent = defaultLabel || '{{ $t.ui.copyAsMarkdown }}';
+        }, 1800);
+      });
+    } catch (e) {
+      console.error('Failed to copy markdown payload:', e);
+    }
+  }
+
+  function copySnippet(btn) {
+    var card = btn.closest('.code-block-card');
+    var pre = card ? card.querySelector('code') : null;
+    if (!pre) return;
+    navigator.clipboard.writeText(pre.innerText).then(function() {
+      var textEl = btn.querySelector('.copy-btn-text');
+      var iconEl = btn.querySelector('.copy-btn-icon');
+      var origText = textEl ? textEl.innerText : 'Copy';
+      if (textEl) textEl.innerText = 'Copied!';
+      if (iconEl) iconEl.innerText = '✓';
+      setTimeout(function() {
+        if (textEl) textEl.innerText = origText;
+        if (iconEl) iconEl.innerText = '📋';
+      }, 1500);
+    });
+  }
+
+  var compactNumFormatter = (typeof Intl !== 'undefined' && Intl.NumberFormat)
+    ? new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 })
+    : null;
+
+  function formatCompactNum(num) {
+    if (!num) return '0';
+    if (compactNumFormatter) return compactNumFormatter.format(num);
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return String(num);
+  }
+
+  var STORAGE_STARS_KEY = 'danicat_starred_skills_v1';
+  var STORAGE_VIEWS_KEY = 'danicat_viewed_skills_v1';
+  var STORAGE_COPIED_SESSION_KEY = 'danicat_session_copied_v1';
+
+  function getStarredSkills() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(STORAGE_STARS_KEY) || '[]'));
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function saveStarredSkills(set) {
+    try {
+      localStorage.setItem(STORAGE_STARS_KEY, JSON.stringify(Array.from(set)));
+    } catch (e) {}
+  }
+
+  function hasCopiedThisSession(docId) {
+    try {
+      var list = JSON.parse(sessionStorage.getItem(STORAGE_COPIED_SESSION_KEY) || '[]');
+      return list.indexOf(docId) !== -1;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function recordCopyThisSession(docId) {
+    try {
+      var list = JSON.parse(sessionStorage.getItem(STORAGE_COPIED_SESSION_KEY) || '[]');
+      if (list.indexOf(docId) === -1) {
+        list.push(docId);
+        sessionStorage.setItem(STORAGE_COPIED_SESSION_KEY, JSON.stringify(list));
+      }
+    } catch (e) {}
+  }
+
+  function copyInstallCommand(cmd, btn) {
+    navigator.clipboard.writeText(cmd).then(function() {
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> {{ $t.ui.copiedBtn }}';
+      btn.classList.add('copied');
+
+      var category = '{{ .Params.category }}';
+      var skillId = '{{ lower (.Params.skillName | default "") }}';
+      var docId = category + '-' + skillId;
+
+      if (skillId && !hasCopiedThisSession(docId)) {
+        recordCopyThisSession(docId);
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+          try {
+            firebase.auth().signInAnonymously().then(function() {
+              var db = firebase.firestore();
+              db.collection('skills').doc(docId).set({
+                category: category,
+                skill: skillId,
+                copies: firebase.firestore.FieldValue.increment(1),
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            });
+          } catch (e) {}
+        }
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'copy_install_command', {
+            skill_category: category,
+            skill_name: skillId,
+            command_text: cmd,
+            page_location: window.location.href
+          });
+        }
+      }
+
+      setTimeout(function() {
+        btn.innerHTML = orig;
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  }
+
+  function handleStarToggle(btn, category, skillId) {
+    var starred = getStarredSkills();
+    var isStarred = starred.has(skillId);
+    var delta = isStarred ? -1 : 1;
+
+    if (isStarred) {
+      starred.delete(skillId);
+    } else {
+      starred.add(skillId);
+    }
+    saveStarredSkills(starred);
+
+    if (!isStarred) {
+      btn.classList.add('is-starred');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('is-starred');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+
+    var detailCount = document.getElementById('detailStarCount');
+    if (detailCount) {
+      var cur = Math.max(0, (parseInt(detailCount.textContent || '0', 10) || 0) + delta);
+      detailCount.textContent = formatCompactNum(cur);
+    }
+
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      try {
+        firebase.auth().signInAnonymously().then(function() {
+          var db = firebase.firestore();
+          var docId = category + '-' + skillId;
+          db.collection('skills').doc(docId).set({
+            category: category,
+            skill: skillId,
+            likes: firebase.firestore.FieldValue.increment(delta),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        });
+      } catch (e) {}
+    }
+
+    if (typeof gtag === 'function') {
+      gtag('event', 'like_skill', {
+        skill_category: category,
+        skill_name: skillId,
+        action: !isStarred ? 'like' : 'unlike',
+        page_location: window.location.href
+      });
+    }
+  }
+
+  (function() {
+    var detailStarBtn = document.getElementById('detailStarBtn');
+    if (!detailStarBtn) return;
+
+    var category = '{{ .Params.category }}';
+    var skillId = '{{ lower (.Params.skillName | default "") }}';
+    if (!category || !skillId) return;
+    var docId = category + '-' + skillId;
+
+    var starred = getStarredSkills();
+    if (starred.has(skillId)) {
+      detailStarBtn.classList.add('is-starred');
+      detailStarBtn.setAttribute('aria-pressed', 'true');
+    }
+
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    try {
+      firebase.auth().signInAnonymously().then(function() {
+        var db = firebase.firestore();
+        var viewed = false;
+        try {
+          var viewedList = JSON.parse(localStorage.getItem(STORAGE_VIEWS_KEY) || '[]');
+          if (viewedList.indexOf(docId) !== -1) {
+            viewed = true;
+          } else {
+            viewedList.push(docId);
+            localStorage.setItem(STORAGE_VIEWS_KEY, JSON.stringify(viewedList));
+          }
+        } catch (e) {}
+
+        if (!viewed) {
+          db.collection('skills').doc(docId).set({
+            category: category,
+            skill: skillId,
+            views: firebase.firestore.FieldValue.increment(1),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
+
+        db.collection('skills').doc(docId).onSnapshot(function(doc) {
+          if (doc.exists) {
+            var data = doc.data();
+            var starCountEl = document.getElementById('detailStarCount');
+            var viewCountEl = document.getElementById('detailViewCount');
+            if (starCountEl && data.likes !== undefined) starCountEl.textContent = formatCompactNum(data.likes);
+            if (viewCountEl && data.views !== undefined) viewCountEl.textContent = formatCompactNum(data.views);
+          }
+        });
+      }).catch(function() {});
+    } catch (e) {}
+  })();
+</script>
+{{ end }}

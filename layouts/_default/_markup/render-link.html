@@ -1,0 +1,54 @@
+{{- $dest := .Destination -}}
+{{- if strings.HasPrefix $dest "file://" -}}
+<code class="inline-code">{{ .Text | safeHTML }}</code>
+{{- else if or (strings.HasPrefix $dest "http://") (strings.HasPrefix $dest "https://") -}}
+<a href="{{ $dest | safeURL }}" target="_blank" rel="noopener noreferrer">{{ .Text | safeHTML }} <span class="ext-icon">↗</span></a>
+{{- else if or (strings.HasPrefix $dest "mailto:") (strings.HasPrefix $dest "tel:") (strings.HasPrefix $dest "#") -}}
+<a href="{{ $dest | safeURL }}">{{ .Text | safeHTML }}</a>
+{{- else -}}
+  {{- $hashParts := split $dest "#" -}}
+  {{- $beforeHash := index $hashParts 0 -}}
+  {{- $queryParts := split $beforeHash "?" -}}
+  {{- $pathPart := index $queryParts 0 -}}
+
+  {{- if or (eq $pathPart "../lyria/SKILL.md") (eq $pathPart "../lyria/") -}}
+    {{- $pathPart = ("/media/lyria/" | relLangURL) -}}
+  {{- else if or (eq $pathPart "../nano-banana/SKILL.md") (eq $pathPart "../nano-banana/") -}}
+    {{- $pathPart = ("/media/nano-banana/" | relLangURL) -}}
+  {{- else if or (eq $pathPart "../godoctor/SKILL.md") (eq $pathPart "../godoctor/") -}}
+    {{- $pathPart = ("/coding/godoctor/" | relLangURL) -}}
+  {{- else if or (eq $pathPart "../swarm-coding/SKILL.md") (eq $pathPart "../swarm-coding/") -}}
+    {{- $pathPart = ("/agents/swarm-coding/" | relLangURL) -}}
+  {{- else if strings.HasSuffix $pathPart "/SKILL.md" -}}
+    {{- $trimmed := strings.TrimSuffix "SKILL.md" $pathPart -}}
+    {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder (not (strings.HasPrefix $trimmed "/")) -}}
+      {{- $pathPart = printf "%s/" (path.Clean (printf "/%s/%s/%s" .Page.Params.category .Page.Params.folder $trimmed)) -}}
+    {{- else -}}
+      {{- $pathPart = $trimmed -}}
+    {{- end -}}
+  {{- else if or (eq $pathPart "SKILL.md") (eq $pathPart "./SKILL.md") -}}
+    {{- $pathPart = "./" -}}
+  {{- else -}}
+    {{- if strings.HasSuffix $pathPart ".md" -}}
+      {{- $pathPart = printf "%s.html" (strings.TrimSuffix ".md" $pathPart) -}}
+    {{- end -}}
+    {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder (not (strings.HasPrefix $pathPart "/")) -}}
+      {{- $hasTrailingSlash := strings.HasSuffix $pathPart "/" -}}
+      {{- $cleaned := path.Clean (printf "/%s/%s/%s" .Page.Params.category .Page.Params.folder $pathPart) -}}
+      {{- if and $hasTrailingSlash (not (strings.HasSuffix $cleaned "/")) -}}
+        {{- $pathPart = printf "%s/" $cleaned -}}
+      {{- else -}}
+        {{- $pathPart = $cleaned -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $rebuilt := $pathPart -}}
+  {{- if gt (len $queryParts) 1 -}}
+    {{- $rebuilt = printf "%s?%s" $rebuilt (delimit (after 1 $queryParts) "?") -}}
+  {{- end -}}
+  {{- if gt (len $hashParts) 1 -}}
+    {{- $rebuilt = printf "%s#%s" $rebuilt (delimit (after 1 $hashParts) "#") -}}
+  {{- end -}}
+<a href="{{ $rebuilt | safeURL }}">{{ .Text | safeHTML }}</a>
+{{- end -}}

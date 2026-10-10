@@ -1,0 +1,28 @@
+disabled = false
+languageCode = "pt-br"
+languageName = "Português"
+weight = 2
+title = "danicat.dev"
+
+[params]
+  displayName = "🇧🇷 Português"
+  isoCode = "pt-br"
+  rtl = false
+  dateFormat = "2 January 2006"
+  description = "Catálogo selecionado de Agent Skills para jogos 2D em Go, ferramentas Python, padrões de engenharia, escrita técnica e mídia generativa."
+
+[params.author]
+  name = "Daniela Petruzalek"
+  email = "daniela@danicat.dev"
+  image = "profile.png"
+  imageQuality = 96
+  headline = "Tecnologista, gamer e gateira"
+  bio = "Engenheira Sênior de Developer Relations no Google"
+  links = [
+    { bluesky = "https://bsky.app/profile/danicat83.bsky.social" },
+    { github = "https://github.com/danicat" },
+    { instagram = "https://instagram.com/danicat83" },
+    { linkedin = "https://linkedin.com/in/petruzalek" },
+    { medium = "https://medium.com/@daniela.petruzalek" },
+    { x-twitter = "https://x.com/danicat83" },
+  ]

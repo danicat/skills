@@ -1,0 +1,28 @@
+disabled = false
+languageCode = "ja"
+languageName = "日本語"
+weight = 3
+title = "danicat.dev"
+
+[params]
+  displayName = "🇯🇵 日本語"
+  isoCode = "ja"
+  rtl = false
+  dateFormat = "2006年1月2日"
+  description = "Go言語2Dゲーム開発、Pythonツール、エンジニアリング標準、テクニカルライティング、生成メディアのための厳選Agent Skillsカタログ。"
+
+[params.author]
+  name = "ダニエラ・ペトルザレク"
+  email = "daniela@danicat.dev"
+  image = "profile.png"
+  imageQuality = 96
+  headline = "テクノロジスト、ゲーマー、猫好き"
+  bio = "Googleのシニアデベロッパーリレーションズエンジニア"
+  links = [
+    { bluesky = "https://bsky.app/profile/danicat83.bsky.social" },
+    { github = "https://github.com/danicat" },
+    { instagram = "https://instagram.com/danicat83" },
+    { linkedin = "https://linkedin.com/in/petruzalek" },
+    { medium = "https://medium.com/@daniela.petruzalek" },
+    { x-twitter = "https://x.com/danicat83" },
+  ]

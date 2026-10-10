@@ -1,0 +1,55 @@
+{{- $s := .page -}}
+{{- $skillId := lower $s.Params.skillName -}}
+<article class="skill-card danicat-card group"
+     id="card-{{ $skillId }}"
+     data-skill-id="{{ $skillId }}"
+     data-category="{{ $s.Params.category }}"
+     data-name="{{ $skillId }}"
+     data-desc="{{ lower $s.Params.description }}"
+     data-tags="{{ lower (delimit ($s.Params.tags | default slice) " ") }}"
+     data-stars="0"
+     data-views="0"
+     data-copies="0"
+     data-score="0">
+  <div>
+    <div class="flex items-center justify-between gap-2 mb-3">
+      <a href="{{ (printf "/#%s" $s.Params.category) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
+        <span>{{ $s.Params.categoryEmoji }}</span>
+        <span>{{ $s.Params.categoryName }}</span>
+      </a>
+
+      <div class="flex items-center gap-1.5">
+        <button type="button"
+                class="metric-pill star-btn"
+                data-action="star"
+                aria-label="Star this skill"
+                title="Star this skill"
+                onclick="handleStarToggle(this, '{{ $s.Params.category }}', '{{ $skillId }}')">
+          <svg class="star-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="metric-val star-count">0</span>
+        </button>
+
+        <div class="metric-pill view-pill" title="Total Views">
+          <svg class="metric-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span class="metric-val view-count">0</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2 leading-snug">
+      <a href="{{ (printf "/%s/%s/" $s.Params.category $s.Params.folder) | relLangURL }}" class="group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors no-underline">
+        {{ $s.Params.skillName }}
+      </a>
+    </h3>
+
+    <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed line-clamp-3 m-0">
+      {{ $s.Params.description }}
+    </p>
+  </div>
+</article>
+

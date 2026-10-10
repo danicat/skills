@@ -35,12 +35,12 @@ Each skill in the starter kit has a distinct, orthogonal responsibility and can 
 | **Game Design & Socratic Interview** | **[`game-design`](../game-design/SKILL.md)** | **Game Designer**: Interactive `/grill-me` Socratic interview across all 2D genres, explicit choice between procedural (`procedural-art`/`procedural-composer`), AI (`nano-banana`/`lyria`), or hybrid asset pipelines, and authoritative `GDD.md` authoring. |
 | **Ebitengine 2D Engine Architecture** | **[`ebitengineer`](../ebitengineer/SKILL.md)** | **Engine Architect**: Genre-agnostic Ebitengine (v2) loop, virtual resolution scaling, FSM/stack scene management (pause/inventory/deck/dialogue overlays), fixed-timestep $\Delta t$, zero-allocation `Draw()` loop, Kage shaders, and WebAssembly audio/browser deployment. |
 | **Pure-Code DSP Audio Synthesis** | **[`procedural-composer`](../procedural-composer/SKILL.md)** | **DSP Sound Engineer**: Zero-asset 16-bit 44.1 kHz stereo PCM audio synthesis (`sound.go`), mandatory 4-byte frame alignment (`&^ 3`), YM2612 6-channel polyphony, FM synthesis, ADSR envelopes, DSP post-processing (`SliceLoopPCM`, LPF/HPF, bitcrushing), and WAV export (`play.go`). |
-| **Generative Studio AI Music** | **[`lyria`](../lyria/SKILL.md)** | **AI Music Composer**: High-fidelity 44.1 kHz stereo soundtracks and loops via **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`) and **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`), timestamped arrangements, custom lyrics, multimodal image-to-music, and `.mp3`/`.wav` export. |
+| **Generative Studio AI Music** | **[`lyria`](../../media/lyria/SKILL.md)** | **AI Music Composer**: High-fidelity 44.1 kHz stereo soundtracks and loops via **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`) and **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`), timestamped arrangements, custom lyrics, multimodal image-to-music, and `.mp3`/`.wav` export. |
 | **Pure-Code Procedural 2D Graphics** | **[`procedural-art`](../procedural-art/SKILL.md)** | **Procedural Technical Artist**: Zero-asset Go texture generation (`art.go`), 2D `GeoM` matrix transform ordering, 32-bit RGBA color ramps, sub-frame animation easing, pre-allocated particle pools, and Kage shaders. |
-| **Generative AI Images & Sprites** | **[`nano-banana`](../nano-banana/SKILL.md)** | **AI Visual Artist**: Conversational image generation and editing via **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image`, and `gemini-3-pro-image` for sprite sheets, character portraits, card art, tilesets, and multi-image style/character consistency. |
+| **Generative AI Images & Sprites** | **[`nano-banana`](../../media/nano-banana/SKILL.md)** | **AI Visual Artist**: Conversational image generation and editing via **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image`, and `gemini-3-pro-image` for sprite sheets, character portraits, card art, tilesets, and multi-image style/character consistency. |
 | **2D Sprite Slicing & Animation** | **[`sprite-animation`](../sprite-animation/SKILL.md)** | **2D Animator**: Sprite sheet grid slicing (`SubImage` zero-alloc views), animation state machines (`idle`, `walk`, `attack`, `cast`, `hit`, `death`), frame timing, Aseprite (`.ase`/`.aseprite`) integration, and Ebitengine animation controllers. |
-| **Go Code Quality & Mutation Testing** | **[`godoctor`](../godoctor/SKILL.md)** | **Go Quality Gate**: AST integrity validation, compiler rollback gates (`smart_build`, `smart_edit`), TestQuery SQLite test/coverage analytics, and Selene mutation testing. |
-| **Multi-Agent Swarm Coordination** | **[`swarm-coding`](../swarm-coding/SKILL.md)** | **Swarm Coordinator**: Hierarchical divide-and-conquer multi-agent orchestration across disjoint packages (e.g., concurrent engine core, procedural/AI assets, UI/HUD, and QA). |
+| **Go Code Quality & Mutation Testing** | **[`godoctor`](../../coding/godoctor/SKILL.md)** | **Go Quality Gate**: AST integrity validation, compiler rollback gates (`smart_build`, `smart_edit`), TestQuery SQLite test/coverage analytics, and Selene mutation testing. |
+| **Multi-Agent Swarm Coordination** | **[`swarm-coding`](../../agents/swarm-coding/SKILL.md)** | **Swarm Coordinator**: Hierarchical divide-and-conquer multi-agent orchestration across disjoint packages (e.g., concurrent engine core, procedural/AI assets, UI/HUD, and QA). |
 
 ---
 
@@ -84,7 +84,7 @@ A core responsibility of this orchestrator is honoring the `GDD.md` pipeline sel
   - Composing 6-channel YM2612-style chiptune BGM in pure Go with zero external audio files.
   - Applying runtime DSP post-processing (`SliceLoopPCM`, ADSR envelopes, low-pass/high-pass filtering, bitcrushing) or enforcing 4-byte stereo PCM alignment (`&^ 3`) for Ebitengine `audio.Context`.
 
-* **Choose [`lyria`](../lyria/SKILL.md)** when:
+* **Choose [`lyria`](../../media/lyria/SKILL.md)** when:
   - Generating studio-quality **44.1 kHz stereo Background Music (BGM)** via **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`) for full multi-section arrangements or **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`) for 30-second loops.
   - Composing thematic soundtracks directly from concept art or screenshots (multimodal image-to-music).
 
@@ -99,7 +99,7 @@ A core responsibility of this orchestrator is honoring the `GDD.md` pipeline sel
   - Generating pure-code textures (`art.go`), crisp geometric entities, tactical grids, particle pools, or Kage post-processing shaders with zero external `.png` files.
   - Implementing 2D `GeoM` matrix hierarchy transforms or sub-frame interpolation curves.
 
-* **Choose [`nano-banana`](../nano-banana/SKILL.md) + [`sprite-animation`](../sprite-animation/SKILL.md)** when:
+* **Choose [`nano-banana`](../../media/nano-banana/SKILL.md) + [`sprite-animation`](../sprite-animation/SKILL.md)** when:
   - Generating character sprite sheets, visual novel portraits, deckbuilder card illustrations, or seamless tilesets using **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image` (high-speed prototyping), or `gemini-3-pro-image` (complex multi-subject composition).
   - Slicing generated sprite sheets into zero-allocation `SubImage` frames and driving state machines (`idle`, `walk`, `attack`, `cast`, `death`) via `sprite-animation`.
 
@@ -116,10 +116,10 @@ When guiding the user through building a complete 2D game from scratch (or execu
 2. **Engine Architecture**: Activate [`ebitengineer`](../ebitengineer/SKILL.md) to scaffold `internal/` packages, virtual resolution scaling, scene state machine (or overlay stack for RPGs/deckbuilders/tactics), fixed-timestep $\Delta t$, and spatial collision/grid systems.
 3. **Visual Pipeline Execution**:
    - **Procedural**: Activate [`procedural-art`](../procedural-art/SKILL.md) for in-memory sprites, vector geometry, particle pools, and Kage shaders.
-   - **AI / Hybrid**: Activate [`nano-banana`](../nano-banana/SKILL.md) (`gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, `gemini-3-pro-image`) to generate sprite sheets/art and [`sprite-animation`](../sprite-animation/SKILL.md) to slice frames and wire animation controllers.
+   - **AI / Hybrid**: Activate [`nano-banana`](../../media/nano-banana/SKILL.md) (`gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, `gemini-3-pro-image`) to generate sprite sheets/art and [`sprite-animation`](../sprite-animation/SKILL.md) to slice frames and wire animation controllers.
 4. **Audio Pipeline Execution**:
    - **Procedural**: Activate [`procedural-composer`](../procedural-composer/SKILL.md) for 4-byte aligned (`&^ 3`) 16-bit stereo SFX, DSP filters, and 6-channel BGM.
-   - **AI / Hybrid**: Activate [`lyria`](../lyria/SKILL.md) (`lyria-3.5` / `lyria-3-pro-preview`, `lyria-3-clip-preview`) for 44.1 kHz stereo soundtracks and combine with [`procedural-composer`](../procedural-composer/SKILL.md) for loop slicing and SFX.
-5. **Parallel Execution (Optional)**: For multi-system builds with orthogonal workstreams, activate [`swarm-coding`](../swarm-coding/SKILL.md) to coordinate parallel specialist subagents across disjoint file sets.
-6. **Quality Gate & Verification**: Activate [`godoctor`](../godoctor/SKILL.md) to validate AST integrity, run unit tests with TestQuery analytics, and eliminate test blind spots via Selene mutation testing.
+   - **AI / Hybrid**: Activate [`lyria`](../../media/lyria/SKILL.md) (`lyria-3.5` / `lyria-3-pro-preview`, `lyria-3-clip-preview`) for 44.1 kHz stereo soundtracks and combine with [`procedural-composer`](../procedural-composer/SKILL.md) for loop slicing and SFX.
+5. **Parallel Execution (Optional)**: For multi-system builds with orthogonal workstreams, activate [`swarm-coding`](../../agents/swarm-coding/SKILL.md) to coordinate parallel specialist subagents across disjoint file sets.
+6. **Quality Gate & Verification**: Activate [`godoctor`](../../coding/godoctor/SKILL.md) to validate AST integrity, run unit tests with TestQuery analytics, and eliminate test blind spots via Selene mutation testing.
 7. **WebAssembly & Cloud Run Deployment**: Activate [`ebitengineer`](../ebitengineer/SKILL.md) to compile to WASM with browser audio unlock synchronization and package for deployment.

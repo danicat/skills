@@ -50,7 +50,9 @@ export function runAudit() {
   }
 
   const htmlFiles = getAllFiles(SITE_DIR, ['.html']);
-  const mdFiles = getAllFiles(ROOT_DIR, ['.md']).filter(f => !f.includes('/_site/'));
+  const mdFiles = getAllFiles(ROOT_DIR, ['.md']).filter(
+    f => !f.includes('/_site/') && !f.includes('/public/') && !f.includes('/themes/')
+  );
 
   let htmlErrors = [];
   let mdErrors = [];
@@ -73,6 +75,13 @@ export function runAudit() {
   for (const file of htmlFiles) {
     const content = fs.readFileSync(file, 'utf-8');
     const relFile = path.relative(SITE_DIR, file);
+
+    // Verify Google Analytics G-8RHDQGEGZ2 is present on all non-redirect HTML pages
+    if (!content.includes('http-equiv="refresh"') && !content.includes('http-equiv=refresh')) {
+      if (!content.includes('googletagmanager.com/gtag/js?id=G-8RHDQGEGZ2')) {
+        uiIssues.push(`[Analytics Missing] In ${relFile}: Google Analytics (G-8RHDQGEGZ2) script tag is missing`);
+      }
+    }
 
     // Check <a href="...">
     const aHrefRegex = /<a\s+[^>]*?href=["']([^"']+)["'][^>]*?>/gi;

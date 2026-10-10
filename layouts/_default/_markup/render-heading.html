@@ -1,0 +1,8 @@
+{{- $level := .Level -}}
+{{- if eq $level 1 -}}
+  {{- $level = 2 -}}
+{{- end -}}
+{{- $id := .Anchor | default (urlize .PlainText) | default "section" -}}
+<h{{ $level }} id="{{ $id }}" class="prose-h{{ $level }}">
+  {{- .Text | safeHTML }} <a href="{{ printf "#%s" $id | safeURL }}" class="anchor-link" aria-label="Link to {{ .PlainText }}">#</a>
+</h{{ $level }}>

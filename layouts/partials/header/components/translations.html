@@ -1,0 +1,31 @@
+<div class="translation nested-menu">
+  <button class="cursor-pointer flex items-center" aria-label="Language selector">
+    <span class="me-1">
+      {{ partial "icon.html" "language" }}
+    </span>
+    <span class="text-sm font-medium bf-icon-color-hover" title="{{ .Title }}">
+      {{- if eq .Site.Language.Lang "pt-br" -}}PT-BR{{- else if eq .Site.Language.Lang "ja" -}}JA{{- else -}}EN{{- end -}}
+    </span>
+  </button>
+  <ul class="menuhide">
+    <li class="rounded-xl backdrop-blur shadow-2xl p-2 flex flex-col gap-1">
+      {{ if .IsTranslated }}
+        {{ range .AllTranslations }}
+          <a href="{{ .RelPermalink }}" class="flex items-center bf-icon-color-hover px-3 py-1">
+            <span class="text-sm font-sm" title="{{ .Title }}">
+              {{ .Language.Params.displayName | emojify }}
+            </span>
+          </a>
+        {{ end }}
+      {{ else }}
+        {{ range .Sites }}
+          <a href="{{ .Home.RelPermalink }}" class="flex items-center bf-icon-color-hover px-3 py-1">
+            <span class="text-sm font-sm" title="{{ .Title }}">
+              {{ .Language.Params.displayName | emojify }}
+            </span>
+          </a>
+        {{ end }}
+      {{ end }}
+    </li>
+  </ul>
+</div>

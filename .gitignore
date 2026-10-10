@@ -7,5 +7,8 @@ venv/
 .agents/
 skills-lock.json
 _site/
+public/
+.hugo_build.lock
+resources/
 .DS_Store
 GEMINI.md

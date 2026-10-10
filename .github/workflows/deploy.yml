@@ -35,20 +35,30 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      HUGO_ENVIRONMENT: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.152.2'
+          extended: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Build site, validate metadata, and run QA audit
+      - name: Validate metadata, build Hugo site, and run QA audit
         run: |
-          node scripts/build_site.mjs
           node scripts/validate_metadata.mjs
-          node scripts/qa_audit.mjs
+          node scripts/build_site.mjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

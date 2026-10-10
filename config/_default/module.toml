@@ -1,0 +1,77 @@
+# -- Hugo Module & Mounts Configuration --
+
+[[mounts]]
+  source = "content"
+  target = "content"
+
+[[mounts]]
+  source = "layouts"
+  target = "layouts"
+
+[[mounts]]
+  source = "data"
+  target = "data"
+
+[[mounts]]
+  source = "assets"
+  target = "assets"
+
+[[mounts]]
+  source = "assets/chibi_dani_oops.png"
+  target = "static/assets/chibi_dani_oops.png"
+
+[[mounts]]
+  source = "catalog.json"
+  target = "static/catalog.json"
+
+[[mounts]]
+  source = "llms.txt"
+  target = "static/llms.txt"
+
+[[mounts]]
+  source = "agents"
+  target = "static/agents"
+
+[[mounts]]
+  source = "analytics"
+  target = "static/analytics"
+
+[[mounts]]
+  source = "coding"
+  target = "static/coding"
+
+[[mounts]]
+  source = "game-dev"
+  target = "static/game-dev"
+
+[[mounts]]
+  source = "media"
+  target = "static/media"
+
+[[mounts]]
+  source = "writing"
+  target = "static/writing"
+
+[[mounts]]
+  source = "agents"
+  target = "assets/_skills/agents"
+
+[[mounts]]
+  source = "analytics"
+  target = "assets/_skills/analytics"
+
+[[mounts]]
+  source = "coding"
+  target = "assets/_skills/coding"
+
+[[mounts]]
+  source = "game-dev"
+  target = "assets/_skills/game-dev"
+
+[[mounts]]
+  source = "media"
+  target = "assets/_skills/media"
+
+[[mounts]]
+  source = "writing"
+  target = "assets/_skills/writing"

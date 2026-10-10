@@ -1,4 +1,4 @@
-# Agent Skills Collection
+# Agent Skills
 
 A curated collection of specialized skills for AI agents and pair programmers, organized by domain.
 
@@ -7,10 +7,14 @@ A curated collection of specialized skills for AI agents and pair programmers, o
 ## Installation
 
 ### Install from GitHub
-Install skills directly from this repository using the Skills CLI:
+Install skills directly from this repository using `kungfu` or the Skills CLI:
 
 ```bash
-# Install a specific skill from this repository:
+# Stream or install a specific skill via KungFu:
+kungfu load ebitengineer
+kungfu learn engineering-flow
+
+# Install a specific skill via npx skills:
 npx skills add danicat/skills --skill engineering-flow -y
 npx skills add danicat/skills --skill ebitengineer -y
 npx skills add danicat/skills --skill skill-optimizer -y
@@ -21,9 +25,9 @@ npx skills add danicat/skills -y
 
 ---
 
-## Skills Catalog
+## Agent Skills
 
-### 🕹️ Game Development (`game-dev/`)
+### 🕹️ Games (`game-dev/`)
 Specialized skills for designing and building 2D games in Go with Ebitengine, chiptune DSP, and procedural generation.
 
 * **[`ebitengineer`](game-dev/ebitengineer/SKILL.md)**: Production-grade 2D game architecture, cycle timing, state machines, shaders, and audio sync for Go & Ebitengine (v2).
@@ -35,7 +39,7 @@ Specialized skills for designing and building 2D games in Go with Ebitengine, ch
 
 ---
 
-### 🎨 Generative Media (`media/`)
+### 🎨 GenAI (`media/`)
 Audio and visual generation using Google AI models with ADC authentication.
 
 * **[`lyria`](media/lyria/SKILL.md)**: High-fidelity 44.1 kHz stereo music and soundtrack generation from text prompts and images using Google's Lyria 3 models.
@@ -44,27 +48,31 @@ Audio and visual generation using Google AI models with ADC authentication.
 ---
 
 ### 💻 Software Engineering (`coding/`)
-Engineering workflow standards, compiler gates, package resolvers, and language-specific tools.
+Engineering workflow standards, compiler gates, package resolvers, architectural decision records, and language-specific tools.
 
+* **[`adr-template`](coding/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
 * **[`engineering-flow`](coding/engineering-flow/SKILL.md)**: Engineering workflow standards detailing semantic versioning (with 0.x zero-debt rules), broken window hygiene, RFC/ADR planning, and the 7-tier Evidence Hierarchy.
 * **[`godoctor`](coding/godoctor/SKILL.md)**: AST-aware Go developer tooling with automatic compiler rollback gates, Selene mutation testing, and multi-tier test runners.
+* **[`google-oss`](coding/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
 * **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
 * **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
+* **[`rfc-template`](coding/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
 
 ---
 
-### 🤖 AI Agents (`agents/`)
+### 🤖 Agents (`agents/`)
 Frameworks, multi-agent swarm orchestration, and skill authoring tools.
 
 * **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
 * **[`intercom`](agents/intercom/SKILL.md)**: Inter-session communication mesh connecting independent terminal sessions via Unix Domain Sockets and dedicated Comms Subagents with zero network configuration, non-blocking duplex messaging, and crash-resilient mailbox spooling.
+* **[`parallel`](agents/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
 * **[`uno-reverse`](agents/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 
 ---
 
-### ✍️ Technical Writing (`writing/`)
+### ✍️ Writing (`writing/`)
 Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, and developer documentation.
 
 * **[`buffer`](writing/buffer/SKILL.md)**: Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI.
@@ -76,7 +84,7 @@ Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, 
 
 ---
 
-### 📊 Data Analytics (`analytics/`)
+### 📊 Analytics (`analytics/`)
 Raw metrics ingestion and SQLite data warehousing for search performance, web traffic, and social distribution.
 
 * **[`buffer-analytics`](analytics/buffer-analytics/SKILL.md)**: Ingest raw Buffer social post and channel data into a local SQLite analytics database and run SQL queries across LinkedIn, Twitter/X, and Bluesky.
@@ -85,16 +93,6 @@ Raw metrics ingestion and SQLite data warehousing for search performance, web tr
 
 ---
 
-### 📐 Engineering Standards (`standards/`)
-Decision records, design consensus frameworks, and open-source compliance.
-
-* **[`adr-template`](standards/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
-* **[`google-oss`](standards/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
-* **[`rfc-template`](standards/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
-
----
-
 ## Disclaimer
 
 This is not an officially supported Google product.
-

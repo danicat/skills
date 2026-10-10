@@ -1,0 +1,74 @@
+# -- Theme Options (Synced with danicat.dev Blowfish Shell) --
+
+colorScheme = "blowfish"
+defaultAppearance = "light"
+autoSwitchAppearance = true
+
+customCSS = ["css/custom.css"]
+
+enableSearch = false
+enableCodeCopy = true
+
+replyByEmail = false
+
+disableImageOptimization = false
+disableTextInHeader = false
+disableImageZoom = true
+
+highlightCurrentMenuArea = true
+
+[header]
+  layout = "basic"
+
+[footer]
+  showMenu = true
+  showCopyright = true
+  showThemeAttribution = true
+  showAppearanceSwitcher = true
+  showScrollToTop = true
+
+[homepage]
+  layout = "custom"
+  showRecent = false
+
+[article]
+  showDate = false
+  showViews = true
+  showLikes = true
+  showAuthor = true
+  showHero = false
+  showBreadcrumbs = true
+  showHeadingAnchors = true
+  showPagination = false
+  showReadingTime = false
+  showTableOfContents = true
+  showRelatedContent = false
+  showTaxonomies = false
+  showCategoryOnly = false
+  showWordCount = false
+  showZenMode = false
+  showComments = false
+
+[list]
+  showHero = false
+  showBreadcrumbs = true
+  showSummary = true
+  showViews = false
+  showLikes = false
+  showTableOfContents = false
+  showCards = false
+  orderByWeight = false
+  groupByYear = false
+  cardView = false
+
+[sitemap]
+  excludedKinds = ["taxonomy", "term"]
+
+[firebase]
+  apiKey = "AIzaSyCazN8y12SLQdV5PPztJ7GsKnFrfCkXVvw"
+  authDomain = "danicat-dev.firebaseapp.com"
+  projectId = "danicat-dev"
+  storageBucket = "danicat-dev.firebasestorage.app"
+  messagingSenderId = "1014224596022"
+  appId = "1:1014224596022:web:05c63cd335f5c0d34c3c97"
+  measurementId = "G-97TXNTPG93"

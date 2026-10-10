@@ -1,0 +1,147 @@
+{{- $t := index site.Data.translations "pt-br" -}}
+{{- $.AddPage (dict
+  "kind" "home"
+  "path" "/"
+  "title" $t.ui.catalogTitle
+  "params" (dict
+    "description" $t.ui.catalogSubtitle
+  )
+) -}}
+
+{{- $categories := slice
+  (dict "id" "game-dev" "emoji" "🕹️" "weight" 10)
+  (dict "id" "media" "emoji" "🎨" "weight" 20)
+  (dict "id" "coding" "emoji" "💻" "weight" 30)
+  (dict "id" "agents" "emoji" "🤖" "weight" 40)
+  (dict "id" "writing" "emoji" "✍️" "weight" 50)
+  (dict "id" "analytics" "emoji" "📊" "weight" 60)
+-}}
+
+{{- range $cat := $categories -}}
+  {{- $catTrans := index $t.categories $cat.id -}}
+  {{- $catName := $catTrans.name -}}
+  {{- $catSubtitle := $catTrans.subtitle -}}
+  {{- $catDesc := $catTrans.description -}}
+
+  {{- $.AddPage (dict
+    "kind" "section"
+    "path" $cat.id
+    "title" (printf "%s — Agent Skills" $catName)
+    "build" (dict "render" "never" "list" "always")
+    "params" (dict
+      "url" (printf "/pt-br/%s/" $cat.id)
+      "categoryId" $cat.id
+      "categoryName" $catName
+      "categoryEmoji" $cat.emoji
+      "subtitle" $catSubtitle
+      "description" $catDesc
+      "weight" $cat.weight
+    )
+  ) -}}
+
+  {{- $skillMatches := resources.Match (printf "_skills/%s/*/SKILL.md" $cat.id) -}}
+  {{- range $skillRes := $skillMatches -}}
+    {{- $prefix := printf "_skills/%s/" $cat.id -}}
+    {{- $cleanSkillResName := strings.TrimPrefix "/" $skillRes.Name -}}
+    {{- $relSkillPath := strings.TrimPrefix $prefix $cleanSkillResName -}}
+    {{- $folder := strings.TrimSuffix "/SKILL.md" $relSkillPath -}}
+
+    {{- $raw := $skillRes.Content -}}
+    {{- $sha256 := crypto.SHA256 $raw -}}
+    {{- $byteSize := len $raw -}}
+
+    {{- $norm := replace $raw "\r\n" "\n" -}}
+    {{- $yamlStr := "" -}}
+    {{- $body := $norm -}}
+    {{- if strings.HasPrefix $norm "---\n" -}}
+      {{- $trimmed := strings.TrimPrefix "---\n" $norm -}}
+      {{- $parts := split $trimmed "\n---\n" -}}
+      {{- if gt (len $parts) 1 -}}
+        {{- $yamlStr = index $parts 0 -}}
+        {{- $body = delimit (after 1 $parts) "\n---\n" -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- $fm := dict -}}
+    {{- if $yamlStr -}}
+      {{- $fm = transform.Unmarshal $yamlStr -}}
+    {{- end -}}
+
+    {{- $skillName := $fm.name | default $folder -}}
+    {{- $enDesc := $fm.description | default "" | strings.TrimSpace -}}
+    {{- $description := (index $t.skills (lower $skillName)) | default $enDesc -}}
+    {{- $license := $fm.license | default "Apache-2.0" -}}
+    {{- $meta := $fm.metadata | default dict -}}
+    {{- $version := $meta.version | default "0.1.0" -}}
+    {{- $author := $meta.author | default "Daniela Petruzalek (daniela@danicat.dev)" -}}
+    {{- $rawTags := $meta.tags | default "" -}}
+    {{- $tags := slice -}}
+    {{- if $rawTags -}}
+      {{- range (split $rawTags ",") -}}
+        {{- $tTag := strings.TrimSpace . -}}
+        {{- if $tTag -}}
+          {{- $tags = $tags | append $tTag -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $tags = slice $cat.id $folder -}}
+    {{- end -}}
+
+    {{- $safeBody := replaceRE "\\{\\{<([^>]+)>\\}\\}" "{{</*$1*/>}}" (strings.TrimSpace $body) -}}
+    {{- $safeBody = replaceRE "\\{\\{%([^%]+)%\\}\\}" "{{%/*$1*/%}}" $safeBody -}}
+
+    {{- $bundledResources := slice -}}
+    {{- $skillFilePrefix := printf "_skills/%s/%s/" $cat.id $folder -}}
+    {{- $allSkillFiles := resources.Match (printf "%s**" $skillFilePrefix) -}}
+    {{- range $fRes := $allSkillFiles -}}
+      {{- $cleanFResName := strings.TrimPrefix "/" $fRes.Name -}}
+      {{- $relPath := strings.TrimPrefix $skillFilePrefix $cleanFResName -}}
+      {{- $pathSegs := split $relPath "/" -}}
+      {{- $topFolder := index $pathSegs 0 -}}
+      {{- if or (eq $topFolder "references") (eq $topFolder "scripts") (eq $topFolder "assets") (eq $topFolder "evals") -}}
+        {{- $fName := index $pathSegs (sub (len $pathSegs) 1) -}}
+        {{- $isMd := strings.HasSuffix $fName ".md" -}}
+        {{- $bundledResources = $bundledResources | append (dict
+          "type" $topFolder
+          "relPath" $relPath
+          "name" $fName
+          "isMarkdown" $isMd
+          "sizeBytes" (len $fRes.Content)
+        ) -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- $.AddPage (dict
+      "kind" "page"
+      "path" (printf "%s/%s" $cat.id $folder)
+      "title" (printf "%s — %s Agent Skill" $skillName $catName)
+      "content" (dict "mediaType" "text/markdown" "value" $safeBody)
+      "params" (dict
+        "url" (printf "/pt-br/%s/%s/" $cat.id $folder)
+        "isCompanion" false
+        "skillName" $skillName
+        "folder" $folder
+        "category" $cat.id
+        "categoryName" $catName
+        "categoryEmoji" $cat.emoji
+        "description" $description
+        "license" $license
+        "author" $author
+        "version" $version
+        "sha256" $sha256
+        "digest" (printf "sha256:%s" $sha256)
+        "byteSize" $byteSize
+        "tags" $tags
+        "rawMarkdown" $raw
+        "installCommand" (printf "npx skills add danicat/skills --skill %s -y" $skillName)
+        "kungfuLoadCommand" (printf "kungfu load %s" $skillName)
+        "kungfuLearnCommand" (printf "kungfu learn %s" $skillName)
+        "rawUrl" (printf "https://skills.danicat.dev/%s/%s/SKILL.md" $cat.id $folder)
+        "detailUrl" (printf "https://skills.danicat.dev/pt-br/%s/%s/" $cat.id $folder)
+        "githubUrl" (printf "https://github.com/danicat/skills/tree/main/%s/%s" $cat.id $folder)
+        "relativePath" (printf "%s/%s/SKILL.md" $cat.id $folder)
+        "bundledResources" $bundledResources
+      )
+    ) -}}
+  {{- end -}}
+{{- end -}}

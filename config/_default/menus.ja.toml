@@ -1,0 +1,47 @@
+# -- Main Menu (JA, Unified with danicat.dev) --
+
+[[main]]
+  name = "投稿"
+  url = "https://danicat.dev/ja/posts/"
+  weight = 10
+
+[[main]]
+  name = "イベント"
+  url = "https://danicat.dev/ja/events/"
+  weight = 15
+
+[[main]]
+  name = "コードラボ"
+  url = "https://danicat.dev/ja/codelabs/"
+  weight = 18
+
+[[main]]
+  name = "スキル"
+  url = "/ja/"
+  weight = 19
+
+[[main]]
+  name = "私について"
+  url = "https://danicat.dev/ja/about/"
+  weight = 20
+
+[[main]]
+  identifier = "linkedin"
+  pre = "linkedin"
+  title = "LinkedIn"
+  weight = 30
+  url = "https://linkedin.com/in/petruzalek"
+
+[[main]]
+  identifier = "x-twitter"
+  pre = "x-twitter"
+  title = "X / Twitter"
+  weight = 35
+  url = "https://x.com/danicat83"
+
+[[main]]
+  identifier = "github"
+  pre = "github"
+  title = "GitHub"
+  weight = 40
+  url = "https://github.com/danicat"

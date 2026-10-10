@@ -1,0 +1,21 @@
+# -- Markup Configuration --
+
+[goldmark]
+  [goldmark.parser]
+    autoHeadingID = true
+    autoHeadingIDType = "github-ascii"
+  [goldmark.renderer]
+    unsafe = false
+  [goldmark.extensions]
+    [goldmark.extensions.passthrough]
+      enable = true
+      [goldmark.extensions.passthrough.delimiters]
+        block = [['\[', '\]'], ['$$', '$$']]
+        inline = [['\(', '\)']]
+
+[highlight]
+  noClasses = false
+
+[tableOfContents]
+  startLevel = 2
+  endLevel = 4

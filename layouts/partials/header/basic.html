@@ -1,0 +1,115 @@
+{{- $danicatUrl := "https://danicat.dev/" -}}
+{{- if eq .Site.Language.Lang "pt-br" -}}
+  {{- $danicatUrl = "https://danicat.dev/pt-br/" -}}
+{{- else if eq .Site.Language.Lang "ja" -}}
+  {{- $danicatUrl = "https://danicat.dev/ja/" -}}
+{{- end -}}
+{{- $disableImageOptimization := .Site.Params.disableImageOptimization | default false -}}
+<header class="main-menu home-unified-header">
+  {{/* Left: Larger Speaker Avatar + 3-Line Identity Stack (synced with danicat.dev) */}}
+  <div class="home-profile-group">
+    {{ with .Site.Params.Author.image }}
+      {{ $authorImage := "" }}
+      {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
+        {{ $authorImage = resources.GetRemote . }}
+      {{ else }}
+        {{ $authorImage = resources.Get . }}
+      {{ end }}
+      {{ if $authorImage }}
+        {{ if not $disableImageOptimization }}
+          {{ $authorImage = $authorImage.Fill (print "240x240 q" ( $.Site.Params.Author.imagequality | default "96" )) }}
+        {{ end }}
+        <a href="{{ $danicatUrl }}" class="shrink-0">
+          <img
+            class="home-profile-avatar nozoom"
+            width="104"
+            height="104"
+            alt="{{ $.Site.Params.Author.name | default "Author" }}"
+            src="{{ $authorImage.RelPermalink }}" />
+        </a>
+      {{ end }}
+    {{ end }}
+    <div class="min-w-0">
+      <div class="home-profile-name">
+        <a href="{{ $danicatUrl }}" class="no-underline text-inherit hover:opacity-90 transition-opacity">
+          {{ .Site.Params.Author.name | default .Site.Title }}
+        </a>
+      </div>
+      {{ with .Site.Params.Author.bio }}
+        <p class="home-profile-role">{{ . }}</p>
+      {{ end }}
+      <p class="home-profile-tagline">
+        {{ i18n "homepage_tagline" | default "Writing about AI agents, Go, and Cloud." }}
+      </p>
+    </div>
+  </div>
+
+  {{/* Right: 2-Tier Navigation & Social/Utility Bar on Desktop, Hamburger on Mobile */}}
+  <div class="home-nav-group">
+    <div class="hidden md:flex home-desktop-nav">
+      {{/* Tier 1: Primary Content Navigation Links */}}
+      <nav class="home-nav-links" aria-label="Primary navigation">
+        {{ range .Site.Menus.main }}
+          {{ if .Name }}
+            {{ $isSkills := or (eq .URL "/") (eq .URL "/pt-br/") (eq .URL "/ja/") }}
+            <a
+              href="{{ .URL }}"
+              {{ if and (or (strings.HasPrefix .URL "http:") (strings.HasPrefix .URL "https:")) (not (strings.HasPrefix .URL "https://danicat.dev")) (not (strings.HasPrefix .URL "https://skills.danicat.dev")) }}
+                target="_blank" rel="noopener noreferrer"
+              {{ end }}
+              class="home-nav-link bf-icon-color-hover"
+              title="{{ .Title }}">
+              <span{{ if $isSkills }} class="active"{{ end }}>{{ .Name | markdownify }}</span>
+            </a>
+          {{ end }}
+        {{ end }}
+      </nav>
+
+      {{/* Tier 2: Upsized Social Icons + Language Switcher + Appearance Switcher */}}
+      <div class="home-nav-utilities">
+        {{ with .Site.Params.Author.links }}
+          <div class="home-social-icons">
+            {{ range $links := . }}
+              {{ range $name, $url := $links }}
+                <a
+                  href="{{ $url | safeURL }}"
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  class="home-social-icon-link"
+                  aria-label="{{ $name | title }}"
+                  title="{{ $name | title }}">
+                  <span class="inline-block align-text-bottom">{{ partial "icon.html" $name }}</span>
+                </a>
+              {{ end }}
+            {{ end }}
+          </div>
+        {{ end }}
+
+        <span class="home-utility-divider" aria-hidden="true"></span>
+
+        <div class="home-utility-controls">
+          {{ partial "header/components/translations.html" . }}
+
+          {{ if .Site.Params.footer.showAppearanceSwitcher | default false }}
+            <button
+              id="appearance-switcher"
+              aria-label="Dark mode switcher"
+              type="button"
+              class="home-theme-icon-btn">
+              <div class="flex items-center justify-center dark:hidden">
+                {{ partial "icon.html" "moon" }}
+              </div>
+              <div class="items-center justify-center hidden dark:flex">
+                {{ partial "icon.html" "sun" }}
+              </div>
+            </button>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex md:hidden">
+      {{ partial "header/components/mobile-menu.html" . }}
+    </div>
+  </div>
+</header>

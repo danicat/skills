@@ -1,0 +1,18 @@
+{{- $icons := dict "note" "ℹ️" "tip" "💡" "important" "❗" "warning" "⚠️" "caution" "🛑" -}}
+{{- if eq .Type "alert" -}}
+  {{- $aType := lower .AlertType -}}
+  {{- $icon := index $icons $aType | default "ℹ️" -}}
+  <div class="alert-callout callout-{{ $aType }}">
+    <div class="callout-header">
+      <span class="callout-icon">{{ $icon }}</span>
+      <span class="callout-title">{{ upper $aType }}</span>
+    </div>
+    <div class="callout-content">
+      {{ .Text | safeHTML }}
+    </div>
+  </div>
+{{- else -}}
+  <blockquote class="prose-quote">
+    {{ .Text | safeHTML }}
+  </blockquote>
+{{- end -}}

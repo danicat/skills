@@ -9,7 +9,7 @@ description: >
   documents, or gathering engineering consensus.
 license: Apache-2.0
 metadata:
-  category: standards
+  category: coding
   tags: "rfc, design-docs, architecture, standards, proposals"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.1"

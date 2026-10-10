@@ -1,20 +1,20 @@
 {
   "name": "danicat/skills",
-  "title": "Daniela's Agent Skills Catalog",
+  "title": "Agent Skills",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 30,
-  "updatedAt": "2026-10-07T00:36:00.000Z",
+  "updatedAt": "2026-10-10T07:46:22.596Z",
   "categories": [
     {
       "id": "game-dev",
-      "name": "Game Development",
+      "name": "Games",
       "emoji": "🕹️",
       "description": "Design and build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD specifications."
     },
     {
       "id": "media",
-      "name": "Generative Media",
+      "name": "GenAI",
       "emoji": "🎨",
       "description": "Synthesize high-fidelity stereo audio with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models."
     },
@@ -22,31 +22,25 @@
       "id": "coding",
       "name": "Software Engineering",
       "emoji": "💻",
-      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, polyglot package version discovery, and zero-debt engineering workflows."
+      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance."
     },
     {
       "id": "agents",
-      "name": "AI Agents",
+      "name": "Agents",
       "emoji": "🤖",
-      "description": "Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, build A2UI streaming interfaces, and author verified Agent Skills."
+      "description": "Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, communicate across sessions, and author verified Agent Skills."
     },
     {
       "id": "writing",
-      "name": "Technical Writing",
+      "name": "Writing",
       "emoji": "✍️",
-      "description": "Author publication-grade engineering blogs, Google Codelabs tutorials, Inverted Pyramid documentation, anti-slop copy, and developer social copy."
+      "description": "Author publication-grade engineering blogs, Inverted Pyramid documentation, anti-slop copy, technical SEO/GEO, and developer social copy."
     },
     {
       "id": "analytics",
-      "name": "Data Analytics",
+      "name": "Analytics",
       "emoji": "📊",
       "description": "Ingest Google Analytics 4, Google Search Console, and Buffer metrics into local SQLite warehouses for deep SQL querying."
-    },
-    {
-      "id": "standards",
-      "name": "Engineering Standards",
-      "emoji": "📐",
-      "description": "Author immutable Architectural Decision Records (ADRs), collaborative Request for Comments (RFCs), and enforce Google open-source compliance."
     }
   ],
   "skills": [
@@ -64,10 +58,10 @@
         "shaders"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
-      "digest": "sha256:71e2271fe31d4af3feb8f3e65123fe8c0814a3ff91f9d7a1f8d3c3d964fad0f6"
+      "digest": "sha256:7cc6ceae1abe817f729d91b8184680ccec7ba701590999b216f5d2f50299bb79"
     },
     {
       "name": "game-design",
@@ -80,10 +74,10 @@
         "prototyping"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/game-design/SKILL.md",
-      "digest": "sha256:f52a256aa92dceb17f2b4d4cf3b524f08a40f35ff877b9be453ba4c6d25490dc"
+      "digest": "sha256:dcbdb32f7833ad66d25697364eb224ed0f7fff46cae65edb1e73125f8d20194a"
     },
     {
       "name": "procedural-art",
@@ -97,10 +91,10 @@
         "vfx"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md",
-      "digest": "sha256:75b16a1af2fb2a4ba42f6faa316e58160b6089f13124624dbc1521f3e388aabd"
+      "digest": "sha256:c219f12702f9dd1f88c1158660d63c027e6abb20336807f2fbdd62eab0c545f4"
     },
     {
       "name": "procedural-composer",
@@ -115,10 +109,10 @@
         "bgm"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md",
-      "digest": "sha256:c8b1613473a06002d6a411b70890b1dbdfafcd5b289246168bc358fd99ee71ea"
+      "digest": "sha256:a79474237a2f81fb6299b115a03cad0f8bbed94956b97c511298e3aa9d3b174c"
     },
     {
       "name": "sprite-animation",
@@ -133,10 +127,10 @@
         "ebitengine"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md",
-      "digest": "sha256:171cf458db9c1a82c0dc5f6522eef9e1c8cce3c48092e19947f7c9b3c117c451"
+      "digest": "sha256:ca2429284488000554f909d74d19a5152a765088841189a348dba740eea7cd0f"
     },
     {
       "name": "vibe-game-developer",
@@ -151,10 +145,10 @@
         "2d"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
-      "digest": "sha256:ef7f43a83b33c0947d077613fc7a62e95d8c7ef0250967537b46c73feba1b9c4"
+      "digest": "sha256:03613d335d2a95f50eec2681ccea5679c9f976fa27e482944976c6766cb66ea0"
     },
     {
       "name": "lyria",
@@ -167,14 +161,14 @@
         "sound"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/lyria/SKILL.md",
-      "digest": "sha256:6bb818591385159439c87402bb8104ca4920dd8b206513f8470d4dded4914060"
+      "digest": "sha256:88e12dda8e48ef410b0a9ee835abef06da9bb61e0b4b5ea957fedcf533b7566c"
     },
     {
       "name": "nano-banana",
-      "description": "Conversational image generation and multimodal image editing tool using Google Nano Banana models. Generates high-resolution images (1K, 2K, 4K), performs style transfers and image edits (\"banana this\"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.",
+      "description": "Conversational image generation and multimodal image editing tool using Google Nano Banana models. Generates high-resolution images (512px, 1K, 2K, 4K), performs style transfers and mask-based image edits (\"banana this\"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.",
       "category": "media",
       "tags": [
         "image-generation",
@@ -183,10 +177,27 @@
         "generative-ai"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/nano-banana/SKILL.md",
-      "digest": "sha256:8bfc8c7d0dd443274cfcc0c9fc653273510f1bdaff61a7d255ca3b67153e4d36"
+      "digest": "sha256:eeae4125aa60530e58c9a27d2b60053a33fddceac8f07eb07bbc4ddb3fd702bc"
+    },
+    {
+      "name": "adr-template",
+      "description": "Guide and template for authoring and maintaining Architecture Decision Records (ADRs). Captures structural decisions, background context, trade-offs, and compliance verification in lightweight, immutable markdown records to preserve engineering context. Activate when making significant architectural choices, documenting technical trade-offs, proposing major refactorings, or authoring ADRs.",
+      "category": "coding",
+      "tags": [
+        "adr",
+        "architecture",
+        "standards",
+        "documentation",
+        "design"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
+      "url": "https://skills.danicat.dev/coding/adr-template/SKILL.md",
+      "digest": "sha256:bb2bbd1b92d8fd1db4ed242e92170b26d55b9e2e9a9d9dd59f56cc951e29a15a"
     },
     {
       "name": "engineering-flow",
@@ -225,6 +236,24 @@
       "digest": "sha256:a6c6f7c963f487c892e765f73444ca610932dd6843711e0932f39ad2164a4539"
     },
     {
+      "name": "google-oss",
+      "description": "Compliance and licensing guide for Google Open Source repositories and personal open-source projects published by Googlers. Enforces source file license headers (such as Apache-2.0) using addlicense, verifies license files, inserts required non-official product disclaimers, and audits pre-release compliance. Activate when preparing Google Open Source or Googler personal projects for release, applying copyright headers, or adding required disclaimers.",
+      "category": "coding",
+      "tags": [
+        "google",
+        "open-source",
+        "licensing",
+        "compliance",
+        "standards",
+        "copyright"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.2",
+      "license": "Apache-2.0",
+      "url": "https://skills.danicat.dev/coding/google-oss/SKILL.md",
+      "digest": "sha256:256bfb23888c9b56341cdd90c239f58699e7f8faae2e7177f0c33992f0eb17f2"
+    },
+    {
       "name": "latest-version",
       "description": "Query and verify latest stable package versions from official registries (npm, PyPI, Go proxy, Cargo, RubyGems) and Gemini models. Resolves accurate version constraints, checks for deprecated or yanked packages, and prevents version guessing. Activate when adding or updating dependencies, initializing new projects, editing package manifests (such as package.json, go.mod, pyproject.toml, Cargo.toml), or selecting Gemini models.",
       "category": "coding",
@@ -258,6 +287,23 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/pyhd/SKILL.md",
       "digest": "sha256:5d7a2c641686dfd68ba95eec4cbd40854ad6a5fc6c199522001a2b4bbf752be4"
+    },
+    {
+      "name": "rfc-template",
+      "description": "Collaborative design proposal framework and template for Request for Comments (RFC) documents. Structures technical design proposals, explores alternative solutions, documents spikes and open questions, and tracks proposal lifecycle states before formalizing decisions into ADRs. Activate when proposing major features, exploring technical solutions under uncertainty, drafting design documents, or gathering engineering consensus.",
+      "category": "coding",
+      "tags": [
+        "rfc",
+        "design-docs",
+        "architecture",
+        "standards",
+        "proposals"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.1",
+      "license": "Apache-2.0",
+      "url": "https://skills.danicat.dev/coding/rfc-template/SKILL.md",
+      "digest": "sha256:98e67540351d5fbdb634303f171d29f81e4c915c282e84429080a2bfbd9b3f7c"
     },
     {
       "name": "double-diamond",
@@ -524,58 +570,6 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/search-analytics/SKILL.md",
       "digest": "sha256:a7d67ca1611ccadb8ac39ff2f7cb6c07af0ec56f0ec7a8706b694a3240b433df"
-    },
-    {
-      "name": "adr-template",
-      "description": "Guide and template for authoring and maintaining Architecture Decision Records (ADRs). Captures structural decisions, background context, trade-offs, and compliance verification in lightweight, immutable markdown records to preserve engineering context. Activate when making significant architectural choices, documenting technical trade-offs, proposing major refactorings, or authoring ADRs.",
-      "category": "standards",
-      "tags": [
-        "adr",
-        "architecture",
-        "standards",
-        "documentation",
-        "design"
-      ],
-      "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
-      "license": "Apache-2.0",
-      "url": "https://skills.danicat.dev/standards/adr-template/SKILL.md",
-      "digest": "sha256:b3c58d5e2a1e4850e9830c1bbbdc59588c11e4d327a6a9f7a1f917e935847c47"
-    },
-    {
-      "name": "google-oss",
-      "description": "Compliance and licensing guide for Google Open Source repositories and personal open-source projects published by Googlers. Enforces source file license headers (such as Apache-2.0) using addlicense, verifies license files, inserts required non-official product disclaimers, and audits pre-release compliance. Activate when preparing Google Open Source or Googler personal projects for release, applying copyright headers, or adding required disclaimers.",
-      "category": "standards",
-      "tags": [
-        "google",
-        "open-source",
-        "licensing",
-        "compliance",
-        "standards",
-        "copyright"
-      ],
-      "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.2",
-      "license": "Apache-2.0",
-      "url": "https://skills.danicat.dev/standards/google-oss/SKILL.md",
-      "digest": "sha256:7157d815b24dd57fc106ec621a9bacfd9597d9735defa747c7cb09754bb29c08"
-    },
-    {
-      "name": "rfc-template",
-      "description": "Collaborative design proposal framework and template for Request for Comments (RFC) documents. Structures technical design proposals, explores alternative solutions, documents spikes and open questions, and tracks proposal lifecycle states before formalizing decisions into ADRs. Activate when proposing major features, exploring technical solutions under uncertainty, drafting design documents, or gathering engineering consensus.",
-      "category": "standards",
-      "tags": [
-        "rfc",
-        "design-docs",
-        "architecture",
-        "standards",
-        "proposals"
-      ],
-      "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.1.1",
-      "license": "Apache-2.0",
-      "url": "https://skills.danicat.dev/standards/rfc-template/SKILL.md",
-      "digest": "sha256:e124b5b0149a972c2509ffb3306e378a770db7ac3a6604e3006fa24dd1ba7a62"
     }
   ]
 }

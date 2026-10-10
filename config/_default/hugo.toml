@@ -1,0 +1,50 @@
+# -- Site Configuration --
+# https://skills.danicat.dev (Hugo + Blowfish)
+
+theme = "blowfish"
+baseURL = "https://skills.danicat.dev/"
+defaultContentLanguage = "en"
+
+enableRobotsTXT = true
+summaryLength = 0
+
+buildDrafts = false
+buildFuture = false
+
+enableEmoji = true
+
+googleAnalytics = "G-8RHDQGEGZ2"
+
+disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+ignoreLogs = ["warning-goldmark-raw-html"]
+
+[services]
+  [services.googleAnalytics]
+    id = "G-8RHDQGEGZ2"
+
+[pagination]
+  pagerSize = 100
+
+[imaging]
+  resampleFilter = "lanczos"
+  quality = 90
+  anchor = "Center"
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.8
+
+[outputs]
+  home = ["HTML"]
+  page = ["HTML"]
+
+[caches]
+  [caches.images]
+    dir = ":cacheDir/images"
+
+[minify]
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepQuotes = true
+      keepWhitespace = false

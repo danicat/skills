@@ -43,8 +43,7 @@ const VALID_CATEGORIES = new Set([
   'coding',
   'agents',
   'writing',
-  'analytics',
-  'standards'
+  'analytics'
 ]);
 
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/;
