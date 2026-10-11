@@ -155,11 +155,90 @@ function discoverBundledResources(skillDir) {
   return resources;
 }
 
+async function fetchFirestoreMetricsSnapshot() {
+  const paramsPath = path.resolve(ROOT_DIR, 'config/_default/params.toml');
+  if (!fs.existsSync(paramsPath)) {
+    throw new Error(`CRITICAL: Missing Firebase config file at ${paramsPath}`);
+  }
+  const paramsToml = fs.readFileSync(paramsPath, 'utf8');
+  const apiKeyMatch = paramsToml.match(/apiKey\s*=\s*"([^"]+)"/);
+  const projectIdMatch = paramsToml.match(/projectId\s*=\s*"([^"]+)"/);
+  if (!apiKeyMatch || !projectIdMatch) {
+    throw new Error(`CRITICAL: Missing firebase.apiKey or firebase.projectId in ${paramsPath}`);
+  }
+  const apiKey = apiKeyMatch[1];
+  const projectId = projectIdMatch[1];
+
+  const authRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Referer': `${SUB_DOMAIN}/`
+    },
+    body: JSON.stringify({ returnSecureToken: true })
+  });
+  if (!authRes.ok) {
+    const body = await authRes.text();
+    throw new Error(`CRITICAL: Firebase anonymous auth failed (${authRes.status}): ${body}`);
+  }
+  const authData = await authRes.json();
+  if (!authData.idToken) {
+    throw new Error(`CRITICAL: Firebase anonymous auth did not return idToken: ${JSON.stringify(authData)}`);
+  }
+
+  const docsRes = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/skills?pageSize=100`,
+    {
+      headers: {
+        'Authorization': `Bearer ${authData.idToken}`,
+        'Referer': `${SUB_DOMAIN}/`
+      }
+    }
+  );
+  if (!docsRes.ok) {
+    const body = await docsRes.text();
+    throw new Error(`CRITICAL: Firestore skills fetch failed (${docsRes.status}): ${body}`);
+  }
+  const docsData = await docsRes.json();
+  if (!Array.isArray(docsData.documents)) {
+    throw new Error(`CRITICAL: Firestore skills response missing documents array: ${JSON.stringify(docsData)}`);
+  }
+
+  const bySkill = {};
+  for (const doc of docsData.documents) {
+    const docId = doc.name.split('/').pop() || '';
+    const f = doc.fields || {};
+    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|agents|writing|analytics|standards)-/, '');
+    const skillId = String(rawSkill || '').toLowerCase();
+    if (!skillId) continue;
+
+    if (!bySkill[skillId]) {
+      bySkill[skillId] = { likes: 0, views: 0, copies: 0, featured: false };
+    }
+    const likes = Math.max(0, parseInt(f.likes?.integerValue ?? f.likes?.doubleValue ?? '0', 10) || 0);
+    const views = Math.max(0, parseInt(f.views?.integerValue ?? f.views?.doubleValue ?? '0', 10) || 0);
+    const copies = Math.max(0, parseInt(f.copies?.integerValue ?? f.copies?.doubleValue ?? '0', 10) || 0);
+    const featured = f.featured?.booleanValue === true || f.featured?.stringValue === 'true';
+
+    bySkill[skillId].likes += likes;
+    bySkill[skillId].views += views;
+    bySkill[skillId].copies += copies;
+    if (featured) {
+      bySkill[skillId].featured = true;
+    }
+  }
+
+  const snapshotPath = path.resolve(ROOT_DIR, 'data/metrics_snapshot.json');
+  fs.writeFileSync(snapshotPath, JSON.stringify(bySkill, null, 2) + '\n', 'utf8');
+  console.log(`Fetched Firestore metrics snapshot for ${Object.keys(bySkill).length} skills -> data/metrics_snapshot.json`);
+}
+
 async function build() {
   console.log('Building skills.danicat.dev with Hugo + Blowfish, catalog.json, llms.txt, and QA audit...');
 
   loadAuthoritativeIdentity();
   fixA2uiLinks();
+  await fetchFirestoreMetricsSnapshot();
 
   const evalDir = path.join(ROOT_DIR, 'writing/seo-optimizer/evals/files');
   if (fs.existsSync(evalDir)) {

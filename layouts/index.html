@@ -1,13 +1,23 @@
 {{ define "main" }}
 {{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
+{{- $metrics := site.Data.metrics_snapshot -}}
 {{- $sections := .Site.Sections.ByWeight -}}
-{{- $allSkills := slice -}}
+{{- $skillItems := slice -}}
 {{- range $sec := $sections -}}
   {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
   {{- range $s := $secSkills.ByTitle -}}
-    {{- $allSkills = $allSkills | append $s -}}
+    {{- $skillId := lower $s.Params.skillName -}}
+    {{- $m := index $metrics $skillId | default dict -}}
+    {{- $stars := int ($m.likes | default 0) -}}
+    {{- $views := int ($m.views | default 0) -}}
+    {{- $featured := $m.featured | default false -}}
+    {{- $baseScore := add (mul 100 $stars) $views -}}
+    {{- $score := cond $featured (mul 2 $baseScore) $baseScore -}}
+    {{- $sortKey := printf "%010d-%d-%08d-%08d-%s" (sub 9999999999 $score) (cond $featured 0 1) (sub 99999999 $stars) (sub 99999999 $views) $skillId -}}
+    {{- $skillItems = $skillItems | append (dict "page" $s "sortKey" $sortKey) -}}
   {{- end -}}
 {{- end -}}
+{{- $sortedItems := sort $skillItems "sortKey" "asc" -}}
 
 <header class="mt-5 mb-8">
   <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
@@ -42,7 +52,7 @@
   </div>
 
   <div class="flex flex-wrap gap-1.5" id="categoryFilters">
-    <button type="button" class="pill-btn active" data-cat="all">{{ $t.ui.allFilter }} ({{ len $allSkills }})</button>
+    <button type="button" class="pill-btn active" data-cat="all">{{ $t.ui.allFilter }} ({{ len $sortedItems }})</button>
     {{- range $sec := $sections -}}
       {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
       <button type="button" class="pill-btn" data-cat="{{ $sec.Params.categoryId }}">
@@ -53,8 +63,8 @@
 </section>
 
 <section class="grid gap-6 sm:grid-cols-2 mb-12" id="skillsGrid">
-  {{- range $s := $allSkills -}}
-    {{ partial "skill-card.html" (dict "page" $s) }}
+  {{- range $item := $sortedItems -}}
+    {{ partial "skill-card.html" (dict "page" $item.page) }}
   {{- end -}}
 </section>
 

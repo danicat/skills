@@ -1,0 +1,182 @@
+{
+  "double-diamond": {
+    "likes": 2,
+    "views": 33,
+    "copies": 1,
+    "featured": false
+  },
+  "intercom": {
+    "likes": 0,
+    "views": 2,
+    "copies": 1,
+    "featured": false
+  },
+  "parallel": {
+    "likes": 2,
+    "views": 4,
+    "copies": 2,
+    "featured": true
+  },
+  "skill-optimizer": {
+    "likes": 1,
+    "views": 11,
+    "copies": 2,
+    "featured": false
+  },
+  "swarm-coding": {
+    "likes": 2,
+    "views": 17,
+    "copies": 1,
+    "featured": true
+  },
+  "uno-reverse": {
+    "likes": 2,
+    "views": 25,
+    "copies": 2,
+    "featured": true
+  },
+  "buffer-analytics": {
+    "likes": 0,
+    "views": 4,
+    "copies": 1,
+    "featured": false
+  },
+  "google-analytics": {
+    "likes": 0,
+    "views": 3,
+    "copies": 1,
+    "featured": false
+  },
+  "search-analytics": {
+    "likes": 0,
+    "views": 2,
+    "copies": 0,
+    "featured": false
+  },
+  "adr-template": {
+    "likes": 0,
+    "views": 6,
+    "copies": 2,
+    "featured": false
+  },
+  "engineering-flow": {
+    "likes": 0,
+    "views": 17,
+    "copies": 3,
+    "featured": false
+  },
+  "godoctor": {
+    "likes": 1,
+    "views": 12,
+    "copies": 2,
+    "featured": false
+  },
+  "google-oss": {
+    "likes": 1,
+    "views": 2,
+    "copies": 0,
+    "featured": false
+  },
+  "latest-version": {
+    "likes": 1,
+    "views": 3,
+    "copies": 1,
+    "featured": false
+  },
+  "pyhd": {
+    "likes": 0,
+    "views": 4,
+    "copies": 2,
+    "featured": false
+  },
+  "rfc-template": {
+    "likes": 0,
+    "views": 4,
+    "copies": 1,
+    "featured": false
+  },
+  "ebitengineer": {
+    "likes": 1,
+    "views": 13,
+    "copies": 3,
+    "featured": false
+  },
+  "game-design": {
+    "likes": 2,
+    "views": 13,
+    "copies": 5,
+    "featured": false
+  },
+  "procedural-art": {
+    "likes": 0,
+    "views": 7,
+    "copies": 2,
+    "featured": false
+  },
+  "procedural-composer": {
+    "likes": 1,
+    "views": 1,
+    "copies": 2,
+    "featured": false
+  },
+  "sprite-animation": {
+    "likes": 0,
+    "views": 9,
+    "copies": 1,
+    "featured": false
+  },
+  "vibe-game-developer": {
+    "likes": 1,
+    "views": 5,
+    "copies": 3,
+    "featured": false
+  },
+  "lyria": {
+    "likes": 0,
+    "views": 4,
+    "copies": 0,
+    "featured": false
+  },
+  "nano-banana": {
+    "likes": 1,
+    "views": 4,
+    "copies": 0,
+    "featured": false
+  },
+  "buffer": {
+    "likes": 0,
+    "views": 5,
+    "copies": 1,
+    "featured": false
+  },
+  "deslopify": {
+    "likes": 1,
+    "views": 13,
+    "copies": 3,
+    "featured": false
+  },
+  "google-blog-style": {
+    "likes": 0,
+    "views": 5,
+    "copies": 0,
+    "featured": false
+  },
+  "inverted-pyramid": {
+    "likes": 1,
+    "views": 3,
+    "copies": 0,
+    "featured": false
+  },
+  "seo-optimizer": {
+    "likes": 1,
+    "views": 7,
+    "copies": 0,
+    "featured": false
+  },
+  "social-copy": {
+    "likes": 1,
+    "views": 5,
+    "copies": 0,
+    "featured": false
+  }
+}

@@ -1,17 +1,25 @@
 {{- $s := .page -}}
 {{- $skillId := lower $s.Params.skillName -}}
-<article class="skill-card danicat-card group"
+{{- $metrics := site.Data.metrics_snapshot -}}
+{{- $m := index $metrics $skillId | default dict -}}
+{{- $stars := int ($m.likes | default 0) -}}
+{{- $views := int ($m.views | default 0) -}}
+{{- $copies := int ($m.copies | default 0) -}}
+{{- $isFeatured := $m.featured | default false -}}
+{{- $baseScore := add (mul 100 $stars) $views -}}
+{{- $score := cond $isFeatured (mul 2 $baseScore) $baseScore -}}
+<article class="skill-card danicat-card group{{ if $isFeatured }} is-featured{{ end }}"
      id="card-{{ $skillId }}"
      data-skill-id="{{ $skillId }}"
      data-category="{{ $s.Params.category }}"
      data-name="{{ $skillId }}"
      data-desc="{{ lower $s.Params.description }}"
      data-tags="{{ lower (delimit ($s.Params.tags | default slice) " ") }}"
-     data-featured="false"
-     data-stars="0"
-     data-views="0"
-     data-copies="0"
-     data-score="0">
+     data-featured="{{ if $isFeatured }}true{{ else }}false{{ end }}"
+     data-stars="{{ $stars }}"
+     data-views="{{ $views }}"
+     data-copies="{{ $copies }}"
+     data-score="{{ $score }}">
   <div>
     <div class="flex items-center justify-between gap-2 mb-3">
       <a href="{{ (printf "/#%s" $s.Params.category) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
@@ -29,7 +37,7 @@
           <svg class="star-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
-          <span class="metric-val star-count">0</span>
+          <span class="metric-val star-count">{{ $stars }}</span>
         </button>
 
         <div class="metric-pill view-pill" title="Total Views">
@@ -37,7 +45,7 @@
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span class="metric-val view-count">0</span>
+          <span class="metric-val view-count">{{ $views }}</span>
         </div>
       </div>
     </div>
