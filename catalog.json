@@ -4,7 +4,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 30,
-  "updatedAt": "2026-10-11T01:18:41.762Z",
+  "updatedAt": "2026-10-11T03:08:36.763Z",
   "categories": [
     {
       "id": "game-dev",
@@ -22,7 +22,7 @@
       "id": "coding",
       "name": "Software Engineering",
       "emoji": "💻",
-      "description": "Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance."
+      "description": "Automate semantic versioning, Go quality gates with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance."
     },
     {
       "id": "agents",
@@ -148,7 +148,7 @@
       "version": "0.3.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
-      "digest": "sha256:03613d335d2a95f50eec2681ccea5679c9f976fa27e482944976c6766cb66ea0"
+      "digest": "sha256:721be8ed68acee03d7e0e684165f46cb74e4f4b1841cbb72400af93c71973381"
     },
     {
       "name": "lyria",
@@ -219,7 +219,7 @@
     },
     {
       "name": "godoctor",
-      "description": "Developer tooling and architectural safety rules for Go. Automatically validates AST integrity, guards against regressions with compiler rollback gates, eliminates blind spots via Selene mutation testing, and enables fast test and coverage analytics with TestQuery SQLite queries. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness with mutation testing, or enforcing idiomatic Go standards.",
+      "description": "Developer tooling and architectural safety rules for Go. Orchestrates high-level Go toolchain and static analysis utilities (gofmt, goimports, go vet, modernize, golangci-lint, deadcode), guards edits with compiler rollback gates, eliminates blind spots via Selene mutation testing, and enables fast test and coverage analytics with TestQuery SQLite queries. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness, or enforcing idiomatic Go standards.",
       "category": "coding",
       "tags": [
         "go",
@@ -230,10 +230,10 @@
         "mutation-testing"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
-      "digest": "sha256:a6c6f7c963f487c892e765f73444ca610932dd6843711e0932f39ad2164a4539"
+      "digest": "sha256:9e9e84c1dd3bee8a8955041405cbd6fec6e392ddf92f137182b458dab58146b8"
     },
     {
       "name": "google-oss",
@@ -375,7 +375,7 @@
       "version": "0.5.1",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/agents/skill-optimizer/SKILL.md",
-      "digest": "sha256:1ed31033256dd583d9e1306f3fe23c9bc4f63108eeb8bdc7ea1bd07185b5a3cf"
+      "digest": "sha256:aca155e93fefe6b093d303d5726db0249d67c1ed5fefbcdc69f6da44579b7fde"
     },
     {
       "name": "swarm-coding",

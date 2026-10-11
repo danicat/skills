@@ -291,15 +291,16 @@ The following 3 case studies demonstrate how to apply these principles across th
 * **Best Practice (Concrete Safety Mechanisms & Value Framing ✅)**:
   ```yaml
   description: >
-    Developer tooling and architectural safety rules for Go. Automatically
-    validates AST integrity, guards against regressions with compiler rollback
-    gates, eliminates blind spots via Selene mutation testing, and isolates
-    test databases with TestQuery SQL transactions. Activate when writing or
-    refactoring Go code, fixing compilation or test failures, auditing test
-    thoroughness with mutation testing, or enforcing idiomatic Go standards.
+    Developer tooling and architectural safety rules for Go. Orchestrates
+    high-level Go toolchain and static analysis utilities (gofmt, goimports,
+    go vet, modernize, golangci-lint, deadcode), guards edits with compiler
+    rollback gates, eliminates blind spots via Selene mutation testing, and
+    enables fast test and coverage analytics with TestQuery SQLite queries.
+    Activate when writing or refactoring Go code, fixing compilation or test
+    failures, auditing test thoroughness, or enforcing idiomatic Go standards.
   tags: "go, golang, testing, refactoring, quality, mutation-testing"
   ```
-* **Why it works**: Highlights the architectural safety mechanisms (**compiler rollback gates** and **isolated SQL transactions**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
+* **Why it works**: Highlights the concrete toolchain orchestration and safety mechanisms (**compiler rollback gates** and **SQLite coverage analytics**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
 
 ---
 

@@ -39,7 +39,7 @@ Each skill in the starter kit has a distinct, orthogonal responsibility and can 
 | **Pure-Code Procedural 2D Graphics** | **[`procedural-art`](../procedural-art/SKILL.md)** | **Procedural Technical Artist**: Zero-asset Go texture generation (`art.go`), 2D `GeoM` matrix transform ordering, 32-bit RGBA color ramps, sub-frame animation easing, pre-allocated particle pools, and Kage shaders. |
 | **Generative AI Images & Sprites** | **[`nano-banana`](../../media/nano-banana/SKILL.md)** | **AI Visual Artist**: Conversational image generation and editing via **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image`, and `gemini-3-pro-image` for sprite sheets, character portraits, card art, tilesets, and multi-image style/character consistency. |
 | **2D Sprite Slicing & Animation** | **[`sprite-animation`](../sprite-animation/SKILL.md)** | **2D Animator**: Sprite sheet grid slicing (`SubImage` zero-alloc views), animation state machines (`idle`, `walk`, `attack`, `cast`, `hit`, `death`), frame timing, Aseprite (`.ase`/`.aseprite`) integration, and Ebitengine animation controllers. |
-| **Go Code Quality & Mutation Testing** | **[`godoctor`](../../coding/godoctor/SKILL.md)** | **Go Quality Gate**: AST integrity validation, compiler rollback gates (`smart_build`, `smart_edit`), TestQuery SQLite test/coverage analytics, and Selene mutation testing. |
+| **Go Code Quality & Mutation Testing** | **[`godoctor`](../../coding/godoctor/SKILL.md)** | **Go Quality Gate**: High-level toolchain orchestration (`gofmt`, `goimports`, `go vet`, `golangci-lint`), compiler rollback gates (`smart_build`, `smart_edit`), TestQuery SQLite analytics, and Selene mutation testing. |
 | **Multi-Agent Swarm Coordination** | **[`swarm-coding`](../../agents/swarm-coding/SKILL.md)** | **Swarm Coordinator**: Hierarchical divide-and-conquer multi-agent orchestration across disjoint packages (e.g., concurrent engine core, procedural/AI assets, UI/HUD, and QA). |
 
 ---
@@ -63,7 +63,7 @@ flowchart TD
     AudChoice -->|Hybrid| ProcComp
     AudChoice -->|Hybrid| Lyria
 
-    Engine --> QA["godoctor (AST Gate, TestQuery, Selene Mutation Testing)"]
+    Engine --> QA["godoctor (Compiler & Lint Gate, TestQuery, Selene Mutation Testing)"]
     ProcArt --> QA
     SpriteAnim --> QA
     ProcComp --> QA
@@ -121,5 +121,5 @@ When guiding the user through building a complete 2D game from scratch (or execu
    - **Procedural**: Activate [`procedural-composer`](../procedural-composer/SKILL.md) for 4-byte aligned (`&^ 3`) 16-bit stereo SFX, DSP filters, and 6-channel BGM.
    - **AI / Hybrid**: Activate [`lyria`](../../media/lyria/SKILL.md) (`lyria-3.5` / `lyria-3-pro-preview`, `lyria-3-clip-preview`) for 44.1 kHz stereo soundtracks and combine with [`procedural-composer`](../procedural-composer/SKILL.md) for loop slicing and SFX.
 5. **Parallel Execution (Optional)**: For multi-system builds with orthogonal workstreams, activate [`swarm-coding`](../../agents/swarm-coding/SKILL.md) to coordinate parallel specialist subagents across disjoint file sets.
-6. **Quality Gate & Verification**: Activate [`godoctor`](../../coding/godoctor/SKILL.md) to validate AST integrity, run unit tests with TestQuery analytics, and eliminate test blind spots via Selene mutation testing.
+6. **Quality Gate & Verification**: Activate [`godoctor`](../../coding/godoctor/SKILL.md) to run compiler and linter quality gates, execute unit tests with TestQuery analytics, and eliminate test blind spots via Selene mutation testing.
 7. **WebAssembly & Cloud Run Deployment**: Activate [`ebitengineer`](../ebitengineer/SKILL.md) to compile to WASM with browser audio unlock synchronization and package for deployment.

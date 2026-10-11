@@ -33,7 +33,7 @@ const REPO_URL = 'https://github.com/danicat/skills';
 const CATEGORIES = [
   { id: 'game-dev', name: 'Games', emoji: '🕹️', description: 'Design and build high-performance 2D games in Go using Ebitengine v2 with procedural art, chiptune DSP sound synthesis, sprite animation, and GDD specifications.' },
   { id: 'media', name: 'GenAI', emoji: '🎨', description: 'Synthesize high-fidelity stereo audio with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models.' },
-  { id: 'coding', name: 'Software Engineering', emoji: '💻', description: 'Automate semantic versioning, Go AST refactoring with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance.' },
+  { id: 'coding', name: 'Software Engineering', emoji: '💻', description: 'Automate semantic versioning, Go quality gates with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance.' },
   { id: 'agents', name: 'Agents', emoji: '🤖', description: 'Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, communicate across sessions, and author verified Agent Skills.' },
   { id: 'writing', name: 'Writing', emoji: '✍️', description: 'Author publication-grade engineering blogs, Inverted Pyramid documentation, anti-slop copy, technical SEO/GEO, and developer social copy.' },
   { id: 'analytics', name: 'Analytics', emoji: '📊', description: 'Ingest Google Analytics 4, Google Search Console, and Buffer metrics into local SQLite warehouses for deep SQL querying.' },
