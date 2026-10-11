@@ -65,11 +65,10 @@
     } catch (e) {}
   }
 
-  function calculateScore(stars, copies, views) {
+  function calculateScore(stars, views) {
     var s = Math.max(0, parseInt(stars, 10) || 0);
-    var c = Math.max(0, parseInt(copies, 10) || 0);
     var v = Math.max(0, parseInt(views, 10) || 0);
-    return (100 * s) + (10 * c) + (1 * v);
+    return (100 * s) + v;
   }
 
   function handleStarToggle(btn, category, skillId) {
@@ -103,11 +102,15 @@
         var currentStars = !isStarred ? Math.max(1, prevStars + 1) : Math.max(0, prevStars - 1);
         card.setAttribute('data-stars', currentStars);
         if (starCountEl) starCountEl.textContent = formatCompactNum(currentStars);
-        var currentCopies = Math.max(0, parseInt(card.getAttribute('data-copies') || '0', 10));
         var currentViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
-        card.setAttribute('data-score', calculateScore(currentStars, currentCopies, currentViews));
+        card.setAttribute('data-score', calculateScore(currentStars, currentViews));
       }
     });
+
+    var sortSelect = document.getElementById('sortSelect');
+    if (!sortSelect || sortSelect.value === 'popularity') {
+      sortSkillsGrid('popularity');
+    }
 
     var detailCount = document.getElementById('detailStarCount');
     if (detailCount) {
@@ -172,7 +175,7 @@
           card.setAttribute('data-copies', currentCopies);
           var currentStars = Math.max(0, parseInt(card.getAttribute('data-stars') || '0', 10));
           var currentViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
-          card.setAttribute('data-score', calculateScore(currentStars, currentCopies, currentViews));
+          card.setAttribute('data-score', calculateScore(currentStars, currentViews));
         }
 
         if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
@@ -295,7 +298,9 @@
           starBtn.setAttribute('aria-pressed', 'true');
         }
         var curStars = Math.max(1, parseInt(card.getAttribute('data-stars') || '0', 10));
+        var curViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
         card.setAttribute('data-stars', curStars);
+        card.setAttribute('data-score', calculateScore(curStars, curViews));
         var starCountEl = card.querySelector('.star-count');
         if (starCountEl) starCountEl.textContent = formatCompactNum(curStars);
       }
@@ -346,7 +351,7 @@
             card.setAttribute('data-stars', stars);
             card.setAttribute('data-views', views);
             card.setAttribute('data-copies', copies);
-            card.setAttribute('data-score', calculateScore(stars, copies, views));
+            card.setAttribute('data-score', calculateScore(stars, views));
 
             var starCountEl = card.querySelector('.star-count');
             var viewCountEl = card.querySelector('.view-count');
@@ -452,6 +457,7 @@
     }
 
     if (sortSelect) {
+      sortSelect.value = 'popularity';
       sortSelect.addEventListener('change', function() {
         sortSelect.dataset.userTriggered = 'true';
         sortSkillsGrid(sortSelect.value);
@@ -468,6 +474,7 @@
     });
 
     hydrateCardsFromLocal();
+    sortSkillsGrid(sortSelect ? sortSelect.value : 'popularity');
     initFirestoreLiveMetrics();
 
     var savedMode = localStorage.getItem('preferred_cli_mode') || 'kungfu';
