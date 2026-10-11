@@ -16,16 +16,20 @@
         {{ $authorImage = resources.Get . }}
       {{ end }}
       {{ if $authorImage }}
-        {{ if not $disableImageOptimization }}
-          {{ $authorImage = $authorImage.Fill (print "240x240 q" ( $.Site.Params.Author.imagequality | default "96" )) }}
-        {{ end }}
+        {{ $avatar104 := $authorImage.Fill "104x104 webp q80" }}
+        {{ $avatar160 := $authorImage.Fill "160x160 webp q80" }}
+        {{ $avatar208 := $authorImage.Fill "208x208 webp q80" }}
         <a href="{{ $danicatUrl }}" class="shrink-0">
           <img
             class="home-profile-avatar nozoom"
             width="104"
             height="104"
+            fetchpriority="high"
+            decoding="async"
             alt="{{ $.Site.Params.Author.name | default "Author" }}"
-            src="{{ $authorImage.RelPermalink }}" />
+            src="{{ $avatar104.RelPermalink }}"
+            srcset="{{ $avatar104.RelPermalink }} 104w, {{ $avatar160.RelPermalink }} 160w, {{ $avatar208.RelPermalink }} 208w"
+            sizes="(max-width: 639px) 80px, 100px" />
         </a>
       {{ end }}
     {{ end }}

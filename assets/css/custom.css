@@ -222,7 +222,6 @@ pre.chroma {
   flex-direction: column;
   justify-content: space-between;
   padding: 1.5rem;
-  will-change: transform;
 }
 
 .skill-card:hover {
@@ -646,7 +645,7 @@ html.dark .code-block-header {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-weight: 600;
   text-transform: uppercase;
-  color: rgb(var(--color-neutral-500));
+  color: rgb(var(--color-neutral-600));
   letter-spacing: 0.04em;
 }
 

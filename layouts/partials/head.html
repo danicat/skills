@@ -1,0 +1,331 @@
+<head>
+  <meta charset="utf-8">
+  {{ with .Site.Language.Params.htmlCode | default .Site.LanguageCode }}
+    <meta http-equiv="content-language" content="{{ . }}">
+  {{ end }}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color">
+
+  {{/* Title */}}
+  {{ if .IsHome }}
+    <title>{{ .Site.Title | emojify }}</title>
+    <meta name="title" content="{{ .Site.Title | emojify }}">
+  {{ else }}
+    <title>{{ .Title | emojify }} &middot; {{ .Site.Title | emojify }}</title>
+    <meta name="title" content="{{ .Title | emojify }} &middot; {{ .Site.Title | emojify }}">
+  {{ end }}
+
+  {{/* Metadata */}}
+  {{ with (.Params.Summary | default .Params.Description) | default .Site.Params.description }}
+    <meta name="description" content="{{ . }}">
+  {{ end }}
+  {{ with .Params.Tags | default .Site.Params.keywords }}
+    <meta name="keywords" content="{{ range . }}{{ . }},{{ end }}">
+  {{ end }}
+  {{ with .Site.Params.robots }}
+    <meta name="robots" content="{{ . }}">
+  {{ end }}
+  {{ with .Params.robots }}
+    <meta name="robots" content="{{ . }}">
+  {{ end }}
+  <link rel="canonical" href="{{ .Permalink }}">
+  {{ range .AlternativeOutputFormats }}
+    {{ printf `
+      <link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .RelPermalink ($.Site.Title | emojify) |
+      safeHTML
+    }}
+  {{ end }}
+
+  {{/* Me */}}
+  {{ with .Site.Params.Author.name }}
+    <meta name="author" content="{{ . }}">
+  {{ end }}
+  {{ with .Site.Params.Author.links }}
+    {{ range $links := . }}
+      {{ range $name, $url := $links }}
+        {{ if not (strings.HasPrefix $url "mailto:") }}
+          <link href="{{ $url }}" rel="me">
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/* Social */}}
+  {{ template "_internal/opengraph.html" . }}
+  {{ template "_internal/twitter_cards.html" . }}
+  {{ $featureImage := "" }}
+  {{ $pageImages := .Resources.ByType "image" }}
+  {{ range slice "*featured*" "*cover*" "*thumbnail*" }}
+    {{ if not $featureImage }}
+      {{ $featureImage = $pageImages.GetMatch . }}
+    {{ end }}
+  {{ end }}
+  {{ if not $featureImage }}
+    {{ with .Site.Params.defaultSocialImage }}
+      {{ $socialImage := "" }}
+      {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
+        {{ $socialImage = resources.GetRemote . }}
+      {{ else }}
+        {{ $socialImage = resources.Get . }}
+      {{ end }}
+      {{ with $socialImage }}
+        <meta name="twitter:image" content="{{ .RelPermalink | absURL }}">
+        <meta property="og:image" content="{{ .RelPermalink | absURL }}">
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/* Site Verification */}}
+  {{ with .Site.Params.verification.google }}
+    <meta name="google-site-verification" content="{{ . }}">
+  {{ end }}
+  {{ with .Site.Params.verification.bing }}
+    <meta name="msvalidate.01" content="{{ . }}">
+  {{ end }}
+  {{ with .Site.Params.verification.pinterest }}
+    <meta name="p:domain_verify" content="{{ . }}">
+  {{ end }}
+  {{ with .Site.Params.verification.yandex }}
+    <meta name="yandex-verification" content="{{ . }}">
+  {{ end }}
+  {{ with .Site.Params.verification.fediverse }}
+    <meta name="fediverse:creator" content="{{ . }}">
+  {{ end }}
+
+  {{/* Inlined Critical CSS (pruned per page at build time by scripts/build_site.mjs) */}}
+  {{ $cssResources := slice }}
+  {{ $schemeName := .Site.Params.colorScheme | default "blowfish" }}
+  {{ $cssScheme := resources.Get (printf "css/schemes/%s.css" (lower $schemeName)) | default (resources.Get "css/schemes/blowfish.css") }}
+  {{ $cssResources = $cssResources | append $cssScheme }}
+  {{ $cssResources = $cssResources | append (resources.Get "css/compiled/main.css") }}
+  {{ with resources.Get "css/custom.css" }}
+    {{ $cssResources = $cssResources | append . }}
+  {{ end }}
+  {{ $bundleCSS := $cssResources | resources.Concat "css/main.bundle.css" | resources.Minify }}
+  <style id="main-css">{{ $bundleCSS.Content | safeCSS }}</style>
+
+  {{/* Inlined Appearance & Scroll-to-Top JS (eliminates render-blocking external JS requests) */}}
+  {{ $jsAppearance := resources.Get "js/appearance.js" | resources.ExecuteAsTemplate "js/appearance.js" . }}
+  {{ $headJSResources := slice $jsAppearance }}
+  {{ if site.Params.footer.showScrollToTop | default true }}
+    {{ $headJSResources = $headJSResources | append (resources.Get "js/scroll-to-top.js") }}
+  {{ end }}
+  {{ $inlineHeadJS := $headJSResources | resources.Concat "js/head-inline.js" | resources.Minify }}
+  <script>{{ $inlineHeadJS.Content | safeJS }}</script>
+
+  {{/* Conditional shortcode vendor resources */}}
+  {{ partial "vendor.html" . }}
+
+  {{/* Icons */}}
+  {{ if templates.Exists "partials/favicons.html" }}
+    {{ partialCached "favicons.html" .Site }}
+  {{ else }}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ "apple-touch-icon.png" | relURL }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | relURL }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon-16x16.png" | relURL }}">
+    <link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
+  {{ end }}
+
+  {{/* Schema */}}
+  {{ partial "schema.html" . }}
+
+  {{/* Analytics */}}
+  {{ if hugo.IsProduction }}
+    {{ partial "analytics/main.html" . }}
+  {{ end }}
+
+  {{/* Extend head */}}
+  {{ if templates.Exists "partials/extend-head.html" }}
+    {{ partialCached "extend-head.html" .Site }}
+  {{ end }}
+
+  {{/* Uncached extend head */}}
+  {{ if templates.Exists "partials/extend-head-uncached.html" }}
+    {{ partial "extend-head-uncached.html" . }}
+  {{ end }}
+
+  {{/* Lightweight Firebase Auth & Firestore REST Client (replaces 156 KiB synchronous v8 SDK) */}}
+  {{ with $.Site.Params.firebase }}
+    {{ if isset $.Site.Params "firebase" }}
+      <script>
+        window.DanicatFirestore = (function() {
+          var apiKey = {{ $.Site.Params.firebase.apiKey }};
+          var projectId = {{ $.Site.Params.firebase.projectId }};
+          var AUTH_CACHE_KEY = 'danicat_fb_auth_v1';
+          var inFlightAuth = null;
+
+          function getIdToken() {
+            try {
+              var cached = JSON.parse(sessionStorage.getItem(AUTH_CACHE_KEY) || 'null');
+              if (cached && cached.idToken && cached.expiresAt > Date.now() + 60000) {
+                return Promise.resolve(cached.idToken);
+              }
+            } catch (e) {}
+
+            if (inFlightAuth) return inFlightAuth;
+
+            inFlightAuth = fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + encodeURIComponent(apiKey), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ returnSecureToken: true })
+            }).then(function(res) {
+              if (!res.ok) {
+                throw new Error('Firebase anonymous auth failed with HTTP ' + res.status);
+              }
+              return res.json();
+            }).then(function(data) {
+              inFlightAuth = null;
+              if (!data || !data.idToken) {
+                throw new Error('Firebase anonymous auth response missing idToken');
+              }
+              var expiresInSec = parseInt(data.expiresIn || '3600', 10) || 3600;
+              try {
+                sessionStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({
+                  idToken: data.idToken,
+                  expiresAt: Date.now() + (expiresInSec * 1000)
+                }));
+              } catch (e) {}
+              return data.idToken;
+            }).catch(function(err) {
+              inFlightAuth = null;
+              throw err;
+            });
+
+            return inFlightAuth;
+          }
+
+          function parseIntField(fieldObj) {
+            if (!fieldObj) return 0;
+            var raw = fieldObj.integerValue !== undefined ? fieldObj.integerValue : fieldObj.doubleValue;
+            return Math.max(0, parseInt(raw || '0', 10) || 0);
+          }
+
+          function fetchSkillsMap() {
+            return getIdToken().then(function(idToken) {
+              var url = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents/skills?pageSize=100';
+              return fetch(url, {
+                headers: { 'Authorization': 'Bearer ' + idToken }
+              });
+            }).then(function(res) {
+              if (!res.ok) {
+                throw new Error('Firestore skills fetch failed with HTTP ' + res.status);
+              }
+              return res.json();
+            }).then(function(data) {
+              var bySkill = {};
+              var docs = (data && Array.isArray(data.documents)) ? data.documents : [];
+              docs.forEach(function(doc) {
+                var docId = (doc.name || '').split('/').pop() || '';
+                var f = doc.fields || {};
+                var rawSkill = (f.skill && f.skill.stringValue)
+                  ? f.skill.stringValue
+                  : docId.replace(/^(game-dev|media|coding|agents|writing|analytics|standards)-/, '');
+                var sId = String(rawSkill || '').toLowerCase();
+                if (!sId) return;
+                if (!bySkill[sId]) {
+                  bySkill[sId] = { likes: 0, views: 0, copies: 0, featured: false };
+                }
+                bySkill[sId].likes += parseIntField(f.likes);
+                bySkill[sId].views += parseIntField(f.views);
+                bySkill[sId].copies += parseIntField(f.copies);
+                if ((f.featured && f.featured.booleanValue === true) || (f.featured && f.featured.stringValue === 'true')) {
+                  bySkill[sId].featured = true;
+                }
+              });
+              return bySkill;
+            });
+          }
+
+          function incrementMetric(category, skillId, fieldName, delta) {
+            var docId = category + '-' + skillId;
+            return getIdToken().then(function(idToken) {
+              var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents:commit';
+              var docName = 'projects/' + projectId + '/databases/(default)/documents/skills/' + docId;
+              return fetch(commitUrl, {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + idToken,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  writes: [{
+                    update: {
+                      name: docName,
+                      fields: {
+                        category: { stringValue: category },
+                        skill: { stringValue: skillId }
+                      }
+                    },
+                    updateMask: { fieldPaths: ['category', 'skill'] },
+                    updateTransforms: [
+                      { fieldPath: fieldName, increment: { integerValue: String(delta) } },
+                      { fieldPath: 'lastUpdated', setToServerValue: 'REQUEST_TIME' }
+                    ]
+                  }]
+                })
+              });
+            }).then(function(res) {
+              if (!res.ok) {
+                throw new Error('Firestore commit failed with HTTP ' + res.status);
+              }
+              return res.json();
+            });
+          }
+
+          function toggleStar(category, skillId, isStarredNow) {
+            var docId = category + '-' + skillId;
+            var docName = 'projects/' + projectId + '/databases/(default)/documents/skills/' + docId;
+            var docUrl = 'https://firestore.googleapis.com/v1/' + docName;
+            var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents:commit';
+
+            return getIdToken().then(function(idToken) {
+              return fetch(docUrl, {
+                headers: { 'Authorization': 'Bearer ' + idToken }
+              }).then(function(res) {
+                if (res.status === 404) return { fields: {} };
+                if (!res.ok) throw new Error('Firestore doc GET failed with HTTP ' + res.status);
+                return res.json();
+              }).then(function(doc) {
+                var curLikes = parseIntField(doc.fields && doc.fields.likes);
+                var nextLikes = isStarredNow ? Math.max(1, curLikes + 1) : Math.max(0, curLikes - 1);
+                return fetch(commitUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + idToken,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    writes: [{
+                      update: {
+                        name: docName,
+                        fields: {
+                          category: { stringValue: category },
+                          skill: { stringValue: skillId },
+                          likes: { integerValue: String(nextLikes) }
+                        }
+                      },
+                      updateMask: { fieldPaths: ['category', 'skill', 'likes'] },
+                      updateTransforms: [
+                        { fieldPath: 'lastUpdated', setToServerValue: 'REQUEST_TIME' }
+                      ]
+                    }]
+                  })
+                });
+              }).then(function(res) {
+                if (!res.ok) throw new Error('Firestore star commit failed with HTTP ' + res.status);
+                return res.json();
+              });
+            });
+          }
+
+          return {
+            fetchSkillsMap: fetchSkillsMap,
+            incrementMetric: incrementMetric,
+            toggleStar: toggleStar
+          };
+        })();
+      </script>
+    {{ end }}
+  {{ end }}
+</head>

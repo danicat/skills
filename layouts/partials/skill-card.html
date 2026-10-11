@@ -31,12 +31,12 @@
         <button type="button"
                 class="metric-pill star-btn"
                 data-action="star"
-                aria-label="Star this skill"
                 title="Star this skill"
                 onclick="handleStarToggle(this, '{{ $s.Params.category }}', '{{ $skillId }}')">
-          <svg class="star-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="star-icon" aria-hidden="true" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
+          <span class="sr-only">Star </span>
           <span class="metric-val star-count">{{ $stars }}</span>
         </button>
 
@@ -50,11 +50,11 @@
       </div>
     </div>
 
-    <h3 class="text-xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2 leading-snug">
+    <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight mt-0 mb-2 leading-snug">
       <a href="{{ (printf "/%s/%s/" $s.Params.category $s.Params.folder) | relLangURL }}" class="group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors no-underline">
         {{ $s.Params.skillName }}
       </a>
-    </h3>
+    </h2>
 
     <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed line-clamp-3 m-0">
       {{ $s.Params.description }}

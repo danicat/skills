@@ -145,28 +145,10 @@
       detailCount.textContent = formatCompactNum(cur);
     }
 
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-      try {
-        firebase.auth().signInAnonymously().then(function() {
-          var db = firebase.firestore();
-          var docId = category + '-' + skillId;
-          var docRef = db.collection('skills').doc(docId);
-          docRef.get().then(function(snap) {
-            var curLikes = snap.exists ? Math.max(0, parseInt(snap.data().likes || 0, 10)) : 0;
-            var nextLikes = !isStarred ? Math.max(1, curLikes + 1) : Math.max(0, curLikes - 1);
-            return docRef.set({
-              category: category,
-              skill: skillId,
-              likes: nextLikes,
-              lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-          }).catch(function(err) {
-            console.warn('Firestore star update warning:', err);
-          });
-        }).catch(function(err) {
-          console.warn('Firestore auth warning:', err);
-        });
-      } catch (e) {}
+    if (window.DanicatFirestore) {
+      window.DanicatFirestore.toggleStar(category, skillId, !isStarred).catch(function(err) {
+        console.error('Firestore star update failed:', err);
+      });
     }
 
     if (typeof gtag === 'function') {
@@ -205,20 +187,10 @@
           card.setAttribute('data-score', calculateScore(currentStars, currentViews, isFeatured));
         }
 
-        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-          try {
-            firebase.auth().signInAnonymously().then(function() {
-              var db = firebase.firestore();
-              db.collection('skills').doc(docId).set({
-                category: category,
-                skill: skillId,
-                copies: firebase.firestore.FieldValue.increment(1),
-                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-              }, { merge: true });
-            }).catch(function(err) {
-              console.warn('Firestore copy update warning:', err);
-            });
-          } catch (e) {}
+        if (window.DanicatFirestore) {
+          window.DanicatFirestore.incrementMetric(category, skillId, 'copies', 1).catch(function(err) {
+            console.error('Firestore copy increment failed:', err);
+          });
         }
 
         if (typeof gtag === 'function') {
@@ -305,11 +277,12 @@
       } else if (mode === 'category') {
         var catA = a.getAttribute('data-category') || '';
         var catB = b.getAttribute('data-category') || '';
-        if (catA !== catB) return catA.localeCompare(catB);
+        if (catA !== catB) return catA < catB ? -1 : 1;
       }
       var nameA = a.getAttribute('data-name') || '';
       var nameB = b.getAttribute('data-name') || '';
-      return nameA.localeCompare(nameB);
+      if (nameA !== nameB) return nameA < nameB ? -1 : 1;
+      return 0;
     });
 
     var orderChanged = false;
@@ -328,9 +301,11 @@
     var starred = getStarredSkills();
     var cachedMetrics = getMetricsCache();
     var gridEl = document.getElementById('skillsGrid');
-    if (!gridEl) return;
+    if (!gridEl) return false;
+    var hasLocalChanges = false;
     gridEl.querySelectorAll('.skill-card').forEach(function(card) {
       var skillId = card.getAttribute('data-skill-id');
+      var origScore = parseFloat(card.getAttribute('data-score') || '0');
       var curStars = Math.max(0, parseInt(card.getAttribute('data-stars') || '0', 10));
       var curViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
       var curCopies = Math.max(0, parseInt(card.getAttribute('data-copies') || '0', 10));
@@ -353,92 +328,79 @@
         curStars = Math.max(1, curStars);
       }
 
+      var newScore = calculateScore(curStars, curViews, isFeatured);
+      if (newScore !== origScore) {
+        hasLocalChanges = true;
+      }
+
       card.setAttribute('data-stars', curStars);
       card.setAttribute('data-views', curViews);
       card.setAttribute('data-copies', curCopies);
       card.setAttribute('data-featured', isFeatured ? 'true' : 'false');
       card.classList.toggle('is-featured', isFeatured);
-      card.setAttribute('data-score', calculateScore(curStars, curViews, isFeatured));
+      card.setAttribute('data-score', newScore);
 
       var starCountEl = card.querySelector('.star-count');
       var viewCountEl = card.querySelector('.view-count');
       if (starCountEl) starCountEl.textContent = formatCompactNum(curStars);
       if (viewCountEl) viewCountEl.textContent = formatCompactNum(curViews);
     });
+    return hasLocalChanges;
   }
 
-  function extractSkillIdFromDoc(docId, data) {
-    if (data && data.skill) return String(data.skill).toLowerCase();
-    return String(docId || '').replace(/^(game-dev|media|coding|agents|writing|analytics|standards)-/, '').toLowerCase();
+  function syncFirestoreLiveMetrics() {
+    if (!window.DanicatFirestore) return;
+    window.DanicatFirestore.fetchSkillsMap().then(function(bySkill) {
+      var gridEl = document.getElementById('skillsGrid');
+      if (!gridEl || !bySkill) return;
+      var starred = getStarredSkills();
+
+      saveMetricsCache(bySkill);
+
+      gridEl.querySelectorAll('.skill-card').forEach(function(card) {
+        var skillId = card.getAttribute('data-skill-id');
+        var data = bySkill[skillId];
+        if (!data) return;
+
+        var stars = Math.max(0, data.likes || 0);
+        if (starred.has(skillId) && stars < 1) {
+          stars = 1;
+        }
+        var views = Math.max(0, data.views || 0);
+        var copies = Math.max(0, data.copies || 0);
+        var isFeatured = Boolean(data.featured);
+
+        card.setAttribute('data-stars', stars);
+        card.setAttribute('data-views', views);
+        card.setAttribute('data-copies', copies);
+        card.setAttribute('data-featured', isFeatured ? 'true' : 'false');
+        card.classList.toggle('is-featured', isFeatured);
+        card.setAttribute('data-score', calculateScore(stars, views, isFeatured));
+
+        var starCountEl = card.querySelector('.star-count');
+        var viewCountEl = card.querySelector('.view-count');
+        if (starCountEl) starCountEl.textContent = formatCompactNum(stars);
+        if (viewCountEl) viewCountEl.textContent = formatCompactNum(views);
+      });
+    }).catch(function(err) {
+      console.error('Firestore live metrics sync failed:', err);
+    });
   }
 
   function initFirestoreLiveMetrics() {
-    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
-    try {
-      firebase.auth().signInAnonymously().then(function() {
-        var db = firebase.firestore();
-        db.collection('skills').onSnapshot(function(snapshot) {
-          var gridEl = document.getElementById('skillsGrid');
-          if (!gridEl) return;
-          var bySkill = {};
-          var starred = getStarredSkills();
-
-          snapshot.forEach(function(doc) {
-            var d = doc.data() || {};
-            if (typeof d.likes === 'number' && d.likes < 0) {
-              doc.ref.set({ likes: 0 }, { merge: true });
-            }
-            var sId = extractSkillIdFromDoc(doc.id, d);
-            if (!sId) return;
-            if (!bySkill[sId]) {
-              bySkill[sId] = { likes: 0, views: 0, copies: 0, featured: false };
-            }
-            bySkill[sId].likes += Math.max(0, parseInt(d.likes || 0, 10));
-            bySkill[sId].views += Math.max(0, parseInt(d.views || 0, 10));
-            bySkill[sId].copies += Math.max(0, parseInt(d.copies || 0, 10));
-            if (d.featured === true || d.featured === 'true') {
-              bySkill[sId].featured = true;
-            }
-          });
-
-          saveMetricsCache(bySkill);
-
-          gridEl.querySelectorAll('.skill-card').forEach(function(card) {
-            var skillId = card.getAttribute('data-skill-id');
-            var data = bySkill[skillId] || { likes: 0, views: 0, copies: 0, featured: false };
-            var stars = Math.max(0, data.likes || 0);
-            if (starred.has(skillId) && stars < 1) {
-              stars = 1;
-            }
-            var views = Math.max(0, data.views || 0);
-            var copies = Math.max(0, data.copies || 0);
-            var isFeatured = Boolean(data.featured);
-
-            card.setAttribute('data-stars', stars);
-            card.setAttribute('data-views', views);
-            card.setAttribute('data-copies', copies);
-            card.setAttribute('data-featured', isFeatured ? 'true' : 'false');
-            card.classList.toggle('is-featured', isFeatured);
-            card.setAttribute('data-score', calculateScore(stars, views, isFeatured));
-
-            var starCountEl = card.querySelector('.star-count');
-            var viewCountEl = card.querySelector('.view-count');
-
-            if (starCountEl) starCountEl.textContent = formatCompactNum(stars);
-            if (viewCountEl) viewCountEl.textContent = formatCompactNum(views);
-          });
-
-          var sortSelect = document.getElementById('sortSelect');
-          if (!sortSelect || sortSelect.value === 'popularity') {
-            sortSkillsGrid('popularity');
-          }
-        }, function(err) {
-          console.warn('Firestore snapshot warning:', err);
-        });
-      }).catch(function(err) {
-        console.warn('Anonymous auth warning:', err);
+    var synced = false;
+    var events = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+    function onFirstInteraction() {
+      if (synced) return;
+      synced = true;
+      events.forEach(function(evt) {
+        window.removeEventListener(evt, onFirstInteraction, { passive: true });
       });
-    } catch (e) {}
+      syncFirestoreLiveMetrics();
+    }
+    events.forEach(function(evt) {
+      window.addEventListener(evt, onFirstInteraction, { once: true, passive: true });
+    });
   }
 
   (function() {
@@ -541,8 +503,9 @@
       }
     });
 
-    hydrateCardsFromLocal();
-    sortSkillsGrid(sortSelect ? sortSelect.value : 'popularity');
+    if (hydrateCardsFromLocal()) {
+      sortSkillsGrid(sortSelect ? sortSelect.value : 'popularity');
+    }
     initFirestoreLiveMetrics();
 
     var savedMode = localStorage.getItem('preferred_cli_mode') || 'kungfu';

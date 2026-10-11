@@ -1,8 +1,9 @@
 <div class="translation nested-menu">
-  <button class="cursor-pointer flex items-center" aria-label="Language selector">
-    <span class="me-1">
+  <button type="button" class="cursor-pointer flex items-center" title="Language selector">
+    <span class="me-1" aria-hidden="true">
       {{ partial "icon.html" "language" }}
     </span>
+    <span class="sr-only">Language: </span>
     <span class="text-sm font-medium bf-icon-color-hover" title="{{ .Title }}">
       {{- if eq .Site.Language.Lang "pt-br" -}}PT-BR{{- else if eq .Site.Language.Lang "ja" -}}JA{{- else -}}EN{{- end -}}
     </span>

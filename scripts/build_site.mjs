@@ -442,6 +442,9 @@ async function build() {
   const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${SUB_DOMAIN}/sitemap.xml\n`;
   fs.writeFileSync(path.join(SITE_DIR, 'robots.txt'), robotsTxt);
 
+  // 7. Prune unused CSS rules from inlined <style id="main-css"> across all generated HTML pages
+  pruneInlineCss(SITE_DIR);
+
   console.log(`Site build complete! Generated ${skills.length} skills detail pages, ${allReferencePages.length} companion reference pages, 404.html, sitemap.xml, robots.txt, and assets in _site/.`);
 
   const auditResult = runAudit();
@@ -455,6 +458,289 @@ async function build() {
       `CRITICAL: QA Audit failed — htmlErrors=${auditResult.htmlErrors.length}, assetErrors=${auditResult.assetErrors.length}, uiIssues=${auditResult.uiIssues.length}, warnings=${auditResult.warnings.length}`
     );
   }
+}
+
+function parseCssRules(css) {
+  const rules = [];
+  let i = 0;
+  const n = css.length;
+
+  while (i < n) {
+    while (i < n && /\s/.test(css[i])) i++;
+    if (i >= n) break;
+
+    if (css[i] === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2);
+      i = end === -1 ? n : end + 2;
+      continue;
+    }
+
+    const start = i;
+    let bracePos = -1;
+    let semiPos = -1;
+    let inSingle = false;
+    let inDouble = false;
+    let parenDepth = 0;
+
+    while (i < n) {
+      const ch = css[i];
+      if (ch === '\\' && i + 1 < n) { i += 2; continue; }
+      if (ch === '\'' && !inDouble) inSingle = !inSingle;
+      else if (ch === '"' && !inSingle) inDouble = !inDouble;
+      else if (!inSingle && !inDouble) {
+        if (ch === '(') parenDepth++;
+        else if (ch === ')' && parenDepth > 0) parenDepth--;
+        else if (parenDepth === 0) {
+          if (ch === '{') { bracePos = i; break; }
+          if (ch === ';') { semiPos = i; break; }
+        }
+      }
+      i++;
+    }
+
+    if (semiPos !== -1 && (bracePos === -1 || semiPos < bracePos)) {
+      rules.push({ type: 'at-stmt', raw: css.slice(start, semiPos + 1) });
+      i = semiPos + 1;
+      continue;
+    }
+
+    if (bracePos === -1) break;
+
+    const prelude = css.slice(start, bracePos).trim();
+    let depth = 1;
+    i = bracePos + 1;
+    const bodyStart = i;
+    while (i < n && depth > 0) {
+      const ch = css[i];
+      if (ch === '\\' && i + 1 < n) { i += 2; continue; }
+      if (ch === '\'' && !inDouble) inSingle = !inSingle;
+      else if (ch === '"' && !inSingle) inDouble = !inDouble;
+      else if (!inSingle && !inDouble) {
+        if (ch === '{') depth++;
+        else if (ch === '}') depth--;
+      }
+      i++;
+    }
+    const body = css.slice(bodyStart, i - 1);
+
+    if (
+      prelude.startsWith('@media') ||
+      prelude.startsWith('@supports') ||
+      (prelude.startsWith('@layer') && !prelude.includes(','))
+    ) {
+      if (prelude === '@layer theme' || prelude === '@layer properties') {
+        rules.push({ type: 'at-block', prelude, body });
+      } else {
+        rules.push({ type: 'at-group', prelude, children: parseCssRules(body) });
+      }
+    } else if (prelude.startsWith('@property ')) {
+      const propName = prelude.slice('@property '.length).trim();
+      rules.push({ type: 'at-property', propName, prelude, body });
+    } else if (prelude.startsWith('@')) {
+      rules.push({ type: 'at-block', prelude, body });
+    } else {
+      rules.push({ type: 'rule', selectors: splitCssSelectors(prelude), body });
+    }
+  }
+  return rules;
+}
+
+function splitCssSelectors(prelude) {
+  const list = [];
+  let cur = '';
+  let paren = 0;
+  let bracket = 0;
+  let inSingle = false;
+  let inDouble = false;
+  for (let i = 0; i < prelude.length; i++) {
+    const ch = prelude[i];
+    if (ch === '\\' && i + 1 < prelude.length) {
+      cur += ch + prelude[i + 1];
+      i++;
+      continue;
+    }
+    if (ch === '\'' && !inDouble) inSingle = !inSingle;
+    else if (ch === '"' && !inSingle) inDouble = !inDouble;
+    else if (!inSingle && !inDouble) {
+      if (ch === '(') paren++;
+      else if (ch === ')' && paren > 0) paren--;
+      else if (ch === '[') bracket++;
+      else if (ch === ']' && bracket > 0) bracket--;
+      else if (ch === ',' && paren === 0 && bracket === 0) {
+        if (cur.trim()) list.push(analyzeCssSelector(cur.trim()));
+        cur = '';
+        continue;
+      }
+    }
+    cur += ch;
+  }
+  if (cur.trim()) list.push(analyzeCssSelector(cur.trim()));
+  return list;
+}
+
+function stripBalancedCssFunc(str, funcPrefix) {
+  let out = '';
+  let i = 0;
+  while (i < str.length) {
+    const idx = str.indexOf(funcPrefix, i);
+    if (idx === -1) { out += str.slice(i); break; }
+    out += str.slice(i, idx);
+    let depth = 1;
+    let j = idx + funcPrefix.length;
+    while (j < str.length && depth > 0) {
+      if (str[j] === '\\' && j + 1 < str.length) { j += 2; continue; }
+      if (str[j] === '(') depth++;
+      else if (str[j] === ')') depth--;
+      j++;
+    }
+    i = j;
+  }
+  return out;
+}
+
+function analyzeCssSelector(raw) {
+  const unsupportedInputTypes = ['checkbox', 'radio', 'file', 'date', 'datetime-local', 'month', 'time', 'week'];
+  for (const t of unsupportedInputTypes) {
+    if (raw.includes(`type='${t}'`) || raw.includes(`type="${t}"`) || raw.includes(`type=${t}`)) {
+      return { raw, classes: ['__unused_input_type__'], ids: [], tags: [] };
+    }
+  }
+  if (raw.includes('::-webkit-datetime') || raw.includes('::-webkit-date-and-time') || raw.includes('::-webkit-calendar')) {
+    return { raw, classes: ['__unused_datetime__'], ids: [], tags: [] };
+  }
+
+  let s = raw;
+  s = stripBalancedCssFunc(s, ':not(');
+  s = stripBalancedCssFunc(s, ':where(');
+  s = stripBalancedCssFunc(s, ':is(');
+  s = stripBalancedCssFunc(s, ':has(');
+  s = s.replace(/\[[^\]]*\]/g, ' ');
+
+  const classes = [];
+  const ids = [];
+  s = s.replace(/\.((?:[a-zA-Z0-9_-]|\\.)+)/g, (_, c) => {
+    classes.push(c.replace(/\\(.)/g, '$1'));
+    return ' ';
+  });
+  s = s.replace(/#((?:[a-zA-Z0-9_-]|\\.)+)/g, (_, id) => {
+    ids.push(id.replace(/\\(.)/g, '$1'));
+    return ' ';
+  });
+  s = s.replace(/::?[a-zA-Z0-9_-]+(?:\([^)]*\))?/g, ' ');
+  const tags = [];
+  const tagMatches = s.match(/[a-zA-Z][a-zA-Z0-9-]*/g) || [];
+  for (const t of tagMatches) {
+    tags.push(t.toLowerCase());
+  }
+  return { raw, classes, ids, tags };
+}
+
+function extractHtmlTokens(html) {
+  const clean = html
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+
+  const tags = new Set(['html', 'body', 'div', 'span', 'svg', 'pre', 'code']);
+  const classes = new Set([
+    'dark', 'light', 'active', 'copied', 'is-starred', 'is-featured',
+    'no-results', 'translate-y-0', 'translate-y-4', 'opacity-0', 'opacity-100', 'hidden'
+  ]);
+  const ids = new Set(['noResults']);
+
+  let m;
+  const tagRe = /<([a-zA-Z][a-zA-Z0-9-]*)/g;
+  while ((m = tagRe.exec(clean)) !== null) {
+    tags.add(m[1].toLowerCase());
+  }
+
+  const classQuotedRe = /\bclass=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
+  while ((m = classQuotedRe.exec(clean)) !== null) {
+    const val = m[1] ?? m[2] ?? m[3] ?? '';
+    for (const c of val.split(/\s+/)) {
+      if (c) classes.add(c);
+    }
+  }
+
+  const idRe = /\bid=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
+  while ((m = idRe.exec(clean)) !== null) {
+    const val = m[1] ?? m[2] ?? m[3] ?? '';
+    if (val) ids.add(val);
+  }
+
+  return { tags, classes, ids };
+}
+
+function serializePrunedCss(rules, tokens) {
+  let out = '';
+  const propRules = [];
+  for (const r of rules) {
+    if (r.type === 'at-stmt') {
+      out += r.raw;
+    } else if (r.type === 'at-property') {
+      propRules.push(r);
+    } else if (r.type === 'at-block') {
+      if (r.prelude === '@layer properties') continue;
+      out += `${r.prelude}{${r.body}}`;
+    } else if (r.type === 'at-group') {
+      if (r.prelude === '@layer components' && !tokens.classes.has('admonition')) continue;
+      const inner = serializePrunedCss(r.children, tokens);
+      if (inner) out += `${r.prelude}{${inner}}`;
+    } else if (r.type === 'rule') {
+      const matched = [];
+      for (const sel of r.selectors) {
+        let ok = true;
+        for (const c of sel.classes) { if (!tokens.classes.has(c)) { ok = false; break; } }
+        if (!ok) continue;
+        for (const id of sel.ids) { if (!tokens.ids.has(id)) { ok = false; break; } }
+        if (!ok) continue;
+        for (const t of sel.tags) { if (!tokens.tags.has(t)) { ok = false; break; } }
+        if (ok) matched.push(sel.raw);
+      }
+      if (matched.length > 0) {
+        out += `${matched.join(',')}{${r.body}}`;
+      }
+    }
+  }
+  for (const pr of propRules) {
+    if (out.includes(pr.propName)) {
+      out += `${pr.prelude}{${pr.body}}`;
+    }
+  }
+  return out;
+}
+
+function pruneInlineCss(siteDir) {
+  const htmlFiles = [];
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith('.html')) htmlFiles.push(full);
+    }
+  }
+  walk(siteDir);
+
+  const styleRegex = /(<style id="?main-css"?>)([\s\S]*?)(<\/style>)/;
+  let cachedRawCss = null;
+  let cachedAst = null;
+  let prunedCount = 0;
+
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const match = html.match(styleRegex);
+    if (!match) continue;
+    const rawCss = match[2];
+    if (rawCss !== cachedRawCss) {
+      cachedRawCss = rawCss;
+      cachedAst = parseCssRules(rawCss);
+    }
+    const tokens = extractHtmlTokens(html);
+    const prunedCss = serializePrunedCss(cachedAst, tokens);
+    const updatedHtml = html.replace(styleRegex, `$1${prunedCss}$3`);
+    fs.writeFileSync(file, updatedHtml, 'utf8');
+    prunedCount++;
+  }
+  console.log(`Pruned inline CSS across ${prunedCount} HTML files.`);
 }
 
 build().catch(err => {

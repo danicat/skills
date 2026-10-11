@@ -17,7 +17,7 @@
 {{- else if and .IsPage .Params.isCompanion }}
 <link rel="alternate" type="text/markdown" href="https://skills.danicat.dev/{{ .Params.category }}/{{ .Params.skillFolder }}/{{ .Params.relPath }}" title="{{ .Params.refTitle | default .Title }} (Markdown)">
 {{- end }}
-{{- if .IsPage }}
+{{- if and .IsPage (in .RawContent "```mermaid") }}
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   const isDark = document.documentElement.classList.contains('dark');
