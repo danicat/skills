@@ -9,58 +9,87 @@
   {{- $skillName := .Params.skillName | default .Title -}}
   {{- $skillId := lower $skillName -}}
 
-  {{/* Clean, lightweight top bar: Breadcrumb on left, Star / Views / Copy as Markdown / GitHub on right */}}
-  <div class="flex items-center justify-between flex-wrap gap-3 mt-4 mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-700">
-    <nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumbs">
-      <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
-      <span class="opacity-50">/</span>
-      <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
-      <span class="opacity-50">/</span>
-      <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $skillName }}</span>
-    </nav>
+  {{/* Breadcrumbs */}}
+  <nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400 mt-4 mb-3" aria-label="Breadcrumbs">
+    <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
+    <span class="opacity-50">/</span>
+    <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
+    <span class="opacity-50">/</span>
+    <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $skillName }}</span>
+  </nav>
 
-    <div class="flex items-center flex-wrap gap-2">
-      <button type="button"
-              class="metric-pill star-btn"
-              id="detailStarBtn"
-              data-action="star"
-              aria-label="Star this skill"
-              title="Star this skill"
-              onclick="handleStarToggle(this, '{{ $catId }}', '{{ $skillId }}')">
-        <svg class="star-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span class="metric-val star-count" id="detailStarCount">0</span>
-      </button>
+  {{/* Simplified Skill Summary Card (with localized description) */}}
+  <section id="detailSkillCard" class="skill-card danicat-card mb-8">
+    <div>
+      <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <div class="flex items-center flex-wrap gap-2">
+          <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
+            <span>{{ $catEmoji }}</span>
+            <span>{{ $catName }}</span>
+          </a>
+          {{- with .Params.version -}}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-100/70 dark:bg-neutral-800/70 border border-neutral-200/60 dark:border-neutral-700/60">v{{ . }}</span>
+          {{- end -}}
+        </div>
 
-      <div class="metric-pill view-pill" title="Total Views">
-        <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-        <span class="metric-val view-count" id="detailViewCount">0</span>
+        <div class="flex items-center flex-wrap gap-2">
+          <button type="button"
+                  class="metric-pill star-btn"
+                  id="detailStarBtn"
+                  data-action="star"
+                  aria-label="Star this skill"
+                  title="Star this skill"
+                  onclick="handleStarToggle(this, '{{ $catId }}', '{{ $skillId }}')">
+            <svg class="star-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span class="metric-val star-count" id="detailStarCount">0</span>
+          </button>
+
+          <div class="metric-pill view-pill" title="Total Views">
+            <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span class="metric-val view-count" id="detailViewCount">0</span>
+          </div>
+
+          <button
+            type="button"
+            onclick="copyDetailMarkdown(this, '{{ $t.ui.copyAsMarkdown }}')"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-primary-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+            title="Copy full SKILL.md as Markdown">
+            <span>📋</span>
+            <span class="copy-md-label">{{ $t.ui.copyAsMarkdown }}</span>
+          </button>
+
+          <a href="{{ .Params.githubUrl }}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center justify-center p-1.5 text-neutral-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400 transition-colors no-underline"
+             aria-label="GitHub"
+             title="View on GitHub">
+            <span class="w-4 h-4 flex items-center justify-center">{{ partial "icon.html" "github" }}</span>
+          </a>
+        </div>
       </div>
 
-      <button
-        type="button"
-        onclick="copyDetailMarkdown(this, '{{ $t.ui.copyAsMarkdown }}')"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-primary-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
-        title="Copy full SKILL.md as Markdown">
-        <span>📋</span>
-        <span class="copy-md-label">{{ $t.ui.copyAsMarkdown }}</span>
-      </button>
+      <div class="text-xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2 leading-snug">
+        {{ $skillName }}
+      </div>
 
-      <a href="{{ .Params.githubUrl }}"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="inline-flex items-center justify-center p-1.5 text-neutral-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400 transition-colors no-underline"
-         aria-label="GitHub"
-         title="View on GitHub">
-        <span class="w-4 h-4 flex items-center justify-center">{{ partial "icon.html" "github" }}</span>
-      </a>
+      <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 leading-relaxed m-0">
+        {{ .Params.description }}
+      </p>
+
+      {{- if ne .Site.Language.Lang "en" -}}
+        <p class="mt-3 pt-2.5 border-t border-neutral-200/60 dark:border-neutral-700/60 text-xs text-neutral-500 dark:text-neutral-400 m-0">
+          {{ $t.ui.englishPromptNotice }}
+        </p>
+      {{- end -}}
     </div>
     <script type="application/json" id="detail-markdown-payload">{{ .Params.rawMarkdown | jsonify | safeJS }}</script>
-  </div>
+  </section>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
     <main class="lg:col-span-8 min-w-0">
@@ -473,6 +502,7 @@
         db.collection('skills').where('skill', '==', skillId).onSnapshot(function(snapshot) {
           var totalLikes = 0;
           var totalViews = 0;
+          var isFeatured = false;
           snapshot.forEach(function(doc) {
             var d = doc.data() || {};
             if (typeof d.likes === 'number' && d.likes < 0) {
@@ -480,9 +510,16 @@
             }
             totalLikes += Math.max(0, parseInt(d.likes || 0, 10));
             totalViews += Math.max(0, parseInt(d.views || 0, 10));
+            if (d.featured === true) {
+              isFeatured = true;
+            }
           });
           if (getStarredSkills().has(skillId) && totalLikes < 1) {
             totalLikes = 1;
+          }
+          var detailCardEl = document.getElementById('detailSkillCard');
+          if (detailCardEl) {
+            detailCardEl.classList.toggle('is-featured', isFeatured);
           }
           var starCountEl = document.getElementById('detailStarCount');
           var viewCountEl = document.getElementById('detailViewCount');
