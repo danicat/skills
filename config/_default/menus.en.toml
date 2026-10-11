@@ -11,6 +11,11 @@
   weight = 15
 
 [[main]]
+  name = "Videos"
+  url = "https://danicat.dev/videos/"
+  weight = 16
+
+[[main]]
   name = "Codelabs"
   url = "https://danicat.dev/codelabs/"
   weight = 18
@@ -45,5 +50,12 @@
   title = "GitHub"
   weight = 40
   url = "https://github.com/danicat"
+
+[[main]]
+  identifier = "youtube"
+  pre = "youtube"
+  title = "YouTube"
+  weight = 45
+  url = "https://www.youtube.com/@danikopaizen"
 
 # -- Footer Menu --
