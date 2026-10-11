@@ -65,10 +65,11 @@
     } catch (e) {}
   }
 
-  function calculateScore(stars, views) {
+  function calculateScore(stars, views, featured) {
     var s = Math.max(0, parseInt(stars, 10) || 0);
     var v = Math.max(0, parseInt(views, 10) || 0);
-    return (100 * s) + v;
+    var base = (100 * s) + v;
+    return featured ? (base * 2) : base;
   }
 
   function handleStarToggle(btn, category, skillId) {
@@ -103,7 +104,8 @@
         card.setAttribute('data-stars', currentStars);
         if (starCountEl) starCountEl.textContent = formatCompactNum(currentStars);
         var currentViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
-        card.setAttribute('data-score', calculateScore(currentStars, currentViews));
+        var isFeatured = card.getAttribute('data-featured') === 'true';
+        card.setAttribute('data-score', calculateScore(currentStars, currentViews, isFeatured));
       }
     });
 
@@ -175,7 +177,8 @@
           card.setAttribute('data-copies', currentCopies);
           var currentStars = Math.max(0, parseInt(card.getAttribute('data-stars') || '0', 10));
           var currentViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
-          card.setAttribute('data-score', calculateScore(currentStars, currentViews));
+          var isFeatured = card.getAttribute('data-featured') === 'true';
+          card.setAttribute('data-score', calculateScore(currentStars, currentViews, isFeatured));
         }
 
         if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
@@ -266,6 +269,9 @@
         var scoreA = parseFloat(a.getAttribute('data-score') || '0');
         var scoreB = parseFloat(b.getAttribute('data-score') || '0');
         if (scoreB !== scoreA) return scoreB - scoreA;
+        var featA = a.getAttribute('data-featured') === 'true' ? 1 : 0;
+        var featB = b.getAttribute('data-featured') === 'true' ? 1 : 0;
+        if (featB !== featA) return featB - featA;
         var starsA = Math.max(0, parseInt(a.getAttribute('data-stars') || '0', 10));
         var starsB = Math.max(0, parseInt(b.getAttribute('data-stars') || '0', 10));
         if (starsB !== starsA) return starsB - starsA;
@@ -299,8 +305,9 @@
         }
         var curStars = Math.max(1, parseInt(card.getAttribute('data-stars') || '0', 10));
         var curViews = Math.max(0, parseInt(card.getAttribute('data-views') || '0', 10));
+        var isFeatured = card.getAttribute('data-featured') === 'true';
         card.setAttribute('data-stars', curStars);
-        card.setAttribute('data-score', calculateScore(curStars, curViews));
+        card.setAttribute('data-score', calculateScore(curStars, curViews, isFeatured));
         var starCountEl = card.querySelector('.star-count');
         if (starCountEl) starCountEl.textContent = formatCompactNum(curStars);
       }
@@ -331,27 +338,33 @@
             var sId = extractSkillIdFromDoc(doc.id, d);
             if (!sId) return;
             if (!bySkill[sId]) {
-              bySkill[sId] = { likes: 0, views: 0, copies: 0 };
+              bySkill[sId] = { likes: 0, views: 0, copies: 0, featured: false };
             }
             bySkill[sId].likes += Math.max(0, parseInt(d.likes || 0, 10));
             bySkill[sId].views += Math.max(0, parseInt(d.views || 0, 10));
             bySkill[sId].copies += Math.max(0, parseInt(d.copies || 0, 10));
+            if (d.featured === true || d.featured === 'true') {
+              bySkill[sId].featured = true;
+            }
           });
 
           gridEl.querySelectorAll('.skill-card').forEach(function(card) {
             var skillId = card.getAttribute('data-skill-id');
-            var data = bySkill[skillId] || { likes: 0, views: 0, copies: 0 };
+            var data = bySkill[skillId] || { likes: 0, views: 0, copies: 0, featured: false };
             var stars = Math.max(0, data.likes || 0);
             if (starred.has(skillId) && stars < 1) {
               stars = 1;
             }
             var views = Math.max(0, data.views || 0);
             var copies = Math.max(0, data.copies || 0);
+            var isFeatured = Boolean(data.featured);
 
             card.setAttribute('data-stars', stars);
             card.setAttribute('data-views', views);
             card.setAttribute('data-copies', copies);
-            card.setAttribute('data-score', calculateScore(stars, views));
+            card.setAttribute('data-featured', isFeatured ? 'true' : 'false');
+            card.classList.toggle('is-featured', isFeatured);
+            card.setAttribute('data-score', calculateScore(stars, views, isFeatured));
 
             var starCountEl = card.querySelector('.star-count');
             var viewCountEl = card.querySelector('.view-count');

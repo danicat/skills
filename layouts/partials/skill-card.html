@@ -7,6 +7,7 @@
      data-name="{{ $skillId }}"
      data-desc="{{ lower $s.Params.description }}"
      data-tags="{{ lower (delimit ($s.Params.tags | default slice) " ") }}"
+     data-featured="false"
      data-stars="0"
      data-views="0"
      data-copies="0"
