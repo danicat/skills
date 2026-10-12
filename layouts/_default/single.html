@@ -181,7 +181,7 @@
                 {{- end -}}
                 {{- $targetUrl := $r.relPath -}}
                 {{- if $r.isMarkdown -}}
-                  {{- $targetUrl = replaceRE "\\.md$" ".html" $r.relPath -}}
+                  {{- $targetUrl = replaceRE "\\.md$" ".html" $r.relPath | lower -}}
                 {{- end -}}
                 <li>
                   <a href="/{{ $catId }}/{{ $.Params.folder }}/{{ $targetUrl }}" class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline break-all">

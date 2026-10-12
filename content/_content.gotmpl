@@ -124,7 +124,7 @@
           {{- $safeRefBody = replaceRE "\\{\\{%([^%]+)%\\}\\}" "{{%/*$1*/%}}" $safeRefBody -}}
 
           {{- $refTitle := replaceRE "[_-]" " " (strings.TrimSuffix ".md" $fName) -}}
-          {{- $refHtmlRel := replaceRE "\\.md$" ".html" $relPath -}}
+          {{- $refHtmlRel := replaceRE "\\.md$" ".html" $relPath | lower -}}
           {{- $refUrl := printf "/%s/%s/%s" $cat.id $folder $refHtmlRel -}}
           {{- $refPagePath := printf "%s/%s/%s" $cat.id $folder (strings.TrimSuffix ".md" $relPath) -}}
 

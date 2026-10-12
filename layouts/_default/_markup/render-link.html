@@ -30,7 +30,7 @@
     {{- $pathPart = "./" -}}
   {{- else -}}
     {{- if strings.HasSuffix $pathPart ".md" -}}
-      {{- $pathPart = printf "%s.html" (strings.TrimSuffix ".md" $pathPart) -}}
+      {{- $pathPart = printf "%s.html" (strings.TrimSuffix ".md" $pathPart) | lower -}}
     {{- end -}}
     {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder (not (strings.HasPrefix $pathPart "/")) -}}
       {{- $hasTrailingSlash := strings.HasSuffix $pathPart "/" -}}

@@ -49,7 +49,21 @@ export function runAudit() {
     return results;
   }
 
-  const htmlFiles = getAllFiles(SITE_DIR, ['.html']);
+  const allSiteFiles = getAllFiles(SITE_DIR);
+  const exactSiteFiles = new Set(allSiteFiles);
+  function existsExactFile(p) {
+    return exactSiteFiles.has(path.resolve(p));
+  }
+  function existsExactTarget(targetPath) {
+    const abs = path.resolve(targetPath);
+    return (
+      exactSiteFiles.has(abs) ||
+      exactSiteFiles.has(abs + '.html') ||
+      exactSiteFiles.has(path.join(abs, 'index.html'))
+    );
+  }
+
+  const htmlFiles = allSiteFiles.filter(f => f.endsWith('.html'));
   const mdFiles = getAllFiles(ROOT_DIR, ['.md']).filter(
     f => !f.includes('/_site/') && !f.includes('/public/') && !f.includes('/themes/')
   );
@@ -63,7 +77,7 @@ export function runAudit() {
   // 1. Root Assets
   const requiredRootAssets = ['CNAME', 'index.html', '404.html', 'llms.txt', 'llms-full.txt', 'sitemap.xml', 'robots.txt', 'catalog.json'];
   for (const asset of requiredRootAssets) {
-    if (!fs.existsSync(path.join(SITE_DIR, asset))) {
+    if (!existsExactFile(path.join(SITE_DIR, asset))) {
       assetErrors.push(`[Root Asset Missing] Missing required site asset: _site/${asset}`);
     }
   }
@@ -97,7 +111,7 @@ export function runAudit() {
         if (href.startsWith('https://skills.danicat.dev/')) {
           const urlPath = href.replace('https://skills.danicat.dev/', '').split('#')[0].split('?')[0];
           const targetPath = path.resolve(SITE_DIR, urlPath);
-          if (!fs.existsSync(targetPath) && !fs.existsSync(targetPath + '.html') && !fs.existsSync(path.join(targetPath, 'index.html'))) {
+          if (!existsExactTarget(targetPath)) {
             htmlErrors.push(`[HTML Link 404] In ${relFile}: absolute site link "${href}" does not exist on disk`);
           }
         }
@@ -129,19 +143,7 @@ export function runAudit() {
         resolvedPath = path.resolve(path.dirname(file), cleanUrl);
       }
 
-      let exists = false;
-      if (fs.existsSync(resolvedPath)) {
-        const stat = fs.statSync(resolvedPath);
-        if (stat.isDirectory()) {
-          if (fs.existsSync(path.join(resolvedPath, 'index.html'))) {
-            exists = true;
-          }
-        } else {
-          exists = true;
-        }
-      } else if (fs.existsSync(resolvedPath + '.html')) {
-        exists = true;
-      }
+      const exists = existsExactTarget(resolvedPath);
 
       if (!exists) {
         htmlErrors.push(`[HTML Link 404] In ${relFile}: link "${href}" -> resolved to non-existent "${path.relative(SITE_DIR, resolvedPath)}"`);
@@ -158,7 +160,7 @@ export function runAudit() {
       }
       const cleanUrl = href.split('?')[0];
       let resolvedPath = cleanUrl.startsWith('/') ? path.resolve(SITE_DIR, '.' + cleanUrl) : path.resolve(path.dirname(file), cleanUrl);
-      if (!fs.existsSync(resolvedPath)) {
+      if (!existsExactFile(resolvedPath)) {
         assetErrors.push(`[HTML Asset 404] In ${relFile}: <link> stylesheet/icon "${href}" does not exist`);
       }
     }
@@ -173,7 +175,7 @@ export function runAudit() {
       }
       const cleanUrl = src.split('?')[0];
       let resolvedPath = cleanUrl.startsWith('/') ? path.resolve(SITE_DIR, '.' + cleanUrl) : path.resolve(path.dirname(file), cleanUrl);
-      if (!fs.existsSync(resolvedPath)) {
+      if (!existsExactFile(resolvedPath)) {
         assetErrors.push(`[HTML Asset 404] In ${relFile}: <script> "${src}" does not exist`);
       }
     }
@@ -188,7 +190,7 @@ export function runAudit() {
       }
       const cleanUrl = src.split('?')[0];
       let resolvedPath = cleanUrl.startsWith('/') ? path.resolve(SITE_DIR, '.' + cleanUrl) : path.resolve(path.dirname(file), cleanUrl);
-      if (!fs.existsSync(resolvedPath)) {
+      if (!existsExactFile(resolvedPath)) {
         assetErrors.push(`[HTML Asset 404] In ${relFile}: <img> "${src}" does not exist`);
       }
     }
@@ -201,7 +203,7 @@ export function runAudit() {
       if (contentVal.startsWith('https://skills.danicat.dev/')) {
         const assetPath = contentVal.replace('https://skills.danicat.dev/', '').split('?')[0];
         const resolvedPath = path.resolve(SITE_DIR, assetPath);
-        if (!fs.existsSync(resolvedPath)) {
+        if (!existsExactFile(resolvedPath)) {
           assetErrors.push(`[HTML og:image 404] In ${relFile}: og:image "${contentVal}" does not exist on disk`);
         }
       }

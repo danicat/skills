@@ -6,6 +6,7 @@ baseURL = "https://skills.danicat.dev/"
 defaultContentLanguage = "en"
 
 enableRobotsTXT = true
+disablePathToLower = true
 summaryLength = 0
 
 buildDrafts = false
