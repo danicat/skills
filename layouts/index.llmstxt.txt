@@ -1,0 +1,18 @@
+{{- $sections := .Site.Sections.ByWeight -}}
+{{- $allSkills := where .Site.RegularPages "Params.isCompanion" false -}}
+# danicat/skills
+
+> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.
+{{ range $sec := $sections }}
+{{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
+{{- if gt (len $secSkills) 0 }}
+## {{ $sec.Params.categoryName }}
+{{ range $s := $secSkills.ByTitle }}
+- [{{ $s.Params.skillName }}]({{ $s.Params.rawUrl }}): {{ $s.Params.description }}
+{{- end }}
+{{ end -}}
+{{- end }}
+## Optional
+
+- [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all {{ len $allSkills }} skill instructions in a single file for large-context models.
+- [Catalog Manifest](https://skills.danicat.dev/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.

@@ -126,12 +126,13 @@
           {{- $refTitle := replaceRE "[_-]" " " (strings.TrimSuffix ".md" $fName) -}}
           {{- $refHtmlRel := replaceRE "\\.md$" ".html" $relPath -}}
           {{- $refUrl := printf "/%s/%s/%s" $cat.id $folder $refHtmlRel -}}
-          {{- $refPagePath := printf "%s/%s__%s" $cat.id $folder (replaceRE "[^a-zA-Z0-9_-]" "__" (strings.TrimSuffix ".md" $relPath)) -}}
+          {{- $refPagePath := printf "%s/%s/%s" $cat.id $folder (strings.TrimSuffix ".md" $relPath) -}}
 
           {{- $.AddPage (dict
             "kind" "page"
             "path" $refPagePath
             "title" (printf "%s · %s Reference" $refTitle $skillName)
+            "outputs" (slice "CompanionHTML")
             "build" (dict "list" "never" "render" "always")
             "content" (dict "mediaType" "text/markdown" "value" $safeRefBody)
             "params" (dict
@@ -177,6 +178,7 @@
         "byteSize" $byteSize
         "tags" $tags
         "rawMarkdown" $raw
+        "markdownBody" (strings.TrimSpace $body)
         "installCommand" (printf "npx skills add danicat/skills --skill %s -y" $skillName)
         "kungfuLoadCommand" (printf "kungfu load %s" $skillName)
         "kungfuLearnCommand" (printf "kungfu learn %s" $skillName)

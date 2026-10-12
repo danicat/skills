@@ -1,0 +1,26 @@
+{{- $sections := .Site.Sections.ByWeight -}}
+# danicat/skills (Full Instructions Catalog)
+
+> Complete collection of all Agent Skills.
+
+---
+{{ range $sec := $sections }}
+{{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
+{{- range $s := $secSkills.ByTitle }}
+# Skill: {{ $s.Params.skillName }} ({{ $s.Params.category }})
+
+> {{ $s.Params.description }}
+
+**Web Page**: {{ $s.Params.detailUrl }}
+**Source**: {{ $s.Params.rawUrl }}
+**Version**: {{ $s.Params.version }}
+**Digest**: {{ $s.Params.digest }}
+**Install**: `{{ $s.Params.installCommand }}`
+
+## Instructions
+
+{{ $s.Params.markdownBody }}
+
+---
+{{ end -}}
+{{- end -}}

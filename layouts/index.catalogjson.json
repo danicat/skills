@@ -1,0 +1,36 @@
+{{- $sections := .Site.Sections.ByWeight -}}
+{{- $categories := slice -}}
+{{- $skills := slice -}}
+{{- range $sec := $sections -}}
+  {{- $categories = $categories | append (dict
+    "id" $sec.Params.categoryId
+    "name" $sec.Params.categoryName
+    "emoji" $sec.Params.categoryEmoji
+    "description" $sec.Params.description
+  ) -}}
+  {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
+  {{- range $s := $secSkills.ByTitle -}}
+    {{- $skills = $skills | append (dict
+      "name" $s.Params.skillName
+      "description" $s.Params.description
+      "category" $s.Params.category
+      "tags" $s.Params.tags
+      "author" $s.Params.author
+      "version" $s.Params.version
+      "license" $s.Params.license
+      "url" $s.Params.rawUrl
+      "digest" $s.Params.digest
+    ) -}}
+  {{- end -}}
+{{- end -}}
+{{- $manifest := dict
+  "name" "danicat/skills"
+  "title" "Agent Skills"
+  "url" "https://skills.danicat.dev"
+  "repository" "https://github.com/danicat/skills"
+  "totalSkills" (len $skills)
+  "updatedAt" (now.UTC.Format "2006-01-02T15:04:05Z")
+  "categories" $categories
+  "skills" $skills
+-}}
+{{- $manifest | jsonify (dict "indent" "  ") -}}

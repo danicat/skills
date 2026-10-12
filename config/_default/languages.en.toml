@@ -4,6 +4,9 @@ languageName = "English"
 weight = 1
 title = "danicat.dev"
 
+[outputs]
+  home = ["HTML", "CatalogJSON", "LLMsTxt", "LLMsFullTxt"]
+
 [params]
   displayName = "🇬🇧 English"
   isoCode = "en"

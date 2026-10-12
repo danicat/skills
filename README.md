@@ -52,7 +52,7 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 
 * **[`adr-template`](coding/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
 * **[`engineering-flow`](coding/engineering-flow/SKILL.md)**: Engineering workflow standards detailing semantic versioning (with 0.x zero-debt rules), broken window hygiene, RFC/ADR planning, and the 7-tier Evidence Hierarchy.
-* **[`godoctor`](coding/godoctor/SKILL.md)**: AST-aware Go developer tooling with automatic compiler rollback gates, Selene mutation testing, and multi-tier test runners.
+* **[`godoctor`](coding/godoctor/SKILL.md)**: Go developer tooling and static analysis orchestrator with automatic compiler rollback gates, Selene mutation testing, and TestQuery analytics.
 * **[`google-oss`](coding/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
 * **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
 * **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
@@ -91,8 +91,3 @@ Raw metrics ingestion and SQLite data warehousing for search performance, web tr
 * **[`google-analytics`](analytics/google-analytics/SKILL.md)**: Ingest raw Google Analytics 4 (GA4) traffic, dwell time, localization performance, and outbound clicks into a local SQLite analytics database and run pre-built or ad-hoc SQL reports.
 * **[`search-analytics`](analytics/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
 
----
-
-## Disclaimer
-
-This is not an officially supported Google product.

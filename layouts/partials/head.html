@@ -93,7 +93,7 @@
     <meta name="fediverse:creator" content="{{ . }}">
   {{ end }}
 
-  {{/* Inlined Critical CSS (pruned per page at build time by scripts/build_site.mjs) */}}
+  {{/* Inlined Critical CSS */}}
   {{ $cssResources := slice }}
   {{ $schemeName := .Site.Params.colorScheme | default "blowfish" }}
   {{ $cssScheme := resources.Get (printf "css/schemes/%s.css" (lower $schemeName)) | default (resources.Get "css/schemes/blowfish.css") }}

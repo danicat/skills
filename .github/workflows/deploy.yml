@@ -1,4 +1,4 @@
-# Copyright 2026 Google LLC
+# Copyright 2026 Daniela Petruzalek
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,7 +58,8 @@ jobs:
       - name: Validate metadata, build Hugo site, and run QA audit
         run: |
           node scripts/validate_metadata.mjs
-          node scripts/build_site.mjs
+          hugo --gc --minify --noBuildLock -d _site
+          node scripts/qa_audit.mjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

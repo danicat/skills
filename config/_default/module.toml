@@ -17,16 +17,12 @@
   target = "assets"
 
 [[mounts]]
+  source = "static"
+  target = "static"
+
+[[mounts]]
   source = "assets/chibi_dani_oops.png"
   target = "static/assets/chibi_dani_oops.png"
-
-[[mounts]]
-  source = "catalog.json"
-  target = "static/catalog.json"
-
-[[mounts]]
-  source = "llms.txt"
-  target = "static/llms.txt"
 
 [[mounts]]
   source = "agents"

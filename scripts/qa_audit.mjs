@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Google LLC
+ * Copyright 2026 Daniela Petruzalek
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -341,3 +341,17 @@ export function runAudit() {
 
   return { htmlErrors, assetErrors, mdErrors, warnings, uiIssues, htmlFilesCount: htmlFiles.length, mdFilesCount: mdFiles.length };
 }
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const res = runAudit();
+  if (
+    res.htmlErrors.length > 0 ||
+    res.assetErrors.length > 0 ||
+    res.mdErrors.length > 0 ||
+    res.uiIssues.length > 0 ||
+    res.warnings.length > 0
+  ) {
+    process.exit(1);
+  }
+}
+

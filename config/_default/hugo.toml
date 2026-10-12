@@ -15,7 +15,7 @@ enableEmoji = true
 
 googleAnalytics = "G-8RHDQGEGZ2"
 
-disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+disableKinds = ["taxonomy", "term", "RSS"]
 ignoreLogs = ["warning-goldmark-raw-html"]
 
 [services]
@@ -34,6 +34,36 @@ ignoreLogs = ["warning-goldmark-raw-html"]
   changefreq = "weekly"
   filename = "sitemap.xml"
   priority = 0.8
+
+[mediaTypes]
+  [mediaTypes."application/vnd.catalog+json"]
+    suffixes = ["json"]
+  [mediaTypes."text/vnd.llms+plain"]
+    suffixes = ["txt"]
+  [mediaTypes."text/vnd.llmsfull+plain"]
+    suffixes = ["txt"]
+
+[outputFormats]
+  [outputFormats.CompanionHTML]
+    mediaType = "text/html"
+    isHTML = true
+    ugly = true
+    permalinkable = true
+  [outputFormats.CatalogJSON]
+    mediaType = "application/vnd.catalog+json"
+    baseName = "catalog"
+    isPlainText = true
+    notAlternative = true
+  [outputFormats.LLMsTxt]
+    mediaType = "text/vnd.llms+plain"
+    baseName = "llms"
+    isPlainText = true
+    notAlternative = true
+  [outputFormats.LLMsFullTxt]
+    mediaType = "text/vnd.llmsfull+plain"
+    baseName = "llms-full"
+    isPlainText = true
+    notAlternative = true
 
 [outputs]
   home = ["HTML"]
