@@ -13,7 +13,7 @@ LinkedIn uses an **Interest & Authority Graph** that measures dwell time, techni
 - **Comment Velocity & Depth:** Meaningful, multi-sentence comments from active industry accounts in the first 60 minutes ("the golden hour") expand distribution to 2nd- and 3rd-degree feeds.
 - **Author Response Velocity:** Author replies to comments within the first 1–2 hours boost the post's active lifecycle by 20–30%.
 - **Saves > Shares > Comments > Reactions:** Saves signal evergreen utility; shallow reactions ("Like") carry minimal algorithmic weight.
-- **Outbound Link Suppression (40–60% Penalty):** Links in the post body face severe reach throttling. Deliver 100% standalone value natively and place external URLs in the **first comment** (e.g. *"Full benchmarks & source code linked in the first comment 👇"*).
+- **Direct In-Body Links Outperform "First Comment" Links:** Contrary to generic marketing folklore, technical posts that include concrete outbound URLs (`https://...` to a technical article, documentation page, or GitHub repository) directly inside a substantive post body (`900–2,000` chars) paired with native visual media consistently outperform linkless and "first-comment" posts in both reach and discussion depth. Always place primary links directly in the post body while delivering 100% standalone technical value in the text above them.
 
 ### Publishing Cadence & Anti-Cannibalization Rules
 - **18–24 Hour Feed Lifecycle:** LinkedIn's algorithm operates on an extended 18–48 hour distribution cycle.
@@ -80,7 +80,7 @@ QUANTITATIVE OUTCOME:
 
 [Nuanced discussion question for peer engineers]
 
-Full architecture breakdown and benchmark logs in the first comment 👇
+Full architecture breakdown and benchmark logs: https://example.com/posts/architecture-deep-dive
 
 #SystemDesign #DistributedSystems #SoftwareEngineering
 ```
@@ -99,7 +99,8 @@ WHAT'S NEW:
 BENCHMARK DELTA:
 • [Memory footprint / build time / throughput comparison]
 
-Full release notes and GitHub repository linked in the first comment 👇
+Full release notes: https://example.com/posts/release-notes
+GitHub repository: https://github.com/example/project
 
 #OpenSource #DevOps #Engineering
 ```
@@ -123,39 +124,18 @@ Carousels capture the highest dwell times on LinkedIn.
 
 ---
 
-## 7. The First Comment & Clipboard Pipeline (Zero-Cost Frictionless Flow)
+## 7. Direct In-Body Links vs. The "First Comment" Myth
 
-### Why the First Comment Strategy Matters
-- **Outbound Link Throttling**: LinkedIn penalizes posts containing outbound links in the body by 40–60% of potential reach.
-- **Dwell Time Optimization**: Placing links in the first comment keeps readers focused on the main post's technical narrative.
+### Why Direct In-Body Links Win for Technical Audiences
+Placing outbound URLs (`https://...`) directly in the post body—when paired with a substantive engineering narrative (`900–2,000` chars) and an explicit native visual attachment—consistently outperforms linkless and "first-comment" posts:
+- **Engineering Proof Signal**: For developer and architecture audiences, a direct URL to runnable code, a benchmark write-up, or a GitHub repository signals verifiable technical substance rather than generic thought-leadership fluff.
+- **The Link-Card Override Mechanism**: The historical penalty associated with outbound links on LinkedIn primarily stems from bare URL drops that render as low-dwell OpenGraph link-preview cards. When you attach a native image, diagram, or PDF carousel alongside an in-body URL, LinkedIn renders the full-size native visual asset while keeping the URL clickable in the text—capturing both high feed dwell and direct click conversion.
 
-### The Problem with Third-Party Schedulers
-Automated first-comment features in scheduling tools like Buffer are frequently gated behind expensive paid plans ($60/channel/year). Furthermore, if a post is scheduled for later, authors often forget to return and paste the comment manually.
+### Why "Link in the First Comment 👇" Backfires
+1. **Comment Sorting Buries Your Link**: LinkedIn defaults comment threads to `Most Relevant` rather than chronological order. As soon as peer engineers leave substantive comments, the author's unpinned "first comment" sinks below the fold, destroying click-through conversions.
+2. **Loss of Context on Reshares**: When a peer engineer reposts your post to their network, your first comment is not carried over to the reshared post, stripping the destination link from all secondary distribution.
+3. **Scheduling Fragility**: Placing the primary URL directly in the post body allows campaigns to be scheduled reliably (`customScheduled` or `addToQueue`) without requiring manual post-publish clipboard workarounds.
 
-### The Frictionless Agent / Terminal Trick (`pbcopy` / `xclip`)
-When publishing via automated tooling or the Buffer CLI:
-1. Dispatch the main post immediately using `mode: shareNow`:
-   ```bash
-   buffer posts create --json "$postPayload" --output json
-   ```
-2. **Immediately pipe the pre-formatted First Comment to the OS clipboard**:
-   - **macOS**:
-     ```bash
-     cat << 'EOF' | pbcopy
-     Links to everything mentioned in the post:
-
-     📖 Technical Deep Dive:
-     https://example.com/posts/deep-dive
-
-     🛠️ Project Repository:
-     https://github.com/example/project
-     EOF
-     ```
-   - **Linux (X11)**: `cat << 'EOF' | xclip -selection clipboard`
-   - **Linux (Wayland)**: `cat << 'EOF' | wl-copy`
-3. Print the live post URL directly to the user so they can click the link, press `Cmd+V` / `Ctrl+V`, and post the comment in 2 seconds.
-
-### Strategic Benefits
-- **Zero Cost ($0/year)**: Bypasses expensive subscription gates.
-- **Zero Forgotten Comments**: The author is already at their keyboard when the post is dispatched live.
-- **Boosts Golden-Hour Velocity**: Triggers an active author session and native interaction on LinkedIn immediately after publishing, which signals active conversation to LinkedIn's algorithm.
+### Best Practices for In-Body Link Placement
+- **Pair with a Native Image or Video Asset**: Always attach an explicit media asset (`1200×630` card, architecture diagram, or demo clip) so LinkedIn renders the native media gallery instead of a compact link preview.
+- **Position Links After the Core Value**: Deliver the complete problem statement, architectural breakdown, and trade-offs first (`Zero-Click` value), then place `1–3` clearly labeled URLs near the bottom of the post just above the hashtags.

@@ -31,7 +31,7 @@ Never use these generic filler words and phrases in developer copy:
 - **"Broetry" & Fake Epiphanies:** Dramatic single-line staccato sentences linking mundane chores to system architecture (*"I watched my espresso drip this morning and realized Kafka partitions work the same way..."*).
 - **Unicode Bold / Italic Glyphs:** Formatting text with `𝗕𝗼𝗹𝗱` glyphs breaks screen readers (accessibility failure), destroys search indexing, and inflates character counts.
 - **Generic Hashtag Stuffing:** Using 5+ hashtags (`#tech #ai #software #coding #innovation`) flags posts as spam.
-- **In-Body Links Without Workaround:** Putting links directly in the post body cuts organic reach by 40–60%.
+- **"Link in First Comment 👇" Evasions:** Withholding the primary article or repository URL from the post body and telling readers to hunt in the comments. Direct in-body URLs paired with native visuals outperform first-comment links—while LinkedIn's default `Most Relevant` comment sorting buries unpinned first-comment links as soon as discussion starts and drops them entirely on reshares.
 
 ### Twitter / X Anti-Patterns
 - **Intra-Day Rapid Burst Posting:** Publishing multiple standalone tweets in a few minutes/hours without a 2–3 hour spacing buffer saturates follower feeds and kills early engagement velocity. Bundle related thoughts into a Thread instead.
