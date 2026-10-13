@@ -17,7 +17,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.1"
+  version: "0.4.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -155,7 +155,7 @@ Never hallucinate features, metrics, or claims.
 
 ### Stage 4: Channel-Specific Distillation & Format Assembly
 Cut and reformat the approved Foundation Narrative into the appropriate archetype for each channel. Each file MUST use YAML frontmatter followed by Markdown content:
-- **LinkedIn** (`linkedin.md`): Architectural deep-dive (1,300–2,000 chars) with first-comment link.
+- **LinkedIn** (`linkedin.md`): Architectural deep-dive (1,300–2,000 chars) with direct in-body link(s) to the primary article, documentation, or repository.
 - **Twitter / X** (`twitter.md`): Native long-form post (800–2,500 chars) with direct links or micro-thread.
 - **Bluesky** (`bluesky.md`): Multi-post thread where every post is strictly <= 300 graphemes.
 - **Instagram** (`instagram.md`): 4:5 multi-slide carousel outline + micro-blog caption with DM automation hook.
@@ -172,7 +172,7 @@ Cut and reformat the approved Foundation Narrative into the appropriate archetyp
 Review all drafts against [references/anti_patterns.md](references/anti_patterns.md) and execute anti-slop checks (leveraging the `deslopify` skill):
 - [ ] No banned AI words (*"delve", "game-changer", "revolutionary", "testament"*).
 - [ ] No mathematical unicode bolding (`𝗕𝗼𝗹𝗱` fonts).
-- [ ] Links positioned according to platform rules (1st comment for LinkedIn, direct in-body for X/Bluesky/Threads/Reddit).
+- [ ] Links positioned directly in the post body across technical platforms (LinkedIn, X, Bluesky, Threads, Reddit); never hide primary links in the first comment.
 - [ ] Hashtags strictly match platform limits (0 for X, 1 for Threads, 0-1 for Bluesky, 1-3 for LinkedIn, 3-5 for Instagram).
 - [ ] Technical claims, metrics, and commands verified against reality.
 - [ ] **At least one media item (image or video) is attached and documented in frontmatter.**
@@ -189,10 +189,9 @@ When human approval is granted and dispatching/automating publication (e.g. via 
    - **Twitter / X**: Enforce a minimum 2-to-3 hour spacing buffer between standalone posts to protect early engagement velocity, or package same-sitting posts as a connected Thread.
    - **Bluesky / Threads**: Maintain at least 1–2 hours between standalone broadcast posts.
 3. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
-4. **First-Comment Clipboard Pipeline (Free Tier Strategy)**:
-   - For platforms where outbound links are placed in the first comment (such as LinkedIn) and the scheduler's automated comment API is restricted behind paid plans, dispatch the post with `mode: shareNow`.
-   - **Immediately pipe the pre-formatted First Comment to the user's OS clipboard** (`pbcopy` on macOS, `xclip`/`wl-copy` on Linux).
-   - Return the live post URL directly so the author can click the link and press `Cmd+V` / `Ctrl+V` immediately, avoiding forgotten comments and boosting the post's golden-hour engagement signal.
+4. **Direct In-Body Link & Native Media Pairing**:
+   - Include primary outbound URLs (blog post, documentation, or GitHub repo) directly in the post body on LinkedIn, X, Bluesky, Threads, and Reddit, paired with an attached native image/video asset (`assets` array) so the post renders as a full-bleed visual card rather than a bare link preview.
+   - Because the primary URL lives inside the post body, posts can be safely scheduled (`customScheduled` or `addToQueue`) without needing manual first-comment follow-ups.
 
 ### Stage 7: Post-Dispatch Lifecycle Synchronization & Status Marking
 As soon as posts are published or confirmed live:
