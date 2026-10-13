@@ -48,6 +48,7 @@ def run_all_analytics_tests() -> int:
         ("Buffer Analytics", os.path.join(REPO_ROOT, "analytics", "buffer-analytics", "scripts"), "test_buffer_analytics.py"),
         ("Google Analytics 4", os.path.join(REPO_ROOT, "analytics", "google-analytics", "scripts"), "test_google_analytics.py"),
         ("Search Analytics (GSC)", os.path.join(REPO_ROOT, "analytics", "search-analytics", "scripts"), "test_search_analytics.py"),
+        ("Skill Analytics", os.path.join(REPO_ROOT, "analytics", "skill-analytics", "scripts"), "test_analyze.py"),
     ]
 
     total_suites = 0
