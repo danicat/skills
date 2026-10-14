@@ -64,7 +64,7 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 Frameworks, multi-agent swarm orchestration, and skill authoring tools.
 
 * **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
-* **[`intercom`](agents/intercom/SKILL.md)**: Inter-session communication mesh connecting independent terminal sessions via Unix Domain Sockets and dedicated Comms Subagents with zero network configuration, non-blocking duplex messaging, and crash-resilient mailbox spooling.
+* **[`intercom`](agents/intercom/SKILL.md)**: Cross-session and cross-project agent communication in Antigravity using the native `agentapi` CLI and `conversation_summaries.db`, with automatic session discovery, `projectId` environment sanitization, and return-address framing.
 * **[`parallel`](agents/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.

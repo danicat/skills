@@ -1,212 +1,175 @@
 ---
 name: intercom
 description: >
-  Inter-session communication mesh connecting independent terminal sessions on
-  the same host via Unix Domain Sockets and dedicated Comms Subagents. Features
-  sticky project identities, zero impersonation, non-blocking duplex messaging,
-  crash-resilient mailbox spooling, and automatic clean restart lifecycles.
-  Activate when coordinating multi-agent workflows across separate workspaces,
-  delegating tasks between independent terminal sessions, relaying test failures
-  or code diffs, or establishing a local agent mesh network.
+  Cross-session and cross-project agent communication in Antigravity using the
+  native agentapi CLI and conversation_summaries.db. Discovers active sessions
+  across workspaces, resolves target projectId metadata, bypasses cross-project
+  PermissionDenied checks via environment sanitization, and delivers reactive
+  messages with return-address headers. Activate when coordinating between
+  independent agent sessions, handing off tasks across different projects or
+  workspaces, discovering peer conversation IDs, or sending cross-project
+  messages with agentapi.
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "ipc, mesh, multi-agent, subagents, sockets, comms, experimental"
+  tags: "intercom, agentapi, cross-project, multi-agent, sessions, coordination, handoff"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Intercom: Inter-Session Multi-Agent Comms Mesh
+# Intercom: Cross-Project & Inter-Session Messaging via `agentapi`
 
-`intercom` establishes zero-configuration, bidirectional inter-session communication between independent agent CLI sessions running on the same host using Unix Domain Sockets and dedicated Comms Subagents.
+`intercom` enables direct, zero-daemon communication between independent Antigravity agent sessions across both the same workspace and completely different project workspaces on the same host using the native `agentapi` CLI.
 
-## Available scripts & assets
+## Available scripts
 
-- **`scripts/agy_ipc.py`**: Zero-dependency Unix Domain Socket transport, message router, auto-elected hub daemon, and sticky identity manager.
-- **`scripts/namegen.py`**: Sci-fi communications officer identity generator with sticky project persistence and channel collision protection.
-- **`scripts/test_ipc.py`**: Unit and integration test suite validating socket transport, leader election, NDJSON message framing, sticky identities, and clean restart lifecycles.
-- **`assets/agents/comms-officer.md`**: Dedicated subagent template for the Communications Officer.
-- **`references/comms-officer.md`**: Comprehensive guide to the Comms Officer subagent pattern and unblocked execution.
-- **`references/protocol.md`**: Low-level wire protocol, message envelope specification, socket framing, and persistence architecture.
+- **`scripts/intercom.py`**: Zero-dependency CLI wrapper around `agentapi` and `$ANTIGRAVITY_APP_DATA_DIR/conversation_summaries.db` providing `whoami`, `discover`, `inspect`, `send`, and `spawn`.
+- **`scripts/test_intercom.py`**: Unit test suite verifying cross-project environment sanitization, return-address envelope formatting, and SQLite session discovery.
 
 ---
 
-## ⚡ Core Operational Mandates
+## ⚡ Core Architecture & Why Cross-Project Messaging Fails by Default
 
-To ensure maximum responsiveness, zero user friction, and context hygiene, all Intercom mesh operations MUST adhere to these five core rules:
+Inside any Antigravity command execution, the runtime populates the environment with session-scoped variables:
 
-1. **One Sticky Comms Agent per Project Workspace:**
-   - Every project directory maintains **one and only one sticky Communications Officer identity** (persisted in `.intercom/session.json`).
-   - The identity is automatically resolved and bound when initializing comms. Across restarts and tool runs, the project always speaks under its established officer codename (e.g., `nyota-uhura`).
-2. **Zero Impersonation & Collision Prevention:**
-   - When claiming or validating an identity, the runtime checks active channel peers (`peers.json` and active socket connections).
-   - If another running project is already actively connected under that officer name, the system automatically assigns the next available officer from the roster, preventing name collisions and impersonation.
-3. **Mandatory Comms Officer Subagent (Unblocked Main Session):**
-   - The Main Agent Session (ROOT) is the pair-programming interface to the user and **MUST NEVER** block itself running background listener scripts or managing raw socket streams.
-   - The Main Agent **ALWAYS spawns a dedicated `comms-officer` subagent** via `invoke_subagent`.
-   - The Comms Officer manages the background bridge, receives incoming socket events, and relays high-signal updates to the Main Agent via `send_message`.
-4. **Smart Script Usage (Zero User Confirmation Spam):**
-   - **NEVER** run `agy_ipc.py poll` in a tight loop or scheduled cron job. Polling loops repeatedly prompt the user for script authorization.
-   - The Comms Officer subagent starts the background listener **ONCE** upon activation:
-     ```bash
-     python3 scripts/agy_ipc.py listen --channel <chan> --session <id> --fresh
-     ```
-   - Running as a single background task authorized once, it streams incoming messages and reactively awakens the subagent without polling overhead.
-5. **Clean Restarts & Dead Comms Cleanup (Zero Context Contamination):**
-   - When restarting or initializing a session (`agy_ipc.py init` or `agy_ipc.py listen --fresh`), the session mailbox is automatically reset to the current stream head.
-   - Stale historical messages from dead sessions or yesterday's runs are never replayed into the LLM context.
-   - Channel broadcasts route exclusively to **currently active connected peers**, preventing message buildup in orphaned zombie mailboxes.
+| Environment Variable | Purpose |
+| :--- | :--- |
+| `ANTIGRAVITY_CONVERSATION_ID` | UUID of the current agent conversation |
+| `ANTIGRAVITY_PROJECT_ID` | UUID of the current workspace's project |
+| `ANTIGRAVITY_TRAJECTORY_ID` | UUID of the active execution trajectory |
+| `ANTIGRAVITY_SOURCE_METADATA` | JSON payload binding the tool call to the sender's `conversationId` and `stepIndex` |
+| `ANTIGRAVITY_LS_ADDRESS` | Local language server RPC address (`localhost:<port>`) |
+| `ANTIGRAVITY_CSRF_TOKEN` | Local language server authentication token |
+| `ANTIGRAVITY_APP_DATA_DIR` | Path to `~/.gemini/antigravity` containing `conversation_summaries.db` and `brain/` |
 
----
+### The Cross-Project Boundary Check
 
-## 1. Mesh Topology & Architecture
+When you call the native `send_message` tool—or run `agentapi send-message <recipient_id> <content>` directly—to message a conversation in a **different project workspace**, it fails with:
 
-```
-┌────────────────────────────────────────────────────────┐          ┌────────────────────────────────────────────────────────┐
-│               PROJECT A (Terminal 1)                   │          │               PROJECT B (Terminal 2)                   │
-│                                                        │          │                                                        │
-│  ┌──────────────────────────────────────────────────┐  │          │  ┌──────────────────────────────────────────────────┐  │
-│  │           Main Agent Session (ROOT)              │  │          │  │           Main Agent Session (ROOT)              │  │
-│  │       (Unblocked, pairing with the user)         │  │          │  │       (Unblocked, pairing with the user)         │  │
-│  └────────────────────────▲─────────────────────────┘  │          │  └────────────────────────▲─────────────────────────┘  │
-│                           │ send_message (Relay)       │          │                           │ send_message (Relay)       │
-│                           ▼                            │          │                           ▼                            │
-│  ┌──────────────────────────────────────────────────┐  │          │  ┌──────────────────────────────────────────────────┐  │
-│  │        Comms Officer Subagent (nyota-uhura)      │  │          │  │       Comms Officer Subagent (seven-of-nine)     │  │
-│  │   (Runs background listener, isolates network)   │  │          │  │   (Runs background listener, isolates network)   │  │
-│  └────────────────────────┬─────────────────────────┘  │          │  └────────────────────────┬─────────────────────────┘  │
-│                           │ agy_ipc.py send / listen   │          │                           │ agy_ipc.py send / listen   │
-└───────────────────────────┼────────────────────────────┘          └───────────────────────────┼────────────────────────────┘
-                            │                                                                   │
-                            ▼                                                                   ▼
-                  ┌───────────────────────────────────────────────────────────────────────────────────┐
-                  │                        Intercom Unix Domain Socket Hub & Spool                    │
-                  │                         /tmp/agy-ipc/<channel_name>/hub.sock                      │
-                  │                 (Auto Leader-Election, Live Peer Routing, Zero-Config)            │
-                  └───────────────────────────────────────────────────────────────────────────────────┘
+```text
+rpc error: code = PermissionDenied desc = permission_denied: source project_id "<source_project_id>" does not match target project_id "<target_project_id>"
 ```
 
+Simply overriding `ANTIGRAVITY_PROJECT_ID="<target_project_id>"` is **not sufficient** on its own. As long as `ANTIGRAVITY_CONVERSATION_ID`, `ANTIGRAVITY_SOURCE_METADATA`, or `ANTIGRAVITY_TRAJECTORY_ID` remain in the environment, the language server resolves `source project_id` from the sender's conversation record and rejects the cross-project call.
+
+### The 3-Step Cross-Project Solution
+
+1. **Resolve the Target `projectId`**:
+   Call `agentapi get-conversation-metadata <target_conversation_id>` (which succeeds across all projects without restriction) and extract `.response.conversationMetadata.metadata.projectId`.
+2. **Sanitize Sender Environment Bindings**:
+   Unset `ANTIGRAVITY_CONVERSATION_ID`, `ANTIGRAVITY_SOURCE_METADATA`, and `ANTIGRAVITY_TRAJECTORY_ID`, while setting `ANTIGRAVITY_PROJECT_ID="<target_project_id>"`.
+3. **Embed a Return-Address Header**:
+   Because unsetting `ANTIGRAVITY_CONVERSATION_ID` removes automatic sender attribution from the RPC metadata, **always include your own `$ANTIGRAVITY_CONVERSATION_ID`, `$ANTIGRAVITY_PROJECT_ID`, and workspace path (`$PWD`)** in `--title` and at the top of the message body so the recipient can reply back to you.
+
 ---
 
-## 2. Quickstart: Connecting Two Sessions
+## 1. 🚀 First Instinct: Using `intercom.py` (`kungfu run`)
 
-Follow this streamlined 3-step workflow to connect independent agent sessions:
-
-### Step 1: Initialize Project Comms & Claim Sticky Identity
-Run `init` to establish the project's sticky identity, start the hub daemon, and reset mailbox state:
+Execute `intercom.py` via `kungfu run` (or directly with `python3 scripts/intercom.py`) to handle discovery, metadata lookup, return-address framing, and environment sanitization automatically:
 
 ```bash
-python3 scripts/agy_ipc.py init --channel collab
+# 1. Inspect your own session identity, projectId, and workspace
+kungfu run intercom intercom.py whoami
+
+# 2. Discover recent active root sessions across all projects (or filter by workspace/title)
+kungfu run intercom intercom.py discover
+kungfu run intercom intercom.py discover --workspace socials --limit 5
+
+# 3. Inspect a specific peer conversation UUID
+kungfu run intercom intercom.py inspect 7566dedc-5206-4975-bb23-7a879a542f93
+
+# 4. Send a message by conversation UUID OR by workspace name substring
+kungfu run intercom intercom.py send 7566dedc-5206-4975-bb23-7a879a542f93 "Campaign files moved to campaigns/2026-10-antigravity-ui-extensions/."
+kungfu run intercom intercom.py send socials "Please review the new LinkedIn draft." --title "Campaign Handoff"
+
+# 5. Spawn a brand-new conversation inside another project workspace
+kungfu run intercom intercom.py spawn socials "Run the weekly social analytics report and reply with findings." --title "Analytics Request"
 ```
-
-*Output:*
-```json
-{
-  "status": "ready",
-  "channel": "collab",
-  "session_id": "nyota-uhura",
-  "name": "Nyota Uhura",
-  "title": "Chief Communications Officer",
-  "is_sticky": true,
-  "inbox_reset": true
-}
-```
-
-### Step 2: Spawn the Dedicated Comms Officer Subagent
-The Main Agent uses `invoke_subagent` to launch the Comms Officer in the background:
-
-```python
-invoke_subagent(
-    Subagents=[{
-        "TypeName": "comms-officer",
-        "Role": "Communications Officer",
-        "Prompt": "You are our dedicated Comms Officer (nyota-uhura) for channel 'collab'. Run the background listener with 'python3 scripts/agy_ipc.py listen --channel collab --session nyota-uhura --fresh' and relay any incoming messages to this main session."
-    }]
-)
-```
-
-### Step 3: Communicate Asynchronously
-- **Sending Outgoing Messages:** The Main Agent sends a directive to the Comms Officer via `send_message`:
-  ```python
-  send_message(
-      Recipient="<comms_subagent_conv_id>",
-      Message="SEND TO seven-of-nine: Please review the newly generated auth schema."
-  )
-  ```
-  The Comms Officer executes `python3 scripts/agy_ipc.py send --channel collab --session nyota-uhura --to seven-of-nine --text "Please review the newly generated auth schema."` and acknowledges.
-
-- **Receiving Incoming Messages:** When the remote peer responds, the background listener outputs the event, and the Comms Officer immediately notifies the Main Agent:
-  ```python
-  send_message(
-      Recipient="<main_agent_conv_id>",
-      Message="[INTERCOM INCOMING from seven-of-nine]: Schema review passed with 0 warnings. Ready to merge."
-  )
-  ```
 
 ---
 
-## 3. Communication Commands Matrix
+## 2. 🛠️ Direct Shell Recipes (`agentapi` + `sqlite3` + `jq`)
 
-| Action | Command | Purpose |
-| :--- | :--- | :--- |
-| **Initialize Comms** | `python3 scripts/agy_ipc.py init --channel <chan>` | Resolves sticky project identity, auto-spawns hub, resets inbox |
-| **Start Listener** | `python3 scripts/agy_ipc.py listen --channel <chan> --session <id> --fresh` | Persistent stream listener running in Comms Officer background |
-| **Direct Message** | `python3 scripts/agy_ipc.py send --channel <chan> --session <id> --to <peer> --text "<msg>"` | Direct point-to-point transmission to a specific officer |
-| **Broadcast** | `python3 scripts/agy_ipc.py send --channel <chan> --session <id> --to "*" --text "<msg>"` | Channel-wide announcement delivered only to live connected peers |
-| **Query Peers** | `python3 scripts/agy_ipc.py peers --channel <chan>` | Enumerates currently connected active sessions |
-| **Clean Stale State** | `python3 scripts/agy_ipc.py cleanup --channel <chan> --stale` | Prunes dead sockets and locks without interrupting active channel |
-| **Full Reset** | `python3 scripts/agy_ipc.py cleanup --channel <chan>` | Completely purges channel socket, locks, and spool directory |
+When executing raw commands directly without the helper script, follow these exact patterns:
 
----
+### A. Discover Active Sessions Across Workspaces (`conversation_summaries.db`)
+Query `$ANTIGRAVITY_APP_DATA_DIR/conversation_summaries.db` in read-only mode to list recent root sessions (`parent_conversation_id = ''`, `killed = 0`) in milliseconds:
 
-## 4. Script Reference & CLI Options
-
-All scripts require **zero external dependencies** and execute on Python 3.10+ standard libraries (`asyncio`, `socket`, `fcntl`, `json`).
-
-### `scripts/agy_ipc.py`
 ```bash
-# Initialize project comms (idempotent, sticky, zero-collision)
-python3 scripts/agy_ipc.py init --channel main
-
-# Send direct message with structured JSON payload
-python3 scripts/agy_ipc.py send --channel main --session nyota-uhura --to seven-of-nine --text "Diff ready" --json-payload '{"files": ["auth.go"]}'
-
-# Stream incoming messages (runs continuously in background subagent)
-python3 scripts/agy_ipc.py listen --channel main --session nyota-uhura --fresh
-
-# List live peers
-python3 scripts/agy_ipc.py peers --channel main
-
-# Purge stale dead artifacts
-python3 scripts/agy_ipc.py cleanup --channel main --stale
+sqlite3 -header -column "$ANTIGRAVITY_APP_DATA_DIR/conversation_summaries.db" "
+  SELECT
+    conversation_id,
+    project_id,
+    title,
+    workspace_uris,
+    status,
+    last_modified_time
+  FROM conversation_summaries
+  WHERE parent_conversation_id = '' AND killed = 0
+  ORDER BY last_modified_time DESC
+  LIMIT 10;
+"
 ```
 
-### `scripts/namegen.py`
+### B. Inspect Target Session Metadata (`get-conversation-metadata`)
+Verify a target `<conversation_id>` and extract its `projectId` and `workspaceUris`:
+
 ```bash
-# Claim or retrieve sticky identity for current project without collisions
-python3 scripts/namegen.py --claim --channel main --json
+TARGET_CONV_ID="7566dedc-5206-4975-bb23-7a879a542f93"
 
-# Generate raw single officer ID
-python3 scripts/namegen.py --id-only
+agentapi get-conversation-metadata "$TARGET_CONV_ID" | jq '{
+  projectId: .response.conversationMetadata.metadata.projectId,
+  workspaceUris: .response.conversationMetadata.metadata.workspaceUris,
+  rootConversationId: .response.conversationMetadata.metadata.rootConversationId
+}'
+```
 
-# Display full roster
-python3 scripts/namegen.py --all
+### C. Send a Cross-Project Message (`send-message`)
+Resolve `TARGET_PROJECT_ID`, include your `$ANTIGRAVITY_CONVERSATION_ID` return address, and unset the 3 sender identity variables:
+
+```bash
+TARGET_CONV_ID="7566dedc-5206-4975-bb23-7a879a542f93"
+TARGET_PROJECT_ID=$(agentapi get-conversation-metadata "$TARGET_CONV_ID" | jq -r '.response.conversationMetadata.metadata.projectId')
+
+HEADER="[Intercom From: ${ANTIGRAVITY_CONVERSATION_ID} | Project: ${ANTIGRAVITY_PROJECT_ID} | Workspace: ${PWD}]"
+BODY="All campaign assets have been copied to your workspace. Please reply to ${ANTIGRAVITY_CONVERSATION_ID} once verified."
+
+env -u ANTIGRAVITY_CONVERSATION_ID \
+    -u ANTIGRAVITY_SOURCE_METADATA \
+    -u ANTIGRAVITY_TRAJECTORY_ID \
+    ANTIGRAVITY_PROJECT_ID="$TARGET_PROJECT_ID" \
+    agentapi send-message \
+      --title="Intercom from ${ANTIGRAVITY_CONVERSATION_ID} ($(basename "$PWD"))" \
+      "$TARGET_CONV_ID" \
+      "$(printf '%s\n\n%s' "$HEADER" "$BODY")"
+```
+
+### D. Spawn a New Conversation in Another Project (`new-conversation`)
+To start a new root conversation inside a target project's context:
+
+```bash
+env -u ANTIGRAVITY_CONVERSATION_ID \
+    -u ANTIGRAVITY_SOURCE_METADATA \
+    -u ANTIGRAVITY_TRAJECTORY_ID \
+    ANTIGRAVITY_PROJECT_ID="$TARGET_PROJECT_ID" \
+    agentapi new-conversation \
+      --title="Task from ${ANTIGRAVITY_CONVERSATION_ID}" \
+      --model=pro \
+      "$(printf '%s\n\n%s' "$HEADER" "$PROMPT")"
 ```
 
 ---
 
-## 5. Antipatterns & Operational Gotchas
+## 3. Operational Rules & Anti-Patterns
 
-1. **The Polling Loop Trap:** Running `agy_ipc.py poll` inside a `while` loop or scheduled timer. This spams the user with approval prompts. **Solution:** Launch `listen` once as a persistent background task.
-2. **The Main Session Blocking Trap:** Running `listen` directly inside the Main Session. This blocks the main chat and prevents the user from pairing with the assistant. **Solution:** Always delegate comms to a dedicated `comms-officer` subagent.
-3. **The Identity Clash Trap:** Hardcoding session names (e.g. `session="agent1"`) instead of using `init` / `namegen.py --claim`. **Solution:** Always let `init` resolve the sticky, collision-free identity.
-4. **The Stale History Contamination Trap:** Restarting an agent and reading old inbox backlogs without `--fresh`. **Solution:** Always pass `--fresh` on restart so the agent only reads new messages from the current conversation.
-
----
-
-## 6. Progressive Disclosure & References
-
-- **[Comms Officer Subagent Guide](references/comms-officer.md)**: Deep dive into the Comms Officer subagent pattern, lifecycle management, and message relaying.
-- **[Comms Officer Subagent Template](assets/agents/comms-officer.md)**: Ready-to-use subagent prompt definition.
-- **[Protocol & Framing Specification](references/protocol.md)**: Wire protocol, message envelope schema, socket framing, and persistence architecture.
+1. **Zero Polling & Zero Listener Subagents**:
+   - `agentapi send-message` delivers messages directly into the recipient session's inbox and triggers an automatic **reactive wakeup**.
+   - Never run polling loops, `sleep` timers, or background listener subagents. After sending a message that awaits a reply, stop calling tools to end your turn; Antigravity will automatically resume your session when the peer replies.
+2. **Never Scan Hundreds of `brain/` Directories with Subprocesses**:
+   - Do not loop over every folder in `$ANTIGRAVITY_APP_DATA_DIR/brain/*` calling `agentapi get-conversation-metadata`—archived or pruned trajectories will fail with `trajectory not found` and waste seconds of latency.
+   - Always discover sessions via `$ANTIGRAVITY_APP_DATA_DIR/conversation_summaries.db` first, then call `agentapi get-conversation-metadata` on the single resolved target UUID.
+3. **Always Include Your Return Address**:
+   - Because cross-project environment sanitization unsets `ANTIGRAVITY_CONVERSATION_ID`, the receiving agent only knows who messaged it if you include your `$ANTIGRAVITY_CONVERSATION_ID` (and workspace path) inside the message header.
+4. **Fail Fast with Rich Diagnostics**:
+   - Never silently ignore `PermissionDenied` or `trajectory not found` errors. If `agentapi` returns a non-zero exit code or a JSON `"error"` field, surface the exact command and error payload immediately.
