@@ -14,23 +14,22 @@
 # limitations under the License.
 
 """
-Skill Analytics: Universal Agent Skill Usage, Context-Tax ROI & Telemetry Engine.
+Skill Analytics: Universal Agent Skill Usage & Context-Tax ROI Engine.
 
 Mines all local agent conversations (0% sampling), inventories all installed and catalog
-skills across built-in, plugin, global, workspace, and remote catalog tiers, and populates
+skills across built-in, plugin, global, workspace, and catalog tiers, and populates
 a local SQLite warehouse (`skill_analytics.db`) for deep SQL analytics and optimization.
 
 Capabilities:
 1. Universal Skill Activation Mapping (`view_file` on any `SKILL.md`, companion `references/`,
-   `scripts/`, and `kungfu` CLI invocations).
+   `scripts/`, and CLI invocations in transcripts).
 2. Context-Tax vs. Activation ROI (`v_skill_roi`) — compares each skill's Tier-1 system-prompt
    token footprint against real conversation activations to detect shelfware vs. high-ROI skills.
 3. Trigger Attribution (`v_trigger_attribution`) — classifies activations into `autonomous`
    (frontmatter description match), `user_explicit` (`::skill`, `//skill`, `/skill`), and
    `rule_driven` to help `skill-optimizer` refine skill descriptions.
-4. Search Gap Discovery (`v_search_gaps`) — surfaces `kungfu find` and `:?` queries that did
+4. Search Gap Discovery (`v_search_gaps`) — surfaces search queries in transcripts that did
    not lead to a skill activation.
-5. KungFu State Telemetry Drift & Backfill (`v_skill_telemetry_drift`, `backfill-state`).
 """
 
 from __future__ import annotations
@@ -49,15 +48,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 HOME_DIR = pathlib.Path.home()
 DEFAULT_BRAIN_DIR = HOME_DIR / ".gemini" / "antigravity" / "brain"
 DEFAULT_SUMMARIES_DB = HOME_DIR / ".gemini" / "antigravity" / "conversation_summaries.db"
-DEFAULT_STATE_JSON = HOME_DIR / ".config" / "kungfu" / "state.json"
 DEFAULT_DB_PATH = pathlib.Path("skill_analytics.db")
-
-UNIT_TEST_POLLUTED_SKILLS = {
-    "evals",
-    "latest-version",
-    "engineering-flow",
-    "pyhd",
-}
 
 BUILTIN_KNOWN_SKILLS = {
     "kungfu",
@@ -358,38 +349,6 @@ CREATE INDEX IF NOT EXISTS idx_se_skill ON skill_events(target_skill);
 CREATE INDEX IF NOT EXISTS idx_se_created ON skill_events(step_created_at);
 CREATE INDEX IF NOT EXISTS idx_se_trigger ON skill_events(trigger_mode);
 
-CREATE TABLE IF NOT EXISTS state_telemetry_snapshot (
-    skill_name TEXT PRIMARY KEY,
-    recorded_count INTEGER NOT NULL,
-    page_load_count INTEGER NOT NULL DEFAULT 0,
-    subpath_load_count INTEGER NOT NULL DEFAULT 0,
-    run_count INTEGER NOT NULL DEFAULT 0,
-    last_loaded_at TEXT NOT NULL,
-    is_learned INTEGER NOT NULL DEFAULT 0,
-    snapshot_at TEXT NOT NULL
-);
-
-DROP VIEW IF EXISTS kungfu_invocations;
-CREATE VIEW kungfu_invocations AS
-SELECT
-    id,
-    conversation_id,
-    step_index,
-    step_created_at,
-    step_type,
-    invocation_kind,
-    notation_type,
-    subcommand,
-    target_skill,
-    raw_args,
-    subpath_or_script,
-    page_number,
-    trigger_mode,
-    source_tier,
-    raw_snippet,
-    is_self_test
-FROM skill_events;
-
 DROP VIEW IF EXISTS v_daily_invocations;
 CREATE VIEW v_daily_invocations AS
 SELECT
@@ -568,76 +527,6 @@ FROM search_events s
 WHERE s.search_query IS NOT NULL AND trim(s.search_query) != ''
 GROUP BY s.search_query, s.invocation_kind
 ORDER BY led_to_load_count ASC, search_count DESC;
-
-DROP VIEW IF EXISTS v_skill_telemetry_drift;
-CREATE VIEW v_skill_telemetry_drift AS
-WITH all_skills AS (
-    SELECT skill_name FROM state_telemetry_snapshot WHERE recorded_count > 0
-    UNION
-    SELECT DISTINCT target_skill AS skill_name
-    FROM skill_events
-    WHERE target_skill IS NOT NULL
-      AND instr(target_skill, ',') = 0
-      AND is_self_test = 0
-      AND (
-          invocation_kind = 'cli_invocation'
-          OR (invocation_kind = 'direct_skill_view' AND target_skill = 'kungfu')
-      )
-),
-transcript_agg AS (
-    SELECT
-        target_skill AS skill_name,
-        SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'load' THEN 1 ELSE 0 END) AS cli_load_raw,
-        SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'load' AND is_self_test = 0 THEN 1 ELSE 0 END) AS cli_load_prod,
-        SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'load' AND is_self_test = 0 AND page_number = 1 AND subpath_or_script IS NULL THEN 1 ELSE 0 END) AS cli_load_primary,
-        SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND is_self_test = 0 AND subpath_or_script = '--load' THEN 1 ELSE 0 END) AS cli_learn_load,
-        SUM(CASE WHEN invocation_kind = 'direct_skill_view' AND is_self_test = 0 AND target_skill = 'kungfu' THEN 1 ELSE 0 END) AS direct_views,
-        SUM(CASE WHEN invocation_kind = 'user_notation' AND is_self_test = 0 THEN 1 ELSE 0 END) AS user_notations,
-        SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'run' AND is_self_test = 0 THEN 1 ELSE 0 END) AS cli_runs,
-        MIN(CASE WHEN is_self_test = 0 THEN step_created_at END) AS first_seen_at,
-        MAX(CASE WHEN is_self_test = 0 AND (
-            (invocation_kind = 'cli_invocation' AND subcommand = 'load')
-            OR (invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND subpath_or_script = '--load')
-            OR (invocation_kind = 'direct_skill_view' AND target_skill = 'kungfu')
-        ) THEN step_created_at END) AS last_activated_at,
-        MAX(CASE WHEN is_self_test = 0 THEN step_created_at END) AS last_seen_at
-    FROM skill_events
-    WHERE target_skill IS NOT NULL
-      AND instr(target_skill, ',') = 0
-    GROUP BY target_skill
-)
-SELECT
-    a.skill_name,
-    COALESCE(s.recorded_count, 0) AS state_json_count,
-    s.last_loaded_at AS state_json_last_loaded,
-    COALESCE(s.is_learned, 0) AS is_learned,
-    COALESCE(t.cli_load_raw, 0) AS transcript_cli_load_raw,
-    COALESCE(t.cli_load_prod, 0) AS transcript_cli_load_prod,
-    COALESCE(t.cli_load_primary, 0) AS transcript_cli_load_primary,
-    COALESCE(t.cli_learn_load, 0) AS transcript_learn_load,
-    COALESCE(t.direct_views, 0) AS transcript_direct_views,
-    COALESCE(t.user_notations, 0) AS transcript_user_notations,
-    COALESCE(t.cli_runs, 0) AS transcript_cli_runs,
-    (COALESCE(t.cli_load_primary, 0) + COALESCE(t.cli_learn_load, 0) + COALESCE(t.direct_views, 0)) AS transcript_total_activations,
-    (COALESCE(t.cli_load_primary, 0) - COALESCE(s.recorded_count, 0)) AS drift_cli_primary_vs_state,
-    ((COALESCE(t.cli_load_primary, 0) + COALESCE(t.cli_learn_load, 0) + COALESCE(t.direct_views, 0)) - COALESCE(s.recorded_count, 0)) AS drift_total_vs_state,
-    t.first_seen_at AS transcript_first_seen,
-    t.last_activated_at AS transcript_last_activated,
-    t.last_seen_at AS transcript_last_seen,
-    CASE
-        WHEN COALESCE(s.recorded_count, 0) = (COALESCE(t.cli_load_primary, 0) + COALESCE(t.cli_learn_load, 0) + COALESCE(t.direct_views, 0))
-            THEN 'RECONCILED_OK'
-        WHEN a.skill_name = 'kungfu' THEN 'DIRECT_VIEW_BYPASS_AND_V050_STATELESS_FREEZE'
-        WHEN COALESCE(s.recorded_count, 0) = 0 AND (COALESCE(t.cli_load_primary, 0) + COALESCE(t.cli_learn_load, 0)) > 0 THEN 'POST_V050_STATELESS_LOAD_UNRECORDED'
-        WHEN COALESCE(t.cli_load_primary, 0) > COALESCE(s.recorded_count, 0) THEN 'POST_V050_LOADS_FROZEN_IN_STATE_JSON'
-        WHEN COALESCE(t.cli_load_primary, 0) = 0 AND COALESCE(s.recorded_count, 0) > 0 AND s.last_loaded_at LIKE '2026-10-08T01:09:%' THEN 'PRE_V050_UNIT_TEST_POLLUTION'
-        WHEN COALESCE(s.recorded_count, 0) > COALESCE(t.cli_load_primary, 0) THEN 'PRE_V050_EXTERNAL_OR_SUBPATH_HISTORICAL'
-        ELSE 'ACTIVITY_WITHOUT_LOAD'
-    END AS drift_diagnosis
-FROM all_skills a
-LEFT JOIN state_telemetry_snapshot s ON s.skill_name = a.skill_name
-LEFT JOIN transcript_agg t ON t.skill_name = a.skill_name
-ORDER BY transcript_total_activations DESC, state_json_count DESC, a.skill_name ASC;
 """
 
 
@@ -725,7 +614,7 @@ def discover_skills_inventory(
     - plugin: ~/.gemini/config/plugins/*/skills/*/SKILL.md
     - global: ~/.gemini/config/skills/*/SKILL.md and ~/.agents/skills/*/SKILL.md
     - workspace: .agents/skills/*/SKILL.md
-    - catalog: catalog repository or ~/.cache/kungfu/index.json
+    - catalog: catalog repository
     """
     inventory: Dict[str, Dict[str, Any]] = {}
     now_iso = utc_now_iso()
@@ -792,38 +681,6 @@ def discover_skills_inventory(
                             always_in_prompt=0,
                         )
 
-    # Also read ~/.cache/kungfu/index.json for cached catalog metadata
-    cache_index = home_dir / ".cache" / "kungfu" / "index.json"
-    if cache_index.is_file():
-        try:
-            idx_obj = json.loads(cache_index.read_text(encoding="utf-8"))
-            manifest = idx_obj.get("manifest") or idx_obj
-            items = manifest.get("skills") or manifest.get("items") or []
-            for it in items:
-                if not isinstance(it, dict):
-                    continue
-                sname = it.get("name") or it.get("id")
-                if sname and sname not in inventory:
-                    desc = it.get("description") or ""
-                    t1_chars = len(sname) + len(desc)
-                    inventory[sname] = {
-                        "skill_name": sname,
-                        "source_tier": "catalog",
-                        "source_origin": manifest.get("name") or "catalog",
-                        "category": it.get("category") or "catalog",
-                        "version": it.get("version") or "unversioned",
-                        "description": desc,
-                        "skill_path": it.get("url") or "",
-                        "is_always_in_prompt": 0,
-                        "tier1_chars": t1_chars,
-                        "tier1_tokens_est": max(1, int(round(t1_chars / 4.0))),
-                        "tier2_lines": 0,
-                        "tier2_tokens_est": 0,
-                        "synced_at": now_iso,
-                    }
-        except Exception:
-            pass
-
     # 2. Built-in Antigravity skills
     builtin_dir = home_dir / ".gemini" / "antigravity" / "builtin" / "skills"
     if builtin_dir.is_dir():
@@ -859,43 +716,6 @@ def discover_skills_inventory(
                 register_skill_md(sdir / "SKILL.md", "workspace", "workspace", 1)
 
     return inventory
-
-
-def read_state_snapshot(
-    state_json_path: pathlib.Path,
-) -> Tuple[Dict[str, Any], Dict[str, Dict[str, Any]], Set[str]]:
-    """Read `~/.config/kungfu/state.json` if present."""
-    if not state_json_path.is_file():
-        return {}, {}, set()
-
-    try:
-        raw_state = json.loads(state_json_path.read_text(encoding="utf-8"))
-    except Exception as exc:
-        fail_fast(
-            "Failed to parse state.json",
-            context={"state_json_path": str(state_json_path), "error": str(exc)},
-        )
-
-    history = raw_state.get("history")
-    if history is None:
-        history = {}
-
-    installed_set: Set[str] = set()
-    global_skills = (raw_state.get("global") or {}).get("skills") or {}
-    for s_name, meta in global_skills.items():
-        if isinstance(meta, dict) and meta.get("status") == "installed":
-            installed_set.add(s_name)
-
-    workspaces = raw_state.get("workspaces") or {}
-    for ws_meta in workspaces.values():
-        if not isinstance(ws_meta, dict):
-            continue
-        ws_skills = ws_meta.get("skills") or {}
-        for s_name, meta in ws_skills.items():
-            if isinstance(meta, dict) and meta.get("status") == "installed":
-                installed_set.add(s_name)
-
-    return raw_state, history, installed_set
 
 
 def read_summaries_metadata(summaries_db_path: pathlib.Path) -> Dict[str, Dict[str, Any]]:
@@ -1628,12 +1448,6 @@ def extract_planner_invocations(
 
 
 def init_db(conn: sqlite3.Connection, rebuild: bool = False) -> None:
-    row = conn.execute(
-        "SELECT type FROM sqlite_master WHERE name = 'kungfu_invocations'"
-    ).fetchone()
-    if row and row[0] == "table":
-        conn.execute("DROP TABLE IF EXISTS kungfu_invocations")
-
     if rebuild:
         conn.executescript(
             """
@@ -1688,40 +1502,10 @@ def sync_skills_inventory_table(
     conn.commit()
 
 
-def sync_state_snapshot_table(
-    conn: sqlite3.Connection,
-    state_json_path: pathlib.Path,
-) -> None:
-    _, history, installed_set = read_state_snapshot(state_json_path)
-    now_iso = utc_now_iso()
-
-    conn.execute("DELETE FROM state_telemetry_snapshot")
-    all_state_skills = set(history.keys()) | installed_set
-    for skill in sorted(all_state_skills):
-        entry = history.get(skill) or {}
-        count = int(entry.get("load_count", entry.get("count", 0)))
-        page_cnt = int(entry.get("page_load_count", 0))
-        sub_cnt = int(entry.get("subpath_load_count", 0))
-        run_cnt = int(entry.get("run_count", 0))
-        last_loaded = str(entry.get("last_seen_at", entry.get("last_loaded", "")))
-        is_learned = 1 if skill in installed_set else 0
-        conn.execute(
-            """
-            INSERT INTO state_telemetry_snapshot (
-                skill_name, recorded_count, page_load_count, subpath_load_count,
-                run_count, last_loaded_at, is_learned, snapshot_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (skill, count, page_cnt, sub_cnt, run_cnt, last_loaded, is_learned, now_iso),
-        )
-    conn.commit()
-
-
 def ingest_conversations(
     conn: sqlite3.Connection,
     brain_dir: pathlib.Path,
     summaries_db_path: pathlib.Path,
-    state_json_path: pathlib.Path,
     catalog_dir: Optional[pathlib.Path] = None,
     rebuild: bool = False,
 ) -> Dict[str, int]:
@@ -1730,11 +1514,8 @@ def ingest_conversations(
 
     inventory = discover_skills_inventory(HOME_DIR, catalog_dir)
     sync_skills_inventory_table(conn, inventory)
-    sync_state_snapshot_table(conn, state_json_path)
 
     known_skills = set(BUILTIN_KNOWN_SKILLS) | set(inventory.keys())
-    _, state_hist, state_inst = read_state_snapshot(state_json_path)
-    known_skills |= set(state_hist.keys()) | state_inst
 
     summaries_meta = read_summaries_metadata(summaries_db_path)
 
@@ -1982,125 +1763,6 @@ def ingest_conversations(
     return stats
 
 
-def compute_backfill_plan(
-    conn: sqlite3.Connection,
-    state_json_path: pathlib.Path,
-) -> Dict[str, Any]:
-    conn.row_factory = sqlite3.Row
-    raw_state, history, _ = read_state_snapshot(state_json_path)
-
-    drift_rows = conn.execute("SELECT * FROM v_skill_telemetry_drift").fetchall()
-    detail_rows = conn.execute(
-        """
-        SELECT
-            target_skill AS skill_name,
-            SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'load' AND is_self_test = 0 AND page_number > 1 AND subpath_or_script IS NULL THEN 1 ELSE 0 END) AS page_loads,
-            SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'load' AND is_self_test = 0 AND subpath_or_script IS NOT NULL AND subpath_or_script != 'MULTI_SKILL_BATCH_REJECTED_V050' THEN 1 ELSE 0 END) AS subpath_loads,
-            SUM(CASE WHEN invocation_kind = 'cli_invocation' AND subcommand = 'run' AND is_self_test = 0 THEN 1 ELSE 0 END) AS run_count
-        FROM skill_events
-        WHERE target_skill IS NOT NULL AND instr(target_skill, ',') = 0
-        GROUP BY target_skill
-        """
-    ).fetchall()
-    details_by_skill = {r["skill_name"]: dict(r) for r in detail_rows}
-
-    new_history: Dict[str, Dict[str, Any]] = {}
-    changes: List[Dict[str, Any]] = []
-
-    for r in drift_rows:
-        skill = r["skill_name"]
-        old_count = int(r["state_json_count"] or 0)
-        old_last = r["state_json_last_loaded"] or ""
-        tx_activations = int(r["transcript_total_activations"] or 0)
-        tx_cli_primary = int(r["transcript_cli_load_primary"] or 0)
-        tx_last = r["transcript_last_activated"] or ""
-        det = details_by_skill.get(skill) or {}
-        page_loads = int(det.get("page_loads") or 0)
-        subpath_loads = int(det.get("subpath_loads") or 0)
-        run_cnt = int(det.get("run_count") or 0)
-
-        if skill in UNIT_TEST_POLLUTED_SKILLS and tx_activations == 0:
-            changes.append(
-                {
-                    "skill": skill,
-                    "action": "remove_unit_test_pollution",
-                    "old_count": old_count,
-                    "new_count": 0,
-                    "old_last_loaded": old_last,
-                    "new_last_loaded": None,
-                }
-            )
-            continue
-
-        reconciled_count = max(old_count, tx_activations)
-        if skill == "godoctor" and tx_activations > 0:
-            reconciled_count = tx_activations
-
-        reconciled_last = max(old_last, tx_last) if (old_last and tx_last) else (tx_last or old_last)
-
-        if reconciled_count > 0 and reconciled_last:
-            rec: Dict[str, Any] = {
-                "last_seen_at": reconciled_last,
-                "load_count": reconciled_count,
-            }
-            if page_loads > 0:
-                rec["page_load_count"] = page_loads
-            if subpath_loads > 0:
-                rec["subpath_load_count"] = subpath_loads
-            if run_cnt > 0:
-                rec["run_count"] = run_cnt
-            new_history[skill] = rec
-            if (
-                reconciled_count != old_count
-                or reconciled_last != old_last
-                or page_loads > 0
-                or subpath_loads > 0
-                or run_cnt > 0
-            ):
-                changes.append(
-                    {
-                        "skill": skill,
-                        "action": "update" if old_count > 0 else "insert_missing_post_v050",
-                        "old_count": old_count,
-                        "new_count": reconciled_count,
-                        "page_load_count": page_loads,
-                        "subpath_load_count": subpath_loads,
-                        "run_count": run_cnt,
-                        "transcript_cli_primary": tx_cli_primary,
-                        "transcript_total_activations": tx_activations,
-                        "old_last_loaded": old_last or None,
-                        "new_last_loaded": reconciled_last,
-                    }
-                )
-
-    sorted_history = {k: new_history[k] for k in sorted(new_history.keys())}
-    new_state_payload = dict(raw_state)
-    new_state_payload["updated_at"] = utc_now_iso()
-    new_state_payload["history"] = sorted_history
-
-    return {
-        "state_json_path": str(state_json_path),
-        "old_skill_count": len(history),
-        "new_skill_count": len(sorted_history),
-        "old_total_loads": sum(
-            int(v.get("load_count", v.get("count", 0))) for v in history.values()
-        ),
-        "new_total_loads": sum(
-            int(v.get("load_count", 0)) for v in sorted_history.values()
-        ),
-        "changes": changes,
-        "new_state": new_state_payload,
-    }
-
-
-def apply_backfill_state(state_json_path: pathlib.Path, new_state: Dict[str, Any]) -> None:
-    state_json_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = state_json_path.with_suffix(".json.tmp")
-    serialized = json.dumps(new_state, indent=2) + "\n"
-    tmp_path.write_text(serialized, encoding="utf-8")
-    os.replace(tmp_path, state_json_path)
-
-
 def run_report(conn: sqlite3.Connection, report_type: str, as_json: bool = False) -> None:
     conn.row_factory = sqlite3.Row
 
@@ -2245,27 +1907,6 @@ def run_report(conn: sqlite3.Connection, report_type: str, as_json: bool = False
             )
         return
 
-    if report_type == "drift":
-        rows = [dict(r) for r in conn.execute("SELECT * FROM v_skill_telemetry_drift").fetchall()]
-        if as_json:
-            print(json.dumps(rows, indent=2))
-            return
-        print("=" * 105)
-        print("KUNGFU STATE.JSON TELEMETRY DRIFT (v_skill_telemetry_drift)")
-        print("=" * 105)
-        print(
-            f"{'SKILL':<26} {'STATE':>5} {'CLI_1ST':>7} {'LEARN_L':>7} {'VIEW':>5} "
-            f"{'TOT_ACT':>7} {'DRIFT':>6} {'DIAGNOSIS'}"
-        )
-        print("-" * 105)
-        for r in rows:
-            print(
-                f"{r['skill_name']:<26} {r['state_json_count']:>5} {r['transcript_cli_load_primary']:>7} "
-                f"{r['transcript_learn_load']:>7} {r['transcript_direct_views']:>5} "
-                f"{r['transcript_total_activations']:>7} {r['drift_total_vs_state']:>+6} {r['drift_diagnosis']}"
-            )
-        return
-
     fail_fast(f"Unknown report type: {report_type}")
 
 
@@ -2296,23 +1937,23 @@ def run_query(conn: sqlite3.Connection, sql: str, as_json: bool = False) -> None
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="analyze.py",
-        description="Skill Analytics: Universal Agent Skill Usage, Context-Tax ROI & Telemetry Engine.",
+        description="Skill Analytics: Universal Agent Skill Usage & Context-Tax ROI Engine.",
     )
     parser.add_argument(
         "command",
         nargs="?",
-        choices=["sync", "report", "query", "backfill-state"],
-        help="Primary subcommand (sync, report, query, backfill-state).",
+        choices=["sync", "report", "query"],
+        help="Primary subcommand (sync, report, query).",
     )
     parser.add_argument(
         "target",
         nargs="?",
-        help="Report name (overview, roi, triggers, velocity, gaps, drift) or SQL query string.",
+        help="Report name (overview, roi, triggers, velocity, gaps) or SQL query string.",
     )
     parser.add_argument(
         "--mode",
-        choices=["rebuild", "incremental", "backfill-state", "summary"],
-        help="Compatibility mode flag (rebuild, incremental, backfill-state, summary).",
+        choices=["rebuild", "incremental", "summary"],
+        help="Compatibility mode flag (rebuild, incremental, summary).",
     )
     parser.add_argument(
         "--full",
@@ -2338,27 +1979,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Path to conversation_summaries.db.",
     )
     parser.add_argument(
-        "--state-json",
-        type=pathlib.Path,
-        default=DEFAULT_STATE_JSON,
-        help="Path to KungFu state.json.",
-    )
-    parser.add_argument(
         "--catalog-dir",
         type=pathlib.Path,
         default=None,
         help="Optional path to local skills catalog repository.",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        default=True,
-        help="Preview backfill changes without modifying state.json (default).",
-    )
-    parser.add_argument(
-        "--apply",
-        action="store_true",
-        help="Atomically write reconciled history to state.json.",
     )
     parser.add_argument(
         "--json",
@@ -2380,8 +2004,6 @@ def main(argv: Optional[List[str]] = None) -> int:
             args.full = True
         elif args.mode == "incremental":
             cmd = "sync"
-        elif args.mode == "backfill-state":
-            cmd = "backfill-state"
         elif args.mode == "summary":
             cmd = "report"
             args.target = "overview"
@@ -2399,7 +2021,6 @@ def main(argv: Optional[List[str]] = None) -> int:
                 conn=conn,
                 brain_dir=args.brain_dir,
                 summaries_db_path=args.summaries_db,
-                state_json_path=args.state_json,
                 catalog_dir=args.catalog_dir,
                 rebuild=args.full,
             )
@@ -2427,33 +2048,6 @@ def main(argv: Optional[List[str]] = None) -> int:
             if not args.target:
                 fail_fast("query subcommand requires a SQL string argument")
             run_query(conn, args.target, as_json=args.json)
-            return 0
-
-        if cmd == "backfill-state":
-            init_db(conn, rebuild=False)
-            plan = compute_backfill_plan(conn, args.state_json)
-            if args.apply:
-                apply_backfill_state(args.state_json, plan["new_state"])
-                sync_state_snapshot_table(conn, args.state_json)
-            if args.json:
-                out = {k: v for k, v in plan.items() if k != "new_state"}
-                out["applied"] = bool(args.apply)
-                print(json.dumps(out, indent=2))
-            else:
-                mode_label = "APPLIED" if args.apply else "DRY-RUN"
-                print("=" * 95)
-                print(f"KUNGFU STATE.JSON BACKFILL PLAN [{mode_label}]")
-                print("=" * 95)
-                print(f"Target file:     {plan['state_json_path']}")
-                print(
-                    f"Tracked skills:  {plan['old_skill_count']} -> {plan['new_skill_count']} | "
-                    f"Total load count: {plan['old_total_loads']} -> {plan['new_total_loads']}"
-                )
-                for ch in plan["changes"]:
-                    print(
-                        f"  {ch['skill']:<26} {ch['action']:<28} "
-                        f"{ch['old_count']:>4} -> {ch['new_count']:>4}"
-                    )
             return 0
 
     finally:

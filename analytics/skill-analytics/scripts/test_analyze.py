@@ -19,12 +19,12 @@ Test Suite for skill-analytics (scripts/analyze.py).
 Validates:
 1. SQLite schema DDL, tables, indexes, and analytical views (`v_skill_roi`,
    `v_trigger_attribution`, `v_daily_invocations`, `v_subcommand_summary`,
-   `v_search_gaps`, `v_skill_telemetry_drift`, `kungfu_invocations`).
+   `v_search_gaps`).
 2. User notation parser (`::skill`, `//skill`, `:?query`, C++/CSS false-positive filtering).
 3. Planner tool_call extractor (`direct_skill_view`, `skill_resource_view`, `cli_invocation`,
    continuation pages `-p 2`, subpaths, `learn --load`, and `run`).
 4. Every SQL query block in `SKILL.md` and `references/queries.md`.
-5. Pre-packaged CLI reports (`overview`, `roi`, `triggers`, `velocity`, `gaps`, `drift`).
+5. Pre-packaged CLI reports (`overview`, `roi`, `triggers`, `velocity`, `gaps`).
 """
 
 import io
@@ -62,14 +62,11 @@ class TestSkillAnalyticsSchema(unittest.TestCase):
             "conversations",
             "ingestion_state",
             "skill_events",
-            "state_telemetry_snapshot",
-            "kungfu_invocations",
             "v_daily_invocations",
             "v_subcommand_summary",
             "v_skill_roi",
             "v_trigger_attribution",
             "v_search_gaps",
-            "v_skill_telemetry_drift",
         }
         for item in expected:
             self.assertIn(item, names, f"Expected table or view '{item}' to exist in schema.")
@@ -144,16 +141,6 @@ class TestSkillAnalyticsParsersAndQueries(unittest.TestCase):
                 ("conv-2", 5, "2026-10-12T11:01:00Z", "PLANNER_RESPONSE", "cli_invocation", None, "find", None, "find kubernetes helm", "kubernetes helm", 1, "autonomous", "kungfu_cli", "kungfu find kubernetes helm", 0),
             ],
         )
-
-        conn.execute(
-            """
-            INSERT INTO state_telemetry_snapshot (
-                skill_name, recorded_count, page_load_count, subpath_load_count,
-                run_count, last_loaded_at, is_learned, snapshot_at
-            ) VALUES ('buffer-analytics', 1, 0, 1, 1, '2026-10-12T11:00:04Z', 0, ?)
-            """,
-            (now,),
-        )
         conn.commit()
 
     def test_extract_user_notations_accuracy(self):
@@ -189,7 +176,7 @@ class TestSkillAnalyticsParsersAndQueries(unittest.TestCase):
         self.assertEqual(rows["buffer-analytics"]["script_runs"], 1)
 
     def test_all_reports_execute(self):
-        for rpt in ("overview", "roi", "triggers", "velocity", "gaps", "drift"):
+        for rpt in ("overview", "roi", "triggers", "velocity", "gaps"):
             buf = io.StringIO()
             with redirect_stdout(buf):
                 analyze.run_report(self.conn, rpt, as_json=False)

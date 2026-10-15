@@ -88,22 +88,6 @@ Stores every extracted skill activation, companion resource view, CLI subcommand
 
 ---
 
-### `state_telemetry_snapshot`
-Stores a snapshot of `~/.config/kungfu/state.json` `history` counters for drift comparison and deterministic backfilling.
-
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `skill_name` | `TEXT` | PRIMARY KEY | Skill name in `state.json` |
-| `recorded_count` | `INTEGER` | NOT NULL | `load_count` in `state.json` |
-| `page_load_count` | `INTEGER` | NOT NULL, DEFAULT 0 | Continuation page loads (`-p 2+`) |
-| `subpath_load_count` | `INTEGER` | NOT NULL, DEFAULT 0 | Companion subpath loads (`skill/references/...`) |
-| `run_count` | `INTEGER` | NOT NULL, DEFAULT 0 | Bundled script executions (`kungfu run`) |
-| `last_loaded_at` | `TEXT` | NOT NULL | `last_seen_at` ISO-8601 timestamp |
-| `is_learned` | `INTEGER` | NOT NULL, DEFAULT 0 | `1` if currently installed in global or workspace scope |
-| `snapshot_at` | `TEXT` | NOT NULL | ISO-8601 UTC snapshot timestamp |
-
----
-
 ## 2. Analytical SQL Views
 
 | View Name | Description |
@@ -112,6 +96,4 @@ Stores a snapshot of `~/.config/kungfu/state.json` `history` counters for drift 
 | `v_trigger_attribution` | Breaks down activations per skill by `autonomous_activations`, `explicit_activations`, `rule_activations`, `autonomous_share_pct`, and `trigger_health` (`NEEDS_DESCRIPTION_TUNING`, `WEAK_AUTONOMOUS_TRIGGER`, `HEALTHY_TRIGGER`). |
 | `v_daily_invocations` | Daily time-series of events grouped by `day`, `invocation_kind`, and `action`. |
 | `v_subcommand_summary` | Aggregate counts, production vs. self-test split, conversation reach, and first/last seen timestamps by `invocation_kind` and `action`. |
-| `v_search_gaps` | Ranks `kungfu find` and `:?` search queries by whether they led to a subsequent skill load (`led_to_load_count`). |
-| `v_skill_telemetry_drift` | Compares `state.json` `load_count` against mined CLI primary loads, `learn --load`, and direct `SKILL.md` views with diagnostic classifications. |
-| `kungfu_invocations` | Compatibility projection over `skill_events`. |
+| `v_search_gaps` | Ranks search queries by whether they led to a subsequent skill load (`led_to_load_count`). |
