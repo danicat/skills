@@ -124,20 +124,24 @@ ORDER BY day DESC, notation_count DESC;
 
 ---
 
-## 7. KungFu `state.json` Telemetry Drift Audit
+## 7. Multi-Skill Conversation Workflows (Co-Occurrence per Conversation)
 
-Compares recorded `load_count` values in `~/.config/kungfu/state.json` against ground-truth transcript activations.
+Identifies conversations that activated multiple distinct skills, showing which skills are frequently combined in complex tasks.
 
 ```sql
 SELECT
-    skill_name,
-    state_json_count,
-    transcript_cli_load_primary,
-    transcript_learn_load,
-    transcript_direct_views,
-    transcript_total_activations,
-    drift_total_vs_state,
-    drift_diagnosis
-FROM v_skill_telemetry_drift
-ORDER BY ABS(drift_total_vs_state) DESC, transcript_total_activations DESC;
+    c.conversation_id,
+    c.title,
+    COUNT(DISTINCT e.target_skill) AS distinct_skills_used,
+    GROUP_CONCAT(DISTINCT e.target_skill) AS skills_list,
+    c.total_steps
+FROM conversations c
+JOIN skill_events e ON e.conversation_id = c.conversation_id
+WHERE e.is_self_test = 0
+  AND e.target_skill IS NOT NULL
+  AND instr(e.target_skill, ',') = 0
+GROUP BY c.conversation_id
+HAVING COUNT(DISTINCT e.target_skill) >= 2
+ORDER BY distinct_skills_used DESC, c.total_steps DESC
+LIMIT 20;
 ```
