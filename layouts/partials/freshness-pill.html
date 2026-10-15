@@ -1,0 +1,95 @@
+{{- $f := .freshness | default dict -}}
+{{- $t := .translations | default site.Data.translations.en -}}
+{{- $showTierLabel := .showTierLabel | default false -}}
+{{- $alignLeft := .alignLeft | default false -}}
+{{- $isUnproven := $f.isUnproven | default false -}}
+{{- $freshScore := int ($f.score | default 85) -}}
+{{- $tierEmoji := $f.tierEmoji | default "🌿" -}}
+{{- $tierLabel := $f.tierLabel | default "Fresh" -}}
+{{- $tierId := $f.tier | default "fresh" -}}
+{{- $uPct := int ($f.updateFreshness | default 0) -}}
+{{- $vPct := int ($f.usageFreshness | default 0) -}}
+{{- $vitalityPts := int ($f.vitalityPoints | default (mul 0.8 $freshScore)) -}}
+{{- $bonusPts := int ($f.adoptionBonusPoints | default (sub $freshScore $vitalityPts)) -}}
+{{- $secPenalty := int ($f.securityPenalty | default 0) -}}
+{{- $ageDays := int (math.Round ($f.ageDays | default 0)) -}}
+{{- $lastDate := $f.lastCommitDate | default "recently" -}}
+{{- $kfTotal := int ($f.kungfuTotal | default 0) -}}
+{{- $kfLoads := int ($f.kungfuLoads | default 0) -}}
+{{- $kfRuns := int ($f.kungfuRuns | default 0) -}}
+{{- $kfLearns := int ($f.kungfuLearns | default 0) -}}
+{{- $installs := int ($f.installs | default 0) -}}
+{{- $curWeek := int ($f.currentWeeklyInstalls | default 0) -}}
+{{- $stars := int (.stars | default ($f.likes | default 0)) -}}
+{{- $copies := int (.copies | default ($f.copies | default 0)) -}}
+{{- $views := int (.views | default ($f.views | default 0)) -}}
+{{- $newLabel := $t.ui.newBadge | default "New" -}}
+
+<a href="{{ "/freshness/" | relLangURL }}"
+   class="metric-pill freshness-pill has-breakdown no-underline{{ if $alignLeft }} breakdown-left{{ end }}"
+   data-tier="{{ $tierId }}"
+   aria-label="{{ if $isUnproven }}{{ $tierEmoji }} {{ $newLabel }} (Unproven){{ else }}{{ $tierEmoji }} {{ $tierLabel }} {{ $freshScore }}%{{ end }}">
+  <span class="freshness-emoji" aria-hidden="true">{{ $tierEmoji }}</span>
+  <span class="metric-val freshness-val">
+    {{- if $isUnproven -}}
+      {{- $newLabel -}}
+    {{- else if $showTierLabel -}}
+      {{- printf "%d%% · %s" $freshScore $tierLabel -}}
+    {{- else -}}
+      {{- printf "%d%%" $freshScore -}}
+    {{- end -}}
+  </span>
+
+  <span class="freshness-breakdown" role="tooltip">
+    <span class="fb-header">
+      <span class="fb-tier">{{ $tierEmoji }} {{ if $isUnproven }}{{ $newLabel }}{{ else }}{{ $tierLabel }}{{ end }}</span>
+      <span class="fb-score">{{ if $isUnproven }}Unproven{{ else }}{{ $freshScore }}%{{ end }}</span>
+    </span>
+
+    {{- if $isUnproven -}}
+      <span class="fb-note">Recently added skill awaiting community usage to earn a percentage score.</span>
+    {{- else -}}
+      <span class="fb-section">
+        <span class="fb-row">
+          <span class="fb-label">Vitality (0–80)</span>
+          <span class="fb-val">{{ $vitalityPts }} / 80</span>
+        </span>
+        <span class="fb-row">
+          <span class="fb-label">Adoption (0–20)</span>
+          <span class="fb-val">+{{ $bonusPts }} / 20</span>
+        </span>
+        {{- if gt $secPenalty 0 -}}
+          <span class="fb-row fb-penalty">
+            <span class="fb-label">Security penalty</span>
+            <span class="fb-val">-{{ $secPenalty }}</span>
+          </span>
+        {{- end -}}
+      </span>
+    {{- end -}}
+
+    <span class="fb-divider"></span>
+
+    <span class="fb-section">
+      <span class="fb-row">
+        <span class="fb-label">Recency (U={{ $uPct }}%)</span>
+        <span class="fb-val">{{ if eq $ageDays 0 }}today{{ else }}{{ $ageDays }}d ago{{ end }} · {{ $lastDate }}</span>
+      </span>
+      <span class="fb-row">
+        <span class="fb-label">Usage (V={{ $vPct }}%)</span>
+        <span class="fb-val">{{ $f.trendLabel | default "Stable" }}</span>
+      </span>
+      <span class="fb-row fb-sub">
+        <span class="fb-label">kungfu CLI</span>
+        <span class="fb-val">{{ $kfTotal }} ({{ $kfLoads }}L{{ if gt $kfRuns 0 }} · {{ $kfRuns }}R{{ end }}{{ if gt $kfLearns 0 }} · {{ $kfLearns }}I{{ end }})</span>
+      </span>
+      <span class="fb-row fb-sub">
+        <span class="fb-label">npx skills</span>
+        <span class="fb-val">{{ $installs }} ({{ $curWeek }}/wk)</span>
+      </span>
+      <span class="fb-row fb-sub">
+        <span class="fb-label">Web</span>
+        <span class="fb-val">{{ $stars }} ★ · {{ $copies }} 📋 · {{ $views }} 👁</span>
+      </span>
+    </span>
+  </span>
+</a>

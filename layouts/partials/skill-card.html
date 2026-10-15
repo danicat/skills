@@ -1,7 +1,17 @@
 {{- $s := .page -}}
+{{- $t := .translations | default site.Data.translations.en -}}
 {{- $skillId := lower $s.Params.skillName -}}
 {{- $metrics := site.Data.metrics_snapshot -}}
 {{- $m := index $metrics $skillId | default dict -}}
+{{- $freshMap := site.Data.freshness -}}
+{{- $f := index $freshMap $skillId | default dict -}}
+{{- $isUnproven := $f.isUnproven | default false -}}
+{{- $freshScore := int ($f.score | default 85) -}}
+{{- $sortFreshness := int ($f.sortScore | default $freshScore) -}}
+{{- $tierEmoji := $f.tierEmoji | default "🌿" -}}
+{{- $tierLabel := $f.tierLabel | default "Fresh" -}}
+{{- $tierId := $f.tier | default "fresh" -}}
+{{- $lastDate := $f.lastCommitDate | default "recently" -}}
 {{- $stars := int ($m.likes | default 0) -}}
 {{- $views := int ($m.views | default 0) -}}
 {{- $copies := int ($m.copies | default 0) -}}
@@ -12,6 +22,7 @@
      id="card-{{ $skillId }}"
      data-skill-id="{{ $skillId }}"
      data-category="{{ $s.Params.category }}"
+     data-is-graveyard="false"
      data-name="{{ $skillId }}"
      data-desc="{{ lower $s.Params.description }}"
      data-tags="{{ lower (delimit ($s.Params.tags | default slice) " ") }}"
@@ -19,22 +30,28 @@
      data-stars="{{ $stars }}"
      data-views="{{ $views }}"
      data-copies="{{ $copies }}"
+     data-freshness="{{ $sortFreshness }}"
+     data-tier="{{ $tierId }}"
      data-score="{{ $score }}">
   <div>
     <div class="flex items-center justify-between gap-2 mb-3">
-      <a href="{{ (printf "/#%s" $s.Params.category) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
-        <span>{{ $s.Params.categoryEmoji }}</span>
-        <span>{{ $s.Params.categoryName }}</span>
-      </a>
+      <div class="flex items-center flex-wrap gap-1.5">
+        <a href="{{ (printf "/#%s" $s.Params.category) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
+          <span>{{ $s.Params.categoryEmoji }}</span>
+          <span>{{ $s.Params.categoryName }}</span>
+        </a>
+      </div>
 
       <div class="flex items-center gap-1.5">
+        {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" $copies "views" $views) }}
+
         <button type="button"
                 class="metric-pill star-btn"
                 data-action="star"
                 title="Star this skill"
                 onclick="handleStarToggle(this, '{{ $s.Params.category }}', '{{ $skillId }}')">
           <svg class="star-icon" aria-hidden="true" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <polygon points="12 2 15.09 8.26 22 9.27 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
           <span class="sr-only">Star </span>
           <span class="metric-val star-count">{{ $stars }}</span>
@@ -61,4 +78,3 @@
     </p>
   </div>
 </article>
-

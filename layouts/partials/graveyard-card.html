@@ -1,0 +1,71 @@
+{{- $c := .item -}}
+{{- $t := .translations -}}
+{{- $hiddenByDefault := .hiddenByDefault | default false -}}
+<article class="skill-card graveyard-card danicat-card border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50/80 dark:bg-neutral-900/50 flex flex-col justify-between p-5"
+     id="card-graveyard-{{ $c.id }}"
+     data-skill-id="{{ $c.id }}"
+     data-category="graveyard"
+     data-is-graveyard="true"
+     data-name="{{ $c.id }}"
+     data-desc="{{ lower $c.epitaph }} {{ lower $c.causeOfDeath }}"
+     data-tags="graveyard retired deprecated {{ lower $c.formerCategory }} {{ lower ($c.successorId | default "") }}"
+     data-featured="false"
+     data-stars="0"
+     data-views="0"
+     data-copies="0"
+     data-freshness="-1"
+     data-score="-1"
+     {{- if $hiddenByDefault }} style="display: none;"{{ end }}>
+  <div>
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-neutral-200/80 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700">
+        <span aria-hidden="true">🪦</span>
+        <span>{{ $c.lifespan }}</span>
+      </span>
+
+      <div class="flex items-center gap-1.5">
+        <span class="metric-pill freshness-pill" data-tier="rip" title="{{ $c.causeOfDeath }}">
+          <span>{{ $c.tierEmoji }}</span>
+          <span>{{ $c.tierLabel }}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-baseline justify-between gap-2 mb-1.5">
+      <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-200 tracking-tight m-0 leading-snug line-through decoration-neutral-400 dark:decoration-neutral-500">
+        <a href="{{ (printf "/graveyard/%s/" $c.id) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors no-underline">
+          {{ $c.name }}
+        </a>
+      </h2>
+      <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">{{ $c.causeOfDeath }}</span>
+    </div>
+
+    <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3 mt-1">
+      {{ $c.epitaph }}
+    </p>
+  </div>
+
+  <div class="pt-3 border-t border-neutral-200/80 dark:border-neutral-700/70 space-y-2">
+    <div class="flex items-center justify-between text-xs">
+      <span class="text-neutral-500 dark:text-neutral-400 font-medium">{{ $t.ui.replacedByLabel }}:</span>
+      {{- if $c.successorId -}}
+        <div class="flex items-center gap-2 font-semibold">
+          <a href="{{ $c.successorUrl | relLangURL }}" class="text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $c.successorId }} →</a>
+        </div>
+      {{- else if $c.successorLabel -}}
+        <span class="font-mono font-semibold text-neutral-700 dark:text-neutral-200">{{ $c.successorLabel }}</span>
+      {{- else -}}
+        <span class="font-mono text-neutral-500">None</span>
+      {{- end -}}
+    </div>
+
+    {{- if $c.migrationCommand -}}
+      <div class="cmd-box-row">
+        <span class="cmd-text text-xs">{{ $c.migrationCommand }}</span>
+        <button type="button" class="cmd-copy-btn" onclick="copyCommand('{{ $c.migrationCommand }}', this)" title="Copy command">
+          {{ $t.ui.copyBtn }}
+        </button>
+      </div>
+    {{- end -}}
+  </div>
+</article>

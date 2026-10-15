@@ -1,11 +1,18 @@
 {{ define "main" }}
 {{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
+{{- $isSpecialPage := .Params.isSpecialPage | default false -}}
 {{- $isCompanion := .Params.isCompanion | default false -}}
 {{- $catId := .Params.category -}}
 {{- $catName := .Params.categoryName -}}
 {{- $catEmoji := .Params.categoryEmoji -}}
 
-{{- if not $isCompanion -}}
+{{- if $isSpecialPage -}}
+  {{- if eq .Params.specialPageType "freshness" -}}
+    {{- partial "freshness-page.html" . -}}
+  {{- else if or (eq .Params.specialPageType "graveyard") (eq .Params.specialPageType "graveyard-single") -}}
+    {{- partial "graveyard-page.html" . -}}
+  {{- end -}}
+{{- else if not $isCompanion -}}
   {{- $skillName := .Params.skillName | default .Title -}}
   {{- $skillId := lower $skillName -}}
   {{- $metrics := site.Data.metrics_snapshot -}}
@@ -13,6 +20,29 @@
   {{- $stars := int ($m.likes | default 0) -}}
   {{- $views := int ($m.views | default 0) -}}
   {{- $isFeatured := $m.featured | default false -}}
+
+  {{- $freshnessMap := site.Data.freshness | default dict -}}
+  {{- $f := index $freshnessMap $skillId | default dict -}}
+  {{- $isUnproven := $f.isUnproven | default false -}}
+  {{- $fScore := int ($f.score | default 85) -}}
+  {{- $fTier := $f.tier | default "fresh" -}}
+  {{- $fEmoji := $f.tierEmoji | default "🌿" -}}
+  {{- $fLabel := $f.tierLabel | default "Fresh" -}}
+  {{- $fTrendLabel := $f.trendLabel | default "Stable" -}}
+  {{- $fAgeDays := int ($f.ageDays | default 0) -}}
+  {{- $fSha := $f.lastCommitSha | default "" -}}
+  {{- $fWeekly := $f.weeklyInstalls | default (slice 0 0 0 0 0 0 0 0) -}}
+  {{- $fAllTime := int ($f.installs | default 0) -}}
+  {{- $fCurWeek := int ($f.currentWeeklyInstalls | default 0) -}}
+  {{- $fKfTotal := int ($f.kungfuTotal | default 0) -}}
+  {{- $fAudits := $f.securityAudits | default dict -}}
+  {{- $fPlainNote := $f.securityNote | default "" -}}
+  {{- $fEditorialNote := $f.editorialNote | default "" -}}
+
+  {{- $tierTransLabel := $fLabel -}}
+  {{- if and $t.freshnessTiers (index $t.freshnessTiers $fTier) -}}
+    {{- $tierTransLabel = index $t.freshnessTiers $fTier -}}
+  {{- end -}}
 
   {{/* Breadcrumbs */}}
   <nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400 mt-4 mb-3" aria-label="Breadcrumbs">
@@ -38,6 +68,8 @@
         </div>
 
         <div class="flex items-center flex-wrap gap-2">
+          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" ($m.copies | default 0) "views" $views) }}
+
           <button type="button"
                   class="metric-pill star-btn"
                   id="detailStarBtn"
@@ -129,6 +161,124 @@
             <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('{{ .Params.installCommand }}', this)" title="Copy command">
               {{ $t.ui.copyBtn }}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {{/* Skill Health Sidebar Card */}}
+      <div class="danicat-card p-5">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{{ $t.ui.freshnessCardTitle | default "Freshness" }}</span>
+          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" ($m.copies | default 0) "views" $views "showTierLabel" true) }}
+        </div>
+
+        <div class="space-y-3 text-xs">
+          {{/* Commit Recency */}}
+          <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+            <span class="text-neutral-500 dark:text-neutral-400">{{ $t.ui.lastUpdatedLabel | default "Last updated" }}</span>
+            <div class="flex items-center gap-1.5 font-medium text-neutral-800 dark:text-neutral-200">
+              <span>
+                {{- if eq $fAgeDays 0 -}}
+                  {{ $t.ui.updatedToday | default "Updated today" }}
+                {{- else -}}
+                  {{ $fAgeDays }}d ago
+                {{- end -}}
+              </span>
+              {{- if $fSha -}}
+                <span class="opacity-40">·</span>
+                <a href="https://github.com/danicat/skills/commit/{{ $fSha }}" target="_blank" rel="noopener noreferrer" class="font-mono text-[11px] text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ substr $fSha 0 7 }}</a>
+              {{- end -}}
+            </div>
+          </div>
+
+          {{/* KungFu CLI + npx skills Usage */}}
+          <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+            <span class="text-neutral-500 dark:text-neutral-400">Usage</span>
+            <span class="font-mono text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+              {{ $fKfTotal }} kungfu · {{ $fAllTime }} npx
+            </span>
+          </div>
+
+          {{/* 8-Week Install Sparkline */}}
+          {{- $maxW := 1 -}}
+          {{- range $wVal := $fWeekly -}}
+            {{- if gt (int $wVal) $maxW -}}
+              {{- $maxW = int $wVal -}}
+            {{- end -}}
+          {{- end -}}
+          <div class="py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-neutral-500 dark:text-neutral-400">{{ $t.ui.weeklyActivityLabel | default "Weekly activity" }}</span>
+              <span class="font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
+                {{- if $isUnproven -}}
+                  🌱 Unproven
+                {{- else -}}
+                  {{ $fCurWeek }}/wk · {{ $fTrendLabel }}
+                {{- end -}}
+              </span>
+            </div>
+            <svg viewBox="0 0 120 26" class="w-full h-6 overflow-visible" role="img" aria-label="8-week activity sparkline">
+              {{- range $idx, $wVal := $fWeekly -}}
+                {{- $v := int $wVal -}}
+                {{- $barH := 3 -}}
+                {{- if gt $v 0 -}}
+                  {{- $barH = add 4 ( div (mul $v 20) $maxW ) -}}
+                {{- end -}}
+                {{- $x := mul $idx 15 -}}
+                {{- $y := sub 25 $barH -}}
+                <rect x="{{ $x }}" y="{{ $y }}" width="11" height="{{ $barH }}" rx="2" class="{{ if eq $idx 7 }}fill-primary-500 dark:fill-primary-400{{ else }}fill-neutral-300 dark:fill-neutral-700{{ end }}">
+                  <title>W{{ add $idx 1 }}: {{ $v }} installs</title>
+                </rect>
+              {{- end -}}
+            </svg>
+          </div>
+
+          {{/* Security Audits */}}
+          <div class="py-1">
+            <div class="text-neutral-500 dark:text-neutral-400 mb-1.5">{{ $t.ui.securityCheckLabel | default "Security" }}</div>
+            <div class="flex flex-wrap gap-1.5 mb-2">
+              {{- $p0 := index $fAudits "0" | default dict -}}
+              {{- $p1 := index $fAudits "1" | default dict -}}
+              {{- $p2 := index $fAudits "2" | default dict -}}
+              {{- if $p0.riskLevel -}}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                  <span>{{ if eq $p0.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
+                  <span>Gen Trust Hub: {{ $p0.riskLevel }}</span>
+                </span>
+              {{- end -}}
+              {{- if $p1.riskLevel -}}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                  <span>{{ if eq $p1.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
+                  <span>Socket: {{ $p1.alerts | default 0 }} Alerts</span>
+                </span>
+              {{- end -}}
+              {{- if $p2.riskLevel -}}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                  <span>{{ if eq $p2.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
+                  <span>Snyk: {{ $p2.riskLevel }}</span>
+                </span>
+              {{- end -}}
+            </div>
+            {{- if $fPlainNote -}}
+              <p class="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed m-0">
+                {{ $fPlainNote }}
+              </p>
+            {{- end -}}
+          </div>
+
+          {{- if $fEditorialNote -}}
+            <div class="pt-2 border-t border-neutral-200/60 dark:border-neutral-700/60 text-[11px] text-neutral-600 dark:text-neutral-300 italic leading-relaxed">
+              “{{ $fEditorialNote }}”
+            </div>
+          {{- end -}}
+
+          <div class="pt-2 border-t border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between">
+            <a href="{{ "/freshness/" | relLangURL }}" class="text-[11px] font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">
+              {{ $t.ui.methodologyLink | default "How is this scored? →" }}
+            </a>
+            <a href="{{ "/graveyard/" | relLangURL }}" class="text-[11px] text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 no-underline">
+              🪦 {{ $t.ui.graveyardTitle | default "Graveyard" }}
+            </a>
           </div>
         </div>
       </div>

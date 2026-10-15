@@ -1,0 +1,2125 @@
+{
+  "ebitengineer": {
+    "id": "ebitengineer",
+    "category": "game-dev",
+    "score": 94,
+    "sortScore": 94,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 83,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 16,
+    "trendRatio": 2.33,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 15,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      3,
+      2,
+      3,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 2,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 2,
+    "likes": 1,
+    "views": 14,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Snyk flags a Medium static alert for local Ebitengine/WASM build commands; Gen Trust Hub and Socket pass with 0 alerts.",
+    "editorialNote": "Battle-tested architecture for zero-allocation 60 TPS Ebitengine v2 games and WebAssembly audio sync."
+  },
+  "game-design": {
+    "id": "game-design",
+    "category": "game-dev",
+    "score": 94,
+    "sortScore": 94,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 84,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 16,
+    "trendRatio": 1.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 16,
+    "weeklyInstalls": [
+      0,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 2,
+    "views": 13,
+    "copies": 5,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "procedural-art": {
+    "id": "procedural-art",
+    "category": "game-dev",
+    "score": 84,
+    "sortScore": 84,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 42,
+    "vitalityPoints": 76,
+    "adoptionBonusPoints": 8,
+    "trendRatio": 2.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 14,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      2,
+      2,
+      3,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 8,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "procedural-composer": {
+    "id": "procedural-composer",
+    "category": "game-dev",
+    "score": 93,
+    "sortScore": 93,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 78,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 3.73,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 18,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      2,
+      2,
+      5,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 1,
+    "views": 1,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "sprite-animation": {
+    "id": "sprite-animation",
+    "category": "game-dev",
+    "score": 84,
+    "sortScore": 84,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 42,
+    "vitalityPoints": 76,
+    "adoptionBonusPoints": 8,
+    "trendRatio": 2.46,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 13,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 9,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "vibe-game-developer": {
+    "id": "vibe-game-developer",
+    "category": "game-dev",
+    "score": 93,
+    "sortScore": 93,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 93,
+    "usageFreshness": 76,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 2.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "17b6bb6",
+    "lastCommitAt": "2026-10-11T04:08:45+01:00",
+    "lastCommitDate": "2026-10-11",
+    "ageDays": 4.38,
+    "plantedDate": "2026-08-11",
+    "installs": 14,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      2,
+      2,
+      3,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 1,
+    "views": 6,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "lyria": {
+    "id": "lyria",
+    "category": "media",
+    "score": 83,
+    "sortScore": 83,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 41,
+    "vitalityPoints": 75,
+    "adoptionBonusPoints": 8,
+    "trendRatio": 2.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-08-11",
+    "installs": 14,
+    "weeklyInstalls": [
+      0,
+      1,
+      1,
+      0,
+      2,
+      3,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 5,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "nano-banana": {
+    "id": "nano-banana",
+    "category": "media",
+    "score": 95,
+    "sortScore": 95,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 91,
+    "usageFreshness": 85,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 17,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b91210e",
+    "lastCommitAt": "2026-10-09T17:02:55+01:00",
+    "lastCommitDate": "2026-10-09",
+    "ageDays": 5.84,
+    "plantedDate": "2026-07-30",
+    "installs": 13,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 6,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 6,
+    "likes": 1,
+    "views": 6,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 2,
+      "warn": 1,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "adr-template": {
+    "id": "adr-template",
+    "category": "coding",
+    "score": 42,
+    "sortScore": 42,
+    "isUnproven": false,
+    "tier": "spoiled",
+    "tierLabel": "Spoiled",
+    "tierEmoji": "🤢",
+    "half": "danger",
+    "isNew": false,
+    "updateFreshness": 27,
+    "usageFreshness": 42,
+    "vitalityPoints": 37,
+    "adoptionBonusPoints": 5,
+    "trendRatio": 2.33,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b57eff3",
+    "lastCommitAt": "2026-07-22T15:10:06+01:00",
+    "lastCommitDate": "2026-07-22",
+    "ageDays": 84.92,
+    "plantedDate": "2026-07-22",
+    "installs": 15,
+    "weeklyInstalls": [
+      1,
+      1,
+      0,
+      1,
+      2,
+      2,
+      2,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 6,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "engineering-flow": {
+    "id": "engineering-flow",
+    "category": "coding",
+    "score": 70,
+    "sortScore": 70,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 77,
+    "vitalityPoints": 59,
+    "adoptionBonusPoints": 11,
+    "trendRatio": 2.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "6d3b7ed",
+    "lastCommitAt": "2026-08-22T03:23:10+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.41,
+    "plantedDate": "2026-08-16",
+    "installs": 15,
+    "weeklyInstalls": [
+      1,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 1,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 1,
+    "likes": 0,
+    "views": 18,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "godoctor": {
+    "id": "godoctor",
+    "category": "coding",
+    "score": 97,
+    "sortScore": 97,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 93,
+    "usageFreshness": 91,
+    "vitalityPoints": 79,
+    "adoptionBonusPoints": 18,
+    "trendRatio": 2.33,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "17b6bb6",
+    "lastCommitAt": "2026-10-11T04:08:45+01:00",
+    "lastCommitDate": "2026-10-11",
+    "ageDays": 4.38,
+    "plantedDate": "2026-08-11",
+    "installs": 15,
+    "weeklyInstalls": [
+      1,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 7,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 7,
+    "likes": 1,
+    "views": 13,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 1,
+      "warn": 2,
+      "fail": 0
+    },
+    "securityNote": "Snyk flags a Medium static alert because SKILL.md documents executing local Go toolchain commands (go test, golangci-lint, deadcode); Gen Trust Hub and Socket confirm zero malicious payloads.",
+    "editorialNote": "Core Go quality gate combining compiler rollback protection, Selene mutation testing, and SQLite coverage analytics."
+  },
+  "google-oss": {
+    "id": "google-oss",
+    "category": "coding",
+    "score": 80,
+    "sortScore": 80,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 49,
+    "usageFreshness": 91,
+    "vitalityPoints": 66,
+    "adoptionBonusPoints": 14,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "4a4c3da",
+    "lastCommitAt": "2026-08-30T04:40:05+01:00",
+    "lastCommitDate": "2026-08-30",
+    "ageDays": 46.35,
+    "plantedDate": "2026-08-21",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 10,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 10,
+    "likes": 1,
+    "views": 2,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Clean across Gen Trust Hub and Socket; documents local addlicense header automation.",
+    "editorialNote": "Automates Apache-2.0 license headers and open-source pre-release compliance."
+  },
+  "latest-version": {
+    "id": "latest-version",
+    "category": "coding",
+    "score": 69,
+    "sortScore": 69,
+    "isUnproven": false,
+    "tier": "stale",
+    "tierLabel": "Stale",
+    "tierEmoji": "🕸️",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 75,
+    "vitalityPoints": 58,
+    "adoptionBonusPoints": 11,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "3b9b6b4",
+    "lastCommitAt": "2026-08-22T05:05:47+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.34,
+    "plantedDate": "2026-02-27",
+    "installs": 20,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 1,
+    "views": 3,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      },
+      "3": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 4,
+      "pass": 3,
+      "warn": 1,
+      "fail": 0
+    },
+    "securityNote": "Snyk flags a Medium static alert because scripts/latest.js queries public package registries (npm, PyPI, Go proxy) over HTTPS; Socket and Gen Trust Hub confirm 0 supply-chain risks.",
+    "editorialNote": "Eliminates hallucinated package versions by querying live upstream registries before editing dependency files."
+  },
+  "pyhd": {
+    "id": "pyhd",
+    "category": "coding",
+    "score": 16,
+    "sortScore": 16,
+    "isUnproven": false,
+    "tier": "rotten",
+    "tierLabel": "Rotten",
+    "tierEmoji": "🦠",
+    "half": "danger",
+    "isNew": false,
+    "updateFreshness": 3,
+    "usageFreshness": 42,
+    "vitalityPoints": 14,
+    "adoptionBonusPoints": 2,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "f78958c",
+    "lastCommitAt": "2026-02-27T12:24:29Z",
+    "lastCommitDate": "2026-02-27",
+    "ageDays": 229.99,
+    "plantedDate": "2026-02-27",
+    "installs": 18,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 4,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      },
+      "3": {
+        "status": "pass",
+        "riskLevel": "NONE",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 4,
+      "pass": 4,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Snyk flags a Medium static alert because companion scripts run local uv and pytest commands; Gen Trust Hub and Socket pass cleanly.",
+    "editorialNote": "Originally planted in Feb 2026; unmaintained since initial creation aside from repo-wide metadata/template sweeps."
+  },
+  "rfc-template": {
+    "id": "rfc-template",
+    "category": "coding",
+    "score": 42,
+    "sortScore": 42,
+    "isUnproven": false,
+    "tier": "spoiled",
+    "tierLabel": "Spoiled",
+    "tierEmoji": "🤢",
+    "half": "danger",
+    "isNew": false,
+    "updateFreshness": 27,
+    "usageFreshness": 42,
+    "vitalityPoints": 37,
+    "adoptionBonusPoints": 5,
+    "trendRatio": 2.78,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "b57eff3",
+    "lastCommitAt": "2026-07-22T15:10:06+01:00",
+    "lastCommitDate": "2026-07-22",
+    "ageDays": 84.92,
+    "plantedDate": "2026-07-22",
+    "installs": 14,
+    "weeklyInstalls": [
+      1,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 4,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "double-diamond": {
+    "id": "double-diamond",
+    "category": "agents",
+    "score": 81,
+    "sortScore": 81,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 100,
+    "vitalityPoints": 66,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 2.46,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "318ab59",
+    "lastCommitAt": "2026-08-22T03:22:50+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.41,
+    "plantedDate": "2026-08-19",
+    "installs": 14,
+    "weeklyInstalls": [
+      0,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 23,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 23,
+    "likes": 2,
+    "views": 39,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "intercom": {
+    "id": "intercom",
+    "category": "agents",
+    "score": 97,
+    "sortScore": 97,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 98,
+    "usageFreshness": 86,
+    "vitalityPoints": 80,
+    "adoptionBonusPoints": 17,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "571f236",
+    "lastCommitAt": "2026-10-14T04:58:53+01:00",
+    "lastCommitDate": "2026-10-14",
+    "ageDays": 1.34,
+    "plantedDate": "2026-08-26",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 8,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 8,
+    "likes": 0,
+    "views": 2,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "warn",
+        "riskLevel": "WARN",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 1,
+      "warn": 2,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "parallel": {
+    "id": "parallel",
+    "category": "agents",
+    "score": 94,
+    "sortScore": 94,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 74,
+    "usageFreshness": 100,
+    "vitalityPoints": 76,
+    "adoptionBonusPoints": 18,
+    "trendRatio": 7.67,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "3b951cf",
+    "lastCommitAt": "2026-09-26T01:08:35+01:00",
+    "lastCommitDate": "2026-09-26",
+    "ageDays": 19.5,
+    "plantedDate": "2026-09-26",
+    "installs": 7,
+    "weeklyInstalls": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 21,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 21,
+    "likes": 2,
+    "views": 9,
+    "copies": 4,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Passes all security scanners cleanly with zero external command execution.",
+    "editorialNote": "High-throughput general-purpose subagent scaling and tournament comparison engine."
+  },
+  "skill-optimizer": {
+    "id": "skill-optimizer",
+    "category": "agents",
+    "score": 99,
+    "sortScore": 99,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 93,
+    "usageFreshness": 100,
+    "vitalityPoints": 79,
+    "adoptionBonusPoints": 20,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "17b6bb6",
+    "lastCommitAt": "2026-10-11T04:08:45+01:00",
+    "lastCommitDate": "2026-10-11",
+    "ageDays": 4.38,
+    "plantedDate": "2026-08-16",
+    "installs": 17,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 13,
+    "kungfuRuns": 7,
+    "kungfuLearns": 0,
+    "kungfuTotal": 20,
+    "likes": 1,
+    "views": 12,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "swarm-coding": {
+    "id": "swarm-coding",
+    "category": "agents",
+    "score": 97,
+    "sortScore": 97,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 88,
+    "usageFreshness": 100,
+    "vitalityPoints": 78,
+    "adoptionBonusPoints": 19,
+    "trendRatio": 4.22,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "9d26c7a",
+    "lastCommitAt": "2026-10-07T01:36:49+01:00",
+    "lastCommitDate": "2026-10-07",
+    "ageDays": 8.48,
+    "plantedDate": "2026-07-20",
+    "installs": 25,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      4,
+      4
+    ],
+    "currentWeeklyInstalls": 4,
+    "kungfuLoads": 13,
+    "kungfuRuns": 0,
+    "kungfuLearns": 1,
+    "kungfuTotal": 14,
+    "likes": 3,
+    "views": 26,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Passes all 5 security scanners (Gen Trust Hub, Socket, Snyk, Runlayer, ZeroLeaks) with zero alerts.",
+    "editorialNote": "Flagship divide-and-conquer multi-agent swarm orchestrator with strict disjoint file ownership."
+  },
+  "uno-reverse": {
+    "id": "uno-reverse",
+    "category": "agents",
+    "score": 94,
+    "sortScore": 94,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 74,
+    "usageFreshness": 100,
+    "vitalityPoints": 76,
+    "adoptionBonusPoints": 18,
+    "trendRatio": 2.46,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "3b951cf",
+    "lastCommitAt": "2026-09-26T01:08:35+01:00",
+    "lastCommitDate": "2026-09-26",
+    "ageDays": 19.5,
+    "plantedDate": "2026-08-24",
+    "installs": 12,
+    "weeklyInstalls": [
+      0,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 47,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 47,
+    "likes": 2,
+    "views": 30,
+    "copies": 2,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Pure architectural red-teaming prompt; zero external scripts or network calls.",
+    "editorialNote": "Applies Occam's Razor to challenge over-engineered PRDs and cut 90% of speculative complexity."
+  },
+  "buffer": {
+    "id": "buffer",
+    "category": "writing",
+    "score": 93,
+    "sortScore": 93,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 69,
+    "usageFreshness": 100,
+    "vitalityPoints": 75,
+    "adoptionBonusPoints": 18,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "cf4c668",
+    "lastCommitAt": "2026-09-21T21:55:55+01:00",
+    "lastCommitDate": "2026-09-21",
+    "ageDays": 23.63,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 20,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 20,
+    "likes": 0,
+    "views": 6,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "deslopify": {
+    "id": "deslopify",
+    "category": "writing",
+    "score": 78,
+    "sortScore": 78,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 93,
+    "vitalityPoints": 64,
+    "adoptionBonusPoints": 14,
+    "trendRatio": 2.33,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "6297f32",
+    "lastCommitAt": "2026-08-22T05:12:53+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.33,
+    "plantedDate": "2026-08-20",
+    "installs": 14,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      2,
+      2,
+      3,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 8,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 8,
+    "likes": 1,
+    "views": 17,
+    "copies": 3,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 2,
+      "warn": 1,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "google-blog-style": {
+    "id": "google-blog-style",
+    "category": "writing",
+    "score": 26,
+    "sortScore": 26,
+    "isUnproven": false,
+    "tier": "spoiled",
+    "tierLabel": "Spoiled",
+    "tierEmoji": "🤢",
+    "half": "danger",
+    "isNew": false,
+    "updateFreshness": 3,
+    "usageFreshness": 71,
+    "vitalityPoints": 22,
+    "adoptionBonusPoints": 4,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "f78958c",
+    "lastCommitAt": "2026-02-27T12:24:29Z",
+    "lastCommitDate": "2026-02-27",
+    "ageDays": 229.99,
+    "plantedDate": "2026-02-27",
+    "installs": 19,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 1,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 1,
+    "likes": 0,
+    "views": 7,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      },
+      "1": {
+        "status": "warn",
+        "riskLevel": "WARN",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      },
+      "3": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 4,
+      "pass": 2,
+      "warn": 2,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "inverted-pyramid": {
+    "id": "inverted-pyramid",
+    "category": "writing",
+    "score": 72,
+    "sortScore": 72,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 42,
+    "usageFreshness": 84,
+    "vitalityPoints": 60,
+    "adoptionBonusPoints": 12,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "a81ee18",
+    "lastCommitAt": "2026-08-20T21:05:45+01:00",
+    "lastCommitDate": "2026-08-20",
+    "ageDays": 55.67,
+    "plantedDate": "2026-08-20",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 6,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 6,
+    "likes": 1,
+    "views": 3,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "seo-optimizer": {
+    "id": "seo-optimizer",
+    "category": "writing",
+    "score": 78,
+    "sortScore": 78,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 41,
+    "usageFreshness": 97,
+    "vitalityPoints": 64,
+    "adoptionBonusPoints": 14,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "8ade115",
+    "lastCommitAt": "2026-08-19T00:08:33+01:00",
+    "lastCommitDate": "2026-08-19",
+    "ageDays": 57.54,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 14,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 14,
+    "likes": 1,
+    "views": 7,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "social-copy": {
+    "id": "social-copy",
+    "category": "writing",
+    "score": 100,
+    "sortScore": 100,
+    "isUnproven": false,
+    "tier": "mint",
+    "tierLabel": "Mint",
+    "tierEmoji": "✨",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 98,
+    "usageFreshness": 100,
+    "vitalityPoints": 80,
+    "adoptionBonusPoints": 20,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "2150c3a",
+    "lastCommitAt": "2026-10-14T00:00:54+01:00",
+    "lastCommitDate": "2026-10-14",
+    "ageDays": 1.55,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 22,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 22,
+    "likes": 1,
+    "views": 6,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "All active security scanners passed with zero alerts.",
+    "editorialNote": ""
+  },
+  "buffer-analytics": {
+    "id": "buffer-analytics",
+    "category": "analytics",
+    "score": 81,
+    "sortScore": 81,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 100,
+    "vitalityPoints": 66,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "fccd373",
+    "lastCommitAt": "2026-08-22T06:38:38+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.27,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 16,
+    "kungfuRuns": 19,
+    "kungfuLearns": 0,
+    "kungfuTotal": 35,
+    "likes": 0,
+    "views": 4,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "warn",
+        "riskLevel": "WARN",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 1,
+      "warn": 2,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "google-analytics": {
+    "id": "google-analytics",
+    "category": "analytics",
+    "score": 81,
+    "sortScore": 81,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 100,
+    "vitalityPoints": 66,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "2fc27e6",
+    "lastCommitAt": "2026-08-22T06:42:55+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.27,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 18,
+    "kungfuRuns": 13,
+    "kungfuLearns": 0,
+    "kungfuTotal": 31,
+    "likes": 0,
+    "views": 3,
+    "copies": 1,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 2,
+      "warn": 1,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "search-analytics": {
+    "id": "search-analytics",
+    "category": "analytics",
+    "score": 81,
+    "sortScore": 81,
+    "isUnproven": false,
+    "tier": "fresh",
+    "tierLabel": "Fresh",
+    "tierEmoji": "🌿",
+    "half": "fresh",
+    "isNew": false,
+    "updateFreshness": 43,
+    "usageFreshness": 100,
+    "vitalityPoints": 66,
+    "adoptionBonusPoints": 15,
+    "trendRatio": 3.04,
+    "trendLabel": "Growing",
+    "securityPenalty": 0,
+    "lastCommitSha": "cad9b5a",
+    "lastCommitAt": "2026-08-22T06:44:55+01:00",
+    "lastCommitDate": "2026-08-22",
+    "ageDays": 54.27,
+    "plantedDate": "2026-08-18",
+    "installs": 11,
+    "weeklyInstalls": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      2,
+      3
+    ],
+    "currentWeeklyInstalls": 3,
+    "kungfuLoads": 16,
+    "kungfuRuns": 9,
+    "kungfuLearns": 0,
+    "kungfuTotal": 25,
+    "likes": 0,
+    "views": 2,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "warn",
+        "riskLevel": "MEDIUM",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 2,
+      "warn": 1,
+      "fail": 0
+    },
+    "securityNote": "Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.",
+    "editorialNote": ""
+  },
+  "skill-analytics": {
+    "id": "skill-analytics",
+    "category": "analytics",
+    "score": null,
+    "sortScore": 80,
+    "isUnproven": true,
+    "tier": "new",
+    "tierLabel": "New",
+    "tierEmoji": "🌱",
+    "half": "new",
+    "isNew": true,
+    "updateFreshness": 98,
+    "usageFreshness": 0,
+    "vitalityPoints": 0,
+    "adoptionBonusPoints": 0,
+    "trendRatio": 0,
+    "trendLabel": "Unproven",
+    "securityPenalty": 0,
+    "lastCommitSha": "06d7037",
+    "lastCommitAt": "2026-10-14T00:17:19+01:00",
+    "lastCommitDate": "2026-10-14",
+    "ageDays": 1.54,
+    "plantedDate": "2026-10-14",
+    "installs": 1,
+    "weeklyInstalls": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "currentWeeklyInstalls": 0,
+    "kungfuLoads": 0,
+    "kungfuRuns": 0,
+    "kungfuLearns": 0,
+    "kungfuTotal": 0,
+    "likes": 0,
+    "views": 1,
+    "copies": 0,
+    "securityAudits": {
+      "0": {
+        "status": "pass",
+        "riskLevel": "SAFE",
+        "alerts": 0
+      },
+      "1": {
+        "status": "pass",
+        "riskLevel": "PASS",
+        "alerts": 0
+      },
+      "2": {
+        "status": "pass",
+        "riskLevel": "LOW",
+        "alerts": 0
+      }
+    },
+    "scannerSummary": {
+      "total": 3,
+      "pass": 3,
+      "warn": 0,
+      "fail": 0
+    },
+    "securityNote": "Companion script (analyze.py) reads local conversation logs and SQLite telemetry offline with zero external network calls.",
+    "editorialNote": "Newly planted local SQLite warehouse for auditing Agent Skill usage, token ROI, and KungFu CLI telemetry."
+  }
+}

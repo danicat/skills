@@ -145,3 +145,49 @@
     ) -}}
   {{- end -}}
 {{- end -}}
+
+{{- $.AddPage (dict
+  "kind" "page"
+  "path" "freshness"
+  "title" $t.ui.freshnessDocTitle
+  "build" (dict "list" "never" "render" "always")
+  "params" (dict
+    "url" "/ja/freshness/"
+    "isSpecialPage" true
+    "specialPageType" "freshness"
+    "isCompanion" true
+    "description" $t.ui.freshnessDocSubtitle
+  )
+) -}}
+
+{{- $.AddPage (dict
+  "kind" "section"
+  "path" "graveyard"
+  "title" $t.ui.graveyardTitle
+  "build" (dict "list" "never" "render" "always")
+  "params" (dict
+    "url" "/ja/graveyard/"
+    "isSpecialPage" true
+    "specialPageType" "graveyard"
+    "isCompanion" true
+    "description" $t.ui.graveyardSubtitle
+  )
+) -}}
+
+{{- range $item := site.Data.graveyard -}}
+  {{- $.AddPage (dict
+    "kind" "page"
+    "path" (printf "graveyard/%s" $item.id)
+    "title" $item.name
+    "build" (dict "list" "never" "render" "always")
+    "params" (dict
+      "url" (printf "/ja/graveyard/%s/" $item.id)
+      "isSpecialPage" true
+      "specialPageType" "graveyard-single"
+      "graveyardId" $item.id
+      "isCompanion" true
+      "description" $item.epitaph
+    )
+  ) -}}
+{{- end -}}
+
