@@ -92,3 +92,23 @@ Raw metrics ingestion and SQLite data warehousing for search performance, web tr
 * **[`search-analytics`](analytics/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
 * **[`skill-analytics`](analytics/skill-analytics/SKILL.md)**: Mine Agent Skill usage, Context-Tax ROI, trigger attribution, and KungFu telemetry into a local SQLite database across all installed skill tiers and conversation transcripts.
 
+---
+
+## Freshness
+
+Every skill in [skills.danicat.dev](https://skills.danicat.dev/freshness/) has a freshness score calculated from substantive Git commit age (`U`, 45-day half-life), `kungfu` CLI telemetry (`loads`, `runs`, `learns`), `npx skills` installs, and web engagement across **🌱 New**, **✨ Mint** (`90–100%`), **🌿 Fresh** (`70–89%`), **🕸️ Stale** (`50–69%`), **🤢 Spoiled** (`25–49%`), and **🦠 Rotten** (`0–24%`).
+
+## Graveyard
+
+Retired skills live in the **[Graveyard](https://skills.danicat.dev/graveyard/)**:
+
+| Skill | Lifespan | Why It Was Killed | Replacement | Command |
+| :--- | :--- | :--- | :--- | :--- |
+| `go-best-practices` | Feb 14 – Feb 16, 2026 | Merged into `godoctor` | [`godoctor`](coding/godoctor/SKILL.md) | `kungfu forget go-best-practices && kungfu learn godoctor` |
+| `go-project-setup` | Feb 14 – Feb 16, 2026 | Merged into `godoctor` | [`godoctor`](coding/godoctor/SKILL.md) | `kungfu forget go-project-setup && kungfu learn godoctor` |
+| `a2ui-developer-guide` | Feb 14 – Feb 21, 2026 | Factually incorrect (produced botched implementations) | None | `kungfu forget a2ui-developer-guide` |
+| `find-examples` | Feb 14 – Mar 14, 2026 | Never used in real life | None | `kungfu forget find-examples` |
+| `google-codelab-authoring` | Feb 14 – Mar 19, 2026 | Never used in real life | None | `kungfu forget google-codelab-authoring` |
+| `agy-extensions` | Mar 23 – Mar 26, 2026 | Replaced by official `agy-customizations` skill | `agy-customizations` | `kungfu forget agy-extensions` |
+| `experiment-analyst` | Mar 15 – Apr 7, 2026 | Niche analysis skill not meant for general use | None | `kungfu forget experiment-analyst` |
+| `catalog` | Feb 14 – Apr 2026 | Unnecessary; replaced by `kungfu list` and `kungfu find` | `kungfu list` / `kungfu find` | `kungfu forget catalog` |

@@ -1,0 +1,11 @@
+{{ define "main" }}
+{{- if .Params.isSpecialPage -}}
+  {{- if eq .Params.specialPageType "freshness" -}}
+    {{- partial "freshness-page.html" . -}}
+  {{- else if or (eq .Params.specialPageType "graveyard") (eq .Params.specialPageType "graveyard-single") -}}
+    {{- partial "graveyard-page.html" . -}}
+  {{- end -}}
+{{- else -}}
+  {{- partial "graveyard-page.html" . -}}
+{{- end -}}
+{{ end }}

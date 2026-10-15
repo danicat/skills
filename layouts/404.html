@@ -1,18 +1,104 @@
 {{ define "main" }}
-<div class="danicat-card max-w-xl mx-auto my-12 p-8 text-center">
+<div class="danicat-card max-w-xl mx-auto my-12 p-8 text-center" id="default404Card">
   <img src="/assets/chibi_dani_oops.png" alt="Oops! Skill Not Found" class="mx-auto mb-6 max-w-[200px] h-auto nozoom" width="200" height="200">
-  <div class="font-mono text-5xl font-extrabold text-primary-600 dark:text-primary-400 mb-2">404</div>
-  <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral mb-3">Page Not Found</h1>
-  <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">
-    The requested page or skill could not be found. It may have been moved, renamed, or retired from the catalog.
+  <div class="font-mono text-5xl font-extrabold text-primary-600 dark:text-primary-400 mb-2" id="error404Badge">404</div>
+  <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral mb-3" id="error404Title">Page Not Found</h1>
+  <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6" id="error404Desc">
+    The requested page or skill could not be found. It may have been moved, renamed, or retired to the Graveyard.
   </p>
+
+  <div id="graveyard404Match" class="hidden text-left mb-6 p-5 rounded-xl bg-neutral-100/90 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-200">
+        <span>🪦</span>
+        <span>R.I.P. · Retired Skill</span>
+      </span>
+      <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400" id="graveyard404Dates"></span>
+    </div>
+    <p class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3" id="graveyard404Epitaph"></p>
+    <div class="text-xs text-neutral-600 dark:text-neutral-300 mb-2">
+      <span class="font-bold">Replaced by:</span>
+      <a href="/graveyard/" id="graveyard404ReplacementLink" class="font-mono font-bold text-primary-600 dark:text-primary-400 hover:underline ml-1"></a>
+    </div>
+    <div class="cmd-box-row">
+      <span class="cmd-text text-xs" id="graveyard404Cmd"></span>
+      <button type="button" class="cmd-copy-btn" id="graveyard404CopyBtn">Copy</button>
+    </div>
+  </div>
+
   <div class="flex flex-wrap justify-center gap-3">
     <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold no-underline transition-colors">
       ← Back to Skills Catalog
     </a>
-    <a href="https://danicat.dev" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:border-primary-500 text-sm font-semibold no-underline transition-colors">
-      danicat.dev Home
+    <a href="/graveyard/" id="graveyard404Btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:border-primary-500 text-sm font-semibold no-underline transition-colors">
+      🪦 Graveyard
     </a>
   </div>
 </div>
+
+<script type="application/json" id="graveyard-404-payload">{{ site.Data.graveyard | jsonify | safeJS }}</script>
+<script>
+  (function() {
+    var payloadEl = document.getElementById('graveyard-404-payload');
+    if (!payloadEl) return;
+    try {
+      var list = JSON.parse(payloadEl.textContent || '[]');
+      var path = (window.location.pathname || '').toLowerCase();
+      var matched = null;
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i];
+        if (item && item.id && path.indexOf(item.id.toLowerCase()) !== -1) {
+          matched = item;
+          break;
+        }
+      }
+      if (!matched) return;
+
+      var badgeEl = document.getElementById('error404Badge');
+      var titleEl = document.getElementById('error404Title');
+      var descEl = document.getElementById('error404Desc');
+      var matchBox = document.getElementById('graveyard404Match');
+      var datesEl = document.getElementById('graveyard404Dates');
+      var epitaphEl = document.getElementById('graveyard404Epitaph');
+      var repLink = document.getElementById('graveyard404ReplacementLink');
+      var cmdEl = document.getElementById('graveyard404Cmd');
+      var copyBtn = document.getElementById('graveyard404CopyBtn');
+      var cemBtn = document.getElementById('graveyard404Btn');
+
+      if (badgeEl) badgeEl.textContent = '🪦 R.I.P.';
+      if (titleEl) titleEl.textContent = matched.name + ' was retired';
+      if (descEl) descEl.textContent = matched.causeOfDeath + ' — moved to the Graveyard.';
+      if (datesEl) datesEl.textContent = matched.lifespan;
+      if (epitaphEl) epitaphEl.textContent = matched.epitaph;
+      if (repLink) {
+        if (matched.successorId) {
+          repLink.textContent = matched.successorId + ' →';
+          repLink.setAttribute('href', matched.successorUrl || '/');
+        } else if (matched.successorLabel) {
+          repLink.textContent = matched.successorLabel;
+          repLink.setAttribute('href', '/graveyard/' + matched.id + '/');
+        } else {
+          repLink.textContent = 'None (killed without replacement)';
+          repLink.setAttribute('href', '/graveyard/' + matched.id + '/');
+        }
+      }
+      if (cmdEl) cmdEl.textContent = matched.migrationCommand || '';
+      if (copyBtn && matched.migrationCommand) {
+        copyBtn.onclick = function() {
+          navigator.clipboard.writeText(matched.migrationCommand).then(function() {
+            copyBtn.textContent = '✓ Copied';
+            setTimeout(function() { copyBtn.textContent = 'Copy'; }, 1500);
+          });
+        };
+      }
+      if (cemBtn) {
+        cemBtn.setAttribute('href', '/graveyard/' + matched.id + '/');
+        cemBtn.textContent = '🪦 View in Graveyard';
+      }
+      if (matchBox) matchBox.classList.remove('hidden');
+    } catch (e) {
+      console.error('404 graveyard lookup failed:', e);
+    }
+  })();
+</script>
 {{ end }}

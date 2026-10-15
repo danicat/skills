@@ -218,6 +218,7 @@ pre.chroma {
    ========================================================================== */
 
 .skill-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -226,6 +227,7 @@ pre.chroma {
 
 .skill-card:hover {
   transform: translateY(-2px);
+  z-index: 30;
 }
 
 .skill-card.is-featured {
@@ -469,6 +471,41 @@ html.dark .pill-btn.active {
   color: #ffffff !important;
 }
 
+.graveyard-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  border: 1px dashed rgba(113, 113, 122, 0.5);
+  background-color: rgba(113, 113, 122, 0.12);
+  color: rgb(var(--color-neutral-700));
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+}
+
+html.dark .graveyard-btn {
+  border-color: rgba(113, 113, 122, 0.65);
+  background-color: rgba(39, 39, 42, 0.85);
+  color: rgb(var(--color-neutral-200));
+}
+
+.graveyard-btn:hover {
+  border-style: solid;
+  border-color: rgb(var(--color-neutral-500));
+  background-color: rgba(113, 113, 122, 0.22);
+  transform: translateY(-1px);
+}
+
+html.dark .graveyard-btn:hover {
+  border-color: rgb(var(--color-neutral-400));
+  background-color: rgba(63, 63, 70, 0.95);
+}
+
 .mode-pill {
   border-radius: 0.375rem;
   padding: 0.25rem 0.65rem;
@@ -514,15 +551,400 @@ html.dark .metric-pill {
   stroke: currentColor;
 }
 
-.star-btn {
+.star-btn,
+.freshness-pill {
   cursor: pointer;
   background-color: rgb(var(--color-neutral-100));
   border-color: rgb(var(--color-neutral-200));
+  color: rgb(var(--color-neutral-700));
 }
 
-html.dark .star-btn {
+html.dark .star-btn,
+html.dark .freshness-pill {
   background-color: rgba(var(--color-neutral-800), 0.9);
   border-color: rgb(var(--color-neutral-700));
+  color: rgb(var(--color-neutral-300));
+}
+
+/* Monotonic Freshness Tier Color Scale:
+   🌱 New (Sky) -> ✨ Mint (Mint Teal) -> 🌿 Fresh (Green) -> 🕸️ Stale (Yellow) -> 🤢 Spoiled (Orange) -> 🦠 Rotten (Crimson Red) -> 🪦 R.I.P. (Charcoal)
+   (Gold #f59e0b is reserved for .skill-card.is-featured borders) */
+.freshness-pill[data-tier="new"] {
+  background-color: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: #0369a1;
+}
+html.dark .freshness-pill[data-tier="new"] {
+  background-color: rgba(14, 165, 233, 0.16);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+.freshness-pill[data-tier="mint"] {
+  background-color: rgba(20, 184, 166, 0.12);
+  border-color: rgba(20, 184, 166, 0.38);
+  color: #0f766e;
+}
+html.dark .freshness-pill[data-tier="mint"] {
+  background-color: rgba(20, 184, 166, 0.16);
+  border-color: rgba(45, 212, 191, 0.42);
+  color: #2dd4bf;
+}
+
+.freshness-pill[data-tier="fresh"] {
+  background-color: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #15803d;
+}
+html.dark .freshness-pill[data-tier="fresh"] {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-color: rgba(74, 222, 128, 0.38);
+  color: #4ade80;
+}
+
+.freshness-pill[data-tier="stale"] {
+  background-color: rgba(234, 179, 8, 0.14);
+  border-color: rgba(234, 179, 8, 0.4);
+  color: #a16207;
+}
+html.dark .freshness-pill[data-tier="stale"] {
+  background-color: rgba(234, 179, 8, 0.16);
+  border-color: rgba(250, 204, 21, 0.42);
+  color: #facc15;
+}
+
+.freshness-pill[data-tier="spoiled"] {
+  background-color: rgba(249, 115, 22, 0.14);
+  border-color: rgba(249, 115, 22, 0.4);
+  color: #c2410c;
+}
+html.dark .freshness-pill[data-tier="spoiled"] {
+  background-color: rgba(249, 115, 22, 0.16);
+  border-color: rgba(251, 146, 60, 0.42);
+  color: #fb923c;
+}
+
+.freshness-pill[data-tier="rotten"] {
+  background-color: rgba(220, 38, 38, 0.14);
+  border-color: rgba(220, 38, 38, 0.42);
+  color: #b91c1c;
+}
+html.dark .freshness-pill[data-tier="rotten"] {
+  background-color: rgba(220, 38, 38, 0.18);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #f87171;
+}
+
+.freshness-pill[data-tier="rip"] {
+  background-color: rgba(113, 113, 122, 0.12);
+  border-color: rgba(113, 113, 122, 0.35);
+  color: #52525b;
+}
+html.dark .freshness-pill[data-tier="rip"] {
+  background-color: rgba(39, 39, 42, 0.85);
+  border-color: rgba(82, 82, 91, 0.7);
+  color: #a1a1aa;
+}
+
+.freshness-pill:hover {
+  transform: translateY(-1px);
+}
+
+.freshness-pill.has-breakdown {
+  position: relative;
+}
+
+.freshness-pill.has-breakdown:hover,
+.freshness-pill.has-breakdown:focus-visible {
+  z-index: 200;
+}
+
+.freshness-breakdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: max-content;
+  min-width: 17.5rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.65rem;
+  background-color: #ffffff;
+  border: 1px solid rgb(var(--color-neutral-200));
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+  color: rgb(var(--color-neutral-800));
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  white-space: nowrap;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.14s ease, transform 0.14s ease, visibility 0.14s ease;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.freshness-pill.breakdown-left .freshness-breakdown {
+  right: auto;
+  left: 0;
+}
+
+html.dark .freshness-breakdown {
+  background-color: #18181b;
+  border-color: rgb(var(--color-neutral-700));
+  box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  color: rgb(var(--color-neutral-200));
+}
+
+.freshness-pill.has-breakdown:hover .freshness-breakdown,
+.freshness-pill.has-breakdown:focus-visible .freshness-breakdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.freshness-breakdown .fb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: rgb(var(--color-neutral-900));
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgb(var(--color-neutral-200));
+}
+
+html.dark .freshness-breakdown .fb-header {
+  color: #ffffff;
+  border-bottom-color: rgb(var(--color-neutral-700));
+}
+
+.freshness-breakdown .fb-score {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.freshness-breakdown .fb-note {
+  color: rgb(var(--color-neutral-600));
+  font-size: 0.72rem;
+  white-space: normal;
+  max-width: 16.5rem;
+}
+
+html.dark .freshness-breakdown .fb-note {
+  color: rgb(var(--color-neutral-400));
+}
+
+.freshness-breakdown .fb-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.freshness-breakdown .fb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.freshness-breakdown .fb-label {
+  color: rgb(var(--color-neutral-500));
+  white-space: nowrap;
+}
+
+html.dark .freshness-breakdown .fb-label {
+  color: rgb(var(--color-neutral-400));
+}
+
+.freshness-breakdown .fb-sub .fb-label {
+  padding-left: 0.45rem;
+  font-size: 0.7rem;
+}
+
+.freshness-breakdown .fb-val {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: rgb(var(--color-neutral-800));
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+html.dark .freshness-breakdown .fb-val {
+  color: rgb(var(--color-neutral-100));
+}
+
+.freshness-breakdown .fb-penalty .fb-label,
+.freshness-breakdown .fb-penalty .fb-val {
+  color: #dc2626;
+}
+
+html.dark .freshness-breakdown .fb-penalty .fb-label,
+html.dark .freshness-breakdown .fb-penalty .fb-val {
+  color: #f87171;
+}
+
+.freshness-breakdown .fb-divider {
+  height: 1px;
+  background-color: rgb(var(--color-neutral-200));
+}
+
+html.dark .freshness-breakdown .fb-divider {
+  background-color: rgb(var(--color-neutral-700));
+}
+
+/* Freshness & Scores Ledger Tables (/freshness/) */
+.freshness-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgb(var(--color-neutral-200));
+  border-radius: 0.65rem;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+html.dark .freshness-table-wrap {
+  border-color: rgb(var(--color-neutral-700));
+  background-color: rgba(var(--color-neutral-900), 0.35);
+}
+
+.freshness-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.freshness-table thead tr {
+  background-color: rgba(var(--color-neutral-100), 0.85);
+  border-bottom: 1px solid rgb(var(--color-neutral-200));
+}
+
+html.dark .freshness-table thead tr {
+  background-color: rgba(var(--color-neutral-800), 0.85);
+  border-bottom-color: rgb(var(--color-neutral-700));
+}
+
+.freshness-table th {
+  padding: 0.7rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(var(--color-neutral-500));
+  white-space: nowrap;
+}
+
+html.dark .freshness-table th {
+  color: rgb(var(--color-neutral-400));
+}
+
+.freshness-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(var(--color-neutral-200), 0.7);
+  vertical-align: middle;
+}
+
+html.dark .freshness-table td {
+  border-bottom-color: rgba(var(--color-neutral-700), 0.65);
+}
+
+.freshness-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.freshness-table tbody tr:hover {
+  background-color: rgba(var(--color-neutral-100), 0.55);
+}
+
+html.dark .freshness-table tbody tr:hover {
+  background-color: rgba(var(--color-neutral-800), 0.5);
+}
+
+.scores-ledger tbody tr:nth-last-child(-n+4) .freshness-breakdown {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
+}
+
+.freshness-table .nowrap-col {
+  white-space: nowrap;
+}
+
+.freshness-table .num-col {
+  text-align: right;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.commit-sha-badge {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  background-color: rgb(var(--color-neutral-100));
+  border: 1px solid rgb(var(--color-neutral-200));
+  color: rgb(var(--color-neutral-600));
+}
+
+html.dark .commit-sha-badge {
+  background-color: rgb(var(--color-neutral-800));
+  border-color: rgb(var(--color-neutral-700));
+  color: rgb(var(--color-neutral-400));
+}
+
+.security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.375rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: help;
+  white-space: nowrap;
+}
+
+.security-badge.sec-pass {
+  background-color: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.32);
+  color: #15803d;
+}
+
+html.dark .security-badge.sec-pass {
+  background-color: rgba(34, 197, 94, 0.16);
+  border-color: rgba(74, 222, 128, 0.35);
+  color: #4ade80;
+}
+
+.security-badge.sec-cli {
+  background-color: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.32);
+  color: #0369a1;
+}
+
+html.dark .security-badge.sec-cli {
+  background-color: rgba(14, 165, 233, 0.16);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.security-badge.sec-pending {
+  background-color: rgba(113, 113, 122, 0.12);
+  border: 1px solid rgba(113, 113, 122, 0.32);
+  color: #52525b;
+}
+
+html.dark .security-badge.sec-pending {
+  background-color: rgba(63, 63, 70, 0.5);
+  border-color: rgba(113, 113, 122, 0.45);
+  color: #a1a1aa;
 }
 
 .star-btn:hover {

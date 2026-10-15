@@ -156,13 +156,20 @@
       {{- end -}}
     {{- end -}}
 
+    {{- $skillAliases := slice -}}
+    {{- if eq $folder "deslopify" -}}
+      {{- $skillAliases = slice "/de-sloppify/" "/writing/de-sloppify/" -}}
+    {{- end -}}
+
     {{- $.AddPage (dict
       "kind" "page"
       "path" (printf "%s/%s" $cat.id $folder)
       "title" (printf "%s — %s Agent Skill" $skillName $catName)
+      "aliases" $skillAliases
       "content" (dict "mediaType" "text/markdown" "value" $safeBody)
       "params" (dict
         "url" (printf "/%s/%s/" $cat.id $folder)
+        "aliases" $skillAliases
         "isCompanion" false
         "skillName" $skillName
         "folder" $folder
@@ -191,3 +198,51 @@
     ) -}}
   {{- end -}}
 {{- end -}}
+
+{{- $.AddPage (dict
+  "kind" "page"
+  "path" "freshness"
+  "title" $t.ui.freshnessDocTitle
+  "build" (dict "list" "never" "render" "always")
+  "params" (dict
+    "url" "/freshness/"
+    "isSpecialPage" true
+    "specialPageType" "freshness"
+    "isCompanion" true
+    "description" $t.ui.freshnessDocSubtitle
+  )
+) -}}
+
+{{- $.AddPage (dict
+  "kind" "section"
+  "path" "graveyard"
+  "title" $t.ui.graveyardTitle
+  "build" (dict "list" "never" "render" "always")
+  "params" (dict
+    "url" "/graveyard/"
+    "isSpecialPage" true
+    "specialPageType" "graveyard"
+    "isCompanion" true
+    "description" $t.ui.graveyardSubtitle
+  )
+) -}}
+
+{{- range $item := site.Data.graveyard -}}
+  {{- $.AddPage (dict
+    "kind" "page"
+    "path" (printf "graveyard/%s" $item.id)
+    "title" $item.name
+    "aliases" $item.legacyAliases
+    "build" (dict "list" "never" "render" "always")
+    "params" (dict
+      "url" (printf "/graveyard/%s/" $item.id)
+      "aliases" $item.legacyAliases
+      "isSpecialPage" true
+      "specialPageType" "graveyard-single"
+      "graveyardId" $item.id
+      "isCompanion" true
+      "description" $item.epitaph
+    )
+  ) -}}
+{{- end -}}
+

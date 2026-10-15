@@ -42,7 +42,21 @@
       "globalInstallLabel": "Global Install",
       "noResults": "No skills matching your criteria.",
       "englishPromptNotice": "Note: Raw SKILL.md instructions below are maintained in English for optimal LLM execution.",
-      "footerDisclaimer": "Disclaimer: The views expressed on this site are my own and do not necessarily represent those of my employer."
+      "footerDisclaimer": "Disclaimer: The views expressed on this site are my own and do not necessarily represent those of my employer.",
+      "sortFreshness": "Freshness",
+      "graveyardFilter": "Graveyard",
+      "freshnessTitle": "Freshness",
+      "freshnessDocTitle": "Freshness",
+      "freshnessDocSubtitle": "How skill freshness scores are calculated from substantive Git history and usage trends.",
+      "freshnessCardTitle": "Freshness",
+      "methodologyLink": "How is this scored? →",
+      "lastUpdatedLabel": "Updated",
+      "weeklyActivityLabel": "Weekly activity",
+      "securityCheckLabel": "Security",
+      "graveyardTitle": "Graveyard",
+      "graveyardSubtitle": "Retired skills, why they were killed, and what replaced them.",
+      "migrationPathLabel": "Replacement",
+      "replacedByLabel": "Replaced by"
     },
     "categories": {
       "game-dev": {
@@ -121,7 +135,21 @@
       "globalInstallLabel": "Instalação Global",
       "noResults": "Nenhuma skill encontrada para sua busca.",
       "englishPromptNotice": "Nota: As instruções originais do SKILL.md abaixo são mantidas em inglês para máxima precisão de execução pelos modelos.",
-      "footerDisclaimer": "Aviso: As opiniões expressas neste site são pessoais e não representam necessariamente as do meu empregador."
+      "footerDisclaimer": "Aviso: As opiniões expressas neste site são pessoais e não representam necessariamente as do meu empregador.",
+      "sortFreshness": "Frescor",
+      "graveyardFilter": "Cemitério",
+      "freshnessTitle": "Frescor",
+      "freshnessDocTitle": "Frescor",
+      "freshnessDocSubtitle": "Como a pontuação de frescor é calculada a partir do histórico do Git e da tendência de uso.",
+      "freshnessCardTitle": "Frescor",
+      "methodologyLink": "Como é calculado? →",
+      "lastUpdatedLabel": "Atualização",
+      "weeklyActivityLabel": "Atividade semanal",
+      "securityCheckLabel": "Segurança",
+      "graveyardTitle": "Cemitério",
+      "graveyardSubtitle": "Skills aposentadas, por que foram descontinuadas e o que as substituiu.",
+      "migrationPathLabel": "Substituição",
+      "replacedByLabel": "Substituída por"
     },
     "categories": {
       "game-dev": {
@@ -232,7 +260,21 @@
       "globalInstallLabel": "グローバルにインストール",
       "noResults": "条件に一致するスキルが見つかりませんでした。",
       "englishPromptNotice": "注記：以下の SKILL.md プロンプト本文は、LLM の実行精度を最大化するため英語で管理されています。",
-      "footerDisclaimer": "免責事項：当サイトに記された見解は個人のものであり、必ずしも雇用主の見解を代表するものではありません。"
+      "footerDisclaimer": "免責事項：当サイトに記された見解は個人のものであり、必ずしも雇用主の見解を代表するものではありません。",
+      "sortFreshness": "鮮度順",
+      "graveyardFilter": "墓場",
+      "freshnessTitle": "鮮度",
+      "freshnessDocTitle": "鮮度",
+      "freshnessDocSubtitle": "Gitの更新履歴と利用トレンドからスキルの鮮度スコアを算出する方法。",
+      "freshnessCardTitle": "鮮度",
+      "methodologyLink": "スコアの算出方法 →",
+      "lastUpdatedLabel": "更新",
+      "weeklyActivityLabel": "週間アクティビティ",
+      "securityCheckLabel": "セキュリティ",
+      "graveyardTitle": "墓場",
+      "graveyardSubtitle": "廃止されたスキル、廃止の理由、および代替手段。",
+      "migrationPathLabel": "代替手段",
+      "replacedByLabel": "後継:"
     },
     "categories": {
       "game-dev": {

@@ -261,6 +261,10 @@
     if (cardNodes.length === 0) return;
 
     var sorted = cardNodes.slice().sort(function(a, b) {
+      var cemA = a.getAttribute('data-is-graveyard') === 'true' ? 1 : 0;
+      var cemB = b.getAttribute('data-is-graveyard') === 'true' ? 1 : 0;
+      if (cemA !== cemB) return cemA - cemB;
+
       if (mode === 'popularity') {
         var scoreA = parseFloat(a.getAttribute('data-score') || '0');
         var scoreB = parseFloat(b.getAttribute('data-score') || '0');
@@ -274,6 +278,13 @@
         var viewsA = Math.max(0, parseInt(a.getAttribute('data-views') || '0', 10));
         var viewsB = Math.max(0, parseInt(b.getAttribute('data-views') || '0', 10));
         if (viewsB !== viewsA) return viewsB - viewsA;
+      } else if (mode === 'freshness') {
+        var freshA = parseFloat(a.getAttribute('data-freshness') || '0');
+        var freshB = parseFloat(b.getAttribute('data-freshness') || '0');
+        if (freshB !== freshA) return freshB - freshA;
+        var scoreFA = parseFloat(a.getAttribute('data-score') || '0');
+        var scoreFB = parseFloat(b.getAttribute('data-score') || '0');
+        if (scoreFB !== scoreFA) return scoreFB - scoreFA;
       } else if (mode === 'category') {
         var catA = a.getAttribute('data-category') || '';
         var catB = b.getAttribute('data-category') || '';
@@ -304,6 +315,7 @@
     if (!gridEl) return false;
     var hasLocalChanges = false;
     gridEl.querySelectorAll('.skill-card').forEach(function(card) {
+      if (card.getAttribute('data-is-graveyard') === 'true') return;
       var skillId = card.getAttribute('data-skill-id');
       var origScore = parseFloat(card.getAttribute('data-score') || '0');
       var curStars = Math.max(0, parseInt(card.getAttribute('data-stars') || '0', 10));
@@ -358,6 +370,7 @@
       saveMetricsCache(bySkill);
 
       gridEl.querySelectorAll('.skill-card').forEach(function(card) {
+        if (card.getAttribute('data-is-graveyard') === 'true') return;
         var skillId = card.getAttribute('data-skill-id');
         var data = bySkill[skillId];
         if (!data) return;
@@ -418,11 +431,20 @@
 
       cards.forEach(function(card) {
         var cat = card.getAttribute('data-category') || '';
+        var isGraveyard = card.getAttribute('data-is-graveyard') === 'true';
         var name = card.getAttribute('data-name') || '';
         var desc = card.getAttribute('data-desc') || '';
         var tags = card.getAttribute('data-tags') || '';
 
-        var matchesCat = activeCategory === 'all' || cat === activeCategory;
+        var matchesCat = false;
+        if (activeCategory === 'graveyard') {
+          matchesCat = isGraveyard;
+        } else if (activeCategory === 'all') {
+          matchesCat = !isGraveyard || query.length >= 2;
+        } else {
+          matchesCat = !isGraveyard && cat === activeCategory;
+        }
+
         var matchesQuery = !query || name.includes(query) || desc.includes(query) || cat.includes(query) || tags.includes(query);
 
         if (matchesCat && matchesQuery) {

@@ -1,0 +1,180 @@
+[
+  {
+    "id": "go-best-practices",
+    "name": "go-best-practices",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-07-21",
+    "lifespan": "Feb 2026 – Jul 2026",
+    "lastCommitSha": "53a68d1",
+    "installs": 5,
+    "causeOfDeath": "Merged into godoctor",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Merged with go-project-setup into godoctor so Go compiler checks, linters, and idiomatic code standards live in a single skill.",
+    "successorId": "godoctor",
+    "successorUrl": "/coding/godoctor/",
+    "migrationCommand": "kungfu forget go-best-practices && kungfu learn godoctor",
+    "legacyAliases": [
+      "/go-best-practices/",
+      "/coding/go-best-practices/"
+    ]
+  },
+  {
+    "id": "go-project-setup",
+    "name": "go-project-setup",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-07-21",
+    "lifespan": "Feb 2026 – Jul 2026",
+    "lastCommitSha": "201fa42",
+    "installs": 3,
+    "causeOfDeath": "Merged into godoctor",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Merged with go-best-practices into godoctor.",
+    "successorId": "godoctor",
+    "successorUrl": "/coding/godoctor/",
+    "migrationCommand": "kungfu forget go-project-setup && kungfu learn godoctor",
+    "legacyAliases": [
+      "/go-project-setup/",
+      "/coding/go-project-setup/"
+    ]
+  },
+  {
+    "id": "a2ui-developer-guide",
+    "name": "a2ui-developer-guide",
+    "formerCategory": "agents",
+    "categoryEmoji": "🤖",
+    "retiredAt": "2026-08-21",
+    "lifespan": "Jun 2026 – Aug 2026",
+    "lastCommitSha": "ce2efe5",
+    "installs": 3,
+    "causeOfDeath": "Factually incorrect",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Proven to be mostly factually incorrect and produced botched implementations. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget a2ui-developer-guide",
+    "legacyAliases": [
+      "/a2ui-developer-guide/",
+      "/a2ui_developer_guide/",
+      "/agents/a2ui-developer-guide/"
+    ]
+  },
+  {
+    "id": "find-examples",
+    "name": "find-examples",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-08-21",
+    "lifespan": "Feb 2026 – Aug 2026",
+    "lastCommitSha": "0d290a6",
+    "installs": 11,
+    "causeOfDeath": "Never used in practice",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Never used in real life. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget find-examples",
+    "legacyAliases": [
+      "/find-examples/",
+      "/coding/find-examples/"
+    ]
+  },
+  {
+    "id": "google-codelab-authoring",
+    "name": "google-codelab-authoring",
+    "formerCategory": "writing",
+    "categoryEmoji": "✍️",
+    "retiredAt": "2026-08-21",
+    "lifespan": "Feb 2026 – Aug 2026",
+    "lastCommitSha": "0d290a6",
+    "installs": 8,
+    "causeOfDeath": "Never used in practice",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Never used in real life. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget google-codelab-authoring",
+    "legacyAliases": [
+      "/google-codelab-authoring/",
+      "/writing/google-codelab-authoring/"
+    ]
+  },
+  {
+    "id": "agy-extensions",
+    "name": "agy-extensions",
+    "formerCategory": "agents",
+    "categoryEmoji": "🤖",
+    "retiredAt": "2026-08-16",
+    "lifespan": "Aug 2026",
+    "lastCommitSha": "4f77964",
+    "installs": 1,
+    "causeOfDeath": "Replaced by built-in agy-customizations",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Antigravity started shipping with the official agy-customizations skill, so this skill was killed in favor of the built-in one.",
+    "successorLabel": "agy-customizations (built-in)",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget agy-extensions",
+    "legacyAliases": [
+      "/agy-extensions/",
+      "/agents/agy-extensions/"
+    ]
+  },
+  {
+    "id": "experiment-analyst",
+    "name": "experiment-analyst",
+    "formerCategory": "analytics",
+    "categoryEmoji": "📊",
+    "retiredAt": "2026-08-16",
+    "lifespan": "Jan 2026 – Aug 2026",
+    "lastCommitSha": "4f77964",
+    "installs": 5,
+    "causeOfDeath": "One-off niche skill",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Written to support a very specific analysis and never meant for general use. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget experiment-analyst",
+    "legacyAliases": [
+      "/experiment-analyst/",
+      "/analytics/experiment-analyst/"
+    ]
+  },
+  {
+    "id": "catalog",
+    "name": "catalog",
+    "formerCategory": "agents",
+    "categoryEmoji": "🤖",
+    "retiredAt": "2026-08-27",
+    "lifespan": "Aug 2026",
+    "lastCommitSha": "30f4b0c",
+    "installs": 7,
+    "causeOfDeath": "Unnecessary; replaced by kungfu CLI",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Proven to be unnecessary and replaced by kungfu list and kungfu find. Killed.",
+    "successorLabel": "kungfu list / kungfu find",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget catalog",
+    "legacyAliases": [
+      "/catalog/"
+    ]
+  }
+]

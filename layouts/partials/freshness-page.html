@@ -1,0 +1,189 @@
+{{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
+{{- $freshMap := site.Data.freshness -}}
+{{- $graveyard := site.Data.graveyard | default slice -}}
+
+{{- $sortedSkills := slice -}}
+{{- range $id, $f := $freshMap -}}
+  {{- $sortedSkills = $sortedSkills | append $f -}}
+{{- end -}}
+{{- $sortedSkills = sort $sortedSkills "sortScore" "desc" -}}
+
+<nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400 mt-4 mb-4" aria-label="Breadcrumbs">
+  <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
+  <span class="opacity-50">/</span>
+  <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $t.ui.freshnessTitle }}</span>
+</nav>
+
+<header class="mb-8">
+  <h1 class="mt-0 mb-3 text-3xl sm:text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+    {{ $t.ui.freshnessTitle }}
+  </h1>
+  <p class="text-base text-neutral-600 dark:text-neutral-300 leading-relaxed max-w-3xl m-0">
+    Agent skills break when the tools, SDKs, or models they target change. Each skill in this catalog has a freshness score calculated from when its substantive instructions or scripts were last updated in Git and whether people are still using it.
+  </p>
+</header>
+
+<section class="danicat-card p-6 mb-8">
+  <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 mt-0 mb-3">Tiers</h2>
+  <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-4">
+    New skills without a proven user base show <strong>🌱 New</strong> instead of a percentage. Once a skill has real usage, it receives a score from 0% to 100%. Retired skills move to the <a href="{{ "/graveyard/" | relLangURL }}" class="text-primary-600 dark:text-primary-400 font-semibold hover:underline">{{ $t.ui.graveyardTitle }}</a>.
+  </p>
+
+  <div class="freshness-table-wrap">
+    <table class="freshness-table">
+      <thead>
+        <tr>
+          <th>Badge</th>
+          <th>Score</th>
+          <th>Stage</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="new">🌱 New</span></td>
+          <td class="nowrap-col font-mono text-neutral-600 dark:text-neutral-400">Unproven</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Incubating</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Recently added skill that does not have enough user activity yet to earn a percentage score.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="mint">✨ Mint</span></td>
+          <td class="nowrap-col font-mono font-bold text-neutral-900 dark:text-neutral-100">90 – 100%</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Gold standard</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Recently updated in Git with a stable or growing user base.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="fresh">🌿 Fresh</span></td>
+          <td class="nowrap-col font-mono font-bold text-neutral-900 dark:text-neutral-100">70 – 89%</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Active</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Either recently updated with a smaller user base, or an older skill with steady weekly usage.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="stale">🕸️ Stale</span></td>
+          <td class="nowrap-col font-mono font-bold text-neutral-900 dark:text-neutral-100">50 – 69%</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Aging</td>
+          <td class="text-neutral-600 dark:text-neutral-300">No recent commits while weekly usage is slipping below its historical baseline.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="spoiled">🤢 Spoiled</span></td>
+          <td class="nowrap-col font-mono font-bold text-neutral-900 dark:text-neutral-100">25 – 49%</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Decaying</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Outdated last commit paired with falling weekly usage.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="rotten">🦠 Rotten</span></td>
+          <td class="nowrap-col font-mono font-bold text-neutral-900 dark:text-neutral-100">0 – 24%</td>
+          <td class="nowrap-col font-semibold text-neutral-700 dark:text-neutral-300">Abandoned</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Untouched for months with zero weekly activity after initial adoption.</td>
+        </tr>
+        <tr>
+          <td class="nowrap-col"><span class="metric-pill freshness-pill" data-tier="rip">🪦 R.I.P.</span></td>
+          <td class="nowrap-col font-mono text-neutral-500">Retired</td>
+          <td class="nowrap-col font-semibold text-neutral-500">Graveyard</td>
+          <td class="text-neutral-600 dark:text-neutral-300">Removed from the catalog and listed in the <a href="{{ "/graveyard/" | relLangURL }}" class="text-primary-600 dark:text-primary-400 hover:underline">{{ $t.ui.graveyardTitle }}</a>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="grid gap-6 md:grid-cols-2 mb-8">
+  <section class="danicat-card p-6">
+    <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 mt-0 mb-3">Formula</h2>
+    <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3">
+      Each proven skill combines substantive Git commit age (<code>U</code>, 45-day half-life) with usage (<code>V</code>) across <code>kungfu</code> CLI telemetry, <code>npx skills</code> installs, and web interactions:
+    </p>
+    <div class="p-3.5 rounded-lg bg-neutral-100 dark:bg-neutral-800/90 font-mono text-xs text-neutral-800 dark:text-neutral-200 space-y-1.5 mb-3">
+      <div>U = 0.5 ^ (age_days / 45)</div>
+      <div>V = log_norm(kungfu_cli + npx_skills + web_activity)</div>
+      <div>Vitality = round(80 × (1 - (1 - U) × (1 - 0.85 × V × U^0.25)))</div>
+      <div>Adoption = round(20 × V × U^0.35)</div>
+      <div>Score = clamp(0, 100, Vitality + Adoption - Penalty)</div>
+    </div>
+    <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-1.5 m-0 pl-4">
+      <li><strong>No-op commit filter:</strong> Repo-wide metadata edits, license header sweeps, and directory moves are ignored when computing <code>age_days</code>.</li>
+      <li><strong>Data sources:</strong> Combines <code>kungfu</code> CLI telemetry (<code>loads</code>, <code>runs</code>, <code>learns</code> synced to Firestore), raw <code>npx skills</code> installs from <code>skills.sh</code>, and web engagement.</li>
+    </ul>
+  </section>
+
+  <section class="danicat-card p-6">
+    <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 mt-0 mb-3">Security</h2>
+    <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3">
+      Each skill page displays results from three security scanners run by <code>skills.sh</code>: <strong>Gen Agent Trust Hub</strong>, <strong>Socket</strong>, and <strong>Snyk</strong>.
+    </p>
+    <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-2 m-0 pl-4">
+      <li><strong>Prompt safety:</strong> Gen Agent Trust Hub and Socket check for prompt injection, credential leaks, and unsafe dependencies.</li>
+      <li><strong>Static scanner notes:</strong> Snyk flags markdown files that document running local CLI tools like <code>go test</code> or <code>uv</code>. Each flagged skill includes a note explaining why the alert triggered.</li>
+    </ul>
+  </section>
+</div>
+
+<section class="danicat-card p-6 mb-12">
+  <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+    <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 m-0">Scores</h2>
+    <a href="{{ "/graveyard/" | relLangURL }}" class="graveyard-btn">
+      🪦 {{ $t.ui.graveyardTitle }} →
+    </a>
+  </div>
+
+  <div class="freshness-table-wrap">
+    <table class="freshness-table scores-ledger">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Score</th>
+          <th class="num-col">Vitality</th>
+          <th class="num-col">Adoption</th>
+          <th class="num-col">Recency</th>
+          <th class="num-col">kungfu</th>
+          <th class="num-col">npx skills</th>
+          <th>Updated</th>
+          <th>Security</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{- range $f := $sortedSkills -}}
+          {{- $hasCliNote := in (lower ($f.securityNote | default "")) "snyk" | or (in (lower ($f.securityNote | default "")) "static scanner") -}}
+          <tr>
+            <td class="nowrap-col font-semibold">
+              <a href="{{ (printf "/%s/%s/" $f.category $f.id) | relLangURL }}" class="text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $f.id }}</a>
+            </td>
+            <td class="nowrap-col">
+              {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "showTierLabel" true "alignLeft" true) }}
+            </td>
+            <td class="num-col">
+              {{- if $f.isUnproven -}}
+                <span class="text-neutral-400">—</span>
+              {{- else -}}
+                <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $f.vitalityPoints }}</span><span class="text-neutral-400">/80</span>
+              {{- end -}}
+            </td>
+            <td class="num-col">
+              {{- if $f.isUnproven -}}
+                <span class="text-neutral-400">—</span>
+              {{- else -}}
+                <span class="font-semibold text-neutral-800 dark:text-neutral-200">+{{ $f.adoptionBonusPoints }}</span><span class="text-neutral-400">/20</span>
+              {{- end -}}
+            </td>
+            <td class="num-col">{{ $f.updateFreshness }}%</td>
+            <td class="num-col font-semibold">{{ $f.kungfuTotal | default 0 }}</td>
+            <td class="num-col">{{ $f.installs | default 0 }}</td>
+            <td class="nowrap-col font-mono text-xs text-neutral-600 dark:text-neutral-300">
+              <span>{{ $f.lastCommitDate }}</span>
+              <span class="commit-sha-badge">{{ $f.lastCommitSha }}</span>
+            </td>
+            <td class="nowrap-col">
+              {{- if not $f.scannerSummary.total -}}
+                <span class="security-badge sec-pending" title="{{ $f.securityNote }}">⏳ Pending</span>
+              {{- else if $hasCliNote -}}
+                <span class="security-badge sec-cli" title="{{ $f.securityNote }}">✓ Pass · CLI note</span>
+              {{- else -}}
+                <span class="security-badge sec-pass" title="{{ $f.securityNote }}">✓ 3/3 Pass</span>
+              {{- end -}}
+            </td>
+          </tr>
+        {{- end -}}
+      </tbody>
+    </table>
+  </div>
+</section>

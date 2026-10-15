@@ -1,4 +1,5 @@
 {{- $sections := .Site.Sections.ByWeight -}}
+{{- $freshnessMap := site.Data.freshness | default dict -}}
 {{- $categories := slice -}}
 {{- $skills := slice -}}
 {{- range $sec := $sections -}}
@@ -10,6 +11,8 @@
   ) -}}
   {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
   {{- range $s := $secSkills.ByTitle -}}
+    {{- $skillId := lower $s.Params.skillName -}}
+    {{- $f := index $freshnessMap $skillId | default dict -}}
     {{- $skills = $skills | append (dict
       "name" $s.Params.skillName
       "description" $s.Params.description
@@ -20,6 +23,10 @@
       "license" $s.Params.license
       "url" $s.Params.rawUrl
       "digest" $s.Params.digest
+      "freshnessScore" (cond ($f.isUnproven | default false) nil (int ($f.score | default 85)))
+      "freshnessTier" ($f.tier | default "fresh")
+      "freshnessEmoji" ($f.tierEmoji | default "🌿")
+      "lastCommitAt" ($f.lastCommitAt | default "")
     ) -}}
   {{- end -}}
 {{- end -}}
@@ -32,5 +39,6 @@
   "updatedAt" (now.UTC.Format "2006-01-02T15:04:05Z")
   "categories" $categories
   "skills" $skills
+  "graveyard" (site.Data.graveyard | default slice)
 -}}
 {{- $manifest | jsonify (dict "indent" "  ") -}}
