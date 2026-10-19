@@ -18,6 +18,10 @@ googleAnalytics = "G-8RHDQGEGZ2"
 
 disableKinds = ["taxonomy", "term", "RSS"]
 ignoreLogs = ["warning-goldmark-raw-html"]
+includeFiles = ["\\.well-known/**"]
+
+[params]
+  images = ["img/og-card.png"]
 
 [services]
   [services.googleAnalytics]

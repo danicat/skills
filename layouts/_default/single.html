@@ -111,9 +111,9 @@
         </div>
       </div>
 
-      <div class="text-xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2 leading-snug">
+      <h1 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 mt-0 mb-2 leading-snug">
         {{ $skillName }}
-      </div>
+      </h1>
 
       <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 leading-relaxed m-0">
         {{ .Params.description }}
@@ -130,7 +130,7 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
     <main class="lg:col-span-8 min-w-0">
-      <article class="prose dark:prose-invert max-w-none skill-prose">
+      <article class="prose dark:prose-invert max-w-none skill-prose"{{ if ne .Language.Lang "en" }} lang="en"{{ end }}>
         {{ .Content }}
       </article>
     </main>
@@ -149,7 +149,7 @@
         <div id="detail-tab-kungfu" class="install-panel-flat active">
           <div class="cmd-box-row">
             <span class="cmd-text">{{ .Params.kungfuLearnCommand }}</span>
-            <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('{{ .Params.kungfuLearnCommand }}', this)" title="Copy command">
+            <button type="button" class="cmd-copy-btn" aria-label="Copy command" onclick="copyInstallCommand('{{ .Params.kungfuLearnCommand }}', this)" title="Copy command">
               {{ $t.ui.copyBtn }}
             </button>
           </div>
@@ -158,7 +158,7 @@
         <div id="detail-tab-npx" class="install-panel-flat">
           <div class="cmd-box-row">
             <span class="cmd-text">{{ .Params.installCommand }}</span>
-            <button type="button" class="cmd-copy-btn" onclick="copyInstallCommand('{{ .Params.installCommand }}', this)" title="Copy command">
+            <button type="button" class="cmd-copy-btn" aria-label="Copy command" onclick="copyInstallCommand('{{ .Params.installCommand }}', this)" title="Copy command">
               {{ $t.ui.copyBtn }}
             </button>
           </div>
@@ -219,15 +219,15 @@
             </div>
             <svg viewBox="0 0 120 26" class="w-full h-6 overflow-visible" role="img" aria-label="8-week activity sparkline">
               {{- range $idx, $wVal := $fWeekly -}}
-                {{- $v := int $wVal -}}
+                {{- $installs := int $wVal -}}
                 {{- $barH := 3 -}}
-                {{- if gt $v 0 -}}
-                  {{- $barH = add 4 ( div (mul $v 20) $maxW ) -}}
+                {{- if gt $installs 0 -}}
+                  {{- $barH = add 4 ( div (mul $installs 20) $maxW ) -}}
                 {{- end -}}
                 {{- $x := mul $idx 15 -}}
                 {{- $y := sub 25 $barH -}}
                 <rect x="{{ $x }}" y="{{ $y }}" width="11" height="{{ $barH }}" rx="2" class="{{ if eq $idx 7 }}fill-primary-500 dark:fill-primary-400{{ else }}fill-neutral-300 dark:fill-neutral-700{{ end }}">
-                  <title>W{{ add $idx 1 }}: {{ $v }} installs</title>
+                  <title>W{{ add $idx 1 }}: {{ if eq $installs 1 }}1 install{{ else }}{{ $installs }} installs{{ end }}</title>
                 </rect>
               {{- end -}}
             </svg>
@@ -247,9 +247,10 @@
                 </span>
               {{- end -}}
               {{- if $p1.riskLevel -}}
+                {{- $totalAlerts := int ($p1.alerts | default 0) -}}
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
                   <span>{{ if eq $p1.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
-                  <span>Socket: {{ $p1.alerts | default 0 }} Alerts</span>
+                  <span>Socket: {{ if eq $totalAlerts 1 }}1 Alert{{ else }}{{ $totalAlerts }} Alerts{{ end }}</span>
                 </span>
               {{- end -}}
               {{- if $p2.riskLevel -}}
@@ -334,7 +335,7 @@
                   {{- $targetUrl = replaceRE "\\.md$" ".html" $r.relPath | lower -}}
                 {{- end -}}
                 <li>
-                  <a href="/{{ $catId }}/{{ $.Params.folder }}/{{ $targetUrl }}" class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline break-all">
+                  <a href="{{ printf "/%s/%s/%s" $catId $.Params.folder $targetUrl | safeURL }}" class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline break-all">
                     <span>{{ $icon }}</span>
                     <span>{{ $r.relPath }}</span>
                   </a>
@@ -358,7 +359,7 @@
       <span class="opacity-50">/</span>
       <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
       <span class="opacity-50">/</span>
-      <a href="/{{ $catId }}/{{ $skillFolder }}/" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $skillName }}</a>
+      <a href="{{ (printf "/%s/%s/" $catId $skillFolder) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $skillName }}</a>
       <span class="opacity-50">/</span>
       <span class="font-semibold text-neutral-800 dark:text-neutral-200 font-mono">{{ $relPath }}</span>
     </nav>
@@ -376,7 +377,8 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
     <main class="lg:col-span-8 min-w-0">
-      <article class="prose dark:prose-invert max-w-none skill-prose">
+      <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 mt-0 mb-4">{{ .Title }}</h1>
+      <article class="prose dark:prose-invert max-w-none skill-prose"{{ if ne .Language.Lang "en" }} lang="en"{{ end }}>
         {{ .Content }}
       </article>
     </main>
@@ -413,13 +415,18 @@
       {{- end -}}
 
       <div class="danicat-card p-5">
-        <a href="/{{ $catId }}/{{ $skillFolder }}/" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $t.ui.backToSkill }} {{ $skillName }}</a>
+        <a href="{{ (printf "/%s/%s/" $catId $skillFolder) | relLangURL }}" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $t.ui.backToSkill }} {{ $skillName }}</a>
       </div>
     </aside>
   </div>
 {{- end -}}
 
 <script>
+  document.querySelectorAll('.copy-code-btn, .copy-button').forEach(function(btn) {
+    if (!btn.getAttribute('aria-label')) {
+      btn.setAttribute('aria-label', 'Copy code');
+    }
+  });
   function switchInstallTab(btn, targetId) {
     var widget = btn.closest('.tab-container') || btn.closest('.install-widget');
     if (!widget) return;

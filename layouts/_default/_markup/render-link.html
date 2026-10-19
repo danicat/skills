@@ -22,12 +22,18 @@
   {{- else if strings.HasSuffix $pathPart "/SKILL.md" -}}
     {{- $trimmed := strings.TrimSuffix "SKILL.md" $pathPart -}}
     {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder (not (strings.HasPrefix $trimmed "/")) -}}
-      {{- $pathPart = printf "%s/" (path.Clean (printf "/%s/%s/%s" .Page.Params.category .Page.Params.folder $trimmed)) -}}
+      {{- $pathPart = (printf "%s/" (path.Clean (printf "/%s/%s/%s" .Page.Params.category .Page.Params.folder $trimmed))) | relLangURL -}}
+    {{- else if strings.HasPrefix $trimmed "/" -}}
+      {{- $pathPart = ($trimmed | relLangURL) -}}
     {{- else -}}
       {{- $pathPart = $trimmed -}}
     {{- end -}}
   {{- else if or (eq $pathPart "SKILL.md") (eq $pathPart "./SKILL.md") -}}
-    {{- $pathPart = "./" -}}
+    {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder -}}
+      {{- $pathPart = (printf "/%s/%s/" .Page.Params.category .Page.Params.folder) | relLangURL -}}
+    {{- else -}}
+      {{- $pathPart = "./" -}}
+    {{- end -}}
   {{- else -}}
     {{- if strings.HasSuffix $pathPart ".md" -}}
       {{- $pathPart = printf "%s.html" (strings.TrimSuffix ".md" $pathPart) | lower -}}

@@ -3,6 +3,7 @@
   "kind" "home"
   "path" "/"
   "title" $t.ui.catalogTitle
+  "description" ($t.ui.catalogSubtitle | plainify | truncate 160)
   "params" (dict
     "description" $t.ui.catalogSubtitle
   )
@@ -27,6 +28,7 @@
     "kind" "section"
     "path" $cat.id
     "title" (printf "%s — Agent Skills" $catName)
+    "description" ($catDesc | plainify | truncate 160)
     "build" (dict "render" "never" "list" "always")
     "params" (dict
       "url" (printf "/ja/%s/" $cat.id)
@@ -115,6 +117,7 @@
       "kind" "page"
       "path" (printf "%s/%s" $cat.id $folder)
       "title" (printf "%s — %s Agent Skill" $skillName $catName)
+      "description" ($description | plainify | truncate 160)
       "content" (dict "mediaType" "text/markdown" "value" $safeBody)
       "params" (dict
         "url" (printf "/ja/%s/%s/" $cat.id $folder)
@@ -150,7 +153,8 @@
   "kind" "page"
   "path" "freshness"
   "title" $t.ui.freshnessDocTitle
-  "build" (dict "list" "never" "render" "always")
+  "description" ($t.ui.freshnessDocSubtitle | plainify | truncate 160)
+  "build" (dict "list" "always" "render" "always")
   "params" (dict
     "url" "/ja/freshness/"
     "isSpecialPage" true
@@ -164,6 +168,7 @@
   "kind" "section"
   "path" "graveyard"
   "title" $t.ui.graveyardTitle
+  "description" ($t.ui.graveyardSubtitle | plainify | truncate 160)
   "build" (dict "list" "never" "render" "always")
   "params" (dict
     "url" "/ja/graveyard/"
@@ -179,7 +184,8 @@
     "kind" "page"
     "path" (printf "graveyard/%s" $item.id)
     "title" $item.name
-    "build" (dict "list" "never" "render" "always")
+    "description" ($item.epitaph | plainify | truncate 160)
+    "build" (dict "list" "always" "render" "always")
     "params" (dict
       "url" (printf "/ja/graveyard/%s/" $item.id)
       "isSpecialPage" true
@@ -190,4 +196,5 @@
     )
   ) -}}
 {{- end -}}
+
 

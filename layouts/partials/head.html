@@ -6,30 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="theme-color">
+  <meta name="color-scheme" content="light dark">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 
   {{/* Title */}}
   {{ if .IsHome }}
-    <title>{{ .Site.Title | emojify }}</title>
-    <meta name="title" content="{{ .Site.Title | emojify }}">
+    <title>{{ .Title | emojify }} | {{ .Site.Title | emojify }}</title>
+    <meta name="title" content="{{ .Title | emojify }} | {{ .Site.Title | emojify }}">
   {{ else }}
     <title>{{ .Title | emojify }} &middot; {{ .Site.Title | emojify }}</title>
     <meta name="title" content="{{ .Title | emojify }} &middot; {{ .Site.Title | emojify }}">
   {{ end }}
 
   {{/* Metadata */}}
-  {{ with (.Params.Summary | default .Params.Description) | default .Site.Params.description }}
-    <meta name="description" content="{{ . }}">
+  {{ with (.Description | default .Params.Summary | default .Params.Description) | default .Site.Params.description }}
+    <meta name="description" content="{{ . | plainify | truncate 160 }}">
   {{ end }}
   {{ with .Params.Tags | default .Site.Params.keywords }}
     <meta name="keywords" content="{{ range . }}{{ . }},{{ end }}">
   {{ end }}
-  {{ with .Site.Params.robots }}
-    <meta name="robots" content="{{ . }}">
-  {{ end }}
-  {{ with .Params.robots }}
-    <meta name="robots" content="{{ . }}">
+  {{ if eq .Kind "404" }}
+    <meta name="robots" content="noindex">
+  {{ else }}
+    {{ with .Site.Params.robots }}
+      <meta name="robots" content="{{ . }}">
+    {{ end }}
+    {{ with .Params.robots }}
+      <meta name="robots" content="{{ . }}">
+    {{ end }}
   {{ end }}
   <link rel="canonical" href="{{ .Permalink }}">
+  {{ if .AllTranslations }}
+    {{ range .AllTranslations }}
+      <link rel="alternate" hreflang="{{ .Language.LanguageCode }}" href="{{ .Permalink }}">
+      {{ if eq .Language.LanguageCode "en" }}
+        <link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+      {{ end }}
+    {{ end }}
+  {{ else if eq .Params.specialPageType "graveyard" }}
+    <link rel="alternate" hreflang="en" href="https://skills.danicat.dev/graveyard/">
+    <link rel="alternate" hreflang="pt-br" href="https://skills.danicat.dev/pt-br/graveyard/">
+    <link rel="alternate" hreflang="ja" href="https://skills.danicat.dev/ja/graveyard/">
+    <link rel="alternate" hreflang="x-default" href="https://skills.danicat.dev/graveyard/">
+  {{ end }}
   {{ range .AlternativeOutputFormats }}
     {{ printf `
       <link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .RelPermalink ($.Site.Title | emojify) |
@@ -54,26 +73,16 @@
   {{/* Social */}}
   {{ template "_internal/opengraph.html" . }}
   {{ template "_internal/twitter_cards.html" . }}
-  {{ $featureImage := "" }}
-  {{ $pageImages := .Resources.ByType "image" }}
-  {{ range slice "*featured*" "*cover*" "*thumbnail*" }}
-    {{ if not $featureImage }}
-      {{ $featureImage = $pageImages.GetMatch . }}
-    {{ end }}
-  {{ end }}
-  {{ if not $featureImage }}
-    {{ with .Site.Params.defaultSocialImage }}
-      {{ $socialImage := "" }}
-      {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
-        {{ $socialImage = resources.GetRemote . }}
-      {{ else }}
-        {{ $socialImage = resources.Get . }}
-      {{ end }}
-      {{ with $socialImage }}
-        <meta name="twitter:image" content="{{ .RelPermalink | absURL }}">
-        <meta property="og:image" content="{{ .RelPermalink | absURL }}">
-      {{ end }}
-    {{ end }}
+  <meta property="og:image" content="{{ "img/og-card.png" | absURL }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ .Title }} — Agent Skills Catalog">
+  <meta name="twitter:image" content="{{ "img/og-card.png" | absURL }}">
+  <meta name="twitter:image:alt" content="{{ .Title }} — Agent Skills Catalog">
+
+  {{/* Uncached extend head (placed above CSS so alternate/social metadata stays within first few KB) */}}
+  {{ if templates.Exists "partials/extend-head-uncached.html" }}
+    {{ partial "extend-head-uncached.html" . }}
   {{ end }}
 
   {{/* Site Verification */}}
@@ -93,17 +102,16 @@
     <meta name="fediverse:creator" content="{{ . }}">
   {{ end }}
 
-  {{/* Inlined Critical CSS */}}
-  {{ $cssResources := slice }}
+  {{/* External Fingerprinted Stylesheet */}}
   {{ $schemeName := .Site.Params.colorScheme | default "blowfish" }}
-  {{ $cssScheme := resources.Get (printf "css/schemes/%s.css" (lower $schemeName)) | default (resources.Get "css/schemes/blowfish.css") }}
-  {{ $cssResources = $cssResources | append $cssScheme }}
-  {{ $cssResources = $cssResources | append (resources.Get "css/compiled/main.css") }}
+  {{ $scheme := resources.Get (printf "css/schemes/%s.css" (lower $schemeName)) | default (resources.Get "css/schemes/blowfish.css") }}
+  {{ $main := resources.Get "css/compiled/main.css" }}
+  {{ $cssResources := slice $scheme $main }}
   {{ with resources.Get "css/custom.css" }}
     {{ $cssResources = $cssResources | append . }}
   {{ end }}
-  {{ $bundleCSS := $cssResources | resources.Concat "css/main.bundle.css" | resources.Minify }}
-  <style id="main-css">{{ $bundleCSS.Content | safeCSS }}</style>
+  {{ $cssBundle := $cssResources | resources.Concat "css/main.bundle.css" | resources.Minify | resources.Fingerprint "sha512" }}
+  <link rel="stylesheet" href="{{ $cssBundle.RelPermalink }}" integrity="{{ $cssBundle.Data.Integrity }}" crossorigin="anonymous">
 
   {{/* Inlined Appearance & Scroll-to-Top JS (eliminates render-blocking external JS requests) */}}
   {{ $jsAppearance := resources.Get "js/appearance.js" | resources.ExecuteAsTemplate "js/appearance.js" . }}
@@ -140,32 +148,48 @@
     {{ partialCached "extend-head.html" .Site }}
   {{ end }}
 
-  {{/* Uncached extend head */}}
-  {{ if templates.Exists "partials/extend-head-uncached.html" }}
-    {{ partial "extend-head-uncached.html" . }}
-  {{ end }}
+  {{/* Speculation Rules API for moderate internal prefetch */}}
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "where": {
+          "and": [
+            { "href_matches": "/*" },
+            { "not": { "href_matches": "/*.md" } },
+            { "not": { "href_matches": "/*.json" } },
+            { "not": { "href_matches": "/*.txt" } }
+          ]
+        },
+        "eagerness": "moderate"
+      }
+    ]
+  }
+  </script>
 
-  {{/* Lightweight Firebase Auth & Firestore REST Client (replaces 156 KiB synchronous v8 SDK) */}}
+  {{/* Lightweight Firebase Auth & Firestore REST Client (passive reads use API key without auth; auth only on explicit install/star actions) */}}
   {{ with $.Site.Params.firebase }}
     {{ if isset $.Site.Params "firebase" }}
       <script>
         window.DanicatFirestore = (function() {
-          var apiKey = {{ $.Site.Params.firebase.apiKey }};
-          var projectId = {{ $.Site.Params.firebase.projectId }};
+          var FIREBASE_API_KEY = {{ $.Site.Params.firebase.apiKey }};
+          var FIREBASE_PROJECT_ID = {{ $.Site.Params.firebase.projectId }};
           var AUTH_CACHE_KEY = 'danicat_fb_auth_v1';
           var inFlightAuth = null;
 
-          function getIdToken() {
+          function saveAuthCache(idToken, refreshToken, expiresInSec) {
+            var exp = Date.now() + ((parseInt(expiresInSec || '3600', 10) || 3600) * 1000);
             try {
-              var cached = JSON.parse(sessionStorage.getItem(AUTH_CACHE_KEY) || 'null');
-              if (cached && cached.idToken && cached.expiresAt > Date.now() + 60000) {
-                return Promise.resolve(cached.idToken);
-              }
+              localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({
+                idToken: idToken,
+                refreshToken: refreshToken || '',
+                expiresAt: exp
+              }));
             } catch (e) {}
+          }
 
-            if (inFlightAuth) return inFlightAuth;
-
-            inFlightAuth = fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + encodeURIComponent(apiKey), {
+          function signUpAnonymous() {
+            return fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + encodeURIComponent(FIREBASE_API_KEY), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ returnSecureToken: true })
@@ -175,18 +199,51 @@
               }
               return res.json();
             }).then(function(data) {
-              inFlightAuth = null;
               if (!data || !data.idToken) {
                 throw new Error('Firebase anonymous auth response missing idToken');
               }
-              var expiresInSec = parseInt(data.expiresIn || '3600', 10) || 3600;
-              try {
-                sessionStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({
-                  idToken: data.idToken,
-                  expiresAt: Date.now() + (expiresInSec * 1000)
-                }));
-              } catch (e) {}
+              saveAuthCache(data.idToken, data.refreshToken, data.expiresIn);
               return data.idToken;
+            });
+          }
+
+          function getFirebaseIdToken() {
+            var cached = null;
+            try {
+              cached = JSON.parse(localStorage.getItem(AUTH_CACHE_KEY) || 'null');
+              if (cached && cached.idToken && cached.expiresAt > Date.now() + 60000) {
+                return Promise.resolve(cached.idToken);
+              }
+            } catch (e) {}
+
+            if (inFlightAuth) return inFlightAuth;
+
+            var authPromise;
+            if (cached && cached.refreshToken) {
+              authPromise = fetch('https://securetoken.googleapis.com/v1/token?key=' + encodeURIComponent(FIREBASE_API_KEY), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(cached.refreshToken)
+              }).then(function(res) {
+                if (!res.ok) {
+                  try { localStorage.removeItem(AUTH_CACHE_KEY); } catch (e) {}
+                  throw new Error('Firebase token refresh failed with HTTP ' + res.status);
+                }
+                return res.json();
+              }).then(function(data) {
+                if (!data || !data.id_token) {
+                  throw new Error('Firebase token refresh missing id_token');
+                }
+                saveAuthCache(data.id_token, data.refresh_token || cached.refreshToken, data.expires_in);
+                return data.id_token;
+              });
+            } else {
+              authPromise = signUpAnonymous();
+            }
+
+            inFlightAuth = authPromise.then(function(token) {
+              inFlightAuth = null;
+              return token;
             }).catch(function(err) {
               inFlightAuth = null;
               throw err;
@@ -202,12 +259,8 @@
           }
 
           function fetchSkillsMap() {
-            return getIdToken().then(function(idToken) {
-              var url = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents/skills?pageSize=100';
-              return fetch(url, {
-                headers: { 'Authorization': 'Bearer ' + idToken }
-              });
-            }).then(function(res) {
+            var url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/skills?pageSize=300&key=${FIREBASE_API_KEY}`;
+            return fetch(url).then(function(res) {
               if (!res.ok) {
                 throw new Error('Firestore skills fetch failed with HTTP ' + res.status);
               }
@@ -237,11 +290,55 @@
             });
           }
 
+          function incrementInstall(skillId, category, delta) {
+            var cat = category || 'agents';
+            var docId = cat + '-' + skillId;
+            var inc = delta || 1;
+            return getFirebaseIdToken().then(function(idToken) {
+              var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(FIREBASE_PROJECT_ID) + '/databases/(default)/documents:commit';
+              var docName = 'projects/' + FIREBASE_PROJECT_ID + '/databases/(default)/documents/skills/' + docId;
+              return fetch(commitUrl, {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + idToken,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  writes: [{
+                    update: {
+                      name: docName,
+                      fields: {
+                        category: { stringValue: cat },
+                        skill: { stringValue: skillId }
+                      }
+                    },
+                    updateMask: { fieldPaths: ['category', 'skill'] },
+                    updateTransforms: [
+                      { fieldPath: 'copies', increment: { integerValue: String(inc) } },
+                      { fieldPath: 'lastUpdated', setToServerValue: 'REQUEST_TIME' }
+                    ]
+                  }]
+                })
+              });
+            }).then(function(res) {
+              if (!res.ok) {
+                throw new Error('Firestore commit failed with HTTP ' + res.status);
+              }
+              return res.json();
+            });
+          }
+
           function incrementMetric(category, skillId, fieldName, delta) {
+            if (fieldName === 'views') {
+              return Promise.resolve(null);
+            }
+            if (fieldName === 'copies') {
+              return incrementInstall(skillId, category, delta);
+            }
             var docId = category + '-' + skillId;
-            return getIdToken().then(function(idToken) {
-              var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents:commit';
-              var docName = 'projects/' + projectId + '/databases/(default)/documents/skills/' + docId;
+            return getFirebaseIdToken().then(function(idToken) {
+              var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(FIREBASE_PROJECT_ID) + '/databases/(default)/documents:commit';
+              var docName = 'projects/' + FIREBASE_PROJECT_ID + '/databases/(default)/documents/skills/' + docId;
               return fetch(commitUrl, {
                 method: 'POST',
                 headers: {
@@ -275,14 +372,12 @@
 
           function toggleStar(category, skillId, isStarredNow) {
             var docId = category + '-' + skillId;
-            var docName = 'projects/' + projectId + '/databases/(default)/documents/skills/' + docId;
-            var docUrl = 'https://firestore.googleapis.com/v1/' + docName;
-            var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(projectId) + '/databases/(default)/documents:commit';
+            var docName = 'projects/' + FIREBASE_PROJECT_ID + '/databases/(default)/documents/skills/' + docId;
+            var docUrl = 'https://firestore.googleapis.com/v1/' + docName + '?key=' + encodeURIComponent(FIREBASE_API_KEY);
+            var commitUrl = 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(FIREBASE_PROJECT_ID) + '/databases/(default)/documents:commit';
 
-            return getIdToken().then(function(idToken) {
-              return fetch(docUrl, {
-                headers: { 'Authorization': 'Bearer ' + idToken }
-              }).then(function(res) {
+            return getFirebaseIdToken().then(function(idToken) {
+              return fetch(docUrl).then(function(res) {
                 if (res.status === 404) return { fields: {} };
                 if (!res.ok) throw new Error('Firestore doc GET failed with HTTP ' + res.status);
                 return res.json();
@@ -320,7 +415,9 @@
           }
 
           return {
+            getFirebaseIdToken: getFirebaseIdToken,
             fetchSkillsMap: fetchSkillsMap,
+            incrementInstall: incrementInstall,
             incrementMetric: incrementMetric,
             toggleStar: toggleStar
           };
@@ -329,3 +426,4 @@
     {{ end }}
   {{ end }}
 </head>
+

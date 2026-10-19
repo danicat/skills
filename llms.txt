@@ -56,3 +56,4 @@
 
 - [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 32 skill instructions in a single file for large-context models.
 - [Catalog Manifest](https://skills.danicat.dev/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.
+- [Agent Skills Discovery Index](https://skills.danicat.dev/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.

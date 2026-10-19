@@ -15,6 +15,7 @@
     {{- $f := index $freshnessMap $skillId | default dict -}}
     {{- $skills = $skills | append (dict
       "name" $s.Params.skillName
+      "type" "skill-md"
       "description" $s.Params.description
       "category" $s.Params.category
       "tags" $s.Params.tags
@@ -31,6 +32,7 @@
   {{- end -}}
 {{- end -}}
 {{- $manifest := dict
+  "$schema" "https://schemas.agentskills.io/discovery/0.2.0/schema.json"
   "name" "danicat/skills"
   "title" "Agent Skills"
   "url" "https://skills.danicat.dev"

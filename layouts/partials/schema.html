@@ -1,7 +1,13 @@
 {{- $identity := site.Data.identity -}}
 {{- $author := $identity.author -}}
 {{- $publisher := $identity.publisher -}}
-{{- $todayIso := now.Format "2006-01-02" -}}
+{{- $freshData := site.Data.freshness | default dict -}}
+{{- $freshSkills := $freshData.skills | default $freshData -}}
+{{- $defaultDate := "2026-10-14" -}}
+{{- with $freshData.generatedAt -}}
+  {{- $defaultDate = substr (string .) 0 10 -}}
+{{- end -}}
+{{- $ogImage := "img/og-card.png" | absURL -}}
 
 {{- if .IsHome -}}
   {{- $skills := where site.RegularPages "Params.isCompanion" false -}}
@@ -29,8 +35,9 @@
     (dict
       "@type" "CollectionPage"
       "@id" "https://skills.danicat.dev/#catalog"
-      "url" "https://skills.danicat.dev/"
-      "name" "Agent Skills"
+      "url" .Permalink
+      "name" .Title
+      "description" (.Description | default .Params.description | default site.Params.description)
       "isPartOf" (dict "@id" "https://danicat.dev/#website")
       "about" (dict
         "@type" "ItemList"
@@ -42,11 +49,18 @@
   {{- $schema := dict "@context" "https://schema.org" "@graph" $graph -}}
   <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
 
-{{- else if and .IsPage (not .Params.isCompanion) -}}
+{{- else if and .IsPage (not .Params.isCompanion) (not .Params.isSpecialPage) -}}
   {{- $canonicalUrl := .Permalink -}}
   {{- $skillName := .Params.skillName | default .Title -}}
-  {{- $catName := .Params.categoryName -}}
-  {{- $catUrl := printf "https://skills.danicat.dev/#%s" .Params.category -}}
+  {{- $catName := .Params.categoryName | default "Catalog" -}}
+  {{- $catUrl := printf "https://skills.danicat.dev/#%s" (.Params.category | default "all") -}}
+  {{- $skillEntry := index $freshSkills (lower $skillName) -}}
+  {{- $dateModified := $defaultDate -}}
+  {{- if and $skillEntry (reflect.IsMap $skillEntry) -}}
+    {{- with $skillEntry.lastCommitDate | default $skillEntry.lastModified -}}
+      {{- $dateModified = substr (string .) 0 10 -}}
+    {{- end -}}
+  {{- end -}}
   {{- $graph := slice
     $author
     $publisher
@@ -56,9 +70,9 @@
       "name" $skillName
       "applicationCategory" "DeveloperApplication"
       "operatingSystem" "Cross-platform"
-      "image" "https://danicat.dev/apple-touch-icon.png"
+      "image" $ogImage
       "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
-      "description" .Params.description
+      "description" (.Params.description | default .Description)
       "keywords" (delimit (.Params.tags | default slice) ", ")
       "softwareVersion" (.Params.version | default "0.1.0")
       "license" "https://www.apache.org/licenses/LICENSE-2.0"
@@ -72,13 +86,13 @@
       "@type" "TechArticle"
       "@id" (printf "%s#article" $canonicalUrl)
       "headline" (printf "%s Agent Skill" $skillName)
-      "description" .Params.description
+      "description" (.Params.description | default .Description)
       "keywords" (delimit (.Params.tags | default slice) ", ")
-      "image" "https://danicat.dev/apple-touch-icon.png"
+      "image" $ogImage
       "url" $canonicalUrl
       "mainEntityOfPage" (dict "@type" "WebPage" "@id" $canonicalUrl)
       "datePublished" "2025-01-01"
-      "dateModified" $todayIso
+      "dateModified" $dateModified
       "author" (dict "@type" "Person" "@id" "https://danicat.dev/#person" "name" "Daniela Petruzalek" "url" "https://danicat.dev")
       "publisher" (dict
         "@type" "Organization"
@@ -92,7 +106,7 @@
       "@type" "BreadcrumbList"
       "@id" (printf "%s#breadcrumbs" $canonicalUrl)
       "itemListElement" (slice
-        (dict "@type" "ListItem" "position" 1 "name" "Catalog" "item" "https://skills.danicat.dev/")
+        (dict "@type" "ListItem" "position" 1 "name" "Catalog" "item" ("/" | absLangURL))
         (dict "@type" "ListItem" "position" 2 "name" $catName "item" $catUrl)
         (dict "@type" "ListItem" "position" 3 "name" $skillName "item" $canonicalUrl)
       )
@@ -101,26 +115,33 @@
   {{- $schema := dict "@context" "https://schema.org" "@graph" $graph -}}
   <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
 
-{{- else if and .IsPage .Params.isCompanion -}}
+{{- else if and .IsPage .Params.isCompanion (not .Params.isSpecialPage) -}}
   {{- $canonicalUrl := .Params.canonicalUrl | default .Permalink -}}
-  {{- $refTitle := .Title -}}
-  {{- $skillName := .Params.skillName -}}
-  {{- $catName := .Params.categoryName -}}
-  {{- $catUrl := printf "https://skills.danicat.dev/#%s" .Params.category -}}
+  {{- $headline := .Title -}}
+  {{- $skillName := .Params.skillName | default .Title -}}
+  {{- $catName := .Params.categoryName | default "Catalog" -}}
+  {{- $catUrl := printf "https://skills.danicat.dev/#%s" (.Params.category | default "all") -}}
   {{- $skillDetailUrl := printf "https://skills.danicat.dev/%s/%s/" .Params.category .Params.skillFolder -}}
+  {{- $skillEntry := index $freshSkills (lower $skillName) -}}
+  {{- $dateModified := $defaultDate -}}
+  {{- if and $skillEntry (reflect.IsMap $skillEntry) -}}
+    {{- with $skillEntry.lastCommitDate | default $skillEntry.lastModified -}}
+      {{- $dateModified = substr (string .) 0 10 -}}
+    {{- end -}}
+  {{- end -}}
   {{- $graph := slice
     $author
     $publisher
     (dict
       "@type" "TechArticle"
       "@id" (printf "%s#article" $canonicalUrl)
-      "headline" (printf "%s · %s Reference" $refTitle $skillName)
-      "description" .Params.description
-      "image" "https://danicat.dev/apple-touch-icon.png"
+      "headline" $headline
+      "description" (.Params.description | default .Description)
+      "image" $ogImage
       "url" $canonicalUrl
       "mainEntityOfPage" (dict "@type" "WebPage" "@id" $canonicalUrl)
       "datePublished" "2025-01-01"
-      "dateModified" $todayIso
+      "dateModified" $dateModified
       "author" (dict "@type" "Person" "@id" "https://danicat.dev/#person" "name" "Daniela Petruzalek" "url" "https://danicat.dev")
       "publisher" (dict
         "@type" "Organization"
@@ -137,10 +158,66 @@
         (dict "@type" "ListItem" "position" 1 "name" "Catalog" "item" "https://skills.danicat.dev/")
         (dict "@type" "ListItem" "position" 2 "name" $catName "item" $catUrl)
         (dict "@type" "ListItem" "position" 3 "name" $skillName "item" $skillDetailUrl)
-        (dict "@type" "ListItem" "position" 4 "name" $refTitle "item" $canonicalUrl)
+        (dict "@type" "ListItem" "position" 4 "name" $headline "item" $canonicalUrl)
       )
     )
   -}}
   {{- $schema := dict "@context" "https://schema.org" "@graph" $graph -}}
   <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+
+{{- else if .Params.isSpecialPage -}}
+  {{- $canonicalUrl := .Permalink -}}
+  {{- $pageTitle := .Title -}}
+  {{- $pageDesc := .Description | default .Params.description | default site.Params.description -}}
+  {{- $breadcrumbItems := slice
+    (dict "@type" "ListItem" "position" 1 "name" "Catalog" "item" ("/" | absLangURL))
+  -}}
+  {{- if eq .Params.specialPageType "graveyard-single" -}}
+    {{- $breadcrumbItems = $breadcrumbItems | append
+      (dict "@type" "ListItem" "position" 2 "name" "The Skill Graveyard" "item" ("/graveyard/" | absLangURL))
+      (dict "@type" "ListItem" "position" 3 "name" $pageTitle "item" $canonicalUrl)
+    -}}
+  {{- else -}}
+    {{- $breadcrumbItems = $breadcrumbItems | append
+      (dict "@type" "ListItem" "position" 2 "name" $pageTitle "item" $canonicalUrl)
+    -}}
+  {{- end -}}
+  {{- $graph := slice
+    $author
+    $publisher
+    (dict
+      "@type" "WebPage"
+      "@id" (printf "%s#webpage" $canonicalUrl)
+      "url" $canonicalUrl
+      "name" $pageTitle
+      "description" $pageDesc
+      "isPartOf" (dict "@id" "https://danicat.dev/#website")
+    )
+    (dict
+      "@type" "TechArticle"
+      "@id" (printf "%s#article" $canonicalUrl)
+      "headline" $pageTitle
+      "description" $pageDesc
+      "image" $ogImage
+      "url" $canonicalUrl
+      "mainEntityOfPage" (dict "@type" "WebPage" "@id" $canonicalUrl)
+      "datePublished" "2025-01-01"
+      "dateModified" $defaultDate
+      "author" (dict "@type" "Person" "@id" "https://danicat.dev/#person" "name" "Daniela Petruzalek" "url" "https://danicat.dev")
+      "publisher" (dict
+        "@type" "Organization"
+        "@id" "https://danicat.dev/#organization"
+        "name" "danicat.dev"
+        "logo" (dict "@type" "ImageObject" "url" "https://danicat.dev/apple-touch-icon.png")
+      )
+    )
+    (dict
+      "@type" "BreadcrumbList"
+      "@id" (printf "%s#breadcrumbs" $canonicalUrl)
+      "itemListElement" $breadcrumbItems
+    )
+  -}}
+  {{- $schema := dict "@context" "https://schema.org" "@graph" $graph -}}
+  <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
 {{- end -}}
+

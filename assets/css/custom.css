@@ -1680,4 +1680,21 @@ html.dark .home-theme-icon-btn:hover {
   color: rgb(var(--color-primary-400));
 }
 
+/* ==========================================================================
+   Layout Stability, Heading Balance & Keyboard Copy Button Accessibility
+   ========================================================================== */
 
+html {
+  scrollbar-gutter: stable;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
+.copy-button:focus,
+.copy-button:focus-visible,
+pre:focus-within .copy-button,
+.highlight:focus-within .copy-button {
+  opacity: 1 !important;
+}
