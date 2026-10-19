@@ -277,14 +277,11 @@
                 var sId = String(rawSkill || '').toLowerCase();
                 if (!sId) return;
                 if (!bySkill[sId]) {
-                  bySkill[sId] = { likes: 0, views: 0, copies: 0, featured: false };
+                  bySkill[sId] = { likes: 0, views: 0, copies: 0 };
                 }
                 bySkill[sId].likes += parseIntField(f.likes);
                 bySkill[sId].views += parseIntField(f.views);
                 bySkill[sId].copies += parseIntField(f.copies);
-                if ((f.featured && f.featured.booleanValue === true) || (f.featured && f.featured.stringValue === 'true')) {
-                  bySkill[sId].featured = true;
-                }
               });
               return bySkill;
             });

@@ -1,6 +1,7 @@
 {{ define "main" }}
 {{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
 {{- $metrics := site.Data.metrics_snapshot -}}
+{{- $freshMap := site.Data.freshness -}}
 {{- $graveyard := site.Data.graveyard | default slice -}}
 {{- $sections := .Site.Sections.ByWeight -}}
 {{- $skillItems := slice -}}
@@ -9,12 +10,16 @@
   {{- range $s := $secSkills.ByTitle -}}
     {{- $skillId := lower $s.Params.skillName -}}
     {{- $m := index $metrics $skillId | default dict -}}
+    {{- $f := index $freshMap $skillId -}}
+    {{- if not $f -}}
+      {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+    {{- end -}}
     {{- $stars := int ($m.likes | default 0) -}}
     {{- $views := int ($m.views | default 0) -}}
-    {{- $featured := $m.featured | default false -}}
-    {{- $baseScore := add (mul 100 $stars) $views -}}
-    {{- $score := cond $featured (mul 2 $baseScore) $baseScore -}}
-    {{- $sortKey := printf "%010d-%d-%08d-%08d-%s" (sub 9999999999 $score) (cond $featured 0 1) (sub 99999999 $stars) (sub 99999999 $views) $skillId -}}
+    {{- $sortFreshness := int $f.sortScore -}}
+    {{- $popScore := add (mul 100 $stars) $views -}}
+    {{- $defaultScore := add (mul 10 $sortFreshness) $popScore -}}
+    {{- $sortKey := printf "%010d-%04d-%08d-%08d-%s" (sub 9999999999 $defaultScore) (sub 9999 $sortFreshness) (sub 99999999 $stars) (sub 99999999 $views) $skillId -}}
     {{- $skillItems = $skillItems | append (dict "page" $s "sortKey" $sortKey) -}}
   {{- end -}}
 {{- end -}}
@@ -45,7 +50,8 @@
         id="sortSelect"
         autocomplete="off"
         class="px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/90 dark:bg-neutral-800/80 text-xs font-semibold text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-primary-500">
-        <option value="popularity" selected>{{ $t.ui.sortPopularity }}</option>
+        <option value="default" selected>{{ $t.ui.sortDefault }}</option>
+        <option value="popularity">{{ $t.ui.sortPopularity }}</option>
         <option value="freshness">{{ $t.ui.sortFreshness }}</option>
         <option value="category">{{ $t.ui.sortCategory }}</option>
         <option value="alphabetical">{{ $t.ui.sortAlphabetical }}</option>
