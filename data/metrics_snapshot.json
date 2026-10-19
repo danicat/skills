@@ -4,48 +4,48 @@
     "views": 46,
     "copies": 5,
     "featured": false,
-    "loads": 17,
-    "pageLoads": 2,
-    "subpathLoads": 4,
+    "loads": 18,
+    "pageLoads": 4,
+    "subpathLoads": 8,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-18T16:38:23.799Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "intercom": {
     "likes": 0,
     "views": 2,
     "copies": 1,
     "featured": false,
-    "loads": 6,
-    "pageLoads": 2,
+    "loads": 10,
+    "pageLoads": 4,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "parallel": {
     "likes": 3,
     "views": 12,
     "copies": 5,
     "featured": true,
-    "loads": 16,
-    "pageLoads": 5,
+    "loads": 25,
+    "pageLoads": 11,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T17:08:06.873Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "skill-optimizer": {
     "likes": 1,
     "views": 14,
     "copies": 2,
     "featured": false,
-    "loads": 11,
-    "pageLoads": 2,
+    "loads": 15,
+    "pageLoads": 8,
     "subpathLoads": 0,
-    "runs": 7,
+    "runs": 11,
     "learns": 0,
-    "lastUpdated": "2026-10-17T20:46:44.493Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "swarm-coding": {
     "likes": 4,
@@ -64,48 +64,48 @@
     "views": 37,
     "copies": 2,
     "featured": true,
-    "loads": 37,
-    "pageLoads": 10,
+    "loads": 50,
+    "pageLoads": 14,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:09:30.196Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "buffer-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
     "featured": false,
-    "loads": 16,
+    "loads": 17,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 19,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "google-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
     "featured": false,
-    "loads": 17,
+    "loads": 18,
     "pageLoads": 1,
     "subpathLoads": 0,
     "runs": 13,
     "learns": 0,
-    "lastUpdated": "2026-10-18T09:07:29.804Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "search-analytics": {
     "likes": 0,
     "views": 3,
     "copies": 0,
     "featured": false,
-    "loads": 16,
+    "loads": 17,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 9,
     "learns": 0,
-    "lastUpdated": "2026-10-18T09:07:49.292Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "adr-template": {
     "likes": 0,
@@ -124,12 +124,12 @@
     "views": 19,
     "copies": 3,
     "featured": false,
-    "loads": 1,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-18T09:08:44.536Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "godoctor": {
     "likes": 1,
@@ -148,9 +148,9 @@
     "views": 2,
     "copies": 0,
     "featured": false,
-    "loads": 10,
+    "loads": 15,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 3,
     "runs": 0,
     "learns": 0,
     "lastUpdated": "2026-09-24T14:53:12.994Z"
@@ -292,12 +292,12 @@
     "views": 6,
     "copies": 1,
     "featured": false,
-    "loads": 18,
+    "loads": 19,
     "pageLoads": 0,
     "subpathLoads": 2,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "deslopify": {
     "likes": 1,
@@ -328,36 +328,36 @@
     "views": 3,
     "copies": 0,
     "featured": false,
-    "loads": 6,
+    "loads": 8,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "seo-optimizer": {
     "likes": 1,
     "views": 7,
     "copies": 0,
     "featured": false,
-    "loads": 9,
+    "loads": 10,
     "pageLoads": 2,
-    "subpathLoads": 3,
+    "subpathLoads": 4,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "social-copy": {
     "likes": 1,
     "views": 6,
     "copies": 1,
     "featured": false,
-    "loads": 17,
+    "loads": 18,
     "pageLoads": 0,
     "subpathLoads": 5,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-19T19:47:06.246Z"
   },
   "kungfu": {
     "likes": 0,
