@@ -12,7 +12,10 @@
   {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
   {{- range $s := $secSkills.ByTitle -}}
     {{- $skillId := lower $s.Params.skillName -}}
-    {{- $f := index $freshnessMap $skillId | default dict -}}
+    {{- $f := index $freshnessMap $skillId -}}
+    {{- if not $f -}}
+      {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+    {{- end -}}
     {{- $skills = $skills | append (dict
       "name" $s.Params.skillName
       "type" "skill-md"
@@ -24,10 +27,10 @@
       "license" $s.Params.license
       "url" $s.Params.rawUrl
       "digest" $s.Params.digest
-      "freshnessScore" (cond ($f.isUnproven | default false) nil (int ($f.score | default 85)))
-      "freshnessTier" ($f.tier | default "fresh")
-      "freshnessEmoji" ($f.tierEmoji | default "🌿")
-      "lastCommitAt" ($f.lastCommitAt | default "")
+      "freshnessScore" (cond ($f.isUnproven | default false) nil (int ($f.score | default 0)))
+      "freshnessTier" $f.tier
+      "freshnessEmoji" $f.tierEmoji
+      "lastCommitAt" $f.lastCommitAt
     ) -}}
   {{- end -}}
 {{- end -}}

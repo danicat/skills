@@ -1,182 +1,386 @@
 {
   "double-diamond": {
-    "likes": 2,
-    "views": 33,
-    "copies": 1,
-    "featured": false
+    "likes": 3,
+    "views": 46,
+    "copies": 5,
+    "featured": false,
+    "loads": 17,
+    "pageLoads": 2,
+    "subpathLoads": 4,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T16:38:23.799Z"
   },
   "intercom": {
     "likes": 0,
     "views": 2,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 6,
+    "pageLoads": 2,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "parallel": {
-    "likes": 2,
-    "views": 4,
-    "copies": 2,
-    "featured": true
+    "likes": 3,
+    "views": 12,
+    "copies": 5,
+    "featured": true,
+    "loads": 16,
+    "pageLoads": 5,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T17:08:06.873Z"
   },
   "skill-optimizer": {
     "likes": 1,
-    "views": 11,
+    "views": 14,
     "copies": 2,
-    "featured": false
+    "featured": false,
+    "loads": 11,
+    "pageLoads": 2,
+    "subpathLoads": 0,
+    "runs": 7,
+    "learns": 0,
+    "lastUpdated": "2026-10-17T20:46:44.493Z"
   },
   "swarm-coding": {
-    "likes": 2,
-    "views": 17,
-    "copies": 1,
-    "featured": true
+    "likes": 4,
+    "views": 34,
+    "copies": 3,
+    "featured": true,
+    "loads": 11,
+    "pageLoads": 0,
+    "subpathLoads": 2,
+    "runs": 0,
+    "learns": 1,
+    "lastUpdated": "2026-10-18T20:40:00.107Z"
   },
   "uno-reverse": {
     "likes": 2,
-    "views": 25,
+    "views": 37,
     "copies": 2,
-    "featured": true
+    "featured": true,
+    "loads": 37,
+    "pageLoads": 10,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T19:09:30.196Z"
   },
   "buffer-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 16,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 19,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "google-analytics": {
     "likes": 0,
-    "views": 3,
+    "views": 4,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 17,
+    "pageLoads": 1,
+    "subpathLoads": 0,
+    "runs": 13,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T09:07:29.804Z"
   },
   "search-analytics": {
     "likes": 0,
-    "views": 2,
+    "views": 3,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 16,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 9,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T09:07:49.292Z"
   },
   "adr-template": {
     "likes": 0,
-    "views": 6,
+    "views": 8,
     "copies": 2,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-09-25T11:28:31.326Z"
   },
   "engineering-flow": {
     "likes": 0,
-    "views": 17,
+    "views": 19,
     "copies": 3,
-    "featured": false
+    "featured": false,
+    "loads": 1,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T09:08:44.536Z"
   },
   "godoctor": {
     "likes": 1,
-    "views": 12,
-    "copies": 2,
-    "featured": false
+    "views": 14,
+    "copies": 3,
+    "featured": false,
+    "loads": 7,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T16:15:34.413Z"
   },
   "google-oss": {
     "likes": 1,
     "views": 2,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 10,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-09-24T14:53:12.994Z"
   },
   "latest-version": {
     "likes": 1,
     "views": 3,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-09T14:58:00.711Z"
   },
   "pyhd": {
     "likes": 0,
     "views": 4,
     "copies": 2,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-02T23:21:21.044Z"
   },
   "rfc-template": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-09T22:02:51.003Z"
   },
   "ebitengineer": {
     "likes": 1,
-    "views": 13,
+    "views": 17,
     "copies": 3,
-    "featured": false
+    "featured": false,
+    "loads": 2,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T18:09:41.980Z"
   },
   "game-design": {
     "likes": 2,
-    "views": 13,
+    "views": 14,
     "copies": 5,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T15:21:24.534Z"
   },
   "procedural-art": {
     "likes": 0,
-    "views": 7,
+    "views": 11,
     "copies": 2,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-19T17:45:14.102Z"
   },
   "procedural-composer": {
     "likes": 1,
     "views": 1,
     "copies": 2,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-11T01:54:26.138Z"
   },
   "sprite-animation": {
     "likes": 0,
-    "views": 9,
+    "views": 10,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T03:25:52.133Z"
   },
   "vibe-game-developer": {
     "likes": 1,
-    "views": 5,
+    "views": 6,
     "copies": 3,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-14T17:05:23.503Z"
   },
   "lyria": {
     "likes": 0,
-    "views": 4,
+    "views": 5,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-13T04:59:36.984Z"
   },
   "nano-banana": {
     "likes": 1,
-    "views": 4,
+    "views": 7,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 6,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T08:12:38.239Z"
   },
   "buffer": {
     "likes": 0,
-    "views": 5,
+    "views": 6,
     "copies": 1,
-    "featured": false
+    "featured": false,
+    "loads": 18,
+    "pageLoads": 0,
+    "subpathLoads": 2,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "deslopify": {
     "likes": 1,
-    "views": 13,
+    "views": 17,
     "copies": 3,
-    "featured": false
+    "featured": false,
+    "loads": 6,
+    "pageLoads": 0,
+    "subpathLoads": 2,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "google-blog-style": {
     "likes": 0,
-    "views": 5,
+    "views": 7,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 1,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "inverted-pyramid": {
     "likes": 1,
     "views": 3,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 6,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "seo-optimizer": {
     "likes": 1,
     "views": 7,
     "copies": 0,
-    "featured": false
+    "featured": false,
+    "loads": 9,
+    "pageLoads": 2,
+    "subpathLoads": 3,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
   },
   "social-copy": {
     "likes": 1,
-    "views": 5,
+    "views": 6,
+    "copies": 1,
+    "featured": false,
+    "loads": 17,
+    "pageLoads": 0,
+    "subpathLoads": 5,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:16.483Z"
+  },
+  "kungfu": {
+    "likes": 0,
+    "views": 0,
     "copies": 0,
+    "loads": 306,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-15T03:26:20.321Z",
+    "featured": false
+  },
+  "skill-analytics": {
+    "likes": 0,
+    "views": 3,
+    "copies": 0,
+    "loads": 0,
+    "pageLoads": 0,
+    "subpathLoads": 0,
+    "runs": 0,
+    "learns": 0,
+    "lastUpdated": "2026-10-18T09:07:54.425Z",
     "featured": false
   }
 }

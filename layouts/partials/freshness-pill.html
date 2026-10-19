@@ -2,11 +2,14 @@
 {{- $t := .translations | default site.Data.translations.en -}}
 {{- $showTierLabel := .showTierLabel | default false -}}
 {{- $alignLeft := .alignLeft | default false -}}
+{{- if not $f.tier -}}
+  {{- errorf "[Fail-Fast] Missing freshness data in freshness-pill.html. Run: node scripts/update_freshness.mjs" -}}
+{{- end -}}
 {{- $isUnproven := $f.isUnproven | default false -}}
-{{- $freshScore := int ($f.score | default 85) -}}
-{{- $tierEmoji := $f.tierEmoji | default "🌿" -}}
-{{- $tierLabel := $f.tierLabel | default "Fresh" -}}
-{{- $tierId := $f.tier | default "fresh" -}}
+{{- $freshScore := int ($f.score | default 0) -}}
+{{- $tierEmoji := $f.tierEmoji -}}
+{{- $tierLabel := $f.tierLabel -}}
+{{- $tierId := $f.tier -}}
 {{- $uPct := int ($f.updateFreshness | default 0) -}}
 {{- $vPct := int ($f.usageFreshness | default 0) -}}
 {{- $vitalityPts := int ($f.vitalityPoints | default (mul 0.8 $freshScore)) -}}
