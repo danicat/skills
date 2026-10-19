@@ -19,7 +19,6 @@
   {{- $m := index $metrics $skillId | default dict -}}
   {{- $stars := int ($m.likes | default 0) -}}
   {{- $views := int ($m.views | default 0) -}}
-  {{- $isFeatured := $m.featured | default false -}}
 
   {{- $freshnessMap := site.Data.freshness | default dict -}}
   {{- $f := index $freshnessMap $skillId -}}
@@ -29,6 +28,7 @@
   {{- $isUnproven := $f.isUnproven | default false -}}
   {{- $fScore := int ($f.score | default 0) -}}
   {{- $fTier := $f.tier -}}
+  {{- $isMint := eq $fTier "mint" -}}
   {{- $fEmoji := $f.tierEmoji -}}
   {{- $fLabel := $f.tierLabel -}}
   {{- $fTrendLabel := $f.trendLabel | default "Stable" -}}
@@ -57,7 +57,7 @@
   </nav>
 
   {{/* Simplified Skill Summary Card (with localized description) */}}
-  <section id="detailSkillCard" class="skill-card danicat-card mb-8{{ if $isFeatured }} is-featured{{ end }}">
+  <section id="detailSkillCard" data-tier="{{ $fTier }}" class="skill-card danicat-card mb-8{{ if $isMint }} is-mint{{ end }}">
     <div>
       <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
         <div class="flex items-center flex-wrap gap-2">
@@ -598,7 +598,7 @@
       var cur = !isStarred ? Math.max(1, prev + 1) : Math.max(0, prev - 1);
       detailCount.textContent = formatCompactNum(cur);
       var cachedMetrics = getMetricsCache() || {};
-      var existing = cachedMetrics[skillId] || { likes: 0, views: 0, copies: 0, featured: false };
+      var existing = cachedMetrics[skillId] || { likes: 0, views: 0, copies: 0 };
       existing.likes = cur;
       cachedMetrics[skillId] = existing;
       saveMetricsCache(cachedMetrics);
@@ -632,7 +632,6 @@
     var cachedMetrics = getMetricsCache();
     var initStarEl = document.getElementById('detailStarCount');
     var initViewEl = document.getElementById('detailViewCount');
-    var detailCardEl = document.getElementById('detailSkillCard');
     if (cachedMetrics && cachedMetrics[skillId]) {
       var cm = cachedMetrics[skillId];
       if (initStarEl && typeof cm.likes === 'number') {
@@ -641,9 +640,6 @@
       if (initViewEl && typeof cm.views === 'number') {
         var curV = Math.max(0, parseInt(initViewEl.textContent || '0', 10) || 0);
         initViewEl.textContent = formatCompactNum(Math.max(curV, cm.views));
-      }
-      if (detailCardEl && typeof cm.featured === 'boolean') {
-        detailCardEl.classList.toggle('is-featured', cm.featured);
       }
     }
 
@@ -685,12 +681,7 @@
           totalLikes = 1;
         }
         var totalViews = Math.max(0, d.views || 0);
-        var isFeatured = Boolean(d.featured);
 
-        var cardEl = document.getElementById('detailSkillCard');
-        if (cardEl) {
-          cardEl.classList.toggle('is-featured', isFeatured);
-        }
         var starCountEl = document.getElementById('detailStarCount');
         var viewCountEl = document.getElementById('detailViewCount');
         if (starCountEl) starCountEl.textContent = formatCompactNum(totalLikes);

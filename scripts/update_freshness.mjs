@@ -214,7 +214,6 @@ async function fetchLiveFirestoreSkillsMap() {
         runs: 0,
         learns: 0,
         lastUpdated: null,
-        featured: false,
       };
     }
     bySkill[sId].likes += parseIntField(f.likes);
@@ -227,9 +226,6 @@ async function fetchLiveFirestoreSkillsMap() {
     bySkill[sId].learns += parseIntField(f.learns);
     if (f.lastUpdated?.timestampValue) {
       bySkill[sId].lastUpdated = f.lastUpdated.timestampValue;
-    }
-    if (f.featured?.booleanValue === true || f.featured?.stringValue === 'true') {
-      bySkill[sId].featured = true;
     }
   }
 
@@ -455,7 +451,6 @@ async function main() {
   for (const [sId, data] of Object.entries(liveFirestore)) {
     const prev = updatedSnapshot[sId] || {};
     updatedSnapshot[sId] = {
-      ...prev,
       likes: Math.max(Number(prev.likes || 0), data.likes),
       views: Math.max(Number(prev.views || 0), data.views),
       copies: Math.max(Number(prev.copies || 0), data.copies),
@@ -465,7 +460,6 @@ async function main() {
       runs: data.runs,
       learns: data.learns,
       lastUpdated: data.lastUpdated || prev.lastUpdated || null,
-      featured: Boolean(data.featured || prev.featured),
     };
   }
   fs.writeFileSync(METRICS_PATH, JSON.stringify(updatedSnapshot, null, 2) + '\n', 'utf8');
@@ -495,7 +489,6 @@ async function main() {
       subpathLoads: 0,
       runs: 0,
       learns: 0,
-      featured: false,
     };
     const skillsSh = await fetchSkillsShTelemetry(entry.skillId);
 

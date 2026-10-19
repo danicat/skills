@@ -9,12 +9,12 @@
      data-name="{{ $c.id }}"
      data-desc="{{ lower $c.epitaph }} {{ lower $c.causeOfDeath }}"
      data-tags="graveyard retired deprecated {{ lower $c.formerCategory }} {{ lower ($c.successorId | default "") }}"
-     data-featured="false"
      data-stars="0"
      data-views="0"
      data-copies="0"
      data-freshness="-1"
      data-score="-1"
+     data-default-score="-1"
      {{- if $hiddenByDefault }} style="display: none;"{{ end }}>
   <div>
     <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
