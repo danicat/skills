@@ -4,14 +4,17 @@
 {{- $metrics := site.Data.metrics_snapshot -}}
 {{- $m := index $metrics $skillId | default dict -}}
 {{- $freshMap := site.Data.freshness -}}
-{{- $f := index $freshMap $skillId | default dict -}}
+{{- $f := index $freshMap $skillId -}}
+{{- if not $f -}}
+  {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+{{- end -}}
 {{- $isUnproven := $f.isUnproven | default false -}}
-{{- $freshScore := int ($f.score | default 85) -}}
-{{- $sortFreshness := int ($f.sortScore | default $freshScore) -}}
-{{- $tierEmoji := $f.tierEmoji | default "🌿" -}}
-{{- $tierLabel := $f.tierLabel | default "Fresh" -}}
-{{- $tierId := $f.tier | default "fresh" -}}
-{{- $lastDate := $f.lastCommitDate | default "recently" -}}
+{{- $freshScore := int ($f.score | default 0) -}}
+{{- $sortFreshness := int $f.sortScore -}}
+{{- $tierEmoji := $f.tierEmoji -}}
+{{- $tierLabel := $f.tierLabel -}}
+{{- $tierId := $f.tier -}}
+{{- $lastDate := $f.lastCommitDate -}}
 {{- $stars := int ($m.likes | default 0) -}}
 {{- $views := int ($m.views | default 0) -}}
 {{- $copies := int ($m.copies | default 0) -}}

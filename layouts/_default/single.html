@@ -22,12 +22,15 @@
   {{- $isFeatured := $m.featured | default false -}}
 
   {{- $freshnessMap := site.Data.freshness | default dict -}}
-  {{- $f := index $freshnessMap $skillId | default dict -}}
+  {{- $f := index $freshnessMap $skillId -}}
+  {{- if not $f -}}
+    {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+  {{- end -}}
   {{- $isUnproven := $f.isUnproven | default false -}}
-  {{- $fScore := int ($f.score | default 85) -}}
-  {{- $fTier := $f.tier | default "fresh" -}}
-  {{- $fEmoji := $f.tierEmoji | default "🌿" -}}
-  {{- $fLabel := $f.tierLabel | default "Fresh" -}}
+  {{- $fScore := int ($f.score | default 0) -}}
+  {{- $fTier := $f.tier -}}
+  {{- $fEmoji := $f.tierEmoji -}}
+  {{- $fLabel := $f.tierLabel -}}
   {{- $fTrendLabel := $f.trendLabel | default "Stable" -}}
   {{- $fAgeDays := int ($f.ageDays | default 0) -}}
   {{- $fSha := $f.lastCommitSha | default "" -}}
