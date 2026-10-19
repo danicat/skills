@@ -1,0 +1,4 @@
+Contact: mailto:daniela@danicat.dev
+Canonical: https://skills.danicat.dev/.well-known/security.txt
+Preferred-Languages: en, pt, ja
+Expires: 2027-04-19T00:00:00.000Z

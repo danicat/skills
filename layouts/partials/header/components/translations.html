@@ -12,7 +12,7 @@
     <li class="rounded-xl backdrop-blur shadow-2xl p-2 flex flex-col gap-1">
       {{ if .IsTranslated }}
         {{ range .AllTranslations }}
-          <a href="{{ .RelPermalink }}" class="flex items-center bf-icon-color-hover px-3 py-1">
+          <a href="{{ .RelPermalink }}" lang="{{ .Language.LanguageCode }}" hreflang="{{ .Language.LanguageCode }}" class="flex items-center bf-icon-color-hover px-3 py-1">
             <span class="text-sm font-sm" title="{{ .Title }}">
               {{ .Language.Params.displayName | emojify }}
             </span>
@@ -20,7 +20,7 @@
         {{ end }}
       {{ else }}
         {{ range .Sites }}
-          <a href="{{ .Home.RelPermalink }}" class="flex items-center bf-icon-color-hover px-3 py-1">
+          <a href="{{ .Home.RelPermalink }}" lang="{{ .Language.LanguageCode }}" hreflang="{{ .Language.LanguageCode }}" class="flex items-center bf-icon-color-hover px-3 py-1">
             <span class="text-sm font-sm" title="{{ .Title }}">
               {{ .Language.Params.displayName | emojify }}
             </span>

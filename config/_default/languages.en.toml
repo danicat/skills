@@ -8,7 +8,7 @@ title = "danicat.dev"
   home = ["HTML", "CatalogJSON", "LLMsTxt", "LLMsFullTxt"]
 
 [params]
-  displayName = "🇬🇧 English"
+  displayName = "English"
   isoCode = "en"
   rtl = false
   dateFormat = "2 January 2006"

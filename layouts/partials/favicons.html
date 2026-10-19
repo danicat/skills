@@ -1,9 +1,5 @@
-{{- $icon := resources.Get "profile.png" -}}
-{{- if $icon -}}
-  {{- $icon32 := $icon.Fill "32x32 png" -}}
-  {{- $icon16 := $icon.Fill "16x16 png" -}}
-  {{- $icon180 := $icon.Fill "180x180 png" -}}
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ $icon32.RelPermalink }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ $icon16.RelPermalink }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ $icon180.RelPermalink }}">
-{{- end -}}
+<link rel="apple-touch-icon" sizes="180x180" href="{{ "apple-touch-icon.png" | relURL }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | relURL }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ "favicon-16x16.png" | relURL }}">
+<link rel="shortcut icon" href="{{ "favicon.ico" | relURL }}">
+<link rel="manifest" href="{{ "site.webmanifest" | relURL }}">

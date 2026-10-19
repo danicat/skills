@@ -240,7 +240,7 @@ export function runAudit() {
     while ((scriptMatch = inlineScriptRegex.exec(content)) !== null) {
       const tagAttrs = scriptMatch[1] || '';
       const scriptCode = scriptMatch[2].trim();
-      if (!scriptCode || tagAttrs.includes('application/ld+json')) continue;
+      if (!scriptCode || tagAttrs.includes('application/ld+json') || tagAttrs.includes('application/json') || tagAttrs.includes('speculationrules')) continue;
       try {
         const codeToTest = tagAttrs.includes('module')
           ? scriptCode.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, '// import')

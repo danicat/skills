@@ -7,24 +7,25 @@
   gtag('config', 'G-8RHDQGEGZ2');
 </script>
 {{- end }}
-<meta property="og:image" content="https://danicat.dev/apple-touch-icon.png">
-<meta name="twitter:image" content="https://danicat.dev/apple-touch-icon.png">
 <meta name="twitter:creator" content="@danicat83">
-<link rel="describedby" href="https://skills.danicat.dev/llms.txt">
-<link rel="alternate" type="application/json" href="https://skills.danicat.dev/catalog.json" title="Agent Skills">
-{{- if and .IsPage (not .Params.isCompanion) }}
+<link rel="describedby" href="{{ absLangURL "llms.txt" }}">
+<link rel="alternate" type="application/json" href="{{ absURL "catalog.json" }}" title="Agent Skills">
+<link rel="agent-skills" type="application/json" href="{{ absURL ".well-known/agent-skills/index.json" }}">
+{{- if and .IsPage (not .Params.isCompanion) (not .Params.isSpecialPage) }}
 <link rel="alternate" type="text/markdown" href="{{ .Params.rawUrl }}" title="{{ .Params.skillName }} (SKILL.md)">
-{{- else if and .IsPage .Params.isCompanion }}
+{{- else if and .IsPage .Params.isCompanion (not .Params.isSpecialPage) }}
 <link rel="alternate" type="text/markdown" href="https://skills.danicat.dev/{{ .Params.category }}/{{ .Params.skillFolder }}/{{ .Params.relPath }}" title="{{ .Params.refTitle | default .Title }} (Markdown)">
 {{- end }}
 {{- if and .IsPage (in .RawContent "```mermaid") }}
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+{{- $mermaid := resources.Get "lib/mermaid/mermaid.min.js" | resources.Fingerprint "sha512" }}
+<script src="{{ $mermaid.RelPermalink }}" integrity="{{ $mermaid.Data.Integrity }}" crossorigin="anonymous"></script>
+<script>
   const isDark = document.documentElement.classList.contains('dark');
   mermaid.initialize({
     startOnLoad: true,
     theme: isDark ? 'dark' : 'default',
-    securityLevel: 'loose'
+    securityLevel: 'strict'
   });
 </script>
 {{- end }}
+
