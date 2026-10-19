@@ -177,15 +177,16 @@ export function generateCatalog() {
         .filter(Boolean);
 
       const skillId = fm.name.toLowerCase();
-      const f = freshnessMap[skillId] || null;
-      const freshnessScore = f
-        ? f.isUnproven
-          ? null
-          : Number(f.score)
-        : 85;
-      const freshnessTier = f ? f.tier : 'fresh';
-      const freshnessEmoji = f ? f.tierEmoji : '🌿';
-      const lastCommitAt = f ? f.lastCommitAt || '' : '';
+      const f = freshnessMap[skillId];
+      if (!f) {
+        throw new Error(
+          `[Fail-Fast] Skill "${skillId}" is missing from data/freshness.json. Run: node scripts/update_freshness.mjs`
+        );
+      }
+      const freshnessScore = f.isUnproven ? null : Number(f.score);
+      const freshnessTier = f.tier;
+      const freshnessEmoji = f.tierEmoji;
+      const lastCommitAt = f.lastCommitAt;
 
       skills.push({
         name: fm.name,
