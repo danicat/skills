@@ -1,0 +1,48 @@
+{
+  "godoctor": {
+    "auditOverride": true,
+    "securityNote": "Snyk flags a Medium static alert because SKILL.md documents executing local Go toolchain commands (go test, golangci-lint, deadcode); Gen Trust Hub and Socket confirm zero malicious payloads.",
+    "editorialNote": "Core Go quality gate combining compiler rollback protection, Selene mutation testing, and SQLite coverage analytics."
+  },
+  "ebitengineer": {
+    "auditOverride": true,
+    "securityNote": "Snyk flags a Medium static alert for local Ebitengine/WASM build commands; Gen Trust Hub and Socket pass with 0 alerts.",
+    "editorialNote": "Battle-tested architecture for zero-allocation 60 TPS Ebitengine v2 games and WebAssembly audio sync."
+  },
+  "latest-version": {
+    "auditOverride": true,
+    "securityNote": "Snyk flags a Medium static alert because scripts/latest.js queries public package registries (npm, PyPI, Go proxy) over HTTPS; Socket and Gen Trust Hub confirm 0 supply-chain risks.",
+    "editorialNote": "Eliminates hallucinated package versions by querying live upstream registries before editing dependency files."
+  },
+  "pyhd": {
+    "auditOverride": true,
+    "ignoredCommits": ["32475be"],
+    "securityNote": "Snyk flags a Medium static alert because companion scripts run local uv and pytest commands; Gen Trust Hub and Socket pass cleanly.",
+    "editorialNote": "Originally planted in Feb 2026; unmaintained since initial creation aside from repo-wide metadata/template sweeps."
+  },
+  "google-oss": {
+    "auditOverride": true,
+    "securityNote": "Clean across Gen Trust Hub and Socket; documents local addlicense header automation.",
+    "editorialNote": "Automates Apache-2.0 license headers and open-source pre-release compliance."
+  },
+  "swarm-coding": {
+    "auditOverride": true,
+    "securityNote": "Passes all 5 security scanners (Gen Trust Hub, Socket, Snyk, Runlayer, ZeroLeaks) with zero alerts.",
+    "editorialNote": "Flagship divide-and-conquer multi-agent swarm orchestrator with strict disjoint file ownership."
+  },
+  "parallel": {
+    "auditOverride": true,
+    "securityNote": "Passes all security scanners cleanly with zero external command execution.",
+    "editorialNote": "High-throughput general-purpose subagent scaling and tournament comparison engine."
+  },
+  "uno-reverse": {
+    "auditOverride": true,
+    "securityNote": "Pure architectural red-teaming prompt; zero external scripts or network calls.",
+    "editorialNote": "Applies Occam's Razor to challenge over-engineered PRDs and cut 90% of speculative complexity."
+  },
+  "skill-analytics": {
+    "auditOverride": true,
+    "securityNote": "Companion script (analyze.py) reads local conversation logs and SQLite telemetry offline with zero external network calls.",
+    "editorialNote": "Newly planted local SQLite warehouse for auditing Agent Skill usage, token ROI, and KungFu CLI telemetry."
+  }
+}

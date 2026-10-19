@@ -17,5 +17,3 @@ firebase.json
 firestore.rules
 .firebase/
 firebase-debug.log*
-scripts/update_freshness.mjs
-data/curation.json
