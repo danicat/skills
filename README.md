@@ -55,6 +55,7 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 * **[`godoctor`](coding/godoctor/SKILL.md)**: Go developer tooling and static analysis orchestrator with automatic compiler rollback gates, Selene mutation testing, and TestQuery analytics.
 * **[`google-oss`](coding/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
 * **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
+* **[`less-is-more`](coding/less-is-more/SKILL.md)**: Frontend design and universal simplification skill that counters AI interface bloat using the Inverted Pyramid, Material Symbols icon buttons with hover hints, non-modal settings popovers, and plain English.
 * **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
 * **[`rfc-template`](coding/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
 
