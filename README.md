@@ -64,11 +64,15 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 ### 🤖 Agents (`agents/`)
 Frameworks, multi-agent swarm orchestration, and skill authoring tools.
 
+* **[`abstract`](agents/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
+* **[`brainstorm`](agents/brainstorm/SKILL.md)**: Divergent ideation and option-generation workflow that suspends premature judgment, forces orthogonal thinking across 5 perspective lenses, and applies feasibility pruning to surface non-obvious possibilities.
+* **[`discovery`](agents/discovery/SKILL.md)**: Evidence-first fact-finding and source-grounding workflow that investigates technical, business, or cultural problem spaces, maps empirical findings across a 6-tier proof hierarchy (`[T1]`–`[T6]`), and surfaces unknowns before planning or action.
 * **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
 * **[`intercom`](agents/intercom/SKILL.md)**: Cross-session and cross-project agent communication in Antigravity using the native `agentapi` CLI and `conversation_summaries.db`, with automatic session discovery, `projectId` environment sanitization, and return-address framing.
 * **[`parallel`](agents/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
 * **[`show-me-the-money`](agents/show-me-the-money/SKILL.md)**: Mine local conversation history, brain artifacts, and full session transcripts using parallel Flash/Flash-Lite `agy` CLI workers to recover high-value features lost to conversation drift or abandonment without burning frontier model quota.
 * **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
+* **[`spike`](agents/spike/SKILL.md)**: Pragmatic Agile spike workflow for retiring technical, design, or functional risk before committing to implementation or estimates using spec/source audits, blast-radius traces, state-table walk-throughs, and throwaway probes.
 * **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
 * **[`uno-reverse`](agents/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 

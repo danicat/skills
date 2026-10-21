@@ -3,106 +3,106 @@
     "likes": 3,
     "views": 46,
     "copies": 5,
-    "loads": 23,
+    "loads": 25,
     "pageLoads": 4,
-    "subpathLoads": 10,
+    "subpathLoads": 14,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T21:00:36.242Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "intercom": {
     "likes": 0,
     "views": 2,
     "copies": 1,
-    "loads": 21,
-    "pageLoads": 5,
-    "subpathLoads": 0,
+    "loads": 24,
+    "pageLoads": 6,
+    "subpathLoads": 2,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-20T19:37:34.967Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "parallel": {
     "likes": 3,
     "views": 12,
     "copies": 5,
-    "loads": 31,
+    "loads": 33,
     "pageLoads": 11,
-    "subpathLoads": 4,
+    "subpathLoads": 8,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-20T18:56:09.150Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "skill-optimizer": {
     "likes": 1,
     "views": 14,
     "copies": 2,
-    "loads": 21,
+    "loads": 24,
     "pageLoads": 10,
     "subpathLoads": 0,
     "runs": 15,
     "learns": 0,
-    "lastUpdated": "2026-10-20T19:53:47.452Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "swarm-coding": {
     "likes": 4,
     "views": 34,
     "copies": 3,
-    "loads": 12,
+    "loads": 14,
     "pageLoads": 0,
-    "subpathLoads": 2,
+    "subpathLoads": 11,
     "runs": 0,
     "learns": 1,
-    "lastUpdated": "2026-10-19T21:00:36.242Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "uno-reverse": {
     "likes": 2,
     "views": 37,
     "copies": 2,
-    "loads": 63,
+    "loads": 66,
     "pageLoads": 18,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-20T19:53:47.452Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "buffer-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 17,
+    "loads": 19,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 4,
     "runs": 19,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "google-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 18,
+    "loads": 20,
     "pageLoads": 1,
-    "subpathLoads": 0,
+    "subpathLoads": 3,
     "runs": 13,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "search-analytics": {
     "likes": 0,
     "views": 3,
     "copies": 0,
-    "loads": 17,
+    "loads": 19,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 3,
     "runs": 9,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "adr-template": {
     "likes": 0,
     "views": 8,
     "copies": 2,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
@@ -113,31 +113,31 @@
     "likes": 0,
     "views": 19,
     "copies": 3,
-    "loads": 6,
+    "loads": 8,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-20T19:53:47.452Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "godoctor": {
     "likes": 1,
     "views": 14,
     "copies": 3,
-    "loads": 7,
+    "loads": 9,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 2,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T16:15:34.413Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "google-oss": {
     "likes": 1,
     "views": 2,
     "copies": 0,
-    "loads": 17,
+    "loads": 19,
     "pageLoads": 0,
-    "subpathLoads": 5,
+    "subpathLoads": 7,
     "runs": 0,
     "learns": 0,
     "lastUpdated": "2026-09-24T14:53:12.994Z"
@@ -146,29 +146,29 @@
     "likes": 1,
     "views": 3,
     "copies": 1,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-09T14:58:00.711Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "pyhd": {
     "likes": 0,
     "views": 4,
     "copies": 2,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 1,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-02T23:21:21.044Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "rfc-template": {
-    "likes": 0,
+    "likes": 1,
     "views": 4,
     "copies": 1,
-    "loads": 2,
+    "loads": 4,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
@@ -179,188 +179,188 @@
     "likes": 1,
     "views": 17,
     "copies": 3,
-    "loads": 2,
+    "loads": 4,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 11,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T18:09:41.980Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "game-design": {
     "likes": 2,
     "views": 14,
     "copies": 5,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 1,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T15:21:24.534Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "procedural-art": {
     "likes": 0,
     "views": 11,
     "copies": 2,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T17:45:14.102Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "procedural-composer": {
     "likes": 1,
     "views": 1,
     "copies": 2,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-11T01:54:26.138Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "sprite-animation": {
     "likes": 0,
     "views": 10,
     "copies": 1,
-    "loads": 0,
+    "loads": 3,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 1,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-18T03:25:52.133Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "vibe-game-developer": {
     "likes": 1,
     "views": 6,
     "copies": 3,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-14T17:05:23.503Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "lyria": {
     "likes": 0,
     "views": 5,
     "copies": 0,
-    "loads": 0,
+    "loads": 2,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 4,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-13T04:59:36.984Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "nano-banana": {
     "likes": 1,
     "views": 7,
     "copies": 0,
-    "loads": 6,
+    "loads": 8,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 6,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-18T08:12:38.239Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "buffer": {
     "likes": 0,
     "views": 6,
     "copies": 1,
-    "loads": 19,
+    "loads": 21,
     "pageLoads": 0,
-    "subpathLoads": 2,
+    "subpathLoads": 5,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "deslopify": {
     "likes": 1,
     "views": 17,
     "copies": 3,
-    "loads": 6,
+    "loads": 8,
     "pageLoads": 0,
-    "subpathLoads": 2,
+    "subpathLoads": 3,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "google-blog-style": {
     "likes": 0,
     "views": 7,
     "copies": 0,
-    "loads": 1,
+    "loads": 4,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 5,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-15T03:26:16.483Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "inverted-pyramid": {
     "likes": 1,
     "views": 3,
     "copies": 0,
-    "loads": 8,
+    "loads": 10,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "seo-optimizer": {
     "likes": 1,
     "views": 7,
     "copies": 0,
-    "loads": 10,
+    "loads": 13,
     "pageLoads": 2,
-    "subpathLoads": 4,
+    "subpathLoads": 16,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "social-copy": {
     "likes": 1,
     "views": 6,
     "copies": 1,
-    "loads": 18,
+    "loads": 20,
     "pageLoads": 0,
-    "subpathLoads": 5,
+    "subpathLoads": 12,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-19T19:47:06.246Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "kungfu": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 318,
+    "loads": 320,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 1,
-    "lastUpdated": "2026-10-20T18:56:09.150Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "skill-analytics": {
     "likes": 0,
     "views": 3,
     "copies": 0,
-    "loads": 4,
+    "loads": 6,
     "pageLoads": 0,
-    "subpathLoads": 0,
+    "subpathLoads": 2,
     "runs": 18,
     "learns": 0,
-    "lastUpdated": "2026-10-19T21:00:36.242Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "less-is-more": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 3,
+    "loads": 5,
     "pageLoads": 1,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-20T19:53:47.452Z"
+    "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "show-me-the-money": {
     "likes": 0,
