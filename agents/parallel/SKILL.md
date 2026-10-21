@@ -16,7 +16,7 @@ metadata:
   category: agents
   tags: "parallel, concurrency, subagents, scaling, orchestration, racing, dop"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -236,3 +236,28 @@ Parallel execution produces distributed artifacts. Before concluding, the Coordi
 - **Racing & Tournaments Guide**: [`references/racing_and_tournaments.md`](references/racing_and_tournaments.md) -- Stochastic races, perturbed constraints, adversarial tournaments, and best-of-N selection.
 - **Multi-Phase Orchestration Guide**: [`references/multi_phase_orchestration.md`](references/multi_phase_orchestration.md) -- Staged pipelines, barrier synchronization, state handoffs, and in-flight steering.
 - **Coordinator Playbook**: [`references/coordinator_playbook.md`](references/coordinator_playbook.md) -- Complete operational lifecycle, invocation parsing, dispatch standards, and reactive event handling.
+
+---
+
+## 🖥️ Pinning exact versions and reasoning effort in Antigravity
+
+> **Ecosystem boundary**: Use the `agy` CLI **only** when running inside Google Antigravity. If you run this skill in Claude Code or another agent environment, use that host's native subagent or CLI mechanism instead—never invoke `agy` outside Antigravity.
+
+In Antigravity, the default `invoke_subagent` tool exposes coarse tiers—`inherit`, `pro`, `flash`, and `flash_lite`—and can't pin an exact version or set a reasoning effort level. When the user asks for a specific version such as `gemini-4-argon` or `gemini-3.8-flash`, or a reasoning effort level—`low`, `medium`, `high`, `xhigh`, or `max`—start each worker as a headless `agy` CLI background job instead of calling `invoke_subagent`:
+
+1. **Query live identifiers**:
+   Run `agy models` to query the live list of valid identifiers and effort variants. Examples include `gemini-4-argon-high`, `gemini-4-argon-medium`, `gemini-4-argon-low`, `gemini-3.8-flash-high`, `gemini-3.8-flash-medium`, and `gemini-3.8-flash-low`. Treat these identifiers as examples rather than an exhaustive list.
+
+2. **Start non-blocking background workers**:
+   Run each worker in the background using `run_command` with `WaitMsBeforeAsync: 500`, writing to isolated staging files. Pass the prompt inline via `-p="..."`, since `agy -p` in text mode ignores standard input:
+   ```bash
+   agy --model gemini-3.8-flash \
+     --effort low \
+     --mode auto \
+     --disable-slash-commands \
+     -p="You are Worker 1. <task instructions>. Write your output to /tmp/worker-01.md."
+   ```
+   You can pass `--model <base-id> --effort <low|medium|high|xhigh|max>` or pass a combined identifier directly, such as `--model gemini-3.8-flash-low`.
+
+3. **Yield the turn right away**:
+   Just like standard subagent dispatch, stop calling tools as soon as you start all `N` background `agy` commands. The runtime wakes the Coordinator when each background task finishes, and the Coordinator then runs the standard Reduce phase over the staged outputs.
