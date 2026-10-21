@@ -11,7 +11,7 @@ metadata:
   category: agents
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.1"
+  version: "0.5.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -133,7 +133,7 @@ Audit skills against Tier 1, Tier 2, and Tier 3 limits using the self-contained 
 
 ```bash
 # 1. Audit a single skill
-uv run scripts/count_tokens.py ../../coding/godoctor/SKILL.md
+uv run scripts/count_tokens.py path/to/my-skill/SKILL.md
 
 # 2. Audit a category directory of skills
 uv run scripts/count_tokens.py ../../coding/
@@ -142,7 +142,7 @@ uv run scripts/count_tokens.py ../../coding/
 uv run scripts/count_tokens.py ../../agents/ --heuristic-only
 
 # 4. Machine-readable JSON output (for CI/CD pipelines)
-uv run scripts/count_tokens.py ../../coding/godoctor/SKILL.md --json
+uv run scripts/count_tokens.py path/to/my-skill/SKILL.md --json
 ```
 
 **Authentication & Models**:
@@ -203,13 +203,9 @@ Every skill body must adhere to these 6 instructional standards:
    - Emphasize the interface the agent interacts with (e.g., `SQLite` tells the agent to query via SQL).
    - Omit internal runtime trivia that does not affect agent interaction (e.g., disk page size, WAL flushing mechanics, internal cache layouts).
 
-5. **Self-Contained with Explicit Installation for Optional Skills**:
-   - Skills must function independently and provide complete baseline instructions.
-   - When referencing a companion or guest skill (e.g., `godoctor`, `pyhd`, `buffer`), always provide its exact installation command:
-     ```bash
-     npx skills add <owner>/<repo> --skill <skill-name> -y
-     ```
-   - Always treat guest skills as **strictly optional** with graceful fallbacks if the companion skill is not installed in the workspace.
+5. **Self-Contained & Independent by Default**:
+   - Skills must function independently and provide complete baseline instructions without referencing or depending on other skills.
+   - Do not cross-reference companion skills unless the skill is explicitly designed as a multi-skill orchestrator.
 
 6. **Zero Contamination**:
    - Ensure all instructions, examples, and scripts are 100% generic, platform-agnostic, and safe for public open-source distribution.
@@ -243,7 +239,7 @@ Enhance skills with proven structural patterns:
 
 The following 3 case studies demonstrate how to apply these principles across three major skill archetypes:
 
-### Case Study 1: `double-diamond` (Process, Agents & Context Isolation)
+### Case Study 1: Process Orchestration & Context Isolation
 
 * **Scenario**: Complex orchestration and multi-phase methodologies.
 * **Anti-Pattern (AI Slop & Procedural Choreography ❌)**:
@@ -256,7 +252,7 @@ The following 3 case studies demonstrate how to apply these principles across th
     independent subagents with automated compiler and test quality gates. Activate for high-ambiguity
     spikes, major refactors, multi-agent coding swarms, or explicit research-then-implement
     workflows. Do not use for single-file edits or simple bug fixes.
-  tags: "agents, double-diamond, agile, swarm, orchestration, architecture, planning, research, problem-framing, parallel-coding, subagents, quality-gates"
+  tags: "agents, agile, swarm, orchestration, architecture, planning, research, problem-framing, parallel-coding, subagents, quality-gates"
   ```
 * **Best Practice (Clean Definition & Architectural Superpower ✅)**:
   ```yaml
@@ -270,11 +266,11 @@ The following 3 case studies demonstrate how to apply these principles across th
     reducing ambiguity and/or enterprise grade quality levels.
   tags: "inception, delivery, agile, planning, research, subagents"
   ```
-* **Why it works**: Replaces artificial procedural narration with a direct definition, highlights the real architectural superpower (**context isolation**), anchors triggers to human problem traits, and reduces 12 redundant tags to 6 high-signal anchors.
+* **Why it works**: Replaces artificial procedural narration with a direct definition, highlights the real architectural superpower (**context isolation**), anchors triggers to human problem traits, and reduces redundant tags to 6 high-signal anchors.
 
 ---
 
-### Case Study 2: `godoctor` (Developer Tooling & Safety Gates)
+### Case Study 2: Developer Tooling & Safety Gates
 
 * **Scenario**: Language tooling, linters, code quality, and testing frameworks.
 * **Anti-Pattern (Generic Linter Jargon & Self-Referential Tags ❌)**:
@@ -286,7 +282,7 @@ The following 3 case studies demonstrate how to apply these principles across th
     and multi-tiered testing loops. Activate when authoring or refactoring Go code,
     debugging compilation issues, auditing test suite strength, reducing cyclomatic
     complexity, or ensuring strict adherence to idiomatic Go conventions.
-  tags: "godoctor, go, golang, ast, selene, mutation-testing, testing, refactoring, quality"
+  tags: "my-go-linter, go, golang, ast, selene, mutation-testing, testing, refactoring, quality"
   ```
 * **Best Practice (Concrete Safety Mechanisms & Value Framing ✅)**:
   ```yaml
@@ -300,11 +296,11 @@ The following 3 case studies demonstrate how to apply these principles across th
     failures, auditing test thoroughness, or enforcing idiomatic Go standards.
   tags: "go, golang, testing, refactoring, quality, mutation-testing"
   ```
-* **Why it works**: Highlights the concrete toolchain orchestration and safety mechanisms (**compiler rollback gates** and **SQLite coverage analytics**), removes self-referential tag noise (`godoctor`), and frames value around preventing broken builds.
+* **Why it works**: Highlights the concrete toolchain orchestration and safety mechanisms (**compiler rollback gates** and **SQLite coverage analytics**), removes self-referential tag noise (`my-go-linter`), and frames value around preventing broken builds.
 
 ---
 
-### Case Study 3: `google-oss` (Ecosystem Scoping & Organizational Standards)
+### Case Study 3: Ecosystem Scoping & Organizational Standards
 
 * **Scenario**: Brand-specific or organizationally bounded guidelines.
 * **Anti-Pattern (Vague General Purpose Claims ❌)**:
@@ -317,7 +313,7 @@ The following 3 case studies demonstrate how to apply these principles across th
     readiness. Activate when preparing a repository for public open-source
     release, auditing license headers, checking copyright statements, or ensuring
     compliance with open-source policies.
-  tags: "standards, google-oss, license, apache-2-0, compliance, addlicense, disclaimer"
+  tags: "standards, org-oss, license, apache-2-0, compliance, addlicense, disclaimer"
   ```
 * **Best Practice (Explicit Organizational Boundaries & Brand Tag ✅)**:
   ```yaml

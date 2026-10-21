@@ -49,7 +49,7 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
 #### A. Subagent Configuration & Tool Rules
 When creating or defining a Lead Agent (via `assets/agents/lead-agent.md` or `define_subagent`):
 - **Model**: Always `model: inherit`.
-- **Customizations**: Always `inheritCustomizations: true`. Setting this to false strips the subagent of project rules (like fail-fast / no-fallbacks) and the `kungfu` gateway.
+- **Customizations**: Always `inheritCustomizations: true`. Setting this to false strips the subagent of project rules (like fail-fast / no-fallbacks) and workspace skills.
 - **MCP**: Always `inheritMcp: true`.
 - **Execution Policy & Tools**: Set `commandExecutionPolicy: off`. **NEVER include `run_command` in a Lead Agent's tools.** A Lead Agent is strictly an orchestrator, spec author, dispatcher, and reviewer.
 

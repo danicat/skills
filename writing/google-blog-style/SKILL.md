@@ -3,8 +3,8 @@ name: google-blog-style
 description: >
   Style guide, legal compliance standards, and validation workflow for the
   Google Developers Blog. Enforces technical readability targets (Fog Index
-  12–15), professional tone, inclusive language, legal compliance, and style
-  linting via Vale and Speedgrapher. Activate when drafting, editing, reviewing,
+  12–15), professional tone, inclusive language, legal compliance, and automated
+  style linting via Vale. Activate when drafting, editing, reviewing,
   or validating technical blog posts and articles for the Google Developers
   Blog.
 license: Apache-2.0
@@ -12,7 +12,7 @@ metadata:
   category: writing
   tags: "google, blog, style-guide, writing, editorial, compliance"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.2.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -45,9 +45,7 @@ Use this skill to strictly focus on drafting, editing, and validating technical 
 3. **Refine**: Ensure the call to action is clear and all placeholder links use `example.com`.
 
 ### 3. Validate (Mandatory)
-> **GOTCHA:** If the `speedgrapher` MCP server is available, you MUST use Speedgrapher's tools and skills (`speedgrapher.vale`, `speedgrapher.fog`, `speedgrapher.slop`) to validate drafts instead of the custom local scripts.
-
-If `speedgrapher` is unavailable, use the following validation scripts:
+Run the following validation scripts:
 1. **All-in-One Validation**: Run `node scripts/validate_all.cjs <path-to-draft>` to run style linting, fog checks, and legal checks in one step, outputting a concise Markdown report.
 2. **Standalone Checks**:
    - **Linting**: `node scripts/lint_style.cjs <path-to-draft>` (Uses Vale).

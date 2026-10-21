@@ -13,7 +13,7 @@ metadata:
   category: coding
   tags: "frontend, design, ui, ux, minimalism, readability"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -36,8 +36,6 @@ Order the screen with the Inverted Pyramid:
 1. **Forefront**: Give 80% or more of the screen to the main subject and the single primary action.
 2. **Edges**: Place secondary actions around the edges as compact icons that stay out of the way.
 3. **Hidden menu**: Tuck all settings, presets, and export options inside a menu or `popover`. Settings support the work; they're never the main event.
-
-For deeper hierarchy rules, load the optional `inverted-pyramid` skill via `kungfu load inverted-pyramid`. You can also install it with `npx skills add danicat/skills --skill inverted-pyramid -y`.
 
 ## 2. Replace text buttons with icons and hover hints
 
@@ -122,11 +120,9 @@ When you do write text, make every word count. As the [Harvard Business Review j
 - **No AI throat-clearing**: Cut `delve into`, `tapestry`, `landscape`, and `In today's fast-paced world`.
 - **Hit clear scores**: Keep Gunning Fog at **11–15** and under **12** for UI copy, Slop under **20**, and Vale at **0 errors and warnings**.
 
-To audit prose and strip AI clichés, load the optional `deslopify` skill via `kungfu load deslopify`. You can also install it with `npx skills add danicat/skills --skill deslopify -y`.
-
 ## 6. Apply the subtraction test
 
-This philosophy applies to code, CLI tools, docs, and life. Before adding any button, subtitle, flag, or feature, ask: **"What breaks if you delete this?"** If nothing breaks, delete it. For deeper scope pruning, load the optional `uno-reverse` skill via `kungfu load uno-reverse` or install it with `npx skills add danicat/skills --skill uno-reverse -y`.
+This philosophy applies to code, CLI tools, docs, and life. Before adding any button, subtitle, flag, or feature, ask: **"What breaks if you delete this?"** If nothing breaks, delete it.
 
 Only keep what protects the user:
 - **Accessibility**: Keep semantic HTML, keyboard focus, strong contrast, and `aria-label` on every icon button.

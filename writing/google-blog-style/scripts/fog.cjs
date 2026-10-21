@@ -19,8 +19,6 @@
 /**
  * Calculates the Gunning Fog Index for a given text file.
  * Formula: 0.4 * ( (words / sentences) + 100 * (complexWords / words) )
- *
- * Logic adapted from the Speedgrapher Go implementation for consistency.
  */
 
 const fs = require('fs');
@@ -35,12 +33,10 @@ const filename = process.argv[2];
 try {
   const text = fs.readFileSync(filename, 'utf8');
 
-  // Sentence Counting: Matches Speedgrapher's simple punctuation check
-  // Note: Speedgrapher uses regexp.MustCompile(`[.!?]+`)
+  // Sentence Counting: simple punctuation check
   const sentences = (text.match(/[.!?]+/g) || []).length || 1;
 
-  // Word Counting: Speedgrapher removes punctuation then splits by space.
-  // We'll mimic this: remove punctuation, then split on whitespace.
+  // Word Counting: remove punctuation, then split on whitespace.
   const cleanText = text.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
   const words = cleanText.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
@@ -51,10 +47,10 @@ try {
   }
 
   // Complex Words: 3+ syllables
-  // Speedgrapher Syllables: Counts [aeiouy]+ groups.
+  // Syllable counting: counts [aeiouy]+ vowel groups.
   const complexWordCount = words.filter(w => {
     const vowelGroups = w.match(/[aeiouy]+/gi);
-    const syllables = vowelGroups ? vowelGroups.length : 1; // Speedgrapher defaults to 1 if no vowels
+    const syllables = vowelGroups ? vowelGroups.length : 1; // Default to 1 if no vowels
     return syllables >= 3;
   }).length;
 
@@ -65,7 +61,7 @@ try {
 
   console.log(`Gunning Fog Index: ${fogIndex.toFixed(2)}`);
 
-  // Classification aligned with Speedgrapher
+  // Readability classification thresholds
   // >= 18: Hard to Read
   // >= 13: Professional
   // >= 9: General

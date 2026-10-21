@@ -4,22 +4,22 @@ description: >
   Mine and analyze Agent Skill usage, Context-Tax ROI, and trigger attribution
   from conversation transcripts in a local SQLite database. Scans conversation
   transcripts and installed skill tiers (built-in, plugin, global, workspace,
-  and catalog) to detect zero-use shelfware and tune activation descriptions
-  with skill-optimizer. Activate when analyzing skill usage over time,
-  auditing system-prompt token overhead, measuring autonomous vs. explicit
-  (::skill or //skill) triggers, or querying conversation skill events with SQL.
+  and catalog) to detect zero-use shelfware and tune activation descriptions.
+  Activate when analyzing skill usage over time, auditing system-prompt token
+  overhead, measuring autonomous vs. explicit (::skill or //skill) triggers, or
+  querying conversation skill events with SQL.
 license: Apache-2.0
 metadata:
   category: analytics
   tags: "skills, agent-skills, transcripts, analytics, sql, roi, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
 # Skill Analytics: Conversation Usage Mining & Context-Tax ROI Engine
 
-The `skill-analytics` skill mines local agent conversation transcripts (with 0% sampling and automatic `transcript.jsonl` + `transcript_full.jsonl` truncation merging) alongside your installed skill inventory across all tiers (`builtin`, `plugin`, `global`, `workspace`, and `catalog`) into a local SQLite warehouse (`skill_analytics.db`). Pair it with `skill-optimizer` to prune zero-use "shelfware" skills and rewrite under-performing frontmatter descriptions.
+The `skill-analytics` skill mines local agent conversation transcripts (with 0% sampling and automatic `transcript.jsonl` + `transcript_full.jsonl` truncation merging) alongside your installed skill inventory across all tiers (`builtin`, `plugin`, `global`, `workspace`, and `catalog`) into a local SQLite warehouse (`skill_analytics.db`). Use these metrics to prune zero-use "shelfware" skills and rewrite under-performing frontmatter descriptions.
 
 ## Available scripts
 - `scripts/analyze.py`: Zero-dependency Python 3 CLI for incremental transcript ingestion, full historical rebuilds, pre-packaged ROI/trigger/velocity/gap reports, and ad-hoc SQL queries.
@@ -83,7 +83,7 @@ The database maintains 4 relational tables and 5 analytical views. Full column-l
 
 ---
 
-## 🔍 Pairing with `skill-optimizer`: Core SQL Workflows
+## 🔍 Skill Optimization & Description Refinement: Core SQL Workflows
 
 Tested SQL recipes for skill portfolio optimization are in [`references/queries.md`](references/queries.md).
 
@@ -105,7 +105,7 @@ ORDER BY tier1_tokens_est DESC;
 ```
 
 ### 2. Find Skills Whose Descriptions Fail to Trigger Autonomously
-Identify skills that are only activated when the user manually types `::skill` or `//skill` (`NEEDS_DESCRIPTION_TUNING` or `WEAK_AUTONOMOUS_TRIGGER`), then feed them to `skill-optimizer`:
+Identify skills that are only activated when the user manually types `::skill` or `//skill` (`NEEDS_DESCRIPTION_TUNING` or `WEAK_AUTONOMOUS_TRIGGER`) for description refinement:
 ```sql
 SELECT
     skill_name,

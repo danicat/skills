@@ -12,7 +12,7 @@ metadata:
   category: game-dev
   tags: "spritesheet, animation, keyframes, aseprite, game-dev, ebitengine"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.3.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -25,7 +25,7 @@ This skill equips AI agents acting in the **Animator Agent Role** with the speci
 ## 1. Animator Agent Role & Core Responsibilities
 
 In a game development workflow, the **Animator Agent** owns all 2D sprite animation pipelines:
-1. **Fail-Fast Asset Validation & Grid Slicing**: Validates sprite sheet images (from `nano-banana` or artist files) using `file` / `mimetype` and [`scripts/slice_spritesheet.py`](scripts/slice_spritesheet.py) to verify binary integrity and exact frame grid divisibility before loading.
+1. **Fail-Fast Asset Validation & Grid Slicing**: Validates sprite sheet images using `file` / `mimetype` and [`scripts/slice_spritesheet.py`](scripts/slice_spritesheet.py) to verify binary integrity and exact frame grid divisibility before loading.
 2. **Animation Tag & State Specification**: Defines animation tags (`idle`, `walk`, `run`, `attack`, `hurt`, `death`, `cast`), positive frame durations (`40ms–200ms`), and loop modes (`LoopForward`, `LoopReverse`, `LoopPingPong`, `LoopOnce`).
 3. **Zero-Allocation Frame Pre-Slicing**: Pre-slices all `ebiten.Image.SubImage` frame references at load time (`NewGridSpriteSheet`) and reuses a persistent `ebiten.DrawImageOptions` field (`ac.drawOp`) so `Draw()` performs **zero** heap allocations.
 4. **Fail-Fast State Transitions**: Rejects corrupt sprite sheet dimensions, non-positive frame durations, out-of-bounds tag ranges, and unknown animation tag names with rich `fmt.Errorf` diagnostics.

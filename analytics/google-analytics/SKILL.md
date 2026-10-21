@@ -12,7 +12,7 @@ metadata:
   category: analytics
   tags: "ga4, analytics, traffic, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.2.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -149,7 +149,7 @@ When cross-referencing GA4 acquisition metrics with Google Search Console data:
 
 1. **Multi-Engine Organic Reach:** GA4 `Organic Search` aggregates landing sessions and active users across **all search engines** (Google Search, Bing, DuckDuckGo, Ecosia, Yahoo, AI search engines). Search Console exclusively measures Google Search impressions and clicks.
 2. **Session Arrivals vs. SERP Clicks:** GA4 tracks 100% of landing sessions without query-level privacy truncation. In contrast, Search Console API keyword exports filter out "anonymized queries".
-3. **Property-Level Reconciliation:** For organic traffic reporting, GA4 `v_channel_performance` (filtering for `channel_group = 'Organic Search'`) naturally aligns with Search Console property-level totals (`daily_site_performance` in `search-analytics` and GSC Web UI Performance cards), while Search Console's `search_performance` table provides the granular ranking breakdown for identifiable keywords.
+3. **Property-Level Reconciliation:** For organic traffic reporting, GA4 `v_channel_performance` (filtering for `channel_group = 'Organic Search'`) naturally aligns with Search Console property-level totals (Google Search Console property-level totals and GSC Web UI Performance cards), while Search Console's `search_performance` table provides the granular ranking breakdown for identifiable keywords.
 
 ---
 

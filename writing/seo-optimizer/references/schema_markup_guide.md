@@ -495,17 +495,17 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#software",
-      "name": "ebitengineer",
+      "@id": "https://docs.example.com/tools/acme-cli/#software",
+      "name": "acme-cli",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Cross-platform",
       "image": "https://danicat.dev/apple-touch-icon.png",
-      "description": "Best practices and guidelines for building production-grade 2D games in Go using Ebitengine (v2).",
+      "description": "Best practices and guidelines for building developer workflows with acme-cli.",
       "softwareVersion": "1.2.0",
       "license": "https://www.apache.org/licenses/LICENSE-2.0",
-      "url": "https://skills.danicat.dev/game-dev/ebitengineer/",
-      "downloadUrl": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
-      "codeRepository": "https://github.com/danicat/skills/tree/main/game-dev/ebitengineer",
+      "url": "https://docs.example.com/tools/acme-cli/",
+      "downloadUrl": "https://docs.example.com/tools/acme-cli/SKILL.md",
+      "codeRepository": "https://github.com/example/acme-cli",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -525,14 +525,14 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
     },
     {
       "@type": "TechArticle",
-      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#article",
-      "headline": "ebitengineer Agent Skill",
-      "description": "Best practices and guidelines for building production-grade 2D games in Go using Ebitengine (v2).",
+      "@id": "https://docs.example.com/tools/acme-cli/#article",
+      "headline": "acme-cli Documentation",
+      "description": "Best practices and guidelines for building developer workflows with acme-cli.",
       "image": "https://danicat.dev/apple-touch-icon.png",
-      "url": "https://skills.danicat.dev/game-dev/ebitengineer/",
+      "url": "https://docs.example.com/tools/acme-cli/",
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://skills.danicat.dev/game-dev/ebitengineer/"
+        "@id": "https://docs.example.com/tools/acme-cli/"
       },
       "datePublished": "2025-01-01T00:00:00Z",
       "dateModified": "2026-08-20T00:00:00Z",
@@ -552,30 +552,30 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
         }
       },
       "about": {
-        "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#software"
+        "@id": "https://docs.example.com/tools/acme-cli/#software"
       }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://skills.danicat.dev/game-dev/ebitengineer/#breadcrumbs",
+      "@id": "https://docs.example.com/tools/acme-cli/#breadcrumbs",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
           "name": "Catalog",
-          "item": "https://skills.danicat.dev/"
+          "item": "https://docs.example.com/"
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Game Development",
-          "item": "https://skills.danicat.dev/game-dev/"
+          "name": "Developer Tools",
+          "item": "https://docs.example.com/tools/"
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": "ebitengineer",
-          "item": "https://skills.danicat.dev/game-dev/ebitengineer/"
+          "name": "acme-cli",
+          "item": "https://docs.example.com/tools/acme-cli/"
         }
       ]
     }
@@ -644,9 +644,9 @@ On catalog root domains, define the global `@graph` connecting the author, publi
           {
             "@type": "ListItem",
             "position": 1,
-            "name": "ebitengineer",
-            "description": "Best practices for building 2D games in Go using Ebitengine v2.",
-            "url": "https://skills.danicat.dev/game-dev/ebitengineer/"
+            "name": "acme-cli",
+            "description": "Best practices for building developer workflows with acme-cli.",
+            "url": "https://docs.example.com/tools/acme-cli/"
           }
         ]
       }
