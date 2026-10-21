@@ -13,7 +13,7 @@ metadata:
   category: writing
   tags: "seo, geo, optimization, search-engines, blog, website, metadata"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.2"
+  version: "0.1.3"
   catalog: https://skills.danicat.dev
 ---
 
@@ -119,12 +119,7 @@ tags: ["apis", "golang", "mcp", "tutorial"]
 ### Stage 5: Deterministic Audit & Validation Loop
 Execute the bundled audit tools and iterate until all issues are resolved:
 
-1. **If Speedgrapher MCP is available**:
-   - Run `speedgrapher.analyze_seo` on the target URL or Markdown draft.
-   - Run `speedgrapher.fog` to ensure technical readability index is between **11.0 and 15.0**.
-   - Run `speedgrapher.slop` to ensure AI cliché score is < 25.
-
-2. **Run Bundled SEO Audit Script**:
+1. **Run Bundled SEO Audit Script**:
    ```bash
    python3 scripts/audit_seo.py <path-to-markdown-file>
    ```
@@ -133,7 +128,7 @@ Execute the bundled audit tools and iterate until all issues are resolved:
    python3 scripts/audit_seo.py <path-to-markdown-file> --json
    ```
 
-3. **Check `llms.txt` Synchronization**:
+2. **Check `llms.txt` Synchronization**:
    When adding or restructuring articles, verify that the site's `/llms.txt` index is updated:
    ```bash
    python3 scripts/generate_llmstxt.py --content-dir content/posts --output static/llms.txt

@@ -16,7 +16,7 @@ metadata:
   category: agents
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.0"
+  version: "0.4.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -186,7 +186,7 @@ Subagents in a Swarm Coding session assume one of three roles:
 
 When defining subagents (`agent.md` or via `define_subagent`), adhere to modern Antigravity configuration standards:
 * **Customization & Skill Inheritance (`inheritCustomizations: true`)**:
-  Subagents MUST declare `inheritCustomizations: true`. This ensures the subagent seamlessly adopts all parent and workspace customizations (skills like `kungfu` and domain linters, rules, plugins, and custom configurations) without synchronization drift. Setting this to false strips the subagent of project rules and capabilities.
+  Subagents MUST declare `inheritCustomizations: true`. This ensures the subagent seamlessly adopts all parent and workspace customizations (installed skills, domain linters, rules, plugins, and custom configurations) without synchronization drift. Setting this to false strips the subagent of project rules and capabilities.
 * **MCP Integration (`inheritMcp: true`)**:
   Passes through external MCP tool servers (e.g., database tools, devtools, knowledge servers) so subagents have access to necessary development tools.
 * **Model Configuration (`model: inherit`)**:
@@ -279,7 +279,7 @@ graph TD
 1. **The Ambient Swarm Assumption Trap:** Assuming spawned subagents inherently understand they are in a swarm or know what "budget" means. Without injecting system definitions and using the canonical briefing templates, subagents will act like solo coders.
 2. **The Lead-As-Coder Prompting Trap:** Prompting a Lead Agent with individual coding commands ("Install library X, implement function Y, verify endpoints") instead of an epic and delegation instructions. This directly causes the Lead to act as an executor.
 3. **The Lead Executor Toolset Trap:** Equipping a Lead Agent with `run_command` or setting `commandExecutionPolicy` to anything other than `off`. If a Lead Agent has terminal execution tools, it will bypass its team and code itself.
-4. **The Customization Stripping Trap:** Setting `inheritCustomizations: false` or `inheritMcp: false` on subagents. This strips away project rules (fail-fast, no fallbacks), linters, and the `kungfu` gateway.
+4. **The Customization Stripping Trap:** Setting `inheritCustomizations: false` or `inheritMcp: false` on subagents. This strips away project rules (fail-fast, no fallbacks), linters, and installed skills.
 5. **The Coordinator-to-Executor Fallback Trap:** Once activated, the Swarm Coordinator MUST NOT interpret user follow-up messages as permission to write code or execute tasks directly. Treat all messages as requests *to the swarm*.
 6. **Leftover Placeholder Trap:** Delivering code where temporary stubs or mocks survive into the final codebase. Always execute the Reduce phase to purge stubs and wire real implementations.
 7. **Under-Utilization Mismatch:** Spawning too few agents or failing to utilize Lead Agents when the agent budget and task scope allow multi-tier delegation. Always build a sensible Org Chart when budget >= 10.

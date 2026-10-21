@@ -39,7 +39,6 @@ try {
     execSync('vale -v', { stdio: 'ignore' });
   } catch (e) {
     console.error("Warning: 'vale' CLI is not installed or not in PATH.");
-    console.log("Alternatively, use the speedgrapher MCP server if available.");
     process.exit(0);
   }
 
@@ -52,7 +51,6 @@ try {
   if (errMsg.includes('no config file found') || errMsg.includes('.vale.ini not found')) {
     console.warn("Warning: Vale is installed but no local '.vale.ini' configuration file was found.");
     console.log("To use Vale, configure a '.vale.ini' file in your workspace root.");
-    console.log("Alternatively, use the speedgrapher MCP server if available.");
     process.exit(0);
   }
   if (error.stdout) {

@@ -17,7 +17,7 @@ metadata:
   category: agents
   tags: "simplification, red-team, architecture, occams-razor, minimalism, review, refactoring"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.2"
+  version: "0.1.3"
   catalog: https://skills.danicat.dev
 ---
 
@@ -43,7 +43,7 @@ When an agent that designed, brainstormed, or iteratively implemented a solution
 
 ### 2. Default Delegation Policy & User Override
 
-* **DEFAULT Behaviour**: When `uno-reverse` is activated (via slash command `//uno-reverse`, skill loading, or prompt directive), the parent agent **MUST spawn a dedicated `uno-reverse` subagent** using `invoke_subagent` and immediately yield execution.
+* **DEFAULT Behaviour**: By default, the parent agent **MUST spawn a dedicated `uno-reverse` subagent** using `invoke_subagent` and immediately yield execution.
 * **Inline Override**: Subagent delegation is bypassed **ONLY** if the user explicitly requests an inline review (e.g., *"review inline"*, *"run uno-reverse in this session"*, or *"do not use subagents"*). In that case, the parent agent executes the 4-step workflow directly in the current context.
 
 ### 3. Delegation Pattern & Subagent Invocation

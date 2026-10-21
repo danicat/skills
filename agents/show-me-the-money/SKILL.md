@@ -1,26 +1,55 @@
 ---
 name: show-me-the-money
 description: >
-  Mine local conversation history and git logs using parallel Flash/Flash-Lite
-  agy CLI workers to recover high-value features that were discussed and never
-  implemented. Runs one fast Flash worker per conversation to list all features
-  with a binary implemented/not-implemented flag, protecting frontier quota.
-  Activate when looking for forgotten features, mining past sessions for
-  unfinished work, or asking "what did I forget to build?".
+  Mine project conversation history and git logs using a Map-Reduce workflow
+  with parallel Flash/Flash-Lite agy CLI workers to recover unimplemented
+  features. Scans all sessions in the current project by default, running one
+  worker per session in the Map step and resolving the latest snapshot in the
+  Reduce step. Activate when looking for forgotten features, mining past
+  sessions for unfinished work, or asking "what did I forget to build?".
 license: Apache-2.0
 metadata:
   category: agents
-  tags: "backlog, transcripts, productivity, discovery, roadmap, prioritization"
+  tags: "backlog, transcripts, map-reduce, productivity, discovery, prioritization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Backlog recovery
+# Backlog finder
 
-Recover high-value features discussed in past sessions that never shipped, without burning frontier quota. Run one fast `agy` Flash worker per session to read the full dialogue and `git log`. Each worker outputs a single message listing every feature discussed as `IMPLEMENTED` or `NOT IMPLEMENTED`, so you can keep the unfinished winners.
+Find features from past sessions that never shipped, without burning frontier quota. Scan all sessions in the current project by default using a Map-Reduce flow:
 
-## 1. Offload reading to `agy` Flash workers
+1. **Map**: Run one fast `agy` Flash worker per session. Each worker lists every feature discussed as `IMPLEMENTED` or `NOT IMPLEMENTED`.
+2. **Reduce**: Compare all worker reports by date against `git log` to find the latest snapshot of open work.
+
+## 1. Select scope
+
+Query `$HOME/.gemini/antigravity/conversation_summaries.db` with `sqlite3` to list root sessions where `parent_conversation_id = ''`. Always skip the active session.
+
+- **Single-project sweep by default**: Scan all sessions for the current workspace across all time, ordered from oldest to newest.
+
+```bash
+WORKSPACE_PATH=$(pwd)
+sqlite3 -json "$HOME/.gemini/antigravity/conversation_summaries.db" "
+  SELECT
+    conversation_id,
+    title,
+    workspace_uris,
+    step_count,
+    datetime(last_modified_time) AS last_active
+  FROM conversation_summaries
+  WHERE parent_conversation_id = ''
+    AND killed = 0
+    AND step_count > 4
+    AND workspace_uris LIKE '%file://${WORKSPACE_PATH}\"%'
+  ORDER BY last_modified_time ASC;
+"
+```
+
+- **Optional time sweep**: Wait for the user to ask for a time window across all projects. Then swap the `workspace_uris` filter for `AND last_modified_time >= datetime('now', '-N days')`.
+
+## 2. Map: one `agy` Flash worker per session
 
 Check your agent tier in the system prompt. When running on a frontier tier such as **Gemini 4 Argon** or **Pro**:
 
@@ -34,32 +63,9 @@ Select the fastest Flash tier from `agy models`:
 FLASH_MODEL=$(agy models | awk '/flash-lite|flash.*low/ {print $1; exit}')
 ```
 
-## 2. List root sessions
+Read only the chat turns and git commits. Skip tool logs, `ask_question` prompts, system notes, and scratch files.
 
-Query `$HOME/.gemini/antigravity/conversation_summaries.db` with `sqlite3` to list root sessions where `parent_conversation_id = ''` from the last **30 days** across all workspaces. Skip the current session.
-
-```bash
-sqlite3 -json "$HOME/.gemini/antigravity/conversation_summaries.db" "
-  SELECT
-    conversation_id,
-    title,
-    workspace_uris,
-    step_count,
-    datetime(last_modified_time) AS last_active
-  FROM conversation_summaries
-  WHERE parent_conversation_id = ''
-    AND killed = 0
-    AND step_count > 4
-    AND last_modified_time >= datetime('now', '-30 days')
-  ORDER BY workspace_uris, last_modified_time DESC;
-"
-```
-
-## 3. Run one worker per session
-
-Focus only on the human-agent dialogue and git history. Ignore tool call logs, `ask_question` choices, system messages, and scratch files.
-
-For each session, extract the non-empty `USER_INPUT` and `PLANNER_RESPONSE` messages from `transcript.jsonl`, plus the last 50 commits from `git log` when the workspace exists on disk. Pass both inside `-p="..."` because `agy -p` ignores `stdin` in text mode. Ask the worker to return a single message listing all features discussed as `IMPLEMENTED` or `NOT IMPLEMENTED`:
+For each session, extract the non-empty `USER_INPUT` and `PLANNER_RESPONSE` messages from `transcript.jsonl`, plus the last 100 commits from `git log` when the workspace uses git. Pass both inside `-p="..."` because `agy -p` ignores `stdin` in text mode:
 
 ```bash
 FLOW=$(jq -r '
@@ -67,7 +73,7 @@ FLOW=$(jq -r '
   | "[\(.step_index) \(.type)]: \(.content)"
 ' "$HOME/.gemini/antigravity/brain/${CONV_ID}/.system_generated/logs/transcript.jsonl")
 
-GIT_LOG=$(git -C "$WORKSPACE_PATH" log --oneline -n 50 2>/dev/null)
+GIT_LOG=$(git -C "$WORKSPACE_PATH" log --oneline -n 100 2>/dev/null)
 
 agy --model "$FLASH_MODEL" --disable-slash-commands -p="Do not call any tools.
 Read the conversation and git log below, and output a single message listing all features discussed with a binary status (IMPLEMENTED or NOT IMPLEMENTED).
@@ -78,7 +84,7 @@ For each feature, include:
 - Last known status: what happened to it in the conversation or git log
 - Expected value: High, Medium, or Low (and why)
 
-Session: ${TITLE} (${CONV_ID})
+Session: ${TITLE} (${CONV_ID}) | Last active: ${LAST_ACTIVE}
 Git log:
 ${GIT_LOG}
 
@@ -86,26 +92,29 @@ Conversation:
 ${FLOW}" > "/tmp/smtm-${CONV_ID}.md"
 ```
 
-Run up to six `agy` workers in parallel background jobs using `&` and `wait`, then read `/tmp/smtm-*.md` in the main session.
+Run up to six `agy` workers in parallel background jobs using `&` and `wait`.
 
-## 4. Filter and rank the backlog
+## 3. Reduce: compute the latest snapshot
 
-Review the `NOT IMPLEMENTED` items across all worker reports. Keep features left behind when the topic shifted or the session ended early, and drop ideas that the user rejected or replaced with a better design.
+After all Map workers finish, read `/tmp/smtm-*.md` by date and check `git log` to build the latest snapshot:
+
+1. **Drop finished items**: If a later session or commit in `git log` shipped a feature from an older session, drop it.
+2. **Drop rejected ideas**: If the user rejected an idea or replaced it with a newer design later, drop it.
+3. **Merge repeated items**: Combine repeated mentions of the same open feature into one row linked to the latest session.
 
 Score each remaining item by user impact, time saved, and system payoff:
-- **💎 High**: Solves a recurring pain point, fixes a bug, unblocks a core workflow, or delivers high return for low effort.
-- **💰 Medium**: Adds useful polish, speeds up a manual step, or delivers a solid feature with clear payoff.
-- **🪙 Low**: Covers minor cleanup, cosmetic tweaks, or optional polish.
+- **High**: Solves a recurring pain point, fixes a bug, unblocks a core workflow, or delivers high return for low effort.
+- **Medium**: Adds useful polish, speeds up a manual step, or delivers a solid feature with clear payoff.
+- **Low**: Covers minor cleanup, cosmetic tweaks, or optional polish.
 
-Group items by project and put the highest-value project first. Rank items within each project from `💎 High` down to `🪙 Low`, and link every item to its source session via `conversation://<id>`:
+## 4. Render the backlog table
+
+Output one compact Markdown table per project, sorted from `High` to `Low`. Keep each cell under 15 words in plain English—no commit hashes, step numbers, or file paths:
 
 ```markdown
-## 📁 <Project / Workspace Name> (`<workspace_path>`)
+## <Project Name>
 
-### 1. [💎 High] <Short item title>
-- **Source**: [<Conversation Title>](conversation://<conversation-id>) (`YYYY-MM-DD`, step `<N>`)
-- **Description**: <1–2 sentences describing the feature or fix that was left behind.>
-- **Why it exists**: <What problem, goal, or insight triggered the idea during the session.>
-- **Last known status**: <Where the thread stopped and why the feature remained unbuilt.>
-- **Expected benefit**: <Concrete user, product, or engineering payoff if built.>
+| Value | Item | Why | Status | Benefit |
+| :--- | :--- | :--- | :--- | :--- |
+| **High** | **<Short title>** ([chat](conversation://<id>)) — <1-line summary> | <Why it came up> | <Where it stopped> | <Payoff if built> |
 ```

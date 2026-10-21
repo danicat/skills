@@ -1,6 +1,6 @@
 # Skill Analytics SQL Query Cookbook
 
-All SQL recipes below run directly against `skill_analytics.db` using `uv run scripts/analyze.py query "<SQL>"`. Pair these queries with `skill-optimizer` to prune shelfware skills, tune under-performing frontmatter descriptions, and discover catalog gaps.
+All SQL recipes below run directly against `skill_analytics.db` using `uv run scripts/analyze.py query "<SQL>"`. Use these queries for skill optimization and description refinement to prune shelfware skills, tune under-performing frontmatter descriptions, and discover catalog gaps.
 
 ---
 
@@ -47,7 +47,7 @@ ORDER BY total_activations DESC, conversations_used DESC;
 
 ---
 
-## 3. Trigger Attribution Audit for `skill-optimizer` (Manual Override vs. Autonomous Match)
+## 3. Trigger Attribution Audit for Description Refinement (Manual Override vs. Autonomous Match)
 
 Pinpoints skills that users must manually invoke with `::skill`, `//skill`, or `/skill` because agents fail to match their frontmatter `description` autonomously (`NEEDS_DESCRIPTION_TUNING` or `WEAK_AUTONOMOUS_TRIGGER`).
 
