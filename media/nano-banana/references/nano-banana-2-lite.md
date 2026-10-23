@@ -65,9 +65,19 @@ Nano Banana 2 Lite generates images within a 1K bounding box across 14 discrete 
 
 ---
 
-## API Code Examples
+## CLI & SDK Examples
 
-### 1. Python SDK (`google-genai`) - Interactions API
+### 1. `gemini-api` CLI — Fast 1K Generation
+
+```bash
+gemini-api image "A vibrant sticker of a cute robot drinking bubble tea, white background" \
+  -m gemini-3.1-flash-lite-image \
+  --aspect-ratio 1:1 \
+  --image-size 1K \
+  --out robot_sticker.png
+```
+
+### 2. Python SDK (`google-genai`) - Interactions API
 
 ```python
 import base64

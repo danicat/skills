@@ -40,9 +40,17 @@
 
 ---
 
-## API Code Examples
+## CLI & SDK Examples
 
-### 1. Python SDK (`google-genai`) - Interactions API
+### 1. `gemini-api` CLI — 30-Second Chiptune Clip
+
+```bash
+gemini-api music "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only, no vocals." \
+  -m lyria-3-clip-preview \
+  --out chiptune.mp3
+```
+
+### 2. Python SDK (`google-genai`) - Interactions API
 
 ```python
 import base64
