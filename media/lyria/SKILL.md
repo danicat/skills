@@ -32,10 +32,20 @@ The `gemini-api` CLI is a zero-dependency binary that writes generated audio fil
 command -v gemini-api >/dev/null 2>&1 || (curl -fsSL https://raw.githubusercontent.com/google-gemini/gemini-api-cli/main/scripts/install.sh | bash)
 # Windows (PowerShell): iwr -useb https://raw.githubusercontent.com/google-gemini/gemini-api-cli/main/scripts/install.ps1 | iex
 
-# 2. Authenticate via environment variable or OS keychain
+# 2a. Authenticate with a Gemini API Key (environment variable or OS keychain)
 export GEMINI_API_KEY="your-api-key"
 # Or store credentials in the OS keychain:
 gemini-api configure --api-key "your-api-key"
+
+# 2b. Or authenticate with a Google Cloud Project / ADC (OAuth2 bearer token)
+# Note: gemini-api does NOT auto-discover application_default_credentials.json, and
+# generativelanguage.googleapis.com requires the 'generative-language' OAuth scope
+# (standard 'gcloud auth application-default login' fails with HTTP 403 ACCESS_TOKEN_SCOPE_INSUFFICIENT).
+gcloud auth application-default login \
+  --scopes="https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/generative-language"
+export GEMINI_ACCESS_TOKEN="$(gcloud auth application-default print-access-token)"
+export GEMINI_USER_PROJECT="your-gcp-project-id"
+# (Or pass per-command: --access-token "$(gcloud auth application-default print-access-token)" --user-project "your-gcp-project-id")
 
 # 3. Verify credentials and inspect CLI schemas offline
 gemini-api whoami
