@@ -18,7 +18,7 @@
   {{- else if or (eq $pathPart "../godoctor/SKILL.md") (eq $pathPart "../godoctor/") -}}
     {{- $pathPart = ("/coding/godoctor/" | relLangURL) -}}
   {{- else if or (eq $pathPart "../swarm-coding/SKILL.md") (eq $pathPart "../swarm-coding/") -}}
-    {{- $pathPart = ("/agents/swarm-coding/" | relLangURL) -}}
+    {{- $pathPart = ("/workflows/swarm-coding/" | relLangURL) -}}
   {{- else if strings.HasSuffix $pathPart "/SKILL.md" -}}
     {{- $trimmed := strings.TrimSuffix "SKILL.md" $pathPart -}}
     {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder (not (strings.HasPrefix $trimmed "/")) -}}

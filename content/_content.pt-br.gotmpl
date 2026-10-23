@@ -4,6 +4,7 @@
   "path" "/"
   "title" $t.ui.catalogTitle
   "description" ($t.ui.catalogSubtitle | plainify | truncate 160)
+  "aliases" (slice "/pt-br/agents/")
   "params" (dict
     "description" $t.ui.catalogSubtitle
   )
@@ -13,7 +14,8 @@
   (dict "id" "game-dev" "emoji" "🕹️" "weight" 10)
   (dict "id" "media" "emoji" "🎨" "weight" 20)
   (dict "id" "coding" "emoji" "💻" "weight" 30)
-  (dict "id" "agents" "emoji" "🤖" "weight" 40)
+  (dict "id" "workflows" "emoji" "🔄" "weight" 40)
+  (dict "id" "traits" "emoji" "🧬" "weight" 45)
   (dict "id" "writing" "emoji" "✍️" "weight" 50)
   (dict "id" "analytics" "emoji" "📊" "weight" 60)
 -}}
@@ -113,14 +115,27 @@
       {{- end -}}
     {{- end -}}
 
+    {{- $skillAliases := slice -}}
+    {{- if eq $cat.id "workflows" -}}
+      {{- $skillAliases = slice (printf "/pt-br/agents/%s/" $folder) -}}
+    {{- else if eq $cat.id "traits" -}}
+      {{- if eq $folder "less-is-more" -}}
+        {{- $skillAliases = slice "/pt-br/coding/less-is-more/" "/pt-br/agents/less-is-more/" -}}
+      {{- else -}}
+        {{- $skillAliases = slice (printf "/pt-br/agents/%s/" $folder) -}}
+      {{- end -}}
+    {{- end -}}
+
     {{- $.AddPage (dict
       "kind" "page"
       "path" (printf "%s/%s" $cat.id $folder)
       "title" (printf "%s — %s Agent Skill" $skillName $catName)
       "description" ($description | plainify | truncate 160)
+      "aliases" $skillAliases
       "content" (dict "mediaType" "text/markdown" "value" $safeBody)
       "params" (dict
         "url" (printf "/pt-br/%s/%s/" $cat.id $folder)
+        "aliases" $skillAliases
         "isCompanion" false
         "skillName" $skillName
         "folder" $folder

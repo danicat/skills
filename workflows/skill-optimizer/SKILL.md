@@ -8,7 +8,7 @@ description: >
   refining existing ones.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.5.2"
@@ -139,7 +139,7 @@ uv run scripts/count_tokens.py path/to/my-skill/SKILL.md
 uv run scripts/count_tokens.py ../../coding/
 
 # 3. Fast offline audit (uses ~4 chars/token heuristic, no API or network calls)
-uv run scripts/count_tokens.py ../../agents/ --heuristic-only
+uv run scripts/count_tokens.py ../../workflows/ --heuristic-only
 
 # 4. Machine-readable JSON output (for CI/CD pipelines)
 uv run scripts/count_tokens.py path/to/my-skill/SKILL.md --json

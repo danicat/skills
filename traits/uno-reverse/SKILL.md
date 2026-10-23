@@ -14,7 +14,7 @@ compatibility:
   agents:
     - Antigravity
 metadata:
-  category: agents
+  category: traits
   tags: "simplification, red-team, architecture, occams-razor, minimalism, review, refactoring"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.3"

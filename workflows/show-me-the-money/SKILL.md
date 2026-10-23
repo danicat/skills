@@ -9,7 +9,7 @@ description: >
   sessions for unfinished work, or asking "what did I forget to build?".
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "backlog, transcripts, map-reduce, productivity, discovery, prioritization"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"

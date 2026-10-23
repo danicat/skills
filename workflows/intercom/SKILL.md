@@ -11,7 +11,7 @@ description: >
   messages with agentapi.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "intercom, agentapi, cross-project, multi-agent, sessions, coordination, handoff"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.3.1"

@@ -71,14 +71,19 @@
         "description": "Synthesize high-fidelity stereo audio with Google Lyria 3 and generate conversational visuals using Nano Banana multimodal image models."
       },
       "coding": {
-        "name": "Software Engineering",
+        "name": "Engineering",
         "subtitle": "Go refactoring, Python environments, ADRs, RFCs, and open-source compliance.",
         "description": "Automate semantic versioning, Go quality gates with GoDoctor MCP, Python uv environments, ADRs, RFCs, and Google open-source compliance."
       },
-      "agents": {
-        "name": "Agents",
-        "subtitle": "Multi-agent orchestration, inter-session messaging, and skill authoring.",
-        "description": "Orchestrate multi-agent swarms, coordinate Double-Diamond workflows, communicate across sessions, and author verified Agent Skills."
+      "workflows": {
+        "name": "Workflows",
+        "subtitle": "Multi-agent orchestration, evidence-first discovery, spikes, and skill authoring.",
+        "description": "Orchestrate multi-agent swarms, coordinate Double-Diamond and discovery workflows, run Agile spikes, communicate across sessions, and author verified Agent Skills."
+      },
+      "traits": {
+        "name": "Traits",
+        "subtitle": "Behavioral mindsets for philosophical abstraction, divergent ideation, and radical simplicity.",
+        "description": "Adopt Level 3 behavioral traits that shape how agents think: philosophical abstraction, five-lens brainstorming, MasterChef-inspired craft focus, and Occam's Razor red-teaming."
       },
       "writing": {
         "name": "Writing",
@@ -165,14 +170,19 @@
         "description": "Sintetize áudio estéreo de alta fidelidade com Google Lyria 3 e gere artes visuais multimodais usando modelos Nano Banana."
       },
       "coding": {
-        "name": "Engenharia de Software",
+        "name": "Engenharia",
         "subtitle": "Refatoração em Go, ambientes Python com uv, ADRs, RFCs e conformidade OSS.",
         "description": "Automatize versionamento semântico, portões de qualidade em Go com GoDoctor MCP, ambientes Python com uv, ADRs, RFCs e conformidade open source."
       },
-      "agents": {
-        "name": "Agentes",
-        "subtitle": "Orquestração multiagente, comunicação entre sessões e criação de skills.",
-        "description": "Orquestre enxames multiagentes, coordene fluxos Double-Diamond, conecte sessões independentes e desenvolva Agent Skills verificadas."
+      "workflows": {
+        "name": "Fluxos de Trabalho",
+        "subtitle": "Orquestração multiagente, descoberta baseada em evidências, spikes e criação de skills.",
+        "description": "Orquestre enxames multiagentes, coordene fluxos Double-Diamond e descoberta, execute spikes Agile, conecte sessões independentes e desenvolva Agent Skills verificadas."
+      },
+      "traits": {
+        "name": "Traços e Postura",
+        "subtitle": "Mentalidades comportamentais para abstração filosófica, ideação divergente e simplicidade radical.",
+        "description": "Adote traços comportamentais de Nível 3 que moldam como os agentes pensam: abstração filosófica, brainstorming em cinco lentes, foco artesanal inspirado no MasterChef e red-teaming com a Navalha de Occam."
       },
       "writing": {
         "name": "Escrita",
@@ -197,7 +207,7 @@
       "engineering-flow": "Padrões de engenharia, pipelines de decisão e diretrizes de higiene de código. Abrange fluxos de decisão arquitetural (RFCs e ADRs), priorização de tarefas, pesquisa técnica fundamentada, versionamento semântico e tratamento explícito de erros.",
       "godoctor": "Ferramental de desenvolvimento e regras de segurança arquitetural para Go. Orquestra ferramentas da linguagem e análise estática (gofmt, goimports, go vet, modernize, golangci-lint, deadcode), previne regressões com rollbacks de compilador, elimina pontos cegos com testes de mutação Selene e analisa cobertura via SQL no TestQuery.",
       "latest-version": "Consulta e verifica as versões estáveis mais recentes de pacotes nos registros oficiais (npm, PyPI, Go proxy, Cargo, RubyGems) e modelos Gemini. Resolve restrições de versão com precisão, detecta pacotes depreciados e evita adivinhação de versões.",
-      "less-is-more": "Skill de design frontend e simplificação universal que combate o excesso de controles em interfaces geradas por IA. Aplica a Pirâmide Invertida para destacar o assunto principal, oculta configurações em popovers não modais, substitui botões cheios de texto por ícones Material Symbols com dicas de hover e exige inglês simples.",
+      "less-is-more": "Filosofia de vida e ofício para focar no que realmente importa e fazer o essencial com excelência, em vez de tentar fazer tudo de forma medíocre. Inspirada na disciplina de empratamento do MasterChef — valorizar o ingrediente principal e executar de 1 a 3 elementos com perfeição — aplica subtração intencional a escolhas de produto, escrita, arquitetura e interfaces frontend.",
       "pyhd": "Fluxo moderno de desenvolvimento Python, arquitetura de projetos e qualidade de código usando uv, Ruff e pytest. Garante isolamento estrito de ambientes virtuais com uv, tipagem Python 3.10+, linting/formatação via AST com Ruff e verificação automatizada com pytest.",
       "adr-template": "Guia e template para criar e manter Registros de Decisão Arquitetural (ADRs). Documenta decisões estruturais, contexto, trade-offs e verificação de conformidade em registros markdown leves e imutáveis.",
       "google-oss": "Guia de conformidade e licenciamento para repositórios Google Open Source e projetos pessoais publicados por Googlers. Aplica cabeçalhos de licença Apache-2.0 via addlicense, verifica arquivos LICENSE e insere avisos obrigatórios de pré-lançamento.",
@@ -297,14 +307,19 @@
         "description": "Google Lyria 3による高音質ステレオ音楽合成と、Nano Bananaマルチモーダル画像モデルによる対話型ビジュアル生成。"
       },
       "coding": {
-        "name": "ソフトウェア工学",
+        "name": "エンジニアリング",
         "subtitle": "Goリファクタリング、Python uv環境構築、ADR・RFC、OSS準拠。",
         "description": "セマンティックバージョニング自動化、GoDoctor MCPによるGo品質ゲート、Python uv環境構築、ADR・RFC策定、OSSライセンス準拠。"
       },
-      "agents": {
-        "name": "エージェント",
-        "subtitle": "マルチエージェント協調、セッション間通信、スキル設計・最適化。",
-        "description": "マルチエージェント・スウォームの統括、ダブルダイヤモンド・ワークフロー、セッション間通信メッシュ、高品質なAgent Skillsの作成。"
+      "workflows": {
+        "name": "ワークフロー",
+        "subtitle": "マルチエージェント協調、エビデンス調査、アジャイルスパイク、スキル設計。",
+        "description": "マルチエージェント・スウォームの統括、ダブルダイヤモンドやディスカバリー調査、アジャイルスパイク、セッション間通信、高品質なAgent Skillsの作成。"
+      },
+      "traits": {
+        "name": "特性・思考法",
+        "subtitle": "哲学的抽象化、発散的アイディア創出、徹底したシンプル化のための行動指針。",
+        "description": "エージェントの思考姿勢を形作るレベル3の行動特性（Traits）：哲学的抽象化、5視点ブレインストーミング、MasterChef流の本質集中、オッカムの剃刀によるレッドチーミング。"
       },
       "writing": {
         "name": "ライティング",
@@ -329,7 +344,7 @@
       "engineering-flow": "ソフトウェア開発におけるエンジニアリング標準、意思決定パイプライン、コード衛生ガイドライン。RFC・ADR による設計判断、タスク優先度付け、根拠に基づく技術調査、セマンティックバージョニング、明示的なエラー処理を徹底します。",
       "godoctor": "Go 言語向け開発ツールおよびアーキテクチャ安全規則。Go 標準ツール群と静的解析ツール（gofmt、goimports、go vet、modernize、golangci-lint、deadcode）を統合し、コンパイラロールバックによる回帰防止、Selene ミューテーションテストによるテスト死角の排除、TestQuery SQLite クエリによる高速なカバレッジ分析を実現します。",
       "latest-version": "公式レジストリ（npm、PyPI、Go proxy、Cargo、RubyGems）および Gemini モデルの最新安定バージョンを照会・検証するスキル。非推奨パッケージの検出や正確なバージョン指定を行い、推測による古いバージョン指定を防ぎます。",
-      "less-is-more": "AI が陥りがちな過剰な UI 肥大化を防ぐフロントエンド設計および汎用シンプル化スキル。逆ピラミッド構造で主要コンテンツを前面に出し、設定項目を非モーダルな popover に収納、テキストだらけのボタンを Material Symbols アイコンとホバーヒントに置き換え、平易な英語を徹底します。",
+      "less-is-more": "本当に重要なことを見極め、あれこれ詰め込んで中途半端にするのではなく、本質的な要素を完璧に仕上げるための人生・クラフト哲学。『MasterChef』の盛り付け哲学（主役の食材を引き立て、1〜3個の核心要素を完璧に仕上げる）に着想を得て、プロダクト判断、執筆、設計、フロントエンドUIの整理に意図的な引き算を適用します。",
       "pyhd": "uv、Ruff、pytest を活用したモダンな Python 開発ワークフローと品質ガイドライン。uv による仮想環境分離、Python 3.10+ 型ヒント、Ruff による AST 安全なリント・フォーマット、pytest による自動検証ループを標準化します。",
       "adr-template": "アーキテクチャ決定記録（ADR）を作成・維持するためのガイド＆テンプレート。重要な設計上の意思決定、背景コンテキスト、トレードオフ、コンプライアンス検証を軽量で不変な Markdown 記録として残します。",
       "google-oss": "Google オープンソースリポジトリおよび Googler の個人 OSS プロジェクト向けライセンス・コンプライアンスガイド。addlicense による Apache-2.0 ヘッダー付与、LICENSE ファイル検証、必須免責事項の挿入と公開前監査を行います。",

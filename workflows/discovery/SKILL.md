@@ -9,7 +9,7 @@ description: >
   hunting for hidden gems, or uncovering what an initial framing missed.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "discovery, exploration, divergence, problem-space, evidence, research"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"

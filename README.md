@@ -40,14 +40,16 @@ Specialized skills for designing and building 2D games in Go with Ebitengine, ch
 ---
 
 ### 🎨 GenAI (`media/`)
-Audio and visual generation using Google AI models with ADC authentication.
+Audio, image, and video generation using Google AI models via the `gemini-api` CLI and Google Gen AI SDKs.
 
-* **[`lyria`](media/lyria/SKILL.md)**: High-fidelity 44.1 kHz stereo music and soundtrack generation from text prompts and images using Google's Lyria 3 models.
+* **[`gemini-omni`](media/gemini-omni/SKILL.md)**: Conversational video generation, multimodal video editing, frame interpolation, and video extension using Gemini Omni 1.1 Flash (`gemini-omni-1.1-flash`).
+* **[`lyria`](media/lyria/SKILL.md)**: High-fidelity 44.1 kHz stereo music and soundtrack generation from text prompts and images using Google's Lyria 3.5 and Lyria 3 models.
 * **[`nano-banana`](media/nano-banana/SKILL.md)**: Conversational image generation and editing using Google's native Nano Banana models with character consistency support.
+* **[`veo`](media/veo/SKILL.md)**: Cinematic video generation with native synchronized audio, first-and-last-frame interpolation, multi-image asset direction, and scene extension using Google Veo models.
 
 ---
 
-### 💻 Software Engineering (`coding/`)
+### 💻 Engineering (`coding/`)
 Engineering workflow standards, compiler gates, package resolvers, architectural decision records, and language-specific tools.
 
 * **[`adr-template`](coding/adr-template/SKILL.md)**: Guidelines, best practices, and templates for authoring immutable Architecture Decision Records (ADRs).
@@ -55,26 +57,32 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 * **[`godoctor`](coding/godoctor/SKILL.md)**: Go developer tooling and static analysis orchestrator with automatic compiler rollback gates, Selene mutation testing, and TestQuery analytics.
 * **[`google-oss`](coding/google-oss/SKILL.md)**: Apply and verify Google open-source compliance, Apache-2.0 license headers via `addlicense`, copyright attributions, and repository disclaimers.
 * **[`latest-version`](coding/latest-version/SKILL.md)**: Real-time package registry and Gemini model version resolver (NPM, PyPI, Go proxy, Cargo, RubyGems).
-* **[`less-is-more`](coding/less-is-more/SKILL.md)**: Frontend design and universal simplification skill that counters AI interface bloat using the Inverted Pyramid, Material Symbols icon buttons with hover hints, non-modal settings popovers, and plain English.
 * **[`pyhd`](coding/pyhd/SKILL.md)**: Modern Python development workflow using `uv` virtual environments, Ruff linting/formatting, and pytest suites.
 * **[`rfc-template`](coding/rfc-template/SKILL.md)**: Collaborative Request for Comments (RFC) frameworks for exploring major features and complex design alternatives.
 
 ---
 
-### 🤖 Agents (`agents/`)
-Frameworks, multi-agent swarm orchestration, and skill authoring tools.
+### 🔄 Workflows (`workflows/`)
+Multi-agent swarm orchestration, evidence-first discovery, Agile spikes, and skill authoring workflows.
 
-* **[`abstract`](agents/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
-* **[`brainstorm`](agents/brainstorm/SKILL.md)**: Divergent ideation and option-generation workflow that suspends premature judgment, forces orthogonal thinking across 5 perspective lenses, and applies feasibility pruning to surface non-obvious possibilities.
-* **[`discovery`](agents/discovery/SKILL.md)**: Evidence-first fact-finding and source-grounding workflow that investigates technical, business, or cultural problem spaces, maps empirical findings across a 6-tier proof hierarchy (`[T1]`–`[T6]`), and surfaces unknowns before planning or action.
-* **[`double-diamond`](agents/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
-* **[`intercom`](agents/intercom/SKILL.md)**: Cross-session and cross-project agent communication in Antigravity using the native `agentapi` CLI and `conversation_summaries.db`, with automatic session discovery, `projectId` environment sanitization, and return-address framing.
-* **[`parallel`](agents/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
-* **[`show-me-the-money`](agents/show-me-the-money/SKILL.md)**: Mine local conversation history, brain artifacts, and full session transcripts using parallel Flash/Flash-Lite `agy` CLI workers to recover high-value features lost to conversation drift or abandonment without burning frontier model quota.
-* **[`skill-optimizer`](agents/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
-* **[`spike`](agents/spike/SKILL.md)**: Pragmatic Agile spike workflow for retiring technical, design, or functional risk before committing to implementation or estimates using spec/source audits, blast-radius traces, state-table walk-throughs, and throwaway probes.
-* **[`swarm-coding`](agents/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
-* **[`uno-reverse`](agents/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
+* **[`discovery`](workflows/discovery/SKILL.md)**: Evidence-first fact-finding and source-grounding workflow that investigates technical, business, or cultural problem spaces, maps empirical findings across a 6-tier proof hierarchy (`[T1]`–`[T6]`), and surfaces unknowns before planning or action.
+* **[`double-diamond`](workflows/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
+* **[`intercom`](workflows/intercom/SKILL.md)**: Cross-session and cross-project agent communication in Antigravity using the native `agentapi` CLI and `conversation_summaries.db`, with automatic session discovery, `projectId` environment sanitization, and return-address framing.
+* **[`parallel`](workflows/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
+* **[`show-me-the-money`](workflows/show-me-the-money/SKILL.md)**: Mine local conversation history, brain artifacts, and full session transcripts using parallel Flash/Flash-Lite `agy` CLI workers to recover high-value features lost to conversation drift or abandonment without burning frontier model quota.
+* **[`skill-optimizer`](workflows/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
+* **[`spike`](workflows/spike/SKILL.md)**: Pragmatic Agile spike workflow for retiring technical, design, or functional risk before committing to implementation or estimates using spec/source audits, blast-radius traces, state-table walk-throughs, and throwaway probes.
+* **[`swarm-coding`](workflows/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
+
+---
+
+### 🧬 Traits (`traits/`)
+Level 3 behavioral traits and thinking lenses that shape how agents reason, abstract, ideate, and simplify.
+
+* **[`abstract`](traits/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
+* **[`brainstorm`](traits/brainstorm/SKILL.md)**: Divergent ideation and option-generation workflow that suspends premature judgment, forces orthogonal thinking across 5 perspective lenses, and applies feasibility pruning to surface non-obvious possibilities.
+* **[`less-is-more`](traits/less-is-more/SKILL.md)**: Life and craft philosophy for focusing on what matters and doing the essential things well instead of doing everything in a mediocre way. Inspired by MasterChef plating discipline—honoring the hero ingredient and executing 1–3 core elements to perfection—across product choices, writing, architecture, and frontend interfaces.
+* **[`uno-reverse`](traits/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 
 ---
 
@@ -118,3 +126,9 @@ Retired skills live in the **[Graveyard](https://skills.danicat.dev/graveyard/)*
 | `agy-extensions` | Mar 23 – Mar 26, 2026 | Replaced by official `agy-customizations` skill | `agy-customizations` | `kungfu forget agy-extensions` |
 | `experiment-analyst` | Mar 15 – Apr 7, 2026 | Niche analysis skill not meant for general use | None | `kungfu forget experiment-analyst` |
 | `catalog` | Feb 14 – Apr 2026 | Unnecessary; replaced by `kungfu list` and `kungfu find` | `kungfu list` / `kungfu find` | `kungfu forget catalog` |
+
+---
+
+## Disclaimer
+
+This is not an officially supported Google product.

@@ -10,7 +10,7 @@ description: >
   fundamentally different ways to solve a problem.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: traits
   tags: "ideation, divergence, options, creativity, architecture, trade-offs"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"
