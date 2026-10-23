@@ -29,7 +29,8 @@ const BASE_URL = 'https://skills.danicat.dev';
 const REPO_URL = 'https://github.com/danicat/skills';
 
 const CATEGORY_ORDER = [
-  { id: 'agents', emoji: '🤖' },
+  { id: 'workflows', emoji: '🔄' },
+  { id: 'traits', emoji: '🧬' },
   { id: 'analytics', emoji: '📊' },
   { id: 'game-dev', emoji: '🕹️' },
   { id: 'media', emoji: '🎨' },

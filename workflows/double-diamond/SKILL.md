@@ -10,7 +10,7 @@ description: >
   structured human alignment gates.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "orchestration, workflow, research, planning, subagents, agile"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.1"

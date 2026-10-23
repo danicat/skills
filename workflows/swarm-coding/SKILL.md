@@ -13,7 +13,7 @@ compatibility:
   agents:
     - Antigravity
 metadata:
-  category: agents
+  category: workflows
   tags: "swarm, subagents, parallel, orchestration, strategy, complexity, coordination"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.4.1"

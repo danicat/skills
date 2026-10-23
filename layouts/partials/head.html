@@ -273,7 +273,7 @@
                 var f = doc.fields || {};
                 var rawSkill = (f.skill && f.skill.stringValue)
                   ? f.skill.stringValue
-                  : docId.replace(/^(game-dev|media|coding|agents|writing|analytics|standards)-/, '');
+                  : docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)-/, '');
                 var sId = String(rawSkill || '').toLowerCase();
                 if (!sId) return;
                 if (!bySkill[sId]) {
@@ -288,7 +288,7 @@
           }
 
           function incrementInstall(skillId, category, delta) {
-            var cat = category || 'agents';
+            var cat = category || 'workflows';
             var docId = cat + '-' + skillId;
             var inc = delta || 1;
             return getFirebaseIdToken().then(function(idToken) {

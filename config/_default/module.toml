@@ -25,8 +25,12 @@
   target = "static/assets/chibi_dani_oops.png"
 
 [[mounts]]
-  source = "agents"
-  target = "static/agents"
+  source = "workflows"
+  target = "static/workflows"
+
+[[mounts]]
+  source = "traits"
+  target = "static/traits"
 
 [[mounts]]
   source = "analytics"
@@ -49,8 +53,12 @@
   target = "static/writing"
 
 [[mounts]]
-  source = "agents"
-  target = "assets/_skills/agents"
+  source = "workflows"
+  target = "assets/_skills/workflows"
+
+[[mounts]]
+  source = "traits"
+  target = "assets/_skills/traits"
 
 [[mounts]]
   source = "analytics"

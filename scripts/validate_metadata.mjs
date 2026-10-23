@@ -41,7 +41,8 @@ const VALID_CATEGORIES = new Set([
   'game-dev',
   'media',
   'coding',
-  'agents',
+  'workflows',
+  'traits',
   'writing',
   'analytics'
 ]);

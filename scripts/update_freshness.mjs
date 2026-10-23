@@ -23,7 +23,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-const CATEGORIES = ['game-dev', 'media', 'coding', 'agents', 'writing', 'analytics'];
+const CATEGORIES = ['game-dev', 'media', 'coding', 'workflows', 'traits', 'writing', 'analytics'];
 const PARAMS_TOML_PATH = path.join(ROOT_DIR, 'config', '_default', 'params.toml');
 const METRICS_PATH = path.join(ROOT_DIR, 'data', 'metrics_snapshot.json');
 const CURATION_PATH = path.join(ROOT_DIR, 'data', 'curation.json');
@@ -68,7 +68,7 @@ function getModifiedSkillsCount(sha) {
     const status = parts[0];
     const file = parts[parts.length - 1];
     if (status.startsWith('A')) continue;
-    const match = file.match(/^(game-dev|media|coding|agents|writing|analytics|standards)\/([^/]+)\//);
+    const match = file.match(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)\/([^/]+)\//);
     if (match) {
       modifiedSkills.add(match[2]);
     } else if (/^([^/.]+)\/(SKILL\.md|scripts|references)/.test(file)) {
@@ -97,7 +97,7 @@ function isSubstantiveSkillCommit(sha, subject, skillId, relSkillDir, isInitialC
 
   const diff = execFileSync(
     'git',
-    ['show', '-M', '--format=', sha, '--', relSkillDir, `standards/${skillId}`, skillId],
+    ['show', '-M', '--format=', sha, '--', relSkillDir, `agents/${skillId}`, `coding/${skillId}`, `standards/${skillId}`, skillId],
     { cwd: ROOT_DIR, encoding: 'utf8' }
   );
   const changedLines = diff
@@ -200,7 +200,7 @@ async function fetchLiveFirestoreSkillsMap() {
   for (const doc of data.documents || []) {
     const docId = (doc.name || '').split('/').pop() || '';
     const f = doc.fields || {};
-    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|agents|writing|analytics|standards)-/, '');
+    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)-/, '');
     const sId = String(rawSkill || '').toLowerCase();
     if (!sId) continue;
     if (!bySkill[sId]) {

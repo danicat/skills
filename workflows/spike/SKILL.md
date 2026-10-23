@@ -9,7 +9,7 @@ description: >
   running a spike or resolving a blocking unknown.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: workflows
   tags: "spike, agile, xp, uncertainty, risk-reduction, feasibility, architecture"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"

@@ -27,7 +27,8 @@ const VALID_CATEGORIES = [
   'game-dev',
   'media',
   'coding',
-  'agents',
+  'workflows',
+  'traits',
   'writing',
   'analytics',
   'standards'

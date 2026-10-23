@@ -10,7 +10,7 @@ description: >
   evidence.
 license: Apache-2.0
 metadata:
-  category: agents
+  category: traits
   tags: "abstraction, philosophy, epistemology, induction, principles, synthesis"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.1.0"

@@ -13,7 +13,7 @@ compatibility:
   agents:
     - Antigravity
 metadata:
-  category: agents
+  category: workflows
   tags: "parallel, concurrency, subagents, scaling, orchestration, racing, dop"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"
