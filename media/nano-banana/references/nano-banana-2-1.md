@@ -3,11 +3,10 @@
 ## Overview
 **Nano Banana 2.1** (`gemini-nano-banana-2.1`) is Google's next-generation multimodal creative workhorse built on the **Gemini 3.6 Flash** architecture. Released on October 6, 2026, it delivers enhanced spatial composition, seamless panoramic synthesis across 14 aspect ratios, mask-based conversational editing, three-tier controllable thinking (`minimal`, `medium`, `high`), real-time Google Web and Image Search grounding, and multi-reference character consistency across up to 14 anchors.
 
-- **Model Code**: `gemini-nano-banana-2.1`
+- **Model Code**: `gemini-nano-banana-2.1` (default model for `gemini-api image`)
 - **Architecture**: Gemini 3.6 Flash
 - **Release Date**: October 6, 2026
 - **Status**: General Availability (GA)
-- **CLI Aliases**: `nano-banana-2.1` (default), `nano-banana-2-1`
 
 ---
 
@@ -19,10 +18,10 @@
 | **Output Modalities** | Image and Text (Interleaved) |
 | **Input Token Limit** | 131,072 tokens |
 | **Output Token Limit** | 32,768 tokens |
-| **Supported Resolutions** | `512px` (0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
+| **Supported Resolutions** | `512` (512px / 0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
 | **Aspect Ratios** | All 14 discrete ratios (`1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`) with panoramic seam/tiling elimination |
 | **Thinking Process** | Supported (`minimal` [default], `medium`, `high`) |
-| **Search Grounding** | **Google Web Search (`--search`)** + **Google Image Search (`--image-search`)** |
+| **Search Grounding** | **Google Web Search (`web_search`)** + **Google Image Search (`image_search`)** |
 | **Reference Anchors** | Up to 14 reference images (up to 10 object anchors + up to 4 character resemblance anchors) |
 | **Conversational Editing** | Multi-turn mask-based inpainting, outpainting, and local regional edits |
 | **Watermarking** | SynthID (Always On) + C2PA Metadata |
@@ -72,9 +71,34 @@ Pass YouTube URLs or MP4 files to synthesize keyframe illustrations, sprite shee
 
 ---
 
-## SDK Code Examples
+## CLI & SDK Examples
 
-### 1. Python SDK (`google-genai`) — 4K Panoramic Generation with `medium` Thinking & Image Search
+### 1. `gemini-api` CLI — 4K Panoramic Generation with `medium` Thinking & Search Grounding
+
+```bash
+gemini-api image "A seamless 2D side-scrolling pixel-art parallax background of a bioluminescent crystal cavern" \
+  -m gemini-nano-banana-2.1 \
+  --aspect-ratio 4:1 \
+  --image-size 4K \
+  --body '{"generation_config":{"thinking_level":"medium"},"tools":[{"type":"google_search","search_types":["web_search","image_search"]}]}' \
+  --out cavern_parallax_4k.png
+```
+
+### 2. `gemini-api` CLI — Multi-Reference Character Consistency
+
+```bash
+gemini-api image "Keep the exact character identity, purple hair, glasses, and chibi proportions from the reference images. Generate a 4-frame horizontal sprite sheet of Dani casting a glowing lightning spell, solid magenta (#FF00FF) background." \
+  -m gemini-nano-banana-2.1 \
+  -i references/chibi-dani.png \
+  -i references/celebrating-dani.png \
+  -i references/speaker-dani.png \
+  --aspect-ratio 4:1 \
+  --image-size 2K \
+  --body '{"generation_config":{"thinking_level":"high"}}' \
+  --out dani_spell_sheet.png
+```
+
+### 3. Python SDK (`google-genai`) — 4K Panoramic Generation with `medium` Thinking & Image Search
 
 ```python
 import base64

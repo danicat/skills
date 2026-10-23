@@ -61,9 +61,22 @@ Can produce multi-panel graphic novels, children's book spreads, or technical st
 
 ---
 
-## SDK Code Examples
+## CLI & SDK Examples
 
-### 1. Studio-Quality 4K Asset Production with Search Grounding
+### 1. `gemini-api` CLI — Multi-Reference Style & Character Consistency
+
+```bash
+gemini-api image "Render the character from images 1 and 2 wearing a leather flight jacket and aviator goggles, standing beside a vintage plane. Recreate the entire scene in the exact watercolor and ink style of image 3." \
+  -m gemini-3-pro-image \
+  -i references/character_face.png \
+  -i references/character_body.png \
+  -i references/art_style.png \
+  --aspect-ratio 3:2 \
+  --image-size 2K \
+  --out character_rendered.png
+```
+
+### 2. Studio-Quality 4K Asset Production with Search Grounding
 
 ```python
 import base64

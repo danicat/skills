@@ -83,9 +83,20 @@ Control reasoning depth with `thinking_level`:
 
 ---
 
-## SDK Code Examples
+## CLI & SDK Examples
 
-### 1. Python SDK (`google-genai`) - 4K High-Resolution Generation
+### 1. `gemini-api` CLI — 4K High-Resolution Generation
+
+```bash
+gemini-api image "A cinematic wide-angle shot of an ancient observatory on a mountain peak under the Aurora Borealis" \
+  -m gemini-3.1-flash-image \
+  --aspect-ratio 16:9 \
+  --image-size 4K \
+  --body '{"generation_config":{"thinking_level":"high"}}' \
+  --out observatory_4k.png
+```
+
+### 2. Python SDK (`google-genai`) - 4K High-Resolution Generation
 
 ```python
 import base64

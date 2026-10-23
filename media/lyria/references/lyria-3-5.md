@@ -63,9 +63,18 @@ Add `"Instrumental only, no vocals"` to synthesize pristine background beds, gam
 
 ---
 
-## SDK Code Examples
+## CLI & SDK Examples
 
-### 1. Full Song with Timestamps & Lyrics (Python - Interactions API)
+### 1. `gemini-api` CLI — Full Song from Prompt File
+
+```bash
+gemini-api music \
+  -m lyria-3.5 \
+  -f lofi_prompt.txt \
+  --out lofi_track.mp3
+```
+
+### 2. Full Song with Timestamps & Lyrics (Python - Interactions API)
 
 ```python
 import base64

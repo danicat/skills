@@ -60,9 +60,18 @@ Pass up to 10 images (e.g. concept art, character designs, landscapes) to genera
 
 ---
 
-## SDK Code Examples
+## CLI & SDK Examples
 
-### 1. Full Song with Timestamps & Structure (Python)
+### 1. `gemini-api` CLI — Full Song with Timestamps & Structure
+
+```bash
+gemini-api music \
+  -m lyria-3-pro-preview \
+  -f mountain_folk_prompt.txt \
+  --out mountain_folk.mp3
+```
+
+### 2. Full Song with Timestamps & Structure (Python)
 
 ```python
 import base64
