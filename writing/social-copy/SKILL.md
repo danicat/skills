@@ -17,7 +17,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, writing, publishing, campaigns"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.2"
+  version: "0.4.3"
   catalog: https://skills.danicat.dev
 ---
 
@@ -51,10 +51,16 @@ Write like a **senior engineer or architect speaking to peers**:
 - **Transparent About Trade-offs:** No architecture or tool is flawless. Acknowledge what was sacrificed (memory, complexity, query latency).
 - **Substance Over Slogans:** Replace vague buzzwords (*"seamless", "revolutionary"*) with concrete technical nouns (*"lock-free ring buffer", "eager loading", "connection pooling"*).
 
-### 2. The "Value-First" / "Zero-Click" Principle
+### 2. Hook Economy & Contextual Judgment (No "Banned Lists")
+The first 1–2 lines (`~140 chars` on mobile, `~210 chars` on desktop) before the `...see more` fold are the highest-leverage space in a post. Treat them as an exercise in **editorial judgment and reader empathy**, not a mechanical blacklist:
+- **Why "Banned Lists" Fail:** Relying on a static list of "banned words" or "banned openers" fails in both directions: it creates the false impression that any sentence avoiding the blacklist is automatically good copy, and it blindly forbids openings (such as a personal milestone or series callback) that are genuinely effective when they *are* the story.
+- **The Reader-Utility Gate (No Self-Referential Preambles or Chronological Recaps):** A cold reader scanning an algorithmic feed asks *What does this solve for me?* in under two seconds. Avoid spending the pre-truncation window on **author-centric housekeeping** (explaining why you haven't posted lately, how busy your week was, or how excited you feel) or **chronological throat-clearing** (recapping a previous installment before stating today's point). Preambles that center on the author's schedule rather than the reader's problem starve `...see more` expansion clicks even when the body and visuals are strong.
+- **Ground the Hook in the Real Story:** Open with the genuine technical tension, quantifiable engineering outcome (latency, cost, or build-time compression), architectural trade-off, or participatory design question from the source material, and weave in background or series context once the reader is hooked.
+
+### 3. The "Value-First" / "Zero-Click" Principle
 Every post should provide actionable insight directly in the timeline. Readers should learn something valuable even if they never click an external link.
 
-### 3. Voice Preservation & User Narrative Copyediting
+### 4. Voice Preservation & User Narrative Copyediting
 To ensure genuine author authenticity:
 - **Preserve User Quotes 1:1 in Canonical**: Any live comments, raw reflections, and spoken quotes from the author must be recorded verbatim (1:1) in a dedicated `## References / Sources` section inside `CANONICAL.md`.
 - **Infuse the Author's Voice into Derivative Copy**: These 1:1 remarks are the primary source for the author's authentic cadence, idioms, and engineering perspective.
@@ -153,7 +159,7 @@ Never hallucinate features, metrics, or claims.
 1. Identify target platform(s) for the campaign.
 2. Load matching platform references (`references/<platform>_playbook.md`).
 
-### Stage 4: Channel-Specific Distillation & Format Assembly
+### Stage 4: Channel-Specific Adaptation & Format Assembly
 Cut and reformat the approved Foundation Narrative into the appropriate archetype for each channel. Each file MUST use YAML frontmatter followed by Markdown content:
 - **LinkedIn** (`linkedin.md`): Architectural deep-dive (1,300–2,000 chars) with direct in-body link(s) to the primary article, documentation, or repository.
 - **Twitter / X** (`twitter.md`): Native long-form post (800–2,500 chars) with direct links or micro-thread.
@@ -162,15 +168,34 @@ Cut and reformat the approved Foundation Narrative into the appropriate archetyp
 - **Reddit** (`reddit.md`): Value-first Markdown self-post (300–800 words, 4-space code indents for Old Reddit).
 - **Threads** (`threads.md`): Casual, builder-centric post (<500 chars) with strictly 1 `#topic` tag.
 
+> [!CAUTION]
+> **Strictly Sequential Channel Drafting (One Channel at a Time)**:
+> NEVER generate all platform drafts (`linkedin.md`, `twitter.md`, `bluesky.md`, etc.) simultaneously. Generating all channels upfront wastes time and tokens if the core narrative or hook needs revision. Always draft and iterate on **one single primary channel first** (e.g., `linkedin.md`) until the user explicitly approves the copy, and only then adapt the approved text to secondary channels one by one.
+
+> [!IMPORTANT]
+> **Hook Economy Above the Fold**:
+> The first 1–2 lines (`~140 chars` on mobile, `~210 chars` on desktop) before `...see more` carry the highest opportunity cost in the post. Do not waste them on chronological throat-clearing or generic filler—and do not rely on a mechanical "banned list" that tricks you into writing synthetic copy just because it avoids certain words. Evaluate the hook in context: does it immediately convey the core problem, insight, or human moment from the author's actual work?
+
 > [!NOTE]
 > **Infusing User Voice with Copyediting**: Draw heavily on the 1:1 user comments captured in the Canonical's `## References / Sources` section to infuse the author's personality, perspective, and phrasing into each channel post. Preserve the author's authentic narrative while applying professional copyediting to ensure a polished appearance.
 
 > [!IMPORTANT]
-> **Mandatory Media Requirement**: Every single social post MUST include at least one media item (picture or video)—such as an architectural diagram, Ray.so/Carbon dark-mode code card, terminal recording, benchmark plot, carousel slide, or demo clip. Naked, text-only posts are strictly prohibited across all platforms. Specify media details in the file's YAML frontmatter `media:` array.
+> **Mandatory Native Media & Multi-Image Parity (The Link-Card Override)**:
+> - Every single social post MUST include at least one native media item (picture or video)—such as an architectural diagram, Ray.so/Carbon dark-mode code card, terminal recording, benchmark plot, carousel slide, or demo clip. Naked, text-only posts are strictly prohibited across all platforms.
+> - **Dual Structural Function**: Native visual attachments both arrest scroll velocity (multiplying dwell time and comment depth) and **override compact OpenGraph link-preview cards** when paired with an in-body URL—allowing the post to render as a full-viewport visual card while keeping links clickable inside the text.
+> - **Never Drop Multi-Image Assets**: When a campaign or article has multiple visual assets declared in `CANONICAL.md` (such as a hero cover plus UI screenshots or architecture diagrams), preserve **all** of them in each channel's YAML frontmatter `media:` array up to the platform's multi-image limit (e.g., up to 9 images on LinkedIn, up to 4 images on X and Bluesky). Never silently reduce a multi-image campaign to a single image.
 
-### Stage 5: Anti-Pattern & Deslopification Audit
-Review all drafts against [references/anti_patterns.md](references/anti_patterns.md) and execute anti-slop checks (leveraging the `deslopify` skill):
-- [ ] No banned AI words (*"delve", "game-changer", "revolutionary", "testament"*).
+### Stage 5: Self-Critique Rubric, Anti-Pattern & Deslopification Audit
+Before presenting any draft to the user, run this 4-step **Pre-Presentation Self-Critique Rubric** alongside [references/anti_patterns.md](references/anti_patterns.md) and the `deslopify` skill:
+1. **The Line-1 Deletion Test**: Temporarily delete your opening sentence or paragraph. Does Sentence 2 state the technical problem, metric, or architectural tension more directly? If yes, permanently delete Sentence 1.
+2. **The Cold-Stranger Test**: Read only the first `140` characters. Do they talk about *the author's publishing schedule/feelings* (*"I've been quiet lately"*, *"In my previous post"*, *"Excited to share"*) or *a concrete engineering problem/outcome* that a stranger cares about?
+3. **The Link-Card Override Check**: Are all primary outbound URLs placed directly in the post body *and* paired with at least one native visual asset in the frontmatter `media:` array so the feed renders a full visual card rather than a cropped link preview or buried first comment?
+4. **The Feed-Horizon Check**: Does the proposed publishing mode respect the target platform's decay horizon (see the Platform Physics Matrix in Stage 6)?
+
+Checklist:
+- [ ] **Passed the 4 Self-Critique Tests** (Line-1 Deletion, Cold-Stranger, Link-Card Override, Feed-Horizon).
+- [ ] **Sequential Drafting Enforced**: Only one platform draft is generated at a time prior to user approval of the primary channel copy.
+- [ ] Free of synthetic AI filler and hollow marketing clichés.
 - [ ] No mathematical unicode bolding (`𝗕𝗼𝗹𝗱` fonts).
 - [ ] Links positioned directly in the post body across technical platforms (LinkedIn, X, Bluesky, Threads, Reddit); never hide primary links in the first comment.
 - [ ] Hashtags strictly match platform limits (0 for X, 1 for Threads, 0-1 for Bluesky, 1-3 for LinkedIn, 3-5 for Instagram).
@@ -184,13 +209,21 @@ Review all drafts against [references/anti_patterns.md](references/anti_patterns
 When human approval is granted and dispatching/automating publication (e.g. via Buffer CLI):
 1. **Publishing Mode Confirmation Gate**:
    - Always ask the author whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule for a Specific Time** (`customScheduled`) before dispatching, unless explicitly commanded in the initial prompt.
-2. **Cadence & Spacing Buffer Enforcement**:
-   - **LinkedIn**: Enforce maximum 1 post per 24 hours to prevent intra-day self-cannibalization and algorithmic reach suppression.
-   - **Twitter / X**: Enforce a minimum 2-to-3 hour spacing buffer between standalone posts to protect early engagement velocity, or package same-sitting posts as a connected Thread.
-   - **Bluesky / Threads**: Maintain at least 1–2 hours between standalone broadcast posts.
+2. **Platform Physics & Feed-Horizon Cadence Matrix**:
+   Match your publishing cadence and timing to the target platform's algorithmic decay horizon:
+
+   | Platform | Feed Half-Life | Intra-Day Multi-Posting Effect | Optimal Cadence & Timing Heuristic | Primary Visual & Link Mechanics |
+   | :--- | :--- | :--- | :--- | :--- |
+   | **LinkedIn** | **18–48 hours** *(Long-horizon authority graph)* | **Negative marginal daily reach**: Creator-diversity caps throttle competing same-day posts so 2 posts/day yield fewer total views than 1. | **Strictly max 1 post / 24h**. Schedule during target audience's mid-week work hours or Sunday evening prep; avoid Friday afternoon wind-down. | Direct in-body URL + native diagram/carousel (`up to 9 images`) to override compact link previews. |
+   | **Twitter / X** | **1–3 hours** *(Real-time velocity stream)* | **Compounds daily reach**: Spaced multi-post launch sequences multiply daily impressions and outbound clicks. | **2–3h+ spacing buffer** between standalone posts (or chain as a Thread). Strong affinity for mid-week & weekend builder demos. | Direct in-body URL + demo video, UI screenshot, or code card (`up to 4 images`). |
+   | **Bluesky** | **1–4 hours** *(Chronological + custom feeds)* | Safe when spaced `1–2h+` apart or chained as multi-post threads. | **1–2h+ spacing buffer** between standalone broadcasts. | Direct in-body URL + alt-text indexed visuals (`up to 4 images`) or rich link card. |
+   | **Threads** | **4–12 hours** *(Interest graph stream)* | Safe with `2–3h+` spacing. | Casual builder cadence; strictly **1 Topic Tag**. | Direct in-body URL + visual card. |
+   | **Reddit** | **12–24 hours** *(Subreddit hot/upvote decay)* | Rapid multi-posting triggers spam filters and moderator removal. | Max 1 self-post per subreddit per launch; honor the 9:1 contribution ratio. | Value-first Markdown self-post with inline links and diagrams. |
+
 3. **Safe Validation**: Always run `--dry-run` to validate JSON structures and per-channel constraints before live mutations.
-4. **Direct In-Body Link & Native Media Pairing**:
-   - Include primary outbound URLs (blog post, documentation, or GitHub repo) directly in the post body on LinkedIn, X, Bluesky, Threads, and Reddit, paired with an attached native image/video asset (`assets` array) so the post renders as a full-bleed visual card rather than a bare link preview.
+4. **Direct In-Body Link & Programmatic Multi-Image Asset Wiring**:
+   - Include primary outbound URLs (blog post, documentation, or GitHub repo) directly in the post body on LinkedIn, X, Bluesky, Threads, and Reddit, paired with the native image/video assets (`assets` array) so the post renders as a visual card or multi-image gallery rather than a bare link preview.
+   - **Never Hand-Code `assets` Payloads**: Always construct the API/CLI `assets` array programmatically from the channel file's YAML frontmatter `media:` list, and assert `len(payload.assets) == len(frontmatter.media)` before and after dispatch so images are never accidentally dropped.
    - Because the primary URL lives inside the post body, posts can be safely scheduled (`customScheduled` or `addToQueue`) without needing manual first-comment follow-ups.
 
 ### Stage 7: Post-Dispatch Lifecycle Synchronization & Status Marking
@@ -201,5 +234,4 @@ As soon as posts are published or confirmed live:
 2. **Record Live URLs**:
    - Append live post URLs (LinkedIn, Twitter/X, Bluesky, Reddit, etc.) directly into `CANONICAL.md` and the respective copy file.
 3. **Synchronize Workspace Backlog / Task Trackers**:
-   - In repositories tracking active tasks (such as `TODOs.md`), move the campaign to the **`## ✅ Completed Tasks`** section tagged `[DONE - PUBLISHED]`.
-   - Remove or resolve the corresponding item from the active backlog.
+   - If the active workspace tracks campaigns in a backlog or task file, mark the campaign as published and resolve the corresponding active item.

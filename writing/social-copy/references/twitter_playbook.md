@@ -17,18 +17,20 @@ X's ranking engine utilizes transformer embeddings and graph clusters that rewar
 - **Expand Post Clicks (`Show more`):** Strong implicit positive signal indicating the hook successfully converted into active reading.
 - **Likes (1x):** Baseline low-effort signal.
 
-### The Rise of Native Long-Form Posts & X Articles
+### The Rise of Native Long-Form Posts, Visual Product Drops & X Articles
 - **Long-Form (800–2,500 characters):** The highest-performing format on X for technical breakdowns, engineering changelogs, and case studies. It captures maximum dwell time, generates high bookmark ratios, and eliminates thread drop-off.
 - **No Link Penalty for Native Posts:** Platform leadership confirmed that posts containing outbound URLs are not algorithmically penalized if accompanied by substantive native text and commentary (avoiding "lazy linking").
+- **Visual Demos & Screenshots Drive Discussion and Clicks:** Attaching native visual proof (UI screenshots, architecture diagrams, terminal recordings, or live product demo clips) significantly increases feed reach, multiples reply depth (`3x+` over text-only posts), and accelerates outbound link click-throughs on launch announcements.
 
 ### Hashtag Consensus (0-Hashtags Rule)
 - **Hashtags are essentially obsolete for organic reach on X.** The algorithm indexes text via semantic NLP and embeddings.
 - Using 3+ hashtags triggers spam dampeners and looks amateurish. Use **0 hashtags** (or max 1 if participating in a recognized live event/conference).
 
-### Publishing Cadence & Spacing Buffers
-- **Early Engagement Velocity:** X heavily weights engagement signals (likes, reposts, and replies) that occur in the first 15–30 minutes after publishing.
-- **The 2-to-3 Hour Spacing Rule:** While high daily volume is effective (2–5 posts/day), standalone broadcast tweets must be separated by at least **2 to 3 hours**. Rapid clustering (posting multiple standalone tweets in minutes or under an hour) splits follower attention, causes subsequent tweets to miss the early velocity threshold, and leads to algorithmic suppression.
-- **Threads vs. Clustered Standalone Posts:** When publishing multiple related thoughts in the same sitting, package them as a connected **Thread** so all interaction signals aggregate into the parent post rather than competing against each other.
+### Publishing Cadence, Stream Velocity & Builder Windows
+- **Early Engagement Velocity:** X operates on a short `1–3 hour` decay horizon and heavily weights engagement signals (likes, reposts, bookmarks, and replies) that occur in the first 15–30 minutes after publishing.
+- **The 2-to-3 Hour Spacing Rule & Multi-Post Launch Velocity:** Unlike long-horizon feeds (LinkedIn) that penalize multiple posts on the same day, X rewards multi-post launch days when standalone broadcasts are separated by at least **2 to 3 hours**. Properly spaced launch sequences compound daily reach and outbound traffic, whereas rapid unthreaded clustering (multiple standalone tweets in minutes) splits early velocity.
+- **Developer Exploration & Weekend Builder Windows:** Hands-on open-source demos, shipping logs, and high-leverage productivity showcases perform strongly during both mid-week windows and **weekend builder windows**, when corporate feed noise drops and developers actively explore new tools and repos.
+- **Threads vs. Clustered Standalone Posts:** When publishing multiple related thoughts in the same sitting (under 2 hours apart), package them as a connected **Thread** so all interaction signals aggregate into the parent post rather than competing against each other.
 
 ---
 

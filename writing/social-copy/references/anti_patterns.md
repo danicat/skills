@@ -4,10 +4,14 @@ Exhaustive checklist of writing patterns, platform missteps, and synthetic AI te
 
 ---
 
-## 1. Synthetic AI Tells & Cliché Vocabulary
+## 1. Synthetic AI Tells & Editorial Judgment
 
-### Banned Fluff & Magic Words
-Never use these generic filler words and phrases in developer copy:
+> [!IMPORTANT]
+> **Why "Banned Lists" Fail in Social Copy:**
+> Treating anti-patterns as a rigid "banned word/phrase list" is a trap in both directions: it makes you think anything *not* on the list is automatically valid (encouraging synthetic copywriter formulas that dodge specific words while still sounding fake), and it makes you think patterns on the list are *always* wrong regardless of context. Use the patterns below as **diagnostic signals for editorial judgment**, not a mechanical blacklist.
+
+### Common Synthetic AI Tells & Empty Modifiers
+Watch out for generic filler phrases that substitute hype for substance:
 - *"In today's fast-paced digital world / landscape..."*
 - *"Delve into / Let's dive deep into..."*
 - *"A testament to..."*
@@ -17,7 +21,10 @@ Never use these generic filler words and phrases in developer copy:
 - *"Navigating the complexities of..."*
 - *"Buckle up 🧵 / Mind-blowing 🤯"*
 
-### Structural AI Tells
+### Structural & Workflow Anti-Patterns
+- **The Self-Referential Preamble Trap (Failing the Cold-Stranger & Line-1 Deletion Tests):** Because feeds truncate after ~140 characters on mobile (~210 on desktop), spending the first lines on **author-centric housekeeping** (*"I've been heads down working on new content so you haven't heard from me..."*, *"I'm usually very grounded in my posts, but..."*) or **chronological throat-clearing** (*"In Part 3 of my series, I showed..."*) fails the reader-utility filter before `...see more`. Always run the **Line-1 Deletion Test**: if deleting your opening sentence lets Sentence 2 state the technical problem, metric, or tension more directly, delete Sentence 1.
+- **Inventing Synthetic Copywriter Strawmen:** Never invent dramatic problems or claims that are not in the author's actual article or code just to manufacture a "punchy" hook. Ground every claim in the author's real perspective and work.
+- **Simultaneous Multi-Channel Draft Generation Before Core Copy Approval:** Never generate all platform derivatives (`linkedin.md`, `twitter.md`, `bluesky.md`, etc.) at the same time. Drafting all channels simultaneously wastes tokens and review cycles if the core hook, angle, or narrative framing needs adjustment. Always draft and iterate on **one single primary channel first** (e.g., `linkedin.md`) until the user explicitly approves the copy, and only then adapt the approved text to secondary channels one by one.
 - **Negative Parallelism:** Avoid repetitive *"It's not just about X, it's about Y"* structures. State what it is directly.
 - **Em-Dash Overdose:** Avoid multiple em-dashes (`—`) per post. Use concise sentences or colons.
 - **Rule of Threes Addiction:** Avoid forcing ideas into artificial triplets when two or four points are more accurate.
@@ -27,7 +34,11 @@ Never use these generic filler words and phrases in developer copy:
 ## 2. Platform-Specific Anti-Patterns
 
 ### LinkedIn Anti-Patterns
-- **Intra-Day Multi-Posting (Self-Cannibalization):** Posting 2+ times in under 18–24 hours throttles both posts by ~30%+ due to feed diversity caps.
+- **Wasted Above-the-Fold Hooks (`...see more` Failure):** Opening a LinkedIn post with chronological recaps (*"In my previous post..."*, *"Today I published..."*) or self-referential status updates (*"I've been quiet this week because..."*) burns the entire 140-character mobile preview window without giving peer engineers a technical reason to expand the post.
+- **Formulaic AI Textbook Summaries:** Writing a post that reads like a sterile, bulleted AI textbook overview rather than a grounded senior engineer sharing real architectural trade-offs and production lessons.
+- **Intra-Day Multi-Posting (Negative Marginal Daily Reach):** Because LinkedIn's feed scores posts over an 18–48 hour horizon with creator-diversity caps, publishing 2+ posts within 24 hours throttles both posts so severely that two same-day posts generate **fewer total daily impressions than a single post**.
+- **End-of-Week Wind-Down Drops:** Publishing heavy architectural deep-dives during Friday afternoon wind-down windows in your target audience's primary timezone suffers steep reach and dwell loss compared to mid-week or Sunday evening windows.
+- **Naked Text-Only Posts or Bare Link Previews:** Publishing without an attached native visual asset (diagram, code card, UI screenshot, or carousel) forfeits `2x–3x` higher discussion depth and allows in-body URLs to collapse the post into a low-dwell OpenGraph link preview.
 - **"Broetry" & Fake Epiphanies:** Dramatic single-line staccato sentences linking mundane chores to system architecture (*"I watched my espresso drip this morning and realized Kafka partitions work the same way..."*).
 - **Unicode Bold / Italic Glyphs:** Formatting text with `𝗕𝗼𝗹𝗱` glyphs breaks screen readers (accessibility failure), destroys search indexing, and inflates character counts.
 - **Generic Hashtag Stuffing:** Using 5+ hashtags (`#tech #ai #software #coding #innovation`) flags posts as spam.

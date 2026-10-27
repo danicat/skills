@@ -5,7 +5,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 39,
-  "updatedAt": "2026-10-23T01:48:23Z",
+  "updatedAt": "2026-10-27T15:25:31Z",
   "categories": [
     {
       "id": "workflows",
@@ -928,10 +928,10 @@
         "campaigns"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
-      "digest": "sha256:6a48a4d05ce4a06c88e84af85ab6a3cf8232e5827306ffe16a88322ad28c5ce4",
+      "digest": "sha256:8ef0a585a3cfe360a43303fc986d917b7f66e9b09b070aa73c831b569df85141",
       "freshnessScore": 97,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
