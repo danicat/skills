@@ -93,6 +93,26 @@ class TestGoogleAnalyticsSchema(unittest.TestCase):
         for col in expected_columns:
             self.assertIn(col, columns, f"Expected column '{col}' in view 'v_page_performance'.")
 
+    def test_view_channel_performance_columns(self):
+        cursor = self.conn.cursor()
+        cursor.execute("PRAGMA table_info(v_channel_performance)")
+        columns = {row["name"] for row in cursor.fetchall()}
+        expected_columns = {
+            "channel_group",
+            "source_medium",
+            "total_sessions",
+            "total_users",
+            "total_new_users",
+            "total_engaged_sessions",
+            "engagement_rate_pct",
+            "avg_dwell_sec",
+            "engaged_dwell_sec",
+            "total_dwell_min",
+            "avg_bounce_pct",
+        }
+        for col in expected_columns:
+            self.assertIn(col, columns, f"Expected column '{col}' in view 'v_channel_performance'.")
+
 
 class TestGoogleAnalyticsQueries(unittest.TestCase):
     """Populates realistic fixture data and executes all example and report queries."""
@@ -144,8 +164,10 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
             ('prop_123', '2026-08-01', 'google / organic', 'Organic Search', 'United States', 'desktop', 520, 450, 280, 420, 45000.0, 0.20),
             ('prop_123', '2026-08-01', 'direct / none', 'Direct', 'United States', 'desktop', 210, 180, 40, 170, 18000.0, 0.25),
             ('prop_123', '2026-08-01', 'github.com / referral', 'Referral', 'United Kingdom', 'desktop', 150, 130, 90, 125, 16000.0, 0.16),
+            ('prop_123', '2026-08-01', 'chatgpt.com / referral', 'Referral', 'United States', 'desktop', 80, 72, 65, 55, 6600.0, 0.31),
             ('prop_123', '2026-08-15', 'google / organic', 'Organic Search', 'United States', 'desktop', 680, 590, 380, 560, 62000.0, 0.18),
             ('prop_123', '2026-08-15', 'direct / none', 'Direct', 'United States', 'mobile', 310, 270, 60, 240, 24000.0, 0.26),
+            ('prop_123', '2026-08-15', 'direct / none', 'Direct', 'Ireland', 'desktop', 120, 118, 118, 4, 80.0, 0.96),
             ('prop_123', '2026-08-15', 'twitter.com / referral', 'Organic Social', 'Canada', 'desktop', 190, 160, 110, 150, 19000.0, 0.21),
         ]
         for t in traffic_data:
@@ -162,9 +184,11 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
         events_data = [
             ('prop_123', '2026-08-01', 'page_view', '/', 'United States', 'desktop', 500, 420),
             ('prop_123', '2026-08-01', 'scroll', '/docs/getting-started', 'United States', 'desktop', 310, 250),
+            ('prop_123', '2026-08-01', 'code_copy', '/docs/getting-started', 'United States', 'desktop', 95, 80),
             ('prop_123', '2026-08-01', 'click', '/blog/sqlite-analytics-guide', 'United Kingdom', 'desktop', 85, 70),
             ('prop_123', '2026-08-15', 'page_view', '/blog/sqlite-analytics-guide', 'United States', 'desktop', 480, 400),
             ('prop_123', '2026-08-15', 'scroll', '/blog/sqlite-analytics-guide', 'United States', 'desktop', 410, 350),
+            ('prop_123', '2026-08-15', 'code_copy', '/blog/sqlite-analytics-guide', 'United States', 'desktop', 120, 105),
             ('prop_123', '2026-08-15', 'click', '/blog/sqlite-analytics-guide', 'United States', 'desktop', 140, 115),
         ]
         for e in events_data:
@@ -478,7 +502,7 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
                     total_executed += 1
                 except Exception as e:
                     self.fail(f"Failed to execute SQL block extracted from {os.path.basename(md_path)}:\n{query}\nError: {e}")
-        self.assertGreaterEqual(total_executed, 9, "Expected at least 9 markdown SQL blocks to be tested.")
+        self.assertGreaterEqual(total_executed, 13, "Expected at least 13 markdown SQL blocks to be tested.")
 
 
 class TestGoogleAnalyticsCLI(unittest.TestCase):

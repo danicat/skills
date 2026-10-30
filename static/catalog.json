@@ -5,7 +5,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 40,
-  "updatedAt": "2026-10-30T07:32:21Z",
+  "updatedAt": "2026-10-30T07:48:03Z",
   "categories": [
     {
       "id": "workflows",
@@ -366,10 +366,10 @@
         "optimization"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/google-analytics/SKILL.md",
-      "digest": "sha256:9fefab1b8d3ee2bde18ca38066901bc88f2bf853a4feba520fa20e8aae7d0f06",
+      "digest": "sha256:ed7f9de3959d1f04361cb18f366a33a89ffb252d669d698297db5bbfe2097f2b",
       "freshnessScore": 76,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",

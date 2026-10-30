@@ -321,6 +321,8 @@ SELECT
     SUM(new_users) AS total_new_users,
     SUM(engaged_sessions) AS total_engaged_sessions,
     ROUND((SUM(engaged_sessions) * 100.0) / MAX(SUM(sessions), 1), 1) AS engagement_rate_pct,
+    ROUND(SUM(user_engagement_duration) / MAX(SUM(sessions), 1), 1) AS avg_dwell_sec,
+    CASE WHEN SUM(engaged_sessions) > 0 THEN ROUND(SUM(user_engagement_duration) / SUM(engaged_sessions), 1) ELSE 0.0 END AS engaged_dwell_sec,
     ROUND(SUM(user_engagement_duration) / 60.0, 1) AS total_dwell_min,
     ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
 FROM daily_traffic
@@ -1130,6 +1132,8 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
                 total_sessions,
                 total_users,
                 engagement_rate_pct || '%' AS eng_rate,
+                avg_dwell_sec || 's' AS avg_dwell,
+                engaged_dwell_sec || 's' AS engaged_dwell,
                 total_dwell_min || 'm' AS dwell,
                 avg_bounce_pct || '%' AS bounce
             FROM v_channel_performance

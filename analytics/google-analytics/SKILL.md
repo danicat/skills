@@ -12,7 +12,7 @@ metadata:
   category: analytics
   tags: "ga4, analytics, traffic, metrics, optimization"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.2"
+  version: "0.2.3"
   catalog: https://skills.danicat.dev
 ---
 
@@ -96,7 +96,7 @@ The database maintains 7 relational tables and 7 analytical views. Detailed DDL 
 | :--- | :--- | :--- |
 | `v_daily_summary` | Daily aggregated traffic metrics | `date`, `total_sessions`, `total_active_users`, `total_page_views`, `total_engagement_min`, `avg_bounce_pct` |
 | `v_page_performance` | Page rollup with views, active users, dwell time, and bounce rate | `page_path`, `page_title`, `total_views`, `total_users`, `total_sessions`, `avg_dwell_sec`, `total_dwell_min`, `avg_bounce_pct` |
-| `v_channel_performance` | Acquisition channel breakdown | `channel_group`, `source_medium`, `total_sessions`, `total_users`, `total_new_users`, `total_engaged_sessions`, `engagement_rate_pct`, `total_dwell_min`, `avg_bounce_pct` |
+| `v_channel_performance` | Acquisition channel breakdown | `channel_group`, `source_medium`, `total_sessions`, `total_users`, `total_new_users`, `total_engaged_sessions`, `engagement_rate_pct`, `avg_dwell_sec`, `engaged_dwell_sec`, `total_dwell_min`, `avg_bounce_pct` |
 | `v_geo_breakdown` | Country traffic and dwell time | `country`, `total_sessions`, `total_users`, `total_page_views`, `avg_dwell_sec`, `avg_bounce_pct` |
 | `v_events_summary` | Aggregate event counts | `event_name`, `total_events`, `total_users` |
 | `v_outbound_links` | Outbound destination rankings | `link_url`, `total_clicks`, `total_users`, `referring_pages_count` |
@@ -140,6 +140,25 @@ FROM v_page_performance
 GROUP BY category
 ORDER BY total_views DESC;
 ```
+
+---
+
+## 🧭 Analytical Guardrails & Engagement Methodology
+
+When analyzing GA4 metrics, apply these four structural checks to avoid misinterpreting raw totals:
+
+1. **Two-Stage Engagement Decomposition (`avg_dwell_sec` vs. `engaged_dwell_sec` + Interaction Density):**
+   - GA4 calculates `user_engagement_duration` as the elapsed time between `session_start` and the final engagement event. Single-page visits that exit without firing a follow-up event record `0s` duration.
+   - Always report **Engaged Session Dwell** (`engaged_dwell_sec`) alongside raw session dwell (`avg_dwell_sec`), and pair time metrics with **Interaction Density** (`scroll` completion and `outbound_clicks` per user) using Recipe #11 in [`references/queries.md`](references/queries.md).
+2. **Unengaged `Direct` Anomaly Gate (Bot & Scraper Filtering):**
+   - Headless crawlers, link previewers, and cloud monitors typically omit the HTTP `Referer` header (landing in `Direct`) and exit before firing a second event (`<2s` dwell and `<15%` engagement rate).
+   - Before reporting site-wide dwell or bounce averages, inspect `Direct` traffic for localized `(month, country, device_category)` spikes with near-zero engagement (Recipe #9 in [`references/queries.md`](references/queries.md)) and segment human discovery metrics separately from unengaged `Direct` spikes.
+3. **Generative Search Channel Split (Organic vs. AI Assistants vs. Social):**
+   - GA4's built-in `session_default_channel_group` groups AI assistants (`chatgpt.com`, `perplexity.ai`, `claude.ai`, `gemini.google.com`, `copilot.microsoft.com`) into generic `Referral` or `Organic Search`.
+   - Use `session_source_medium` pattern matching (Recipe #8 in [`references/queries.md`](references/queries.md)) to separate **Generative AI**, **Organic Search**, **Social Referrals**, and **Web Referrals**.
+4. **Custom Telemetry Discovery Gate (`daily_events` Inventory):**
+   - Standard page views (`v_page_performance`) query only `daily_pages`. Any custom instrumentation (such as `scroll_25`, `scroll_50`, `scroll_75`, `code_copy`, or `form_submit`) lands in `daily_events`.
+   - Always run an event inventory query (`WHERE event_name NOT IN ('page_view', 'user_engagement', 'session_start', 'first_visit')`, Recipe #10 in [`references/queries.md`](references/queries.md)) before concluding page-level analysis so custom events are joined into your findings.
 
 ---
 

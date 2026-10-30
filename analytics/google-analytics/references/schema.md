@@ -186,7 +186,7 @@ Page-level rollup with views, active users, average dwell time, and bounce rate.
 ---
 
 ### `v_channel_performance`
-Acquisition channels and source/medium pairs with sessions, new users, and engagement rate %.
+Acquisition channels and source/medium pairs with sessions, new users, engagement rate %, raw session dwell, and engaged session dwell.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
@@ -197,6 +197,8 @@ Acquisition channels and source/medium pairs with sessions, new users, and engag
 | `total_new_users` | `INTEGER` | First-time visitors |
 | `total_engaged_sessions`| `INTEGER` | Count of engaged sessions |
 | `engagement_rate_pct` | `REAL` | Engagement percentage (`engaged_sessions / sessions * 100`) |
+| `avg_dwell_sec` | `REAL` | Average dwell time across all sessions (seconds) |
+| `engaged_dwell_sec` | `REAL` | Average dwell time per engaged session (seconds) |
 | `total_dwell_min`| `REAL` | Total active dwell time in minutes |
 | `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
 
