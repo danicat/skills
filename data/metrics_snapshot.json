@@ -69,34 +69,34 @@
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 19,
+    "loads": 25,
     "pageLoads": 0,
-    "subpathLoads": 4,
-    "runs": 19,
+    "subpathLoads": 6,
+    "runs": 24,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "google-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 20,
+    "loads": 25,
     "pageLoads": 1,
     "subpathLoads": 3,
-    "runs": 13,
+    "runs": 14,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "search-analytics": {
     "likes": 0,
     "views": 3,
     "copies": 0,
-    "loads": 19,
+    "loads": 24,
     "pageLoads": 0,
     "subpathLoads": 3,
-    "runs": 9,
+    "runs": 10,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "adr-template": {
     "likes": 1,
@@ -124,18 +124,18 @@
     "likes": 2,
     "views": 14,
     "copies": 3,
-    "loads": 9,
+    "loads": 12,
     "pageLoads": 0,
     "subpathLoads": 2,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T13:45:46.690Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "google-oss": {
     "likes": 1,
     "views": 2,
     "copies": 0,
-    "loads": 19,
+    "loads": 23,
     "pageLoads": 0,
     "subpathLoads": 7,
     "runs": 0,
@@ -189,13 +189,13 @@
   "game-design": {
     "likes": 3,
     "views": 14,
-    "copies": 5,
+    "copies": 6,
     "loads": 2,
     "pageLoads": 0,
     "subpathLoads": 1,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T13:45:59.348Z"
+    "lastUpdated": "2026-10-23T16:11:10.823Z"
   },
   "procedural-art": {
     "likes": 0,
@@ -256,23 +256,23 @@
     "likes": 1,
     "views": 7,
     "copies": 0,
-    "loads": 8,
-    "pageLoads": 0,
-    "subpathLoads": 6,
+    "loads": 9,
+    "pageLoads": 1,
+    "subpathLoads": 8,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-23T01:50:59.596Z"
   },
   "buffer": {
     "likes": 0,
     "views": 6,
     "copies": 1,
-    "loads": 21,
+    "loads": 29,
     "pageLoads": 0,
-    "subpathLoads": 5,
+    "subpathLoads": 6,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "deslopify": {
     "likes": 1,
@@ -300,12 +300,12 @@
     "likes": 1,
     "views": 3,
     "copies": 0,
-    "loads": 10,
+    "loads": 11,
     "pageLoads": 0,
     "subpathLoads": 0,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "seo-optimizer": {
     "likes": 1,
@@ -322,12 +322,12 @@
     "likes": 1,
     "views": 6,
     "copies": 1,
-    "loads": 20,
+    "loads": 31,
     "pageLoads": 0,
-    "subpathLoads": 12,
+    "subpathLoads": 22,
     "runs": 0,
     "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-10-27T13:18:22.378Z"
   },
   "kungfu": {
     "likes": 0,

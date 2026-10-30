@@ -4,8 +4,8 @@
   "title": "Agent Skills",
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
-  "totalSkills": 39,
-  "updatedAt": "2026-10-27T15:25:31Z",
+  "totalSkills": 40,
+  "updatedAt": "2026-10-30T07:32:21Z",
   "categories": [
     {
       "id": "workflows",
@@ -92,7 +92,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/double-diamond/SKILL.md",
       "digest": "sha256:94a7152031f8d79a8d608048f54eea8bc105a19abdd505d98851d0536f736c45",
-      "freshnessScore": 78,
+      "freshnessScore": 76,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T03:22:50+01:00"
@@ -116,7 +116,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/intercom/SKILL.md",
       "digest": "sha256:8af8378f22887683673aa42906ed6b03eff151831434d7bdbb4c70ec7c9ab78f",
-      "freshnessScore": 98,
+      "freshnessScore": 94,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-14T04:58:53+01:00"
@@ -140,7 +140,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/parallel/SKILL.md",
       "digest": "sha256:58865edd8ac4447dacc872c484b158a2f0e418973b19c24f14c45f8a1a18c902",
-      "freshnessScore": 100,
+      "freshnessScore": 97,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-21T14:15:16+01:00"
@@ -163,9 +163,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/show-me-the-money/SKILL.md",
       "digest": "sha256:5bfc52206b83222b4e4f235b283d1eb7c14301a4074c188d5c88cb1a7ee46c30",
-      "freshnessScore": 93,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 88,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-10-21T01:55:15+01:00"
     },
     {
@@ -184,7 +184,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/skill-optimizer/SKILL.md",
       "digest": "sha256:6facac9183fafc0dbc3f2a83566cb19d2b58ddd0dd6317bb96cbe23137ccb4b7",
-      "freshnessScore": 97,
+      "freshnessScore": 94,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-11T04:08:45+01:00"
@@ -232,7 +232,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/swarm-coding/SKILL.md",
       "digest": "sha256:e8bc17c0e36ead9c3f4628f4106196ccba1fab6188633fc0925c3bc1c1d5efcc",
-      "freshnessScore": 95,
+      "freshnessScore": 93,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-07T01:36:49+01:00"
@@ -301,10 +301,10 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/traits/less-is-more/SKILL.md",
       "digest": "sha256:edd0c841dafbacb0d88731266a9a8b6e6d285625f2b460ecfe1cfb94203df464",
-      "freshnessScore": 93,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
-      "lastCommitAt": "2026-10-19T17:37:53+01:00"
+      "freshnessScore": 89,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
+      "lastCommitAt": "2026-10-23T02:48:35+01:00"
     },
     {
       "name": "uno-reverse",
@@ -325,9 +325,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/traits/uno-reverse/SKILL.md",
       "digest": "sha256:76d27abe27272513d93db16cf7c55e6c7e533672dc436b793bd6f9f43d2bb179",
-      "freshnessScore": 91,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 89,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-09-26T01:08:35+01:00"
     },
     {
@@ -348,7 +348,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/buffer-analytics/SKILL.md",
       "digest": "sha256:d165d7c7f0adb7865271c4980d722314c51252a8ee07bfe35f304872412545e4",
-      "freshnessScore": 78,
+      "freshnessScore": 76,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T06:38:38+01:00"
@@ -370,10 +370,33 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/google-analytics/SKILL.md",
       "digest": "sha256:9fefab1b8d3ee2bde18ca38066901bc88f2bf853a4feba520fa20e8aae7d0f06",
-      "freshnessScore": 78,
+      "freshnessScore": 76,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T06:42:55+01:00"
+    },
+    {
+      "name": "pagespeed-insights",
+      "type": "skill-md",
+      "description": "Run, extract, and debug Google PageSpeed Insights (pagespeed.web.dev) Mobile and Desktop Lighthouse reports using Chrome DevTools MCP (chrome-devtools-mcp). Reads raw Lighthouse Result (LHR) JSON from window.__LIGHTHOUSE_MOBILE_JSON__ and window.__LIGHTHOUSE_DESKTOP_JSON__ without noisy DOM snapshots. Activate when auditing a pagespeed.web.dev URL, running a live PageSpeed Insights check, or fixing Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index).",
+      "category": "analytics",
+      "tags": [
+        "pagespeed-insights",
+        "lighthouse",
+        "core-web-vitals",
+        "performance",
+        "seo",
+        "accessibility"
+      ],
+      "author": "Daniela Petruzalek (daniela@danicat.dev)",
+      "version": "0.1.0",
+      "license": "Apache-2.0",
+      "url": "https://skills.danicat.dev/analytics/pagespeed-insights/SKILL.md",
+      "digest": "sha256:65937713ab826f8809ac6c88130018da4e074c68801183a3c8a15e0515c80b77",
+      "freshnessScore": null,
+      "freshnessTier": "new",
+      "freshnessEmoji": "🌱",
+      "lastCommitAt": "2026-10-30T07:31:39Z"
     },
     {
       "name": "search-analytics",
@@ -392,7 +415,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/search-analytics/SKILL.md",
       "digest": "sha256:a7d67ca1611ccadb8ac39ff2f7cb6c07af0ec56f0ec7a8706b694a3240b433df",
-      "freshnessScore": 78,
+      "freshnessScore": 76,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T06:44:55+01:00"
@@ -416,7 +439,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/analytics/skill-analytics/SKILL.md",
       "digest": "sha256:3aa56af6d38c9f40805bac27e197c26a73710c027e1600ec7dbe88a9dd64e684",
-      "freshnessScore": 98,
+      "freshnessScore": 95,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-15T14:39:59+01:00"
@@ -440,7 +463,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/ebitengineer/SKILL.md",
       "digest": "sha256:7cc6ceae1abe817f729d91b8184680ccec7ba701590999b216f5d2f50299bb79",
-      "freshnessScore": 96,
+      "freshnessScore": 93,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-09T17:02:55+01:00"
@@ -461,7 +484,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/game-design/SKILL.md",
       "digest": "sha256:dcbdb32f7833ad66d25697364eb224ed0f7fff46cae65edb1e73125f8d20194a",
-      "freshnessScore": 93,
+      "freshnessScore": 91,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-09T17:02:55+01:00"
@@ -483,9 +506,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-art/SKILL.md",
       "digest": "sha256:c219f12702f9dd1f88c1158660d63c027e6abb20336807f2fbdd62eab0c545f4",
-      "freshnessScore": 90,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 85,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-10-09T17:02:55+01:00"
     },
     {
@@ -506,9 +529,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/procedural-composer/SKILL.md",
       "digest": "sha256:a79474237a2f81fb6299b115a03cad0f8bbed94956b97c511298e3aa9d3b174c",
-      "freshnessScore": 92,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 87,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-10-09T17:02:55+01:00"
     },
     {
@@ -529,9 +552,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/sprite-animation/SKILL.md",
       "digest": "sha256:1d7e0e2244f04d71c3bcada42afebedaa24c67c8c1d8e3f3f5b9bbb98e53e645",
-      "freshnessScore": 90,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 86,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-10-09T17:02:55+01:00"
     },
     {
@@ -552,9 +575,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
       "digest": "sha256:c4bf1ae4609028aed64a9ba35dbf2232af826947a2dcdd32e16808c0aac165a5",
-      "freshnessScore": 92,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 88,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-10-11T04:08:45+01:00"
     },
     {
@@ -577,7 +600,7 @@
       "freshnessScore": null,
       "freshnessTier": "new",
       "freshnessEmoji": "🌱",
-      "lastCommitAt": "2026-10-23T01:30:00+01:00"
+      "lastCommitAt": "2026-10-23T02:38:49+01:00"
     },
     {
       "name": "lyria",
@@ -596,10 +619,10 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/lyria/SKILL.md",
       "digest": "sha256:504de8eccab3304be5d48086e05ee23756c7a81d670e08d0d4143c9647ff9688",
-      "freshnessScore": 91,
+      "freshnessScore": 93,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
-      "lastCommitAt": "2026-10-09T17:02:55+01:00"
+      "lastCommitAt": "2026-10-23T02:38:49+01:00"
     },
     {
       "name": "nano-banana",
@@ -618,10 +641,10 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/media/nano-banana/SKILL.md",
       "digest": "sha256:2ec09855319375894726a9a3fa38ef4b731fca118a8773e2eb3ce886a22bf9de",
-      "freshnessScore": 95,
+      "freshnessScore": 98,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
-      "lastCommitAt": "2026-10-09T17:02:55+01:00"
+      "lastCommitAt": "2026-10-23T02:38:49+01:00"
     },
     {
       "name": "veo",
@@ -643,7 +666,7 @@
       "freshnessScore": null,
       "freshnessTier": "new",
       "freshnessEmoji": "🌱",
-      "lastCommitAt": "2026-10-23T01:30:00+01:00"
+      "lastCommitAt": "2026-10-23T02:38:49+01:00"
     },
     {
       "name": "adr-template",
@@ -662,7 +685,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/adr-template/SKILL.md",
       "digest": "sha256:bb2bbd1b92d8fd1db4ed242e92170b26d55b9e2e9a9d9dd59f56cc951e29a15a",
-      "freshnessScore": 57,
+      "freshnessScore": 55,
       "freshnessTier": "stale",
       "freshnessEmoji": "🕸️",
       "lastCommitAt": "2026-07-22T15:10:06+01:00"
@@ -685,7 +708,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md",
       "digest": "sha256:efb5186721d66f5e74072194ade3f164094793a19bea93c3c09aff1edf3eca45",
-      "freshnessScore": 75,
+      "freshnessScore": 73,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T03:23:10+01:00"
@@ -708,7 +731,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/godoctor/SKILL.md",
       "digest": "sha256:9e9e84c1dd3bee8a8955041405cbd6fec6e392ddf92f137182b458dab58146b8",
-      "freshnessScore": 96,
+      "freshnessScore": 94,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
       "lastCommitAt": "2026-10-11T04:08:45+01:00"
@@ -731,7 +754,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/google-oss/SKILL.md",
       "digest": "sha256:256bfb23888c9b56341cdd90c239f58699e7f8faae2e7177f0c33992f0eb17f2",
-      "freshnessScore": 81,
+      "freshnessScore": 78,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-30T04:40:05+01:00"
@@ -753,9 +776,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/latest-version/SKILL.md",
       "digest": "sha256:5a9d7521e51222570c1a8388fc8bd4f03271f5614dca328dc35ebb0f1899dc18",
-      "freshnessScore": 70,
-      "freshnessTier": "fresh",
-      "freshnessEmoji": "🌿",
+      "freshnessScore": 68,
+      "freshnessTier": "stale",
+      "freshnessEmoji": "🕸️",
       "lastCommitAt": "2026-08-22T05:05:47+01:00"
     },
     {
@@ -798,7 +821,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/coding/rfc-template/SKILL.md",
       "digest": "sha256:98e67540351d5fbdb634303f171d29f81e4c915c282e84429080a2bfbd9b3f7c",
-      "freshnessScore": 60,
+      "freshnessScore": 57,
       "freshnessTier": "stale",
       "freshnessEmoji": "🕸️",
       "lastCommitAt": "2026-07-22T15:10:06+01:00"
@@ -819,9 +842,9 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/buffer/SKILL.md",
       "digest": "sha256:c81acf43aad9f936ce525c7fedcca3ca5b3e762a50778c05799518c204cee196",
-      "freshnessScore": 90,
-      "freshnessTier": "mint",
-      "freshnessEmoji": "✨",
+      "freshnessScore": 86,
+      "freshnessTier": "fresh",
+      "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-09-21T21:55:55+01:00"
     },
     {
@@ -840,7 +863,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/deslopify/SKILL.md",
       "digest": "sha256:00812fac37913982b253d096363883c974856a29718424b2a19c198d92ff61d5",
-      "freshnessScore": 77,
+      "freshnessScore": 74,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-22T05:12:53+01:00"
@@ -863,7 +886,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/google-blog-style/SKILL.md",
       "digest": "sha256:9793abd85105a5e8884b966bf97b23f109d0d07a071386b517790cdbf98aba73",
-      "freshnessScore": 31,
+      "freshnessScore": 30,
       "freshnessTier": "spoiled",
       "freshnessEmoji": "🤢",
       "lastCommitAt": "2026-02-27T12:24:29Z"
@@ -886,7 +909,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md",
       "digest": "sha256:9dbd3322cbc15ea6b84e31298a4345993a98248df59377411e9615cddd16158f",
-      "freshnessScore": 74,
+      "freshnessScore": 72,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-20T21:05:45+01:00"
@@ -910,7 +933,7 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/seo-optimizer/SKILL.md",
       "digest": "sha256:1be2851140c9b4a31c1b66be61abaa4d5ea13fe47f824a0619e42e2583c1f756",
-      "freshnessScore": 77,
+      "freshnessScore": 75,
       "freshnessTier": "fresh",
       "freshnessEmoji": "🌿",
       "lastCommitAt": "2026-08-19T00:08:33+01:00"
@@ -932,10 +955,10 @@
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/writing/social-copy/SKILL.md",
       "digest": "sha256:8ef0a585a3cfe360a43303fc986d917b7f66e9b09b070aa73c831b569df85141",
-      "freshnessScore": 97,
+      "freshnessScore": 99,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
-      "lastCommitAt": "2026-10-14T00:00:54+01:00"
+      "lastCommitAt": "2026-10-27T15:25:46Z"
     }
   ],
   "graveyard": [

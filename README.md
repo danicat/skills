@@ -103,6 +103,7 @@ Raw metrics ingestion and SQLite data warehousing for search performance, web tr
 
 * **[`buffer-analytics`](analytics/buffer-analytics/SKILL.md)**: Ingest raw Buffer social post and channel data into a local SQLite analytics database and run SQL queries across LinkedIn, Twitter/X, and Bluesky.
 * **[`google-analytics`](analytics/google-analytics/SKILL.md)**: Ingest raw Google Analytics 4 (GA4) traffic, dwell time, localization performance, and outbound clicks into a local SQLite analytics database and run pre-built or ad-hoc SQL reports.
+* **[`pagespeed-insights`](analytics/pagespeed-insights/SKILL.md)**: Run, extract, and debug Google PageSpeed Insights (`pagespeed.web.dev`) Mobile and Desktop Lighthouse reports via Chrome DevTools MCP without DOM snapshot bloat.
 * **[`search-analytics`](analytics/search-analytics/SKILL.md)**: Ingest raw Google Search Console performance metrics into a local SQLite database and execute deep SQL analytics over organic search traffic.
 * **[`skill-analytics`](analytics/skill-analytics/SKILL.md)**: Mine Agent Skill usage, Context-Tax ROI, and trigger attribution from conversation transcripts into a local SQLite database across all installed skill tiers.
 

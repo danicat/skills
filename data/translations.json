@@ -231,6 +231,7 @@
       "social-copy": "Fluxo editorial e playbooks por plataforma para redigir posts e campanhas técnicas em redes sociais. Extrai evidências técnicas via git log ou entrevistas /grill-me, estabelece uma narrativa base (CANONICAL.md) e adapta o texto para LinkedIn, X/Twitter e Bluesky.",
       "buffer-analytics": "Colete e analise dados de redes sociais do Buffer em um banco SQLite local. Armazena todo o histórico de publicações e métricas de engajamento, cliques e visualizações para consultas em SQL e identificação dos melhores horários e conteúdos.",
       "google-analytics": "Colete e analise dados do Google Analytics 4 (GA4) em um banco SQLite local. Armazena visualizações de página, usuários ativos, tempo de leitura, origens de tráfego e cliques externos para consultas SQL e relatórios de performance do site.",
+      "pagespeed-insights": "Execute, extraia e depure relatórios Mobile e Desktop do Google PageSpeed Insights (pagespeed.web.dev) via Chrome DevTools MCP. Lê o JSON bruto do Lighthouse Result (LHR) diretamente de window.__LIGHTHOUSE_MOBILE_JSON__ e window.__LIGHTHOUSE_DESKTOP_JSON__ sem snapshots pesados de DOM para corrigir Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index).",
       "search-analytics": "Colete e analise dados de busca orgânica do Google Search Console em um banco SQLite local. Armazena cliques, impressões, CTR, posição média e páginas de destino para identificar oportunidades de otimização de SEO com consultas SQL.",
       "skill-analytics": "Extraia e analise o uso de Agent Skills, ROI de tokens no prompt de sistema, atribuição de gatilhos e telemetria do KungFu em um banco SQLite local. Audita conversas e skills instaladas para detectar skills sem uso, refinar descrições com o skill-optimizer e reconciliar o state.json."
     }
@@ -368,6 +369,7 @@
       "social-copy": "開発者向け SNS 投稿やキャンペーンを起案する編集ワークフローとプラットフォーム別プレイブック。git log 調査や /grill-me インタビューから技術的根拠を抽出し、CANONICAL.md を核に LinkedIn・X・Bluesky 向け投稿を作成します。",
       "buffer-analytics": "Buffer の SNS 投稿履歴とエンゲージメント指標をローカル SQLite データベースに収集・分析するスキル。LinkedIn、X/Twitter、Bluesky などのクリック数・閲覧数を SQL でクエリし、最適な投稿時間帯や高反応コンテンツを特定します。",
       "google-analytics": "Google Analytics 4 (GA4) のアクセス解析データをローカル SQLite データベースに収集・分析するスキル。ページビュー、アクティブユーザー、滞在時間、流入元、外部リンククリックを保存し、SQL でサイト成果を検証します。",
+      "pagespeed-insights": "Chrome DevTools MCP を用いて Google PageSpeed Insights (pagespeed.web.dev) のモバイル・デスクトップ両レポートを実行・抽出・診断するスキル。DOM スナップショットを使わず window.__LIGHTHOUSE_MOBILE_JSON__ と window.__LIGHTHOUSE_DESKTOP_JSON__ から生の Lighthouse Result (LHR) JSON を直接読み取り、Core Web Vitals（LCP、CLS、TBT、FCP、Speed Index）のボトルネックを特定・改善します。",
       "search-analytics": "Google Search Console の自然検索データをローカル SQLite データベースに収集・分析するスキル。クリック数、表示回数、CTR、平均掲載順位、ランディングページを SQL で分析し、SEO 改善機会を発見します。",
       "skill-analytics": "ローカル SQLite データベースで Agent Skills の利用状況、システムプロンプトのトークン効率（ROI）、発火トリガー属性、および KungFu CLI テレメトリを収集・分析するスキル。会話ログとインストール済みスキルを横断監査し、未使用スキルの特定、skill-optimizer と連携した説明文の改善、state.json の整合性検証とバックフィルを行います。"
     }
