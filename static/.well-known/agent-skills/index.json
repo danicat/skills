@@ -5,7 +5,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 40,
-  "updatedAt": "2026-10-30T07:48:03Z",
+  "updatedAt": "2026-11-02T22:38:36Z",
   "categories": [
     {
       "id": "workflows",
@@ -216,7 +216,7 @@
     {
       "name": "swarm-coding",
       "type": "skill-md",
-      "description": "Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, disjoint work allocations, and strict parent-child communication. Activate whenever the user mentions 'swarm', requests multi-agent team coordination, or needs context isolation across multiple technical domains.",
+      "description": "Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, Single Writer file boundaries, and strict parent-child communication. Activate on swarm-coding(N), /swarm-coding <N>, /swarm <N>, or any mention of 'swarm' or multi-agent team coordination across technical domains.",
       "category": "workflows",
       "tags": [
         "swarm",
@@ -225,13 +225,14 @@
         "orchestration",
         "strategy",
         "complexity",
-        "coordination"
+        "coordination",
+        "dop"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.4.1",
+      "version": "0.5.0",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/swarm-coding/SKILL.md",
-      "digest": "sha256:e8bc17c0e36ead9c3f4628f4106196ccba1fab6188633fc0925c3bc1c1d5efcc",
+      "digest": "sha256:7548920ecfb9346169325d3d1a0c4b19fef407ad6742ffe3e12b386019abedd2",
       "freshnessScore": 93,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",

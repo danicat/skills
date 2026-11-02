@@ -20,16 +20,12 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
 
 ### 1. Budget Evaluation & Org Chart Definition (Mandatory First Action)
 - **Determine Agent Budget (DOP):**
+  - Parse `swarm-coding(N)`, `/swarm-coding <N>`, `/swarm <N>`, `/swarm-coding dop: <N>`, `/swarm-coding budget <N>`, or natural language budgets.
   - **Omission Default:** If the user omitted specifying an agent budget, **assume the default budget of 10**.
   - **Low Budget Guard (<= 1):** If the user specifies an `agent budget <= 1`, multi-agent orchestration is disabled. Automatically fall back to direct single-agent execution without spawning subagents, notifying the user: *"Agent budget is set to <= 1; running in direct single-agent execution mode. To enable swarm parallelism, specify an agent budget > 1 (default: 10)."*
 - **Swarm Shapes & Sizing Decision Tree:**
-  - **Flat Shape (DOP < 10):** Swarm Coordinator directly coordinates Specialists (all specialists). Break down tasks so that agents do not step on each other, giving one task to each agent.
-  - **Nested Shape (DOP >= 10):** Assign Tech Leads per domain and allocate each a slice of the budget (**Leads count towards the budget**). Break down the objective into "epics" and assign them to Leads; Leads recursively break down epics to assign tasks to specialists.
-    - **Nesting Level / Depth**:
-      - DOP < 20 (10-19): `max depth == 1` (Coordinator -> Domain Tech Leads -> Specialists).
-      - DOP 20-49: `max depth == 2` (Coordinator -> Domain Tech Leads -> Sub-Leads -> Specialists).
-      - DOP >= 50: `max depth == 3` (Coordinator -> Leads -> Sub-Leads -> Component Leads -> Specialists).
-      - *Note*: The tree does not need to be perfectly balanced; different branches can have different depths based on domain complexity.
+  - **Flat Shape (DOP < 10):** Swarm Coordinator directly coordinates Specialists (all specialists). Partition tasks with strict Single Writer file ownership, giving one task to each agent.
+  - **Nested Shape (DOP >= 10, Max Depth = 1):** Assign Domain Tech Leads and allocate each a slice of the budget (**each Lead counts as 1 slot**). Break down the objective into domain epics and assign them to Leads; Leads break epics into tasks for Specialists (`Coordinator -> Domain Tech Leads -> Specialists`). Never add deeper sub-lead layers; for large budgets (20+), Leads manage larger concurrency slices and drip-feed tasks from their domain backlog.
   - **Hybrid Shape:** Combines nested domain teams for complex areas with flat direct specialists reporting to the Coordinator for standalone or cross-cutting tasks.
 - **Identify Technical Domains / Systems:** Analyze the project scope and break it down into high-level systems or domains (e.g. `Backend Domain`, `Frontend Domain`, `Database Domain`, `QA & Documentation`).
 - **Name Lead Agents:** Assign a **Lead Agent** to each domain (e.g. `Lead Backend Engineer`, `Lead Frontend Engineer`).
@@ -42,41 +38,52 @@ As Swarm Coordinator, you act as the top-level technical architect and organizat
 
 > [!CRITICAL]
 > **Zero Ambient Swarm Knowledge:**
-> Subagents start with a completely blank conversational context. Simply telling an agent *"you are a swarm coding lead"* or *"you have a budget of 8"* provides zero understanding of swarm protocols, DOP mechanics, non-execution posture, or boundary isolation.
+> Subagents start with a completely blank conversational context. Simply telling an agent *"you are a swarm coding lead"* or *"you have a budget of 8"* provides zero understanding of swarm protocols, DOP mechanics, non-execution posture, or how to call `define_subagent` and `invoke_subagent`.
 >
-> If you give a Lead Agent an individual coding prompt like *"Install library X, implement function Y, verify and report proof"*, the Lead will attempt to write code and run commands itself, breaking the swarm hierarchy!
+> You MUST instruct every Lead Agent to load the `swarm-coding` skill as its mandatory Step 1 and provide the exact `define_subagent` and `invoke_subagent` tool schemas in its initial briefing.
 
-#### A. Subagent Configuration & Tool Rules
-When creating or defining a Lead Agent (via `assets/agents/lead-agent.md` or `define_subagent`):
-- **Model**: Always `model: inherit`.
-- **Customizations**: Always `inheritCustomizations: true`. Setting this to false strips the subagent of project rules (like fail-fast / no-fallbacks) and workspace skills.
-- **MCP**: Always `inheritMcp: true`.
-- **Execution Policy & Tools**: Set `commandExecutionPolicy: off`. **NEVER include `run_command` in a Lead Agent's tools.** A Lead Agent is strictly an orchestrator, spec author, dispatcher, and reviewer.
+#### A. Subagent Configuration & Runtime Tool Rules
+When defining `lead-agent` via `define_subagent` and invoking via `invoke_subagent`:
+- **Model**: Always `Model: "inherit"`.
+- **Subagent Tools**: Set `EnableSubagentTools: true`. Without this, the Lead Agent lacks `define_subagent` and `invoke_subagent` and cannot assemble a team.
+- **Write Tools & Execution Boundary**: Set `EnableWriteTools: true` **solely** so the Lead can author markdown specifications in `docs/`. Explicitly forbid the Lead from editing production source code or calling `run_command`.
+- **MCP**: Set `EnableMCPTools: true` (and `inheritCustomizations: true`, `inheritMcp: true` in static definitions).
 
 #### B. Canonical Lead Agent Briefing Template
-When invoking a Lead Agent via `invoke_subagent`, the `Prompt` MUST follow this structured briefing format:
+When invoking a Lead Agent via `invoke_subagent(TypeName: "lead-agent", Model: "inherit", ...)`, the `Prompt` MUST follow this structured briefing format:
 
 ```markdown
 You are the Lead [Domain] Engineer in a hierarchical Swarm Coding session.
 
+### Step 1: Mandatory Skill Onboarding (Execute First)
+Before taking any other action, load the `swarm-coding` skill (and its `references/lead.md` playbook) into your context so you have full awareness of Swarm Coding rules and protocols.
+
 ### Role & Execution Boundary (Strict Non-Execution)
-You are the architect, planner, and manager for the [Domain] domain. You are strictly forbidden from writing production code or running terminal commands yourself. All implementation, dependency installations, and validation runs MUST be delegated to Specialist subagents that you spawn.
+- You are the architect, planner, and manager for the [Domain] domain.
+- Your `write_file` and `edit_file` tools are enabled **strictly** for drafting or updating markdown specification files in `docs/`.
+- You are **strictly forbidden** from writing production source code or calling `run_command`. All code changes, dependency installations, builds, and test runs MUST be delegated to Specialist subagents that you spawn.
 
 ### Agent Budget & Concurrency Mechanics (DOP: [N])
 - Your allocated domain budget is [N] concurrent agents.
-- You occupy 1 concurrency slot, leaving [N - 1] active concurrent Specialist slots.
+- You occupy 1 concurrency slot, leaving **[N - 1] active concurrent Specialist slots**.
 - Concurrency slots are ephemeral and freed immediately when a Specialist finishes and exits.
 - If your epic has more tasks than [N - 1], maintain a domain task backlog and drip-feed tasks to new Specialists as prior workers conclude.
 
 ### Domain Epic & Specifications
 [Detailed domain objective, referencing workspace specification files or top-level architecture specs in docs/]
 
-### Your Swarm Protocol
-1. Specification First: Draft or update domain API/data contracts before assigning tasks.
-2. Task Deconstruction: Break the epic into independent, non-overlapping tasks with disjoint file boundaries.
-3. Spawn & Steer Specialists: Define/invoke Specialist workers (model: inherit, commandExecutionPolicy: sandbox). Supply each with explicit file boundaries, localized test commands, and fail-fast rules.
-4. Domain Reconciliation: Verify that Specialists replace all temporary stubs/mocks with real implementations, review validation logs, and message completion to your parent (Swarm Coordinator).
-5. User Escalation: You do not have ask_question. Send any requirement ambiguities to the Swarm Coordinator via send_message.
+### How to Assemble & Run Your Specialist Team
+1. **Specification First**: Draft or update domain API/data contracts in `docs/` using `write_file` or `edit_file`.
+2. **Task Deconstruction (Single Writer Principle)**: Break the epic into independent tasks with disjoint file boundaries so only one Specialist writes to any file at a time (or use `staging/` files for shared outputs).
+3. **Define the Specialist Subagent**: Call `define_subagent` with:
+   - `Name`: `"specialist"`
+   - `Description`: `"Domain Specialist worker for code implementation and localized testing."`
+   - `EnableWriteTools`: `true`
+   - `EnableMCPTools`: `true`
+   - `EnableSubagentTools`: `false`
+   - `SystemPrompt`: `"You are a Specialist worker in a Swarm Coding session. Edit only your assigned target files, run localized package tests only, fail fast without fallbacks, send terminal validation proof via send_message, and terminate immediately."`
+4. **Spawn Specialists (`invoke_subagent`) & Yield**: Invoke up to [N - 1] Specialists concurrently with `TypeName: "specialist"` and `Model: "inherit"`, supplying each with its target files, forbidden boundaries, and localized test command. **Immediately stop calling tools after `invoke_subagent`** to yield your turn and wait reactively for Specialist completion messages.
+5. **Domain Reconciliation & Escalation**: Verify that Specialists replace all temporary stubs/mocks with real implementations, review validation logs, and message completion to your parent (Swarm Coordinator). Route any requirement ambiguities to the Swarm Coordinator via `send_message` (you do not have `ask_question`).
 ```
 
 ### 3. Top-Level Architectural Specifications ("Document First")
