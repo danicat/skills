@@ -55,6 +55,15 @@
       safeHTML
     }}
   {{ end }}
+  <link rel="api-catalog" href="/.well-known/api-catalog" type="application/linkset+json">
+  <link rel="ai-catalog" href="/.well-known/ai-catalog.json" type="application/json">
+  <link rel="describedby" href="/.well-known/agent-skills/index.json" type="application/json">
+  <link rel="service-doc" href="/llms.txt" type="text/plain">
+  {{ if .IsHome }}
+    <link rel="alternate" type="text/markdown" href="/index.md">
+  {{ else if and .Params.rawUrl (not .Params.isCompanion) }}
+    <link rel="alternate" type="text/markdown" href="{{ .Params.rawUrl }}">
+  {{ end }}
 
   {{/* Me */}}
   {{ with .Site.Params.Author.name }}

@@ -35,12 +35,18 @@
 </header>
 
 <section class="mb-8 space-y-4">
-  <div class="flex flex-col sm:flex-row gap-3">
+  <form id="catalogSearchForm"
+        toolname="search_skills"
+        tooldescription="Search and filter AI agent skills in the catalog by keyword or category"
+        onsubmit="return false;"
+        class="flex flex-col sm:flex-row gap-3">
     <div class="relative flex-1">
       <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-sm">🔍</span>
       <input
         type="text"
         id="searchInput"
+        name="query"
+        toolparamdescription="Keyword to match against skill name, description, category, or tags"
         placeholder="{{ $t.ui.searchPlaceholder }}"
         class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/90 dark:bg-neutral-800/80 text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-primary-500 transition-colors">
     </div>
@@ -48,6 +54,8 @@
       <label for="sortSelect" class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{{ $t.ui.sortLabel }}</label>
       <select
         id="sortSelect"
+        name="sort"
+        toolparamdescription="Sort order for skills: default, popularity, freshness, category, or alphabetical"
         autocomplete="off"
         class="px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/90 dark:bg-neutral-800/80 text-xs font-semibold text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-primary-500">
         <option value="default" selected>{{ $t.ui.sortDefault }}</option>
@@ -57,7 +65,7 @@
         <option value="alphabetical">{{ $t.ui.sortAlphabetical }}</option>
       </select>
     </div>
-  </div>
+  </form>
 
   <div class="flex flex-wrap items-center gap-1.5" id="categoryFilters">
     <button type="button" class="pill-btn active" data-cat="all">{{ $t.ui.allFilter }} ({{ len $sortedItems }})</button>

@@ -552,5 +552,154 @@
     if (modeBtn) {
       setGlobalCliMode(savedMode, modeBtn);
     }
+
+    // WebMCP (Model Context API) Registration for Browser Agents
+    var modelContext = (typeof document !== 'undefined' && document.modelContext)
+      ? document.modelContext
+      : ((typeof navigator !== 'undefined' && navigator.modelContext) ? navigator.modelContext : null);
+
+    if (modelContext && typeof modelContext.registerTool === 'function') {
+      var webMcpController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var registerOpts = webMcpController ? { signal: webMcpController.signal } : undefined;
+
+      function extractCardSkillInfo(card) {
+        var skillId = card.getAttribute('data-skill-id') || '';
+        var cat = card.getAttribute('data-category') || '';
+        var titleLink = card.querySelector('h2 a');
+        var name = titleLink ? titleLink.textContent.trim() : skillId;
+        var href = titleLink ? titleLink.getAttribute('href') : ('/' + cat + '/' + skillId + '/');
+        var descEl = card.querySelector('p');
+        var description = descEl ? descEl.textContent.trim() : (card.getAttribute('data-desc') || '');
+        return {
+          name: name,
+          category: cat,
+          description: description,
+          tags: (card.getAttribute('data-tags') || '').split(/\s+/).filter(Boolean),
+          detailUrl: new URL(href, window.location.origin).href,
+          rawUrl: window.location.origin + '/' + cat + '/' + skillId + '/SKILL.md',
+          indexMdUrl: window.location.origin + '/' + cat + '/' + skillId + '/index.md',
+          kungfuCommand: 'kungfu load ' + name,
+          installCommand: 'npx skills add danicat/skills --skill ' + name + ' -y'
+        };
+      }
+
+      try {
+        modelContext.registerTool({
+          name: 'search_skills',
+          description: 'Search and filter AI agent skills in the catalog by keyword and/or category.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: {
+                type: 'string',
+                description: 'Keyword to match against skill name, description, category, or tags.'
+              },
+              category: {
+                type: 'string',
+                description: 'Optional category ID filter (all, game-dev, media, coding, workflows, traits, writing, analytics).'
+              }
+            }
+          },
+          execute: async function(args) {
+            var q = (args && args.query ? String(args.query) : '').toLowerCase().trim();
+            var catFilter = (args && args.category ? String(args.category) : 'all').toLowerCase().trim();
+
+            if (searchInput && args && typeof args.query === 'string') {
+              searchInput.value = args.query;
+            }
+            if (catFilter && pillButtons.length > 0) {
+              var targetPill = document.querySelector('#categoryFilters .pill-btn[data-cat="' + catFilter + '"]');
+              if (targetPill) targetPill.click();
+            } else {
+              filterSkills();
+            }
+
+            var results = [];
+            cards.forEach(function(card) {
+              if (card.getAttribute('data-is-graveyard') === 'true') return;
+              var cat = card.getAttribute('data-category') || '';
+              var name = card.getAttribute('data-name') || '';
+              var desc = card.getAttribute('data-desc') || '';
+              var tags = card.getAttribute('data-tags') || '';
+              var matchesCat = !catFilter || catFilter === 'all' || cat === catFilter;
+              var matchesQ = !q || name.includes(q) || desc.includes(q) || cat.includes(q) || tags.includes(q);
+              if (matchesCat && matchesQ) {
+                results.push(extractCardSkillInfo(card));
+              }
+            });
+
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({ totalMatches: results.length, skills: results }, null, 2)
+              }]
+            };
+          }
+        }, registerOpts);
+
+        modelContext.registerTool({
+          name: 'list_categories',
+          description: 'List all AI agent skill categories available in the catalog with their skill counts.',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          },
+          execute: async function() {
+            var categories = [];
+            pillButtons.forEach(function(btn) {
+              var catId = btn.getAttribute('data-cat');
+              if (!catId || catId === 'all') return;
+              categories.push({
+                id: catId,
+                label: btn.textContent.trim(),
+                llmsTxtUrl: window.location.origin + '/' + catId + '/llms.txt'
+              });
+            });
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({ categories: categories, catalogUrl: window.location.origin + '/catalog.json' }, null, 2)
+              }]
+            };
+          }
+        }, registerOpts);
+
+        modelContext.registerTool({
+          name: 'get_skill_instructions',
+          description: 'Fetch the full raw SKILL.md markdown instructions for a specific skill by name.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              skillName: {
+                type: 'string',
+                description: 'The skill identifier (e.g. godoctor, ebitengineer, kungfu, deslopify).'
+              }
+            },
+            required: ['skillName']
+          },
+          execute: async function(args) {
+            var target = (args && args.skillName ? String(args.skillName) : '').toLowerCase().trim();
+            var matchedCard = document.querySelector('.skill-card[data-skill-id="' + target + '"]');
+            if (!matchedCard) {
+              throw new Error('Skill not found in catalog: ' + target);
+            }
+            var info = extractCardSkillInfo(matchedCard);
+            var res = await fetch(info.rawUrl);
+            if (!res.ok) {
+              throw new Error('Failed to fetch SKILL.md from ' + info.rawUrl + ' (HTTP ' + res.status + ')');
+            }
+            var markdown = await res.text();
+            return {
+              content: [{
+                type: 'text',
+                text: markdown
+              }]
+            };
+          }
+        }, registerOpts);
+      } catch (e) {
+        console.error('WebMCP tool registration error:', e);
+      }
+    }
   })();
 </script>

@@ -51,7 +51,11 @@ export function prepareHugoStatic() {
 
   const staticCatalogDest = path.join(ROOT_DIR, 'static', 'catalog.json');
   const staticLlmsDest = path.join(ROOT_DIR, 'static', 'llms.txt');
+  const staticIndexMdDest = path.join(ROOT_DIR, 'static', 'index.md');
+  const staticLlmsFullDest = path.join(ROOT_DIR, 'static', 'llms-full.txt');
   const wellKnownIndexDest = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills', 'index.json');
+  const wellKnownArdDest = path.join(ROOT_DIR, 'static', '.well-known', 'ai-catalog.json');
+  const wellKnownApiCatalogDest = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog');
 
   fs.mkdirSync(path.dirname(staticCatalogDest), { recursive: true });
   fs.mkdirSync(path.dirname(wellKnownIndexDest), { recursive: true });
@@ -59,9 +63,18 @@ export function prepareHugoStatic() {
   fs.copyFileSync(catalogSrc, staticCatalogDest);
   fs.copyFileSync(catalogSrc, wellKnownIndexDest);
   fs.copyFileSync(llmsSrc, staticLlmsDest);
+  fs.copyFileSync(llmsSrc, staticIndexMdDest);
+
+  for (const reqStatic of [staticLlmsFullDest, wellKnownArdDest, wellKnownApiCatalogDest]) {
+    if (!fs.existsSync(reqStatic)) {
+      throw new Error(
+        `[Fail-Fast] Missing generated static discovery file: ${ path.relative(ROOT_DIR, reqStatic) }. Run: node scripts/generate_catalog.mjs`
+      );
+    }
+  }
 
   console.log(
-    `✅ Synced catalog.json (${parsed.skills.length} skills) -> static/catalog.json & static/.well-known/agent-skills/index.json, and llms.txt -> static/llms.txt`
+    `✅ Synced catalog.json (${parsed.skills.length} skills) -> static/catalog.json & static/.well-known/agent-skills/index.json, llms.txt -> static/llms.txt & static/index.md`
   );
 }
 

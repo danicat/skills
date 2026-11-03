@@ -65,7 +65,7 @@ export function runAudit() {
 
   const htmlFiles = allSiteFiles.filter(f => f.endsWith('.html'));
   const mdFiles = getAllFiles(ROOT_DIR, ['.md']).filter(
-    f => !f.includes('/_site/') && !f.includes('/public/') && !f.includes('/themes/')
+    f => !f.includes('/_site/') && !f.includes('/public/') && !f.includes('/themes/') && !f.includes('/static/')
   );
 
   let htmlErrors = [];
@@ -74,11 +74,94 @@ export function runAudit() {
   let warnings = [];
   let uiIssues = [];
 
-  // 1. Root Assets
-  const requiredRootAssets = ['CNAME', 'index.html', '404.html', 'llms.txt', 'llms-full.txt', 'sitemap.xml', 'robots.txt', 'catalog.json'];
+  // 1. Root Assets & Agent Discovery Manifests
+  const requiredRootAssets = [
+    'CNAME',
+    'index.html',
+    'index.md',
+    '404.html',
+    'llms.txt',
+    'llms-full.txt',
+    'sitemap.xml',
+    'robots.txt',
+    'catalog.json',
+    '.well-known/agent-skills/index.json',
+    '.well-known/ai-catalog.json',
+    '.well-known/api-catalog',
+    '.well-known/api-catalog.json',
+  ];
   for (const asset of requiredRootAssets) {
     if (!existsExactFile(path.join(SITE_DIR, asset))) {
       assetErrors.push(`[Root Asset Missing] Missing required site asset: _site/${asset}`);
+    }
+  }
+
+  // 1b. Agent Readiness & Manifest Validation
+  const robotsTxtPath = path.join(SITE_DIR, 'robots.txt');
+  if (existsExactFile(robotsTxtPath)) {
+    const robotsTxt = fs.readFileSync(robotsTxtPath, 'utf-8');
+    if (robotsTxt.includes('Sitemap: https://skills.danicat.dev/llms.txt')) {
+      assetErrors.push('[Agent Readiness] _site/robots.txt must not declare llms.txt as an XML Sitemap');
+    }
+    if (!robotsTxt.includes('Agentmap: https://skills.danicat.dev/.well-known/ai-catalog.json')) {
+      assetErrors.push('[Agent Readiness] _site/robots.txt is missing Agentmap directive pointing to /.well-known/ai-catalog.json');
+    }
+  }
+
+  const aiCatalogPath = path.join(SITE_DIR, '.well-known/ai-catalog.json');
+  if (existsExactFile(aiCatalogPath)) {
+    try {
+      const aiCatalog = JSON.parse(fs.readFileSync(aiCatalogPath, 'utf-8'));
+      if (aiCatalog.specVersion !== '1.0') {
+        assetErrors.push('[Agent Readiness] .well-known/ai-catalog.json missing specVersion "1.0"');
+      }
+      if (aiCatalog.host?.identifier !== 'did:web:skills.danicat.dev') {
+        assetErrors.push('[Agent Readiness] .well-known/ai-catalog.json missing valid host.identifier');
+      }
+      if (!Array.isArray(aiCatalog.entries) || aiCatalog.entries.length === 0) {
+        assetErrors.push('[Agent Readiness] .well-known/ai-catalog.json entries array is empty');
+      } else {
+        for (const entry of aiCatalog.entries) {
+          if (!entry.identifier?.startsWith('urn:air:skills.danicat.dev:') || !entry.url || !Array.isArray(entry.representativeQueries)) {
+            assetErrors.push(`[Agent Readiness] Invalid ARD entry in .well-known/ai-catalog.json: ${entry.identifier || 'unknown'}`);
+          }
+        }
+      }
+    } catch (err) {
+      assetErrors.push(`[Agent Readiness] Invalid JSON in .well-known/ai-catalog.json: ${err.message}`);
+    }
+  }
+
+  const apiCatalogPath = path.join(SITE_DIR, '.well-known/api-catalog');
+  if (existsExactFile(apiCatalogPath)) {
+    try {
+      const apiCatalog = JSON.parse(fs.readFileSync(apiCatalogPath, 'utf-8'));
+      if (!Array.isArray(apiCatalog.linkset) || apiCatalog.linkset.length === 0) {
+        assetErrors.push('[Agent Readiness] .well-known/api-catalog linkset array is empty');
+      }
+    } catch (err) {
+      assetErrors.push(`[Agent Readiness] Invalid JSON in .well-known/api-catalog: ${err.message}`);
+    }
+  }
+
+  const expectedCategories = ['coding', 'game-dev', 'media', 'workflows', 'traits', 'writing', 'analytics'];
+  for (const cat of expectedCategories) {
+    if (!existsExactFile(path.join(SITE_DIR, cat, 'llms.txt'))) {
+      assetErrors.push(`[Agent Readiness] Missing per-category llms.txt: _site/${cat}/llms.txt`);
+    }
+    if (!existsExactFile(path.join(SITE_DIR, cat, 'index.md'))) {
+      assetErrors.push(`[Agent Readiness] Missing per-category index.md: _site/${cat}/index.md`);
+    }
+  }
+
+  const homeHtmlPath = path.join(SITE_DIR, 'index.html');
+  if (existsExactFile(homeHtmlPath)) {
+    const homeHtml = fs.readFileSync(homeHtmlPath, 'utf-8');
+    if (!homeHtml.includes('toolname="search_skills"') && !homeHtml.includes('toolname=search_skills')) {
+      uiIssues.push('[WebMCP] _site/index.html is missing declarative toolname="search_skills" form attribute');
+    }
+    if (!homeHtml.includes('registerTool')) {
+      uiIssues.push('[WebMCP] _site/index.html is missing imperative modelContext.registerTool registration');
     }
   }
 

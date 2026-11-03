@@ -123,6 +123,29 @@ function parseFrontmatterStrict(rawContent, relPath) {
   return data;
 }
 
+function extractMarkdownBody(rawContent) {
+  const norm = rawContent.replace(/\r\n/g, '\n');
+  if (norm.startsWith('---\n')) {
+    const trimmed = norm.slice(4);
+    const parts = trimmed.split('\n---\n');
+    if (parts.length > 1) {
+      return parts.slice(1).join('\n---\n').trim();
+    }
+  }
+  return norm.trim();
+}
+
+function buildRepresentativeQueries(skill) {
+  const queries = [
+    `load ${skill.name} skill instructions`,
+    skill.description.length > 120 ? `${skill.description.slice(0, 117)}...` : skill.description,
+  ];
+  if (skill.tags && skill.tags.length > 0) {
+    queries.push(`${skill.category} skill for ${skill.tags.slice(0, 3).join(', ')}`);
+  }
+  return queries;
+}
+
 export function generateCatalog() {
   const translations = readRequiredJson('data/translations.json');
   const freshnessMap = readRequiredJson('data/freshness.json');
@@ -135,6 +158,7 @@ export function generateCatalog() {
 
   const categories = [];
   const skills = [];
+  const skillBodies = new Map();
 
   for (const catDef of CATEGORY_ORDER) {
     const catTrans = enCategories[catDef.id];
@@ -189,7 +213,7 @@ export function generateCatalog() {
       const freshnessEmoji = f.tierEmoji;
       const lastCommitAt = f.lastCommitAt;
 
-      skills.push({
+      const skillEntry = {
         name: fm.name,
         type: 'skill-md',
         description: fm.description.trim(),
@@ -204,6 +228,14 @@ export function generateCatalog() {
         freshnessTier,
         freshnessEmoji,
         lastCommitAt,
+      };
+      skills.push(skillEntry);
+      skillBodies.set(`${catDef.id}/${folder}`, {
+        folder,
+        rawText,
+        markdownBody: extractMarkdownBody(rawText),
+        detailUrl: `${BASE_URL}/${catDef.id}/${folder}/`,
+        installCommand: `npx skills add danicat/skills --skill ${fm.name} -y`,
       });
     }
   }
@@ -225,7 +257,7 @@ export function generateCatalog() {
 
   const catalogJson = JSON.stringify(catalogManifest, null, 2) + '\n';
 
-  // Build llms.txt
+  // Build llms.txt & root /index.md
   let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.\n\n`;
   for (const cat of categories) {
     const catSkills = skills.filter((s) => s.category === cat.id);
@@ -240,6 +272,110 @@ export function generateCatalog() {
   llmsTxt += `- [Full Instructions Catalog](${BASE_URL}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
   llmsTxt += `- [Catalog Manifest](${BASE_URL}/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.\n`;
   llmsTxt += `- [Agent Skills Discovery Index](${BASE_URL}/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.\n`;
+  llmsTxt += `- [ARD Capability Manifest](${BASE_URL}/.well-known/ai-catalog.json): Agentic Resource Discovery (ARD) manifest with semantic representative queries.\n`;
+  llmsTxt += `- [API Catalog](${BASE_URL}/.well-known/api-catalog): RFC 9727 linkset catalog of machine-readable endpoints.\n`;
+  for (const cat of categories) {
+    const catSkills = skills.filter((s) => s.category === cat.id);
+    if (catSkills.length === 0) continue;
+    llmsTxt += `- [${cat.name} Index](${BASE_URL}/${cat.id}/llms.txt): Directory-scoped \`llms.txt\` index for ${cat.name} skills.\n`;
+  }
+
+  // Build llms-full.txt
+  let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n`;
+  for (const cat of categories) {
+    const catSkills = skills
+      .filter((s) => s.category === cat.id)
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name));
+    for (const s of catSkills) {
+      const folderSlug = s.url.split('/').slice(-2, -1)[0];
+      const meta = skillBodies.get(`${cat.id}/${folderSlug}`);
+      llmsFullTxt += `\n# Skill: ${s.name} (${s.category})\n\n`;
+      llmsFullTxt += `> ${s.description}\n\n`;
+      llmsFullTxt += `**Web Page**: ${meta.detailUrl}\n`;
+      llmsFullTxt += `**Source**: ${s.url}\n`;
+      llmsFullTxt += `**Version**: ${s.version}\n`;
+      llmsFullTxt += `**Digest**: ${s.digest}\n`;
+      llmsFullTxt += `**Install**: \`${meta.installCommand}\`\n\n`;
+      llmsFullTxt += `## Instructions\n\n${meta.markdownBody}\n\n---\n`;
+    }
+  }
+
+  // Build ARD Capability Manifest (/.well-known/ai-catalog.json)
+  const ardManifest = {
+    specVersion: '1.0',
+    host: {
+      displayName: 'Danicat Agent Skills Catalog',
+      identifier: 'did:web:skills.danicat.dev',
+    },
+    entries: [
+      {
+        identifier: 'urn:air:skills.danicat.dev:catalog:agent-skills',
+        displayName: 'Danicat Agent Skills Discovery Index',
+        type: 'application/json',
+        url: `${BASE_URL}/.well-known/agent-skills/index.json`,
+        representativeQueries: [
+          'discover all available AI agent skills in danicat/skills',
+          'list agent skill manifests and sha256 digests',
+          'find coding, game-dev, media, workflow, and writing skills',
+        ],
+      },
+      ...skills.map((s) => ({
+        identifier: `urn:air:skills.danicat.dev:skill:${s.name.toLowerCase()}`,
+        displayName: `${s.name} (${s.category})`,
+        type: 'text/markdown',
+        url: s.url,
+        representativeQueries: buildRepresentativeQueries(s),
+      })),
+    ],
+  };
+  const ardJson = JSON.stringify(ardManifest, null, 2) + '\n';
+
+  // Build RFC 9727 API Catalog (/.well-known/api-catalog)
+  const apiCatalogManifest = {
+    linkset: [
+      {
+        anchor: `${BASE_URL}/catalog.json`,
+        'service-desc': [
+          {
+            href: SCHEMA_URI,
+            type: 'application/schema+json',
+          },
+        ],
+        'service-doc': [
+          {
+            href: `${BASE_URL}/llms.txt`,
+            type: 'text/plain',
+          },
+        ],
+      },
+      {
+        anchor: `${BASE_URL}/.well-known/agent-skills/index.json`,
+        'service-desc': [
+          {
+            href: SCHEMA_URI,
+            type: 'application/schema+json',
+          },
+        ],
+        'service-doc': [
+          {
+            href: `${BASE_URL}/llms.txt`,
+            type: 'text/plain',
+          },
+        ],
+      },
+      {
+        anchor: `${BASE_URL}/.well-known/ai-catalog.json`,
+        'service-doc': [
+          {
+            href: `${BASE_URL}/llms.txt`,
+            type: 'text/plain',
+          },
+        ],
+      },
+    ],
+  };
+  const apiCatalogJson = JSON.stringify(apiCatalogManifest, null, 2) + '\n';
 
   // Write root artifacts
   const rootCatalogPath = path.join(ROOT_DIR, 'catalog.json');
@@ -247,20 +383,57 @@ export function generateCatalog() {
   fs.writeFileSync(rootCatalogPath, catalogJson, 'utf8');
   fs.writeFileSync(rootLlmsPath, llmsTxt, 'utf8');
 
-  // Sync to static/ and static/.well-known/agent-skills/index.json
+  // Sync to static/ and static/.well-known/
   const staticCatalogPath = path.join(ROOT_DIR, 'static', 'catalog.json');
   const staticLlmsPath = path.join(ROOT_DIR, 'static', 'llms.txt');
+  const staticLlmsFullPath = path.join(ROOT_DIR, 'static', 'llms-full.txt');
+  const staticRootIndexMdPath = path.join(ROOT_DIR, 'static', 'index.md');
   const wellKnownIndexPath = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills', 'index.json');
+  const wellKnownArdPath = path.join(ROOT_DIR, 'static', '.well-known', 'ai-catalog.json');
+  const wellKnownApiCatalogPath = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog');
+  const wellKnownApiCatalogJsonPath = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog.json');
 
   fs.mkdirSync(path.dirname(staticCatalogPath), { recursive: true });
   fs.mkdirSync(path.dirname(wellKnownIndexPath), { recursive: true });
 
   fs.writeFileSync(staticCatalogPath, catalogJson, 'utf8');
   fs.writeFileSync(staticLlmsPath, llmsTxt, 'utf8');
+  fs.writeFileSync(staticLlmsFullPath, llmsFullTxt, 'utf8');
+  fs.writeFileSync(staticRootIndexMdPath, llmsTxt, 'utf8');
   fs.writeFileSync(wellKnownIndexPath, catalogJson, 'utf8');
+  fs.writeFileSync(wellKnownArdPath, ardJson, 'utf8');
+  fs.writeFileSync(wellKnownApiCatalogPath, apiCatalogJson, 'utf8');
+  fs.writeFileSync(wellKnownApiCatalogJsonPath, apiCatalogJson, 'utf8');
+
+  // Write per-category llms.txt & index.md, and per-skill index.md fallbacks
+  for (const cat of categories) {
+    const catSkills = skills.filter((s) => s.category === cat.id);
+    if (catSkills.length === 0) continue;
+
+    let catLlmsTxt = `# ${cat.name} — danicat/skills\n\n> ${cat.description}\n\n## Skills\n\n`;
+    for (const s of catSkills) {
+      catLlmsTxt += `- [${s.name}](${s.url}): ${s.description}\n`;
+    }
+    catLlmsTxt += `\n## Optional\n\n`;
+    catLlmsTxt += `- [Root Catalog Index](${BASE_URL}/llms.txt): Main \`llms.txt\` directory across all categories.\n`;
+    catLlmsTxt += `- [Full Instructions Catalog](${BASE_URL}/llms-full.txt): Complete bundle of all skill instructions.\n`;
+
+    const staticCatDir = path.join(ROOT_DIR, 'static', cat.id);
+    fs.mkdirSync(staticCatDir, { recursive: true });
+    fs.writeFileSync(path.join(staticCatDir, 'llms.txt'), catLlmsTxt, 'utf8');
+    fs.writeFileSync(path.join(staticCatDir, 'index.md'), catLlmsTxt, 'utf8');
+
+    for (const s of catSkills) {
+      const folderSlug = s.url.split('/').slice(-2, -1)[0];
+      const meta = skillBodies.get(`${cat.id}/${folderSlug}`);
+      const staticSkillDir = path.join(staticCatDir, folderSlug);
+      fs.mkdirSync(staticSkillDir, { recursive: true });
+      fs.writeFileSync(path.join(staticSkillDir, 'index.md'), meta.rawText, 'utf8');
+    }
+  }
 
   console.log(
-    `✅ Generated catalog (${skills.length} active skills across ${categories.length} categories) -> catalog.json, static/catalog.json, static/.well-known/agent-skills/index.json, llms.txt, static/llms.txt`
+    `✅ Generated catalog (${skills.length} active skills across ${categories.length} categories) -> catalog.json, llms.txt, llms-full.txt, .well-known/{agent-skills/index.json,ai-catalog.json,api-catalog}, and /index.md fallbacks`
   );
 
   return catalogManifest;

@@ -704,6 +704,38 @@
     events.forEach(function(evt) {
       window.addEventListener(evt, onFirstInteraction, { once: true, passive: true });
     });
+
+    // WebMCP Registration for Skill Detail Pages
+    var modelContext = (typeof document !== 'undefined' && document.modelContext)
+      ? document.modelContext
+      : ((typeof navigator !== 'undefined' && navigator.modelContext) ? navigator.modelContext : null);
+
+    if (modelContext && typeof modelContext.registerTool === 'function') {
+      var webMcpController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var registerOpts = webMcpController ? { signal: webMcpController.signal } : undefined;
+      try {
+        modelContext.registerTool({
+          name: 'get_current_skill_markdown',
+          description: 'Return the raw SKILL.md markdown instructions and metadata for the skill on this page.',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          },
+          execute: async function() {
+            var payloadEl = document.getElementById('detail-markdown-payload');
+            var md = payloadEl ? JSON.parse(payloadEl.textContent) : '';
+            return {
+              content: [{
+                type: 'text',
+                text: md
+              }]
+            };
+          }
+        }, registerOpts);
+      } catch (e) {
+        console.error('WebMCP detail tool registration error:', e);
+      }
+    }
   })();
 </script>
 {{ end }}

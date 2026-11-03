@@ -30,5 +30,5 @@ User-agent: CCBot
 Allow: /
 
 Sitemap: {{ "sitemap.xml" | absURL }}
-Sitemap: {{ "llms.txt" | absURL }}
+Agentmap: {{ ".well-known/ai-catalog.json" | absURL }}
 
