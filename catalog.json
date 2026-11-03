@@ -5,7 +5,7 @@
   "url": "https://skills.danicat.dev",
   "repository": "https://github.com/danicat/skills",
   "totalSkills": 40,
-  "updatedAt": "2026-11-03T02:08:56Z",
+  "updatedAt": "2026-11-03T02:45:21Z",
   "categories": [
     {
       "id": "workflows",
@@ -100,10 +100,9 @@
     {
       "name": "intercom",
       "type": "skill-md",
-      "description": "Cross-session and cross-project agent communication in Antigravity using the native agentapi CLI and conversation_summaries.db. Discovers active sessions across workspaces, resolves target projectId metadata, bypasses cross-project PermissionDenied checks via environment sanitization, and delivers reactive messages with return-address headers. Activate when coordinating between independent agent sessions, handing off tasks across different projects or workspaces, discovering peer conversation IDs, or sending cross-project messages with agentapi.",
+      "description": "Cross-project and cross-session collaboration between Antigravity agents using the agentapi CLI and conversation_summaries.db. Finds active peer sessions across workspaces, looks up target project IDs, routes messages to other projects with return-address headers, and starts new sessions across workspaces. Activate when collaborating between agents in different projects, handing off tasks across workspaces, finding peer session IDs, or sending cross-project messages with agentapi.",
       "category": "workflows",
       "tags": [
-        "intercom",
         "agentapi",
         "cross-project",
         "multi-agent",
@@ -112,10 +111,10 @@
         "handoff"
       ],
       "author": "Daniela Petruzalek (daniela@danicat.dev)",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "license": "Apache-2.0",
       "url": "https://skills.danicat.dev/workflows/intercom/SKILL.md",
-      "digest": "sha256:8af8378f22887683673aa42906ed6b03eff151831434d7bdbb4c70ec7c9ab78f",
+      "digest": "sha256:938491225bc8e13a97207d0bf62f246521aa9e13874c97e74d8e335878cd628b",
       "freshnessScore": 94,
       "freshnessTier": "mint",
       "freshnessEmoji": "✨",
