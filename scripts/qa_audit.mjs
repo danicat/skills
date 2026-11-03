@@ -118,9 +118,7 @@ export function runAudit() {
           }
         }
         let artifactPath;
-        if (s.type === 'archive') {
-          artifactPath = path.join(SITE_DIR, '.well-known/agent-skills', s.url);
-        } else if (s.type === 'skill-md') {
+        if (s.type === 'archive' || s.type === 'skill-md') {
           const relUrl = s.url.replace('https://skills.danicat.dev/', '');
           artifactPath = path.join(SITE_DIR, relUrl);
         }

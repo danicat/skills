@@ -77,7 +77,14 @@ export function prepareHugoStatic() {
     }
 
     if (s.type === 'archive') {
-      const archivePath = path.join(wellKnownDir, s.url);
+      const archivePrefix = 'https://skills.danicat.dev/.well-known/agent-skills/';
+      if (!s.url.startsWith(archivePrefix)) {
+        throw new Error(
+          `[Fail-Fast] Archive skill "${s.name}" url must start with "${archivePrefix}", got "${s.url}"`
+        );
+      }
+      const archiveFileName = s.url.slice(archivePrefix.length);
+      const archivePath = path.join(wellKnownDir, archiveFileName);
       if (!fs.existsSync(archivePath)) {
         throw new Error(`[Fail-Fast] Missing archive artifact for skill "${s.name}": ${archivePath}`);
       }

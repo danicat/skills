@@ -334,10 +334,11 @@ export function generateCatalog() {
 
       if (isMultiFile) {
         entryType = 'archive';
-        entryUrl = `${folder}.tar.gz`;
+        const archiveFileName = `${folder}.tar.gz`;
+        entryUrl = `${BASE_URL}/.well-known/agent-skills/${archiveFileName}`;
         const archiveBuffer = buildDeterministicTarGz(files);
         digestHex = crypto.createHash('sha256').update(archiveBuffer).digest('hex');
-        fs.writeFileSync(path.join(wellKnownDir, entryUrl), archiveBuffer);
+        fs.writeFileSync(path.join(wellKnownDir, archiveFileName), archiveBuffer);
         archiveCount++;
       } else {
         entryType = 'skill-md';

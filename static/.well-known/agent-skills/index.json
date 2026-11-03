@@ -12,7 +12,7 @@
       "name": "double-diamond",
       "type": "archive",
       "description": "Universal multi-agent orchestration workflow based on the Double Diamond framework (Inception -> Discovery -> Definition -> Development -> Delivery). Coordinates parallel subagents with context isolation to separate problem-space research from solution-space implementation. Activate for complex, high-ambiguity initiatives across software engineering, in-depth research, long-form writing, legal analysis, or product strategy requiring structured human alignment gates.",
-      "url": "double-diamond.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/double-diamond.tar.gz",
       "digest": "sha256:de808b065409a8921c8fcfa5c6728d80dc20fcc968c51891a208c3ee6275d3fe"
     },
     {
@@ -26,7 +26,7 @@
       "name": "parallel",
       "type": "archive",
       "description": "General-purpose task parallelization and agent scaling engine. Orchestrates concurrent subagents for ANY task (research, analysis, writing, coding, planning, evaluation) across arbitrary parallel budgets. Enforces immediate main session unblocking, flat orthogonal task partitioning, and agent racing / tournament comparisons. Activate whenever the user invokes /parallel, requests parallel execution, specifies a DOP/budget, or wants concurrent agent swarms.",
-      "url": "parallel.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/parallel.tar.gz",
       "digest": "sha256:5c1173364f31bef6f42ebac6a74f95062b6aace088d790c7f1f405e80e242b36"
     },
     {
@@ -40,7 +40,7 @@
       "name": "skill-optimizer",
       "type": "archive",
       "description": "Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.",
-      "url": "skill-optimizer.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/skill-optimizer.tar.gz",
       "digest": "sha256:159fa3808736210e3e8063176b24d165b9e912c068dfcdfabaac5ef87d32c531"
     },
     {
@@ -54,7 +54,7 @@
       "name": "swarm-coding",
       "type": "archive",
       "description": "Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, Single Writer file boundaries, and strict parent-child communication. Activate on swarm-coding(N), /swarm-coding <N>, /swarm <N>, or any mention of 'swarm' or multi-agent team coordination across technical domains.",
-      "url": "swarm-coding.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/swarm-coding.tar.gz",
       "digest": "sha256:32db40e4acdf127e268e36c340a5a96aaa5b4c7092180980f30e6bda80199e7d"
     },
     {
@@ -89,14 +89,14 @@
       "name": "buffer-analytics",
       "type": "archive",
       "description": "Collect and analyze social media data from Buffer in a local SQLite database. Stores your full post history and metrics across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view reports on engagement, clicks, and views. Activate when you need to analyze social media performance, find the best days or times to post, identify top-performing content, or query Buffer data with SQL.",
-      "url": "buffer-analytics.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer-analytics.tar.gz",
       "digest": "sha256:39ed7398f07aeac0b69939b776269a0d9abf5b40d64334ad990d546088735945"
     },
     {
       "name": "google-analytics",
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
-      "url": "google-analytics.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
       "digest": "sha256:0d9d500f15be6a2a6b86e6bc8a6afefcfcfaf9875d9b37984a860d7b7c34bbdb"
     },
     {
@@ -110,49 +110,49 @@
       "name": "search-analytics",
       "type": "archive",
       "description": "Collect and analyze Google Search Console organic search data in a local SQLite database. Stores clicks, impressions, click-through rates (CTR), average ranking positions, and landing pages so you can run SQL queries or view performance reports. Activate when analyzing Google Search traffic, tracking keyword rankings, finding SEO content optimization opportunities, or querying Search Console data with SQL.",
-      "url": "search-analytics.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/search-analytics.tar.gz",
       "digest": "sha256:7782a33bed193258935fc439779c74458df2c4a0d82a2323d585048e4f7edb3a"
     },
     {
       "name": "skill-analytics",
       "type": "archive",
       "description": "Mine and analyze Agent Skill usage, Context-Tax ROI, and trigger attribution from conversation transcripts in a local SQLite database. Scans conversation transcripts and installed skill tiers (built-in, plugin, global, workspace, and catalog) to detect zero-use shelfware and tune activation descriptions. Activate when analyzing skill usage over time, auditing system-prompt token overhead, measuring autonomous vs. explicit (::skill or //skill) triggers, or querying conversation skill events with SQL.",
-      "url": "skill-analytics.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/skill-analytics.tar.gz",
       "digest": "sha256:ffc1c959a1304f296e955ef767db7bb6ead1abf88460132b537f6e0899af040e"
     },
     {
       "name": "ebitengineer",
       "type": "archive",
       "description": "Engineering architecture and best practices for building 2D games in Go using Ebitengine (v2). Covers modular game architecture, scene state machines, virtual resolution scaling, delta-time physics, zero-allocation draw loops, Kage shaders, and WebAssembly audio synchronization. Activate when designing, building, optimizing, or debugging 2D games in Go, implementing game systems with Ebitengine, or compiling games to WebAssembly.",
-      "url": "ebitengineer.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/ebitengineer.tar.gz",
       "digest": "sha256:b025690359d2e4d72d27632ca2272056c3a7a26bad125596783d82c3a20db3b6"
     },
     {
       "name": "game-design",
       "type": "archive",
       "description": "Interactive game design workflow and Game Design Document (GDD) authoring guide for 2D games. Structures game ideation through interactive probing interviews, defining core gameplay loops, win and loss conditions, control schemes, visual asset pipelines, and audio strategies into a clean GDD.md. Activate when conceptualizing a new game, defining gameplay mechanics, conducting game design interviews (/grill-me), or authoring a Game Design Document.",
-      "url": "game-design.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/game-design.tar.gz",
       "digest": "sha256:e1247b280aba7a7e76b415f79580abc4d1cc268a388f6bc60b51e022aa47992e"
     },
     {
       "name": "procedural-art",
       "type": "archive",
       "description": "Pure-code procedural graphics, sprite generation, and visual effects (VFX) guide for 2D games. Generates sprites, tilesets, particle systems, and vector shapes in memory without external image files, enforcing 2D matrix transformation order, sub-frame animation easing, and pre-allocated particle pools. Activate when creating procedural 2D sprites, building zero-asset games, designing particle effects, or implementing 2D matrix transformations.",
-      "url": "procedural-art.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-art.tar.gz",
       "digest": "sha256:eb72f4666647acc407e3b9a72407a74c558408c1e9821e56816aedf628d2d713"
     },
     {
       "name": "procedural-composer",
       "type": "archive",
       "description": "Pure-code procedural audio synthesis guide for sound effects (SFX) and polyphonic background music (BGM) in games. Generates 16-bit stereo PCM audio in memory without external audio files, featuring multi-channel polyphonic composition, ADSR envelopes, frequency modulation, and declarative JSON sound definitions with a CLI player and WAV exporter. Activate when synthesizing sound effects, composing chiptune background music, building zero-asset audio engines, or exporting procedural sounds to WAV.",
-      "url": "procedural-composer.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-composer.tar.gz",
       "digest": "sha256:3f37328d99f11af4d71f0d293b6bf6ea83118a667b2bfee7a77f303420910437"
     },
     {
       "name": "sprite-animation",
       "type": "archive",
       "description": "2D sprite sheet management, frame animation sequencing, and Aseprite integration guide for games. Covers sprite grid slicing, animation state machines (idle, walk, attack, death), frame duration timing, tag loops, and Go animation controllers in Ebitengine. Activate when slicing sprite sheets, configuring character animations, integrating Aseprite files (.ase/.aseprite), or writing game animation controllers.",
-      "url": "sprite-animation.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/sprite-animation.tar.gz",
       "digest": "sha256:a666086ab6adfb5d02e9573b3d5b4872cfb6bb3dc8c04879a6d2c582dfe599c5"
     },
     {
@@ -166,28 +166,28 @@
       "name": "gemini-omni",
       "type": "archive",
       "description": "Conversational video generation, multimodal video editing, first-and-last-frame interpolation, multi-reference video synthesis, and video extension using Gemini Omni 1.1 Flash (gemini-omni-1.1-flash) via the gemini-api CLI and Google Gen AI SDKs. Generates 3s-10s video clips (extendable up to 40s) from 360p to 4K with native synchronized audio, dialogue, and sound effects. Activate when generating videos from text, animating starting/ending frames, editing existing videos conversationally, or extending video clips.",
-      "url": "gemini-omni.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/gemini-omni.tar.gz",
       "digest": "sha256:e2644bee4590e71f1c766e785f5cefea889238071b44dae1076000494d7b5f22"
     },
     {
       "name": "lyria",
       "type": "archive",
       "description": "Generative music and audio synthesis from text prompts or reference images using Google Lyria models via the gemini-api CLI and Google Gen AI SDKs. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3.5 and lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.",
-      "url": "lyria.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/lyria.tar.gz",
       "digest": "sha256:3e5c7556b197105c0962014510285ee752a85420088133b294fa57a16861ce23"
     },
     {
       "name": "nano-banana",
       "type": "archive",
       "description": "Conversational image generation and multimodal image editing using Google Nano Banana models via the gemini-api CLI and Google Gen AI SDKs. Generates high-resolution images (512px, 1K, 2K, 4K), performs style transfers and mask-based image edits (\"banana this\"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.",
-      "url": "nano-banana.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/nano-banana.tar.gz",
       "digest": "sha256:fd578b0da251ec4c85ee108dc4c38fdc9783b4e2d0ded8605cf139b19ce7929d"
     },
     {
       "name": "veo",
       "type": "archive",
       "description": "Cinematic video generation with native synchronized audio, first-and-last-frame interpolation, multi-image asset direction, and scene extension using Google Veo models (veo-3.1-generate-preview, veo-3.1-fast-generate-preview, veo-3.1-lite-generate-preview, veo-3.0-generate-001) and the gemini-api CLI or Google Gen AI SDKs. Generates 4s, 6s, or 8s clips at 720p, 1080p, or 4K (extendable up to 148s). Activate when generating cinematic Veo videos, interpolating keyframes, directing scenes with up to 3 asset references, or extending Veo clips.",
-      "url": "veo.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/veo.tar.gz",
       "digest": "sha256:2a0d35f2b5da4457f8528389a7c0a5de91e76dcccab6c51ed8b1f70e8d46244b"
     },
     {
@@ -208,28 +208,28 @@
       "name": "godoctor",
       "type": "archive",
       "description": "Developer tooling and architectural safety rules for Go. Orchestrates high-level Go toolchain and static analysis utilities (gofmt, goimports, go vet, modernize, golangci-lint, deadcode), guards edits with compiler rollback gates, eliminates blind spots via Selene mutation testing, and enables fast test and coverage analytics with TestQuery SQLite queries. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness, or enforcing idiomatic Go standards.",
-      "url": "godoctor.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/godoctor.tar.gz",
       "digest": "sha256:624f66fddeaa7f8dad15fc018c4f9dbe2210ceb60a3a1ec8afa8c5bf209954a4"
     },
     {
       "name": "google-oss",
       "type": "archive",
       "description": "Compliance and licensing guide for Google Open Source repositories and personal open-source projects published by Googlers. Enforces source file license headers (such as Apache-2.0) using addlicense, verifies license files, inserts required non-official product disclaimers, and audits pre-release compliance. Activate when preparing Google Open Source or Googler personal projects for release, applying copyright headers, or adding required disclaimers.",
-      "url": "google-oss.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/google-oss.tar.gz",
       "digest": "sha256:cce19260d10dd7c459122cabc137c9a48dfd5949e34ca8737f14b9e2f02507a8"
     },
     {
       "name": "latest-version",
       "type": "archive",
       "description": "Query and verify latest stable package versions from official registries (npm, PyPI, Go proxy, Cargo, RubyGems) and Gemini models. Resolves accurate version constraints, checks for deprecated or yanked packages, and prevents version guessing. Activate when adding or updating dependencies, initializing new projects, editing package manifests (such as package.json, go.mod, pyproject.toml, Cargo.toml), or selecting Gemini models.",
-      "url": "latest-version.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/latest-version.tar.gz",
       "digest": "sha256:20ca2ed8b6cda597ccc0955940527c5c20fb86db84544d7bffc2edaa68f8326b"
     },
     {
       "name": "pyhd",
       "type": "archive",
       "description": "Modern Python development workflow, project architecture, and code quality guidelines using uv, Ruff, and pytest. Enforces strict virtual environment isolation with uv, modern Python 3.10+ typing, AST-safe linting and formatting with Ruff, and automated pytest verification loops. Activate when creating, refactoring, testing, or building Python code, managing dependencies with uv, or configuring pyproject.toml.",
-      "url": "pyhd.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/pyhd.tar.gz",
       "digest": "sha256:6c86df1c5e41e6e2df777d6edb38e235248d10c5c24147297ca2a524fca80054"
     },
     {
@@ -243,21 +243,21 @@
       "name": "buffer",
       "type": "archive",
       "description": "Manage, draft, schedule, and publish social media content across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) using the Buffer CLI (@bufferapp/cli). Covers account and channel inspection, queue scheduling with dry-run safety validation, draft ideas management, and GraphQL schema introspection. Activate when scheduling social media posts, inspecting Buffer channels, automating social publishing, or managing social queues.",
-      "url": "buffer.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer.tar.gz",
       "digest": "sha256:ae297044e3238d331b05b3fd1455819c24b9b862f075e1c502024613fe658e5b"
     },
     {
       "name": "deslopify",
       "type": "archive",
       "description": "Editorial guidelines and rewriting workflow for purging text of AI clichés, tropes, and formulaic filler. Identifies and removes overused AI vocabulary (such as delve, tapestry, seamlessly), negative parallelism, dramatic countdowns, and repetitive summaries to restore natural human cadence. Activate when rewriting text to remove AI tells, polishing drafts to sound authentically human, eliminating filler tropes, or auditing prose style.",
-      "url": "deslopify.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/deslopify.tar.gz",
       "digest": "sha256:df8144b71eb3de48f02d0980a764a4e867c79445654d639a7ae154aff0554e9b"
     },
     {
       "name": "google-blog-style",
       "type": "archive",
       "description": "Style guide, legal compliance standards, and validation workflow for the Google Developers Blog. Enforces technical readability targets (Fog Index 12–15), professional tone, inclusive language, legal compliance, and automated style linting via Vale. Activate when drafting, editing, reviewing, or validating technical blog posts and articles for the Google Developers Blog.",
-      "url": "google-blog-style.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/google-blog-style.tar.gz",
       "digest": "sha256:0c1547713b9b7a8ff2cbfd6489a04c27c90b2a3c5639b2a016546434907e59a7"
     },
     {
@@ -271,14 +271,14 @@
       "name": "seo-optimizer",
       "type": "archive",
       "description": "Technical SEO and Generative Engine Optimization (GEO) guide for developer docs and engineering blogs. Optimizes content for search engines and AI answer engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from search description metadata, verifies JSON-LD structured data (TechArticle), and maintains llms.txt. Activate when auditing technical SEO, optimizing articles for AI answer engines (GEO), generating llms.txt, or structuring search metadata.",
-      "url": "seo-optimizer.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/seo-optimizer.tar.gz",
       "digest": "sha256:522053dfd9f43f1a8ad2a924f404f630e034525b82931563ef83ec44f55f5e4d"
     },
     {
       "name": "social-copy",
       "type": "archive",
       "description": "Editorial workflow and platform playbooks for drafting developer-native social media copy and campaigns. Extracts technical evidence via git log inspections or /grill-me interviews, establishes a canonical foundation narrative (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate when drafting social media posts, writing release announcements, authoring technical threads, or running developer campaigns.",
-      "url": "social-copy.tar.gz",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/social-copy.tar.gz",
       "digest": "sha256:0e9ddb1f1a1c1ae916ea83b4e72384c1a2e6dc90c17ddba64a0bb0c97e113972"
     }
   ]
