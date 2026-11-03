@@ -15,7 +15,6 @@
 ## Optional
 
 - [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all {{ len $allSkills }} skill instructions in a single file for large-context models.
-- [Catalog Manifest](https://skills.danicat.dev/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.
 - [Agent Skills Discovery Index](https://skills.danicat.dev/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.
 - [ARD Capability Manifest](https://skills.danicat.dev/.well-known/ai-catalog.json): Agentic Resource Discovery (ARD) manifest with semantic representative queries.
 - [API Catalog](https://skills.danicat.dev/.well-known/api-catalog): RFC 9727 linkset catalog of machine-readable endpoints.

@@ -9,9 +9,10 @@
 {{- end }}
 <meta name="twitter:creator" content="@danicat83">
 <link rel="describedby" href="{{ absLangURL "llms.txt" }}">
-<link rel="alternate" type="application/json" href="{{ absURL "catalog.json" }}" title="Agent Skills">
 <link rel="agent-skills" type="application/json" href="{{ absURL ".well-known/agent-skills/index.json" }}">
-{{- if and .IsPage (not .Params.isCompanion) (not .Params.isSpecialPage) }}
+{{- if .IsHome }}
+<link rel="alternate" type="text/markdown" href="{{ absURL "index.md" }}" title="Agent Skills Catalog (Markdown)">
+{{- else if and .IsPage (not .Params.isCompanion) (not .Params.isSpecialPage) }}
 <link rel="alternate" type="text/markdown" href="{{ .Params.rawUrl }}" title="{{ .Params.skillName }} (SKILL.md)">
 {{- else if and .IsPage .Params.isCompanion (not .Params.isSpecialPage) }}
 <link rel="alternate" type="text/markdown" href="https://skills.danicat.dev/{{ .Params.category }}/{{ .Params.skillFolder }}/{{ .Params.relPath }}" title="{{ .Params.refTitle | default .Title }} (Markdown)">

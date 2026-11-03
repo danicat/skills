@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
@@ -84,7 +85,6 @@ export function runAudit() {
     'llms-full.txt',
     'sitemap.xml',
     'robots.txt',
-    'catalog.json',
     '.well-known/agent-skills/index.json',
     '.well-known/ai-catalog.json',
     '.well-known/api-catalog',
@@ -93,6 +93,48 @@ export function runAudit() {
   for (const asset of requiredRootAssets) {
     if (!existsExactFile(path.join(SITE_DIR, asset))) {
       assetErrors.push(`[Root Asset Missing] Missing required site asset: _site/${asset}`);
+    }
+  }
+  if (existsExactFile(path.join(SITE_DIR, 'catalog.json'))) {
+    assetErrors.push('[Deprecated Asset Present] Deprecated _site/catalog.json must not be emitted');
+  }
+
+  // Validate RFC v0.2.0 Discovery Index and Archive/Skill-MD Artifacts
+  const discoveryIndexPath = path.join(SITE_DIR, '.well-known/agent-skills/index.json');
+  if (existsExactFile(discoveryIndexPath)) {
+    try {
+      const discoveryIndex = JSON.parse(fs.readFileSync(discoveryIndexPath, 'utf-8'));
+      const allowedTop = new Set(['$schema', 'skills']);
+      for (const k of Object.keys(discoveryIndex)) {
+        if (!allowedTop.has(k)) {
+          assetErrors.push(`[Discovery RFC Violation] Unexpected top-level key "${k}" in .well-known/agent-skills/index.json`);
+        }
+      }
+      const allowedSkillKeys = new Set(['name', 'type', 'description', 'url', 'digest']);
+      for (const s of discoveryIndex.skills || []) {
+        for (const k of Object.keys(s)) {
+          if (!allowedSkillKeys.has(k)) {
+            assetErrors.push(`[Discovery RFC Violation] Skill "${s.name}" has unexpected property "${k}"`);
+          }
+        }
+        let artifactPath;
+        if (s.type === 'archive') {
+          artifactPath = path.join(SITE_DIR, '.well-known/agent-skills', s.url);
+        } else if (s.type === 'skill-md') {
+          const relUrl = s.url.replace('https://skills.danicat.dev/', '');
+          artifactPath = path.join(SITE_DIR, relUrl);
+        }
+        if (!artifactPath || !existsExactFile(artifactPath)) {
+          assetErrors.push(`[Discovery Artifact 404] Skill "${s.name}" (${s.type}) artifact missing at ${artifactPath}`);
+        } else {
+          const actualDigest = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync(artifactPath)).digest('hex');
+          if (actualDigest !== s.digest) {
+            assetErrors.push(`[Discovery Digest Mismatch] Skill "${s.name}" expected ${s.digest}, got ${actualDigest}`);
+          }
+        }
+      }
+    } catch (err) {
+      assetErrors.push(`[Discovery Index Parse Error] ${err.message}`);
     }
   }
 

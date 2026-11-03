@@ -18,6 +18,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -26,7 +27,6 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 
 const SCHEMA_URI = 'https://schemas.agentskills.io/discovery/0.2.0/schema.json';
 const BASE_URL = 'https://skills.danicat.dev';
-const REPO_URL = 'https://github.com/danicat/skills';
 
 const CATEGORY_ORDER = [
   { id: 'workflows', emoji: '🔄' },
@@ -146,19 +146,135 @@ function buildRepresentativeQueries(skill) {
   return queries;
 }
 
+/**
+ * Recursively collects all files in a skill directory relative to skillDir,
+ * sorted lexicographically for deterministic archive creation.
+ */
+function collectSkillFiles(skillDir, relPrefix = '') {
+  const entries = fs.readdirSync(skillDir, { withFileTypes: true }).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+  const files = [];
+  for (const entry of entries) {
+    if (entry.name === '.DS_Store' || entry.name.startsWith('.')) continue;
+    const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    const fullPath = path.join(skillDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectSkillFiles(fullPath, relPath));
+    } else if (entry.isFile()) {
+      files.push({ relPath, fullPath });
+    }
+  }
+  return files;
+}
+
+/**
+ * Creates a deterministic POSIX USTAR tar header (512 bytes) with mtime=0, uid=0, gid=0.
+ */
+function createUstarHeader(relPath, size, mode) {
+  const header = Buffer.alloc(512, 0);
+
+  let name = relPath;
+  let prefix = '';
+  if (Buffer.byteLength(name, 'utf8') > 100) {
+    const slashIdx = name.lastIndexOf('/');
+    if (slashIdx === -1) {
+      throw new Error(`[Fail-Fast] Tar entry filename exceeds 100 bytes: ${relPath}`);
+    }
+    prefix = name.slice(0, slashIdx);
+    name = name.slice(slashIdx + 1);
+    if (Buffer.byteLength(name, 'utf8') > 100 || Buffer.byteLength(prefix, 'utf8') > 155) {
+      throw new Error(`[Fail-Fast] Tar entry path exceeds USTAR limits: ${relPath}`);
+    }
+  }
+
+  const writeOctal = (val, offset, length) => {
+    const str = val.toString(8).padStart(length - 1, '0') + '\0';
+    header.write(str, offset, length, 'ascii');
+  };
+
+  header.write(name, 0, 100, 'utf8');
+  writeOctal(mode, 100, 8);
+  writeOctal(0, 108, 8); // uid = 0
+  writeOctal(0, 116, 8); // gid = 0
+  writeOctal(size, 124, 12);
+  writeOctal(0, 136, 12); // mtime = 0 (1970-01-01T00:00:00Z)
+  header.fill(0x20, 148, 156); // checksum placeholder (8 spaces)
+  header.write('0', 156, 1, 'ascii'); // typeflag = '0' (regular file)
+  header.write('ustar\0', 257, 6, 'ascii');
+  header.write('00', 263, 2, 'ascii');
+  header.write('root', 265, 32, 'ascii');
+  header.write('root', 297, 32, 'ascii');
+  if (prefix) {
+    header.write(prefix, 345, 155, 'utf8');
+  }
+
+  let chksum = 0;
+  for (let i = 0; i < 512; i++) {
+    chksum += header[i];
+  }
+  const chkStr = chksum.toString(8).padStart(6, '0') + '\0 ';
+  header.write(chkStr, 148, 8, 'ascii');
+
+  return header;
+}
+
+/**
+ * Builds a deterministic .tar.gz buffer (gzip OS byte = 3 Unix, mtime = 0).
+ */
+function buildDeterministicTarGz(files) {
+  const blocks = [];
+  for (const file of files) {
+    const content = fs.readFileSync(file.fullPath);
+    const isExecutable = file.relPath.startsWith('scripts/') && /\.(sh|py|mjs|js)$/.test(file.relPath);
+    const mode = isExecutable ? 0o755 : 0o644;
+    const header = createUstarHeader(file.relPath, content.length, mode);
+    blocks.push(header);
+    blocks.push(content);
+    const remainder = content.length % 512;
+    if (remainder !== 0) {
+      blocks.push(Buffer.alloc(512 - remainder, 0));
+    }
+  }
+  // End-of-archive marker: two 512-byte zero blocks
+  blocks.push(Buffer.alloc(1024, 0));
+
+  const tarBuffer = Buffer.concat(blocks);
+  const gzBuffer = zlib.gzipSync(tarBuffer, { level: 9 });
+  // Zero out gzip header mtime (bytes 4..7) and normalize OS byte (byte 9 = 3 for Unix)
+  gzBuffer[4] = 0;
+  gzBuffer[5] = 0;
+  gzBuffer[6] = 0;
+  gzBuffer[7] = 0;
+  gzBuffer[9] = 3;
+  return gzBuffer;
+}
+
 export function generateCatalog() {
   const translations = readRequiredJson('data/translations.json');
   const freshnessMap = readRequiredJson('data/freshness.json');
-  const graveyard = readRequiredJson('data/graveyard.json');
 
   const enCategories = translations?.en?.categories;
   if (!enCategories) {
     throw new Error('[Fail-Fast] Missing en.categories in data/translations.json');
   }
 
+  const wellKnownDir = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills');
+  fs.mkdirSync(wellKnownDir, { recursive: true });
+
+  // Clean up any stale .tar.gz archives in static/.well-known/agent-skills/
+  for (const existing of fs.readdirSync(wellKnownDir)) {
+    if (existing.endsWith('.tar.gz')) {
+      fs.unlinkSync(path.join(wellKnownDir, existing));
+    }
+  }
+
   const categories = [];
-  const skills = [];
+  const discoverySkills = [];
+  const richSkills = [];
   const skillBodies = new Map();
+  let archiveCount = 0;
+  let skillMdCount = 0;
 
   for (const catDef of CATEGORY_ORDER) {
     const catTrans = enCategories[catDef.id];
@@ -185,6 +301,7 @@ export function generateCatalog() {
       .sort();
 
     for (const folder of skillFolders) {
+      const skillDir = path.join(catDir, folder);
       const relSkillPath = `${catDef.id}/${folder}/SKILL.md`;
       const fullSkillPath = path.join(ROOT_DIR, relSkillPath);
       if (!fs.existsSync(fullSkillPath)) {
@@ -193,7 +310,6 @@ export function generateCatalog() {
 
       const rawBytes = fs.readFileSync(fullSkillPath);
       const rawText = rawBytes.toString('utf8');
-      const sha256Hex = crypto.createHash('sha256').update(rawBytes).digest('hex');
       const fm = parseFrontmatterStrict(rawText, relSkillPath);
 
       const tags = fm.metadata.tags
@@ -202,34 +318,58 @@ export function generateCatalog() {
         .filter(Boolean);
 
       const skillId = fm.name.toLowerCase();
-      const f = freshnessMap[skillId];
-      if (!f) {
+      if (!freshnessMap[skillId]) {
         throw new Error(
           `[Fail-Fast] Skill "${skillId}" is missing from data/freshness.json. Run: node scripts/update_freshness.mjs`
         );
       }
-      const freshnessScore = f.isUnproven ? null : Number(f.score);
-      const freshnessTier = f.tier;
-      const freshnessEmoji = f.tierEmoji;
-      const lastCommitAt = f.lastCommitAt;
 
-      const skillEntry = {
+      const files = collectSkillFiles(skillDir);
+      const isMultiFile = files.some((f) => f.relPath !== 'SKILL.md');
+      const skillMdUrl = `${BASE_URL}/${catDef.id}/${folder}/SKILL.md`;
+
+      let entryType;
+      let entryUrl;
+      let digestHex;
+
+      if (isMultiFile) {
+        entryType = 'archive';
+        entryUrl = `${folder}.tar.gz`;
+        const archiveBuffer = buildDeterministicTarGz(files);
+        digestHex = crypto.createHash('sha256').update(archiveBuffer).digest('hex');
+        fs.writeFileSync(path.join(wellKnownDir, entryUrl), archiveBuffer);
+        archiveCount++;
+      } else {
+        entryType = 'skill-md';
+        entryUrl = skillMdUrl;
+        digestHex = crypto.createHash('sha256').update(rawBytes).digest('hex');
+        skillMdCount++;
+      }
+
+      // Strict Cloudflare Agent Skills Discovery RFC v0.2.0 entry (5 fields only)
+      discoverySkills.push({
         name: fm.name,
-        type: 'skill-md',
+        type: entryType,
+        description: fm.description.trim(),
+        url: entryUrl,
+        digest: `sha256:${digestHex}`,
+      });
+
+      richSkills.push({
+        name: fm.name,
+        folder,
+        type: entryType,
         description: fm.description.trim(),
         category: fm.metadata.category,
         tags,
         author: fm.metadata.author,
         version: fm.metadata.version,
         license: fm.license,
-        url: `${BASE_URL}/${catDef.id}/${folder}/SKILL.md`,
-        digest: `sha256:${sha256Hex}`,
-        freshnessScore,
-        freshnessTier,
-        freshnessEmoji,
-        lastCommitAt,
-      };
-      skills.push(skillEntry);
+        url: skillMdUrl,
+        discoveryUrl: entryUrl,
+        digest: `sha256:${digestHex}`,
+      });
+
       skillBodies.set(`${catDef.id}/${folder}`, {
         folder,
         rawText,
@@ -240,27 +380,18 @@ export function generateCatalog() {
     }
   }
 
-  const updatedAt = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
-
-  const catalogManifest = {
+  // Strict Cloudflare Agent Skills Discovery RFC v0.2.0 top-level object ($schema + skills only)
+  const discoveryManifest = {
     $schema: SCHEMA_URI,
-    name: 'danicat/skills',
-    title: 'Agent Skills',
-    url: BASE_URL,
-    repository: REPO_URL,
-    totalSkills: skills.length,
-    updatedAt,
-    categories,
-    skills,
-    graveyard,
+    skills: discoverySkills,
   };
 
-  const catalogJson = JSON.stringify(catalogManifest, null, 2) + '\n';
+  const indexJson = JSON.stringify(discoveryManifest, null, 2) + '\n';
 
   // Build llms.txt & root /index.md
   let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.\n\n`;
   for (const cat of categories) {
-    const catSkills = skills.filter((s) => s.category === cat.id);
+    const catSkills = richSkills.filter((s) => s.category === cat.id);
     if (catSkills.length === 0) continue;
     llmsTxt += `## ${cat.name}\n\n`;
     for (const s of catSkills) {
@@ -269,13 +400,12 @@ export function generateCatalog() {
     llmsTxt += `\n`;
   }
   llmsTxt += `## Optional\n\n`;
-  llmsTxt += `- [Full Instructions Catalog](${BASE_URL}/llms-full.txt): Complete bundle of all ${skills.length} skill instructions in a single file for large-context models.\n`;
-  llmsTxt += `- [Catalog Manifest](${BASE_URL}/catalog.json): Machine-readable catalog manifest with metadata, tags, and digests.\n`;
+  llmsTxt += `- [Full Instructions Catalog](${BASE_URL}/llms-full.txt): Complete bundle of all ${richSkills.length} skill instructions in a single file for large-context models.\n`;
   llmsTxt += `- [Agent Skills Discovery Index](${BASE_URL}/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.\n`;
   llmsTxt += `- [ARD Capability Manifest](${BASE_URL}/.well-known/ai-catalog.json): Agentic Resource Discovery (ARD) manifest with semantic representative queries.\n`;
   llmsTxt += `- [API Catalog](${BASE_URL}/.well-known/api-catalog): RFC 9727 linkset catalog of machine-readable endpoints.\n`;
   for (const cat of categories) {
-    const catSkills = skills.filter((s) => s.category === cat.id);
+    const catSkills = richSkills.filter((s) => s.category === cat.id);
     if (catSkills.length === 0) continue;
     llmsTxt += `- [${cat.name} Index](${BASE_URL}/${cat.id}/llms.txt): Directory-scoped \`llms.txt\` index for ${cat.name} skills.\n`;
   }
@@ -283,13 +413,12 @@ export function generateCatalog() {
   // Build llms-full.txt
   let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n`;
   for (const cat of categories) {
-    const catSkills = skills
+    const catSkills = richSkills
       .filter((s) => s.category === cat.id)
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name));
     for (const s of catSkills) {
-      const folderSlug = s.url.split('/').slice(-2, -1)[0];
-      const meta = skillBodies.get(`${cat.id}/${folderSlug}`);
+      const meta = skillBodies.get(`${cat.id}/${s.folder}`);
       llmsFullTxt += `\n# Skill: ${s.name} (${s.category})\n\n`;
       llmsFullTxt += `> ${s.description}\n\n`;
       llmsFullTxt += `**Web Page**: ${meta.detailUrl}\n`;
@@ -320,7 +449,7 @@ export function generateCatalog() {
           'find coding, game-dev, media, workflow, and writing skills',
         ],
       },
-      ...skills.map((s) => ({
+      ...richSkills.map((s) => ({
         identifier: `urn:air:skills.danicat.dev:skill:${s.name.toLowerCase()}`,
         displayName: `${s.name} (${s.category})`,
         type: 'text/markdown',
@@ -334,21 +463,6 @@ export function generateCatalog() {
   // Build RFC 9727 API Catalog (/.well-known/api-catalog)
   const apiCatalogManifest = {
     linkset: [
-      {
-        anchor: `${BASE_URL}/catalog.json`,
-        'service-desc': [
-          {
-            href: SCHEMA_URI,
-            type: 'application/schema+json',
-          },
-        ],
-        'service-doc': [
-          {
-            href: `${BASE_URL}/llms.txt`,
-            type: 'text/plain',
-          },
-        ],
-      },
       {
         anchor: `${BASE_URL}/.well-known/agent-skills/index.json`,
         'service-desc': [
@@ -377,37 +491,32 @@ export function generateCatalog() {
   };
   const apiCatalogJson = JSON.stringify(apiCatalogManifest, null, 2) + '\n';
 
-  // Write root artifacts
-  const rootCatalogPath = path.join(ROOT_DIR, 'catalog.json');
+  // Write root llms.txt
   const rootLlmsPath = path.join(ROOT_DIR, 'llms.txt');
-  fs.writeFileSync(rootCatalogPath, catalogJson, 'utf8');
   fs.writeFileSync(rootLlmsPath, llmsTxt, 'utf8');
 
   // Sync to static/ and static/.well-known/
-  const staticCatalogPath = path.join(ROOT_DIR, 'static', 'catalog.json');
   const staticLlmsPath = path.join(ROOT_DIR, 'static', 'llms.txt');
   const staticLlmsFullPath = path.join(ROOT_DIR, 'static', 'llms-full.txt');
   const staticRootIndexMdPath = path.join(ROOT_DIR, 'static', 'index.md');
-  const wellKnownIndexPath = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills', 'index.json');
+  const wellKnownIndexPath = path.join(wellKnownDir, 'index.json');
   const wellKnownArdPath = path.join(ROOT_DIR, 'static', '.well-known', 'ai-catalog.json');
   const wellKnownApiCatalogPath = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog');
   const wellKnownApiCatalogJsonPath = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog.json');
 
-  fs.mkdirSync(path.dirname(staticCatalogPath), { recursive: true });
-  fs.mkdirSync(path.dirname(wellKnownIndexPath), { recursive: true });
+  fs.mkdirSync(path.dirname(staticLlmsPath), { recursive: true });
 
-  fs.writeFileSync(staticCatalogPath, catalogJson, 'utf8');
   fs.writeFileSync(staticLlmsPath, llmsTxt, 'utf8');
   fs.writeFileSync(staticLlmsFullPath, llmsFullTxt, 'utf8');
   fs.writeFileSync(staticRootIndexMdPath, llmsTxt, 'utf8');
-  fs.writeFileSync(wellKnownIndexPath, catalogJson, 'utf8');
+  fs.writeFileSync(wellKnownIndexPath, indexJson, 'utf8');
   fs.writeFileSync(wellKnownArdPath, ardJson, 'utf8');
   fs.writeFileSync(wellKnownApiCatalogPath, apiCatalogJson, 'utf8');
   fs.writeFileSync(wellKnownApiCatalogJsonPath, apiCatalogJson, 'utf8');
 
   // Write per-category llms.txt & index.md, and per-skill index.md fallbacks
   for (const cat of categories) {
-    const catSkills = skills.filter((s) => s.category === cat.id);
+    const catSkills = richSkills.filter((s) => s.category === cat.id);
     if (catSkills.length === 0) continue;
 
     let catLlmsTxt = `# ${cat.name} — danicat/skills\n\n> ${cat.description}\n\n## Skills\n\n`;
@@ -424,19 +533,18 @@ export function generateCatalog() {
     fs.writeFileSync(path.join(staticCatDir, 'index.md'), catLlmsTxt, 'utf8');
 
     for (const s of catSkills) {
-      const folderSlug = s.url.split('/').slice(-2, -1)[0];
-      const meta = skillBodies.get(`${cat.id}/${folderSlug}`);
-      const staticSkillDir = path.join(staticCatDir, folderSlug);
+      const meta = skillBodies.get(`${cat.id}/${s.folder}`);
+      const staticSkillDir = path.join(staticCatDir, s.folder);
       fs.mkdirSync(staticSkillDir, { recursive: true });
       fs.writeFileSync(path.join(staticSkillDir, 'index.md'), meta.rawText, 'utf8');
     }
   }
 
   console.log(
-    `✅ Generated catalog (${skills.length} active skills across ${categories.length} categories) -> catalog.json, llms.txt, llms-full.txt, .well-known/{agent-skills/index.json,ai-catalog.json,api-catalog}, and /index.md fallbacks`
+    `✅ Generated RFC v0.2.0 discovery index (${discoverySkills.length} skills: ${archiveCount} archives, ${skillMdCount} standalone skill-md) -> static/.well-known/agent-skills/index.json, llms.txt, llms-full.txt, .well-known/{ai-catalog.json,api-catalog}, and /index.md fallbacks`
   );
 
-  return catalogManifest;
+  return discoveryManifest;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

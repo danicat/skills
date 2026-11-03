@@ -658,7 +658,7 @@
             return {
               content: [{
                 type: 'text',
-                text: JSON.stringify({ categories: categories, catalogUrl: window.location.origin + '/catalog.json' }, null, 2)
+                text: JSON.stringify({ categories: categories, discoveryIndexUrl: window.location.origin + '/.well-known/agent-skills/index.json' }, null, 2)
               }]
             };
           }

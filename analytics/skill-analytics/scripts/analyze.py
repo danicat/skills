@@ -665,11 +665,11 @@ def discover_skills_inventory(
     if catalog_dir and catalog_dir.is_dir():
         candidates.append(catalog_dir)
     script_repo_root = pathlib.Path(__file__).resolve().parents[3]
-    if (script_repo_root / "catalog.json").is_file():
+    if (script_repo_root / "static" / ".well-known" / "agent-skills" / "index.json").is_file() or (script_repo_root / "llms.txt").is_file():
         candidates.append(script_repo_root)
 
     for cat_root in candidates:
-        for cat_name in ("agents", "analytics", "coding", "game-dev", "media", "writing"):
+        for cat_name in ("workflows", "traits", "analytics", "coding", "game-dev", "media", "writing"):
             cat_dir = cat_root / cat_name
             if cat_dir.is_dir():
                 for skill_dir in sorted(cat_dir.iterdir()):

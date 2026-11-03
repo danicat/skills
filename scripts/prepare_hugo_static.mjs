@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,58 +24,92 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
+const ALLOWED_TOP_LEVEL_KEYS = new Set(['$schema', 'skills']);
+const ALLOWED_SKILL_KEYS = new Set(['name', 'type', 'description', 'url', 'digest']);
+const ALLOWED_SKILL_TYPES = new Set(['skill-md', 'archive']);
+
 export function prepareHugoStatic() {
-  const catalogSrc = path.join(ROOT_DIR, 'catalog.json');
+  const wellKnownDir = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills');
+  const wellKnownIndex = path.join(wellKnownDir, 'index.json');
   const llmsSrc = path.join(ROOT_DIR, 'llms.txt');
 
-  if (!fs.existsSync(catalogSrc)) {
-    throw new Error(`[Fail-Fast] Missing root catalog.json at ${catalogSrc}`);
+  if (!fs.existsSync(wellKnownIndex)) {
+    throw new Error(`[Fail-Fast] Missing discovery index at ${wellKnownIndex}`);
   }
   if (!fs.existsSync(llmsSrc)) {
     throw new Error(`[Fail-Fast] Missing root llms.txt at ${llmsSrc}`);
   }
 
-  const parsed = JSON.parse(fs.readFileSync(catalogSrc, 'utf8'));
+  const parsed = JSON.parse(fs.readFileSync(wellKnownIndex, 'utf8'));
+  const topKeys = Object.keys(parsed);
+  for (const key of topKeys) {
+    if (!ALLOWED_TOP_LEVEL_KEYS.has(key)) {
+      throw new Error(
+        `[Fail-Fast] index.json contains non-RFC top-level property "${key}". Only "$schema" and "skills" are allowed.`
+      );
+    }
+  }
   if (parsed.$schema !== 'https://schemas.agentskills.io/discovery/0.2.0/schema.json') {
     throw new Error(
-      `[Fail-Fast] catalog.json is missing required $schema ("https://schemas.agentskills.io/discovery/0.2.0/schema.json")`
+      `[Fail-Fast] index.json is missing required $schema ("https://schemas.agentskills.io/discovery/0.2.0/schema.json")`
     );
   }
   if (!Array.isArray(parsed.skills) || parsed.skills.length === 0) {
-    throw new Error('[Fail-Fast] catalog.json has an empty or invalid skills array');
+    throw new Error('[Fail-Fast] index.json has an empty or invalid skills array');
   }
+
   for (const s of parsed.skills) {
-    if (s.type !== 'skill-md' || !s.name || !s.description || !s.url || !s.digest?.startsWith('sha256:')) {
+    for (const k of Object.keys(s)) {
+      if (!ALLOWED_SKILL_KEYS.has(k)) {
+        throw new Error(
+          `[Fail-Fast] Skill entry "${s.name || 'unknown'}" contains non-RFC property "${k}"`
+        );
+      }
+    }
+    if (
+      !ALLOWED_SKILL_TYPES.has(s.type) ||
+      !s.name ||
+      !s.description ||
+      !s.url ||
+      !/^sha256:[0-9a-f]{64}$/.test(s.digest || '')
+    ) {
       throw new Error(`[Fail-Fast] Skill entry "${s.name || 'unknown'}" fails Agent Skills Discovery v0.2.0 schema check`);
+    }
+
+    if (s.type === 'archive') {
+      const archivePath = path.join(wellKnownDir, s.url);
+      if (!fs.existsSync(archivePath)) {
+        throw new Error(`[Fail-Fast] Missing archive artifact for skill "${s.name}": ${archivePath}`);
+      }
+      const actualDigest = 'sha256:' + crypto.createHash('sha256').update(fs.readFileSync(archivePath)).digest('hex');
+      if (actualDigest !== s.digest) {
+        throw new Error(
+          `[Fail-Fast] Archive digest mismatch for "${s.name}": expected ${s.digest}, got ${actualDigest}`
+        );
+      }
     }
   }
 
-  const staticCatalogDest = path.join(ROOT_DIR, 'static', 'catalog.json');
   const staticLlmsDest = path.join(ROOT_DIR, 'static', 'llms.txt');
   const staticIndexMdDest = path.join(ROOT_DIR, 'static', 'index.md');
   const staticLlmsFullDest = path.join(ROOT_DIR, 'static', 'llms-full.txt');
-  const wellKnownIndexDest = path.join(ROOT_DIR, 'static', '.well-known', 'agent-skills', 'index.json');
   const wellKnownArdDest = path.join(ROOT_DIR, 'static', '.well-known', 'ai-catalog.json');
   const wellKnownApiCatalogDest = path.join(ROOT_DIR, 'static', '.well-known', 'api-catalog');
 
-  fs.mkdirSync(path.dirname(staticCatalogDest), { recursive: true });
-  fs.mkdirSync(path.dirname(wellKnownIndexDest), { recursive: true });
-
-  fs.copyFileSync(catalogSrc, staticCatalogDest);
-  fs.copyFileSync(catalogSrc, wellKnownIndexDest);
+  fs.mkdirSync(path.dirname(staticLlmsDest), { recursive: true });
   fs.copyFileSync(llmsSrc, staticLlmsDest);
   fs.copyFileSync(llmsSrc, staticIndexMdDest);
 
   for (const reqStatic of [staticLlmsFullDest, wellKnownArdDest, wellKnownApiCatalogDest]) {
     if (!fs.existsSync(reqStatic)) {
       throw new Error(
-        `[Fail-Fast] Missing generated static discovery file: ${ path.relative(ROOT_DIR, reqStatic) }. Run: node scripts/generate_catalog.mjs`
+        `[Fail-Fast] Missing generated static discovery file: ${path.relative(ROOT_DIR, reqStatic)}. Run: node scripts/generate_catalog.mjs`
       );
     }
   }
 
   console.log(
-    `✅ Synced catalog.json (${parsed.skills.length} skills) -> static/catalog.json & static/.well-known/agent-skills/index.json, llms.txt -> static/llms.txt & static/index.md`
+    `✅ Verified static/.well-known/agent-skills/index.json (${parsed.skills.length} skills) & synced llms.txt -> static/llms.txt & static/index.md`
   );
 }
 

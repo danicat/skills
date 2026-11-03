@@ -41,8 +41,6 @@ includeFiles = ["\\.well-known/**"]
   priority = 0.8
 
 [mediaTypes]
-  [mediaTypes."application/vnd.catalog+json"]
-    suffixes = ["json"]
   [mediaTypes."text/vnd.llms+plain"]
     suffixes = ["txt"]
   [mediaTypes."text/vnd.llmsfull+plain"]
@@ -54,11 +52,6 @@ includeFiles = ["\\.well-known/**"]
     isHTML = true
     ugly = true
     permalinkable = true
-  [outputFormats.CatalogJSON]
-    mediaType = "application/vnd.catalog+json"
-    baseName = "catalog"
-    isPlainText = true
-    notAlternative = true
   [outputFormats.LLMsTxt]
     mediaType = "text/vnd.llms+plain"
     baseName = "llms"
