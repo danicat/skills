@@ -83,7 +83,7 @@
       "traits": {
         "name": "Traits",
         "subtitle": "Behavioral mindsets for philosophical abstraction, divergent ideation, and radical simplicity.",
-        "description": "Adopt Level 3 behavioral traits that shape how agents think: philosophical abstraction, five-lens brainstorming, MasterChef-inspired craft focus, and Occam's Razor red-teaming."
+        "description": "Adopt Level 3 behavioral traits that shape how agents think: philosophical abstraction, symmetry-breaking brainstorming, MasterChef-inspired craft focus, and Occam's Razor red-teaming."
       },
       "writing": {
         "name": "Writing",
@@ -182,7 +182,7 @@
       "traits": {
         "name": "Traços e Postura",
         "subtitle": "Mentalidades comportamentais para abstração filosófica, ideação divergente e simplicidade radical.",
-        "description": "Adote traços comportamentais de Nível 3 que moldam como os agentes pensam: abstração filosófica, brainstorming em cinco lentes, foco artesanal inspirado no MasterChef e red-teaming com a Navalha de Occam."
+        "description": "Adote traços comportamentais de Nível 3 que moldam como os agentes pensam: abstração filosófica, brainstorming com quebra de simetria, foco artesanal inspirado no MasterChef e red-teaming com a Navalha de Occam."
       },
       "writing": {
         "name": "Escrita",
@@ -213,7 +213,7 @@
       "google-oss": "Guia de conformidade e licenciamento para repositórios Google Open Source e projetos pessoais publicados por Googlers. Aplica cabeçalhos de licença Apache-2.0 via addlicense, verifica arquivos LICENSE e insere avisos obrigatórios de pré-lançamento.",
       "rfc-template": "Framework colaborativo e template para documentos de Request for Comments (RFC). Estrutura propostas de design técnico, avalia soluções alternativas, documenta experimentos (spikes) e acompanha o ciclo de vida antes da formalização em ADRs.",
       "abstract": "Fluxo filosófico e indutivo de destilação de conhecimento que extrai princípios universais, leis causais e conceitos portáveis a partir de fatos concretos, evidências e exemplos. Aplica a separação entre essência e acidente de Aristóteles, a ascensão indutiva de Bacon, a nomeação de conceitos de Peirce e o teste de falseabilidade de Popper.",
-      "brainstorm": "Fluxo de ideação divergente e geração de opções para explorar possibilidades antes de escolher uma direção. Suspende o julgamento prematuro, força o pensamento ortogonal em 5 lentes de perspectiva e aplica poda de viabilidade para revelar alternativas não óbvias.",
+      "brainstorm": "Motor de ideação divergente e geração de opções que evita o colapso de modo de LLMs usando algoritmos de quebra de simetria e disparo paralelo opcional de subagentes. Aplica deflexão de clichês, inversão de premissas, quebra de tensões, transferência entre domínios e apostas testáveis para gerar 3 propostas de alta convicção por execução ou consolidar descobertas de N subagentes.",
       "discovery": "Fluxo de investigação baseado em evidências que mapeia espaços de problema técnicos, de negócios ou culturais em uma hierarquia de provas de 6 níveis ([T1] a [T6]), expondo fatos verificados e incógnitas antes do planejamento ou execução.",
       "double-diamond": "Fluxo universal de orquestração multiagente baseado no framework Double Diamond (Incepção -> Descoberta -> Definição -> Desenvolvimento -> Entrega). Coordena subagentes paralelos com isolamento de contexto para separar a pesquisa do problema da implementação da solução.",
       "intercom": "Colaboração entre projetos e entre sessões de agentes no Antigravity usando a CLI agentapi e conversation_summaries.db. Localiza sessões ativas em outros workspaces, consulta o projectId de destino, roteia mensagens entre projetos com cabeçalho de retorno e inicia novas sessões.",
@@ -320,7 +320,7 @@
       "traits": {
         "name": "特性・思考法",
         "subtitle": "哲学的抽象化、発散的アイディア創出、徹底したシンプル化のための行動指針。",
-        "description": "エージェントの思考姿勢を形作るレベル3の行動特性（Traits）：哲学的抽象化、5視点ブレインストーミング、MasterChef流の本質集中、オッカムの剃刀によるレッドチーミング。"
+        "description": "エージェントの思考姿勢を形作るレベル3の行動特性（Traits）：哲学的抽象化、対称性破壊ブレインストーミング、MasterChef流の本質集中、オッカムの剃刀によるレッドチーミング。"
       },
       "writing": {
         "name": "ライティング",
@@ -351,7 +351,7 @@
       "google-oss": "Google オープンソースリポジトリおよび Googler の個人 OSS プロジェクト向けライセンス・コンプライアンスガイド。addlicense による Apache-2.0 ヘッダー付与、LICENSE ファイル検証、必須免責事項の挿入と公開前監査を行います。",
       "rfc-template": "Request for Comments（RFC）設計提案ドキュメントの共同策定フレームワーク＆テンプレート。不確実性の高い技術課題に対して代替案の比較、検証スパイク、未解決の論点を整理し、ADR として確定するまでの合意形成を支援します。",
       "abstract": "具体的な事実・証拠・事例から普遍的な原則、因果法則、再利用可能な概念を抽出する哲学的・帰納的知識蒸留ワークフロー。アリストテレスの本質と偶有性の分離、ベーコンの帰納的上昇、パースの概念命名、ポパーの反証可能性テストを適用し、空疎な一般論ではない高価値な知見を導き出します。",
-      "brainstorm": "方針を決定する前に多様な選択肢と非自明な可能性を発掘する発散的アイディア創出ワークフロー。時期尚早な批判を保留し、5つの直交する視点レンズで発想を広げた上で、実現可能性の枝刈りを行って有力な候補を厳選します。",
+      "brainstorm": "対称性破壊アルゴリズムとオプションの並列サブエージェント起動によって LLM のモード崩壊を防ぐ発散的アイディア創出エンジン。定番回答の排除、前提の反転、トレードオフの打破、異分野からの構造転用、反証可能な3つの仮説提案を通じて非自明な解決策を発掘し、N個のサブエージェントの結果を統合します。",
       "discovery": "技術・ビジネス・文化のあらゆる問題領域において、6段階の証拠階層（[T1]〜[T6]）に基づき事実調査と一次情報への裏付けを行うエビデンス重視の調査ワークフロー。計画や実装の前に確認済みの事実と未解決の不明点を明確化します。",
       "double-diamond": "ダブルダイヤモンド・フレームワーク（発散と収束の4段階）に基づく汎用マルチエージェント協調ワークフロー。コンテキスト分離された並列サブエージェントを活用し、問題空間の調査と解決空間の実装を明確に分離します。",
       "intercom": "agentapi CLI と conversation_summaries.db を用いた Antigravity エージェント間のプロジェクト横断・セッション間連携スキル。別ワークスペースのアクティブセッション検索、対象 projectId の確認、返信先ヘッダー付きのプロジェクト間メッセージ送信、新規セッションの起動を行います。",

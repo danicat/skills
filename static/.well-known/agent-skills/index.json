@@ -67,9 +67,9 @@
     {
       "name": "brainstorm",
       "type": "skill-md",
-      "description": "Divergent ideation and option-generation engine that prevents LLM mode collapse through orthogonal axis perturbation and deferred convergence. Generates structurally distinct design alternatives across subtractive, convention-first, declarative, UX-backward, and first-principles lenses before scoring trade-offs. Activate when exploring alternative architectures, generating creative options, breaking out of local maxima, or comparing fundamentally different ways to solve a problem.",
+      "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N), /brainstorm, or when exploring non-obvious solutions, architectures, or creative directions.",
       "url": "https://skills.danicat.dev/traits/brainstorm/SKILL.md",
-      "digest": "sha256:df2455a40207d028a8f3387de7d9bf7a0bbd42e57d2e7a526aa949de96c3ef77"
+      "digest": "sha256:eb808b9454c1ff03638e30dbe10f70681fa7852b05ddce32a38b9059e2973f13"
     },
     {
       "name": "less-is-more",

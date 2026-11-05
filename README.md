@@ -80,7 +80,7 @@ Multi-agent swarm orchestration, evidence-first discovery, Agile spikes, and ski
 Level 3 behavioral traits and thinking lenses that shape how agents reason, abstract, ideate, and simplify.
 
 * **[`abstract`](traits/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
-* **[`brainstorm`](traits/brainstorm/SKILL.md)**: Divergent ideation and option-generation workflow that suspends premature judgment, forces orthogonal thinking across 5 perspective lenses, and applies feasibility pruning to surface non-obvious possibilities.
+* **[`brainstorm`](traits/brainstorm/SKILL.md)**: Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms (taboo deflection, assumption flips, tension breaking, cross-domain transfer, and testable bets) and same-prompt parallel dispatch (`brainstorm(N)`) with Map-Reduce synthesis.
 * **[`less-is-more`](traits/less-is-more/SKILL.md)**: Life and craft philosophy for focusing on what matters and doing the essential things well instead of doing everything in a mediocre way. Inspired by MasterChef plating discipline—honoring the hero ingredient and executing 1–3 core elements to perfection—across product choices, writing, architecture, and frontend interfaces.
 * **[`uno-reverse`](traits/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 
