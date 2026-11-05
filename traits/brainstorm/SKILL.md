@@ -14,18 +14,19 @@ metadata:
   category: traits
   tags: "ideation, divergence, creativity, architecture, subagents, trade-offs"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
 # Brainstorm high-signal options
 
-Standard LLM brainstorming fails in three ways:
+Standard LLM brainstorming fails in four ways:
 1. **Greedy mode collapse**: In a single pass, token weights pull every idea toward the most common textbook answer. Options two and three become minor edits of option one.
 2. **Box-checking filler**: Fixed domain templates force the agent to write one real answer and pad the rest with weak decoys.
 3. **Parallel rail lock**: When parallel workers share fixed buckets, every worker walks down the same rails and returns near-twin ideas.
+4. **Checklist poisoning**: When the framing step dumps raw examples or topic lists into `Hard limits`, workers cram every prompt noun into the output instead of abstracting the core idea.
 
-`brainstorm` solves this with **six symmetry-breaking steps** and **same-prompt parallel dispatch** via `brainstorm(N)`. Instead of sorting ideas into fixed buckets, each run burns the obvious default and flips hidden premises. It then breaks the core bottleneck and frames **3 high-conviction testable bets**.
+`brainstorm` solves this with **essence-first framing**, **six symmetry-breaking steps**, and **same-prompt parallel dispatch** via `brainstorm(N)`. Instead of sorting ideas into fixed buckets or reciting a topic list, each run strips one-off details, burns the obvious default, and flips hidden premises. It then breaks the core bottleneck and frames **3 high-conviction testable bets**.
 
 ---
 
@@ -55,12 +56,13 @@ Check the prompt to pick the right run mode:
    - Use when the user gives a worker count, such as `brainstorm(10)`, `/brainstorm 10`, `/brainstorm(10)`, or *"brainstorm this across 10 agents"*.
    - The active agent acts strictly as a **non-blocking lead**. It spawns `N` concurrent `research` subagents with `Model: "inherit"`, stops calling tools right away to end its turn, and runs the **Reduce pass** once all `N` workers finish.
 
-### 🔒 The same-prompt rule
+### 🔒 The same-prompt & clean-framing rules
 
 In parallel mode, you test how the six steps and turn-1 probes lead equal agents to new ideas:
 
 - **Same prompt for all `N` workers**: Every subagent gets the **exact same problem setup and the exact same `brainstorm` instructions**.
 - **No per-worker personas or split lenses**: Never tell Worker 1 to focus on speed and Worker 2 to focus on cost. Never split fixed buckets across workers.
+- **Strip accidents out of `Hard limits`**: Before framing the problem, split the **essence**—the core goal and boundary rules—from **accidents** like tool names, URLs, or raw topic lists. Put only true structural bounds such as latency caps, word counts, or format rules into `Hard limits`. Pass raw examples and topic lists as `Context seeds` to abstract from, never as a checklist that every bet must repeat.
 - **Natural spread only**: Let turn-1 micro-probes, premise flips, cross-domain models, and token sampling drive the spread across workers.
 
 ```text
@@ -91,8 +93,9 @@ Call `invoke_subagent` with `TypeName: "research"` and `Model: "inherit"` to spa
 You are an independent brainstorm agent exploring high-signal options for the problem below.
 
 ### Problem setup and hard rules
-- **Goal**: [1-sentence core goal]
-- **Hard limits**: [Non-negotiable rules]
+- **Goal**: [1-sentence core goal abstracted from raw examples]
+- **Hard limits**: [Strict structural bounds ONLY (e.g. latency, word count, format)—never a checklist of topics or examples]
+- **Context seeds**: [Raw examples, topics, or prior art to abstract from—never recite as a checklist]
 - **Non-goals**: [What stays out of scope]
 
 ### Mandatory 6-step ideation algorithm
@@ -102,7 +105,7 @@ Run all 6 steps in order before writing your final 3 proposals:
 3. **Assumption flip**: List 3 to 5 hidden premises in the problem or current design and state what happens when each premise is flipped or removed.
 4. **Tension breaking**: State the core trade-off conflict ("Improving X hurts Y because of Z") and look for mechanisms that remove Z directly.
 5. **Cross-domain transfer**: Strip domain nouns to name the abstract bottleneck, then map a working mechanism from an unrelated field (such as packet routing, compilers, kitchens, biology, or auctions).
-6. **Commit to 3 testable bets**: Pick your 3 strongest, most distinct mechanisms. Do not use vague "Low/Med/High" ratings. For each bet, provide:
+6. **Commit to 3 testable bets**: Pick your 3 strongest, most distinct mechanisms. Synthesize the context seeds into one unified idea rather than stuffing every prompt noun into a checklist. Do not use vague "Low/Med/High" ratings. For each bet, provide:
    - **Title & spark** (which flipped premise or cross-domain model sparked it)
    - **The bet (Popper flip test)**: The non-obvious claim that makes this win, plus the sensible counter-view it rejects.
    - **Core mechanism & concrete sketch**: 2 to 3 sentences explaining how it works, plus a code snippet, schema, CLI call, or text diagram.
@@ -135,20 +138,20 @@ Once all `N` workers finish and wake the lead agent, don't dump `3 × N` raw ide
 ## 📋 Workflow checklists
 
 ### Single-agent checklist
-- [ ] **Step 1: Frame hard rules & run micro-probe**
-  State the goal, hard limits, and non-goals in 3 to 5 bullets. Run 1 or 2 read-only checks to ground the problem in real facts.
+- [ ] **Step 1: Frame hard rules, strip accidents, & run micro-probe**
+  State the goal, structural hard limits, context seeds, and non-goals in 3 to 5 bullets. Keep raw examples and topic lists in `Context seeds` rather than `Hard limits` so they don't force checklist stuffing. Run 1 or 2 read-only checks to ground the problem in real facts.
 - [ ] **Step 2: Burn the default & flip premises**
   Write the **Banned default box** with 1 to 3 textbook answers. List 3 to 5 hidden premises, flip them, state the core `X vs. Y` conflict, and pull 1 to 2 cross-domain models.
 - [ ] **Step 3: Draft 3 testable bets**
   Write 3 distinct proposals. Each bet must include its **Popper flip-test claim**, **concrete sketch**, **cost floor**, and **stop rule**.
 - [ ] **Step 4: Run quality gate**
-  Check that none of the 3 bets repeat the banned default or share the same mechanism. Note how two bets might combine.
+  Check that none of the 3 bets repeat the banned default, stuff context seeds into a checklist, or share the same mechanism. Note how two bets might combine.
 - [ ] **Step 5: User selection gate (`ask_question`)**
   Share the brainstorm report and call `ask_question` before touching any project source files.
 
 ### Parallel lead checklist
-- [ ] **Step 1: Parse `N` & frame shared problem setup**
-  Read the worker count `N` and write the shared problem setup. If hard limits conflict, call `ask_question` before spawning workers.
+- [ ] **Step 1: Parse `N`, strip accidents, & frame shared problem setup**
+  Read the worker count `N`, separate structural `Hard limits` from raw `Context seeds`, and write the shared problem setup. Never put a list of user topics or examples into `Hard limits`. If hard limits conflict, call `ask_question` before spawning workers.
 - [ ] **Step 2: Dispatch `N` equal workers & yield turn**
   Spawn `N` concurrent `research` subagents with `Model: "inherit"` using the worker prompt template. Stop calling tools right away so the chat stays unblocked.
 - [ ] **Step 3: Cluster & map signal bands (Reduce)**
@@ -162,12 +165,13 @@ Once all `N` workers finish and wake the lead agent, don't dump `3 × N` raw ide
 
 ## ✅ Quality gate
 
-Before showing results to the user, check all four rules:
+Before showing results to the user, check all five rules:
 
 1. **Burned default enforced**: The report lists 1 to 3 obvious textbook answers in the Banned default box. None of the main proposals repeat them.
-2. **Distinct causal mechanisms**: No two final proposals differ only by library name, tuning flag, or label.
-3. **No vague labels**: Every proposal swaps `Low / Medium / High` ratings for a concrete sketch, a cost floor, a Popper flip test, and a clear stop rule.
-4. **Zero early edits**: Project source files stay untouched until the user picks an option via `ask_question`.
+2. **Zero checklist stuffing**: Proposals abstract and unify `Context seeds` into a coherent mechanism or story rather than reciting every prompt noun as a list.
+3. **Distinct causal mechanisms**: No two final proposals differ only by library name, tuning flag, or label.
+4. **No vague labels**: Every proposal swaps `Low / Medium / High` ratings for a concrete sketch, a cost floor, a Popper flip test, and a clear stop rule.
+5. **Zero early edits**: Project source files stay untouched until the user picks an option via `ask_question`.
 
 ---
 

@@ -76,7 +76,7 @@
       "type": "skill-md",
       "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N), /brainstorm, or when exploring non-obvious solutions, architectures, or creative directions.",
       "url": "https://skills.danicat.dev/traits/brainstorm/SKILL.md",
-      "digest": "sha256:eb808b9454c1ff03638e30dbe10f70681fa7852b05ddce32a38b9059e2973f13"
+      "digest": "sha256:e312e06e36a5d84aef13ef18dd6609ef7fb813c16e4f3a6ce721714737584c65"
     },
     {
       "name": "less-is-more",
@@ -104,7 +104,7 @@
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
-      "digest": "sha256:0d9d500f15be6a2a6b86e6bc8a6afefcfcfaf9875d9b37984a860d7b7c34bbdb"
+      "digest": "sha256:f3cb461c6cba51c28af8b951e989f49b458bb66272b5c5c8690cfd29dc35c072"
     },
     {
       "name": "pagespeed-insights",
