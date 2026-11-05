@@ -30,6 +30,13 @@
       "digest": "sha256:5c1173364f31bef6f42ebac6a74f95062b6aace088d790c7f1f405e80e242b36"
     },
     {
+      "name": "router",
+      "type": "skill-md",
+      "description": "Automatic model and thinking-effort router that dispatches tasks as headless agy CLI background jobs. Scores prompt complexity to choose between gemini-3.5-flash-lite, gemini-3.8-flash, and gemini-4-argon across low, medium, and high thinking levels while keeping the main chat unblocked. Activate on router, router(N), router(auto), /router, or when routing tasks to right-sized tiers and parallel worker counts.",
+      "url": "https://skills.danicat.dev/workflows/router/SKILL.md",
+      "digest": "sha256:2311679046c7c11838af2f7f803ad24509e89a7737bf26055eb21e48127d93c1"
+    },
+    {
       "name": "show-me-the-money",
       "type": "skill-md",
       "description": "Mine project conversation history and git logs using a Map-Reduce workflow with parallel Flash/Flash-Lite agy CLI workers to recover unimplemented features. Scans all sessions in the current project by default, running one worker per session in the Map step and resolving the latest snapshot in the Reduce step. Activate when looking for forgotten features, mining past sessions for unfinished work, or asking \"what did I forget to build?\".",
