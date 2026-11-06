@@ -184,7 +184,7 @@ export function runAudit() {
     }
   }
 
-  const expectedCategories = ['coding', 'game-dev', 'media', 'workflows', 'traits', 'writing', 'analytics'];
+  const expectedCategories = ['plugins', 'coding', 'game-dev', 'media', 'workflows', 'writing', 'analytics'];
   for (const cat of expectedCategories) {
     if (!existsExactFile(path.join(SITE_DIR, cat, 'llms.txt'))) {
       assetErrors.push(`[Agent Readiness] Missing per-category llms.txt: _site/${cat}/llms.txt`);
@@ -227,7 +227,7 @@ export function runAudit() {
       totalHtmlLinksChecked++;
       const href = match[1];
 
-      if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+      if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:') || href.startsWith('sidecar:')) {
         continue;
       }
       if (href.startsWith('http://') || href.startsWith('https://')) {
@@ -381,10 +381,11 @@ export function runAudit() {
   for (const file of mdFiles) {
     const content = fs.readFileSync(file, 'utf-8');
     const relFile = path.relative(ROOT_DIR, file);
+    const proseContent = content.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]+`/g, '');
 
     const mdLinkRegex = /\[([^\]]*?)\]\(([^)]+)\)/g;
     let match;
-    while ((match = mdLinkRegex.exec(content)) !== null) {
+    while ((match = mdLinkRegex.exec(proseContent)) !== null) {
       totalMdLinksChecked++;
       const label = match[1];
       const url = match[2].trim();
@@ -393,7 +394,7 @@ export function runAudit() {
         mdErrors.push(`[Markdown Corrupted Link] In ${relFile}: link url "${url}" contains HTML tag (e.g. <em>)`);
       }
 
-      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:') || url.startsWith('conversation:') || url.startsWith('file:')) {
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:') || url.startsWith('conversation:') || url.startsWith('file:') || url.startsWith('sidecar:')) {
         continue;
       }
 

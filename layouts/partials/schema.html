@@ -52,9 +52,10 @@
 {{- else if and .IsPage (not .Params.isCompanion) (not .Params.isSpecialPage) -}}
   {{- $canonicalUrl := .Permalink -}}
   {{- $skillName := .Params.skillName | default .Title -}}
+  {{- $freshKey := .Params.freshnessKey | default (lower $skillName) -}}
   {{- $catName := .Params.categoryName | default "Catalog" -}}
   {{- $catUrl := printf "https://skills.danicat.dev/#%s" (.Params.category | default "all") -}}
-  {{- $skillEntry := index $freshSkills (lower $skillName) -}}
+  {{- $skillEntry := index $freshSkills $freshKey -}}
   {{- $dateModified := $defaultDate -}}
   {{- if and $skillEntry (reflect.IsMap $skillEntry) -}}
     {{- with $skillEntry.lastCommitDate | default $skillEntry.lastModified -}}
@@ -119,10 +120,12 @@
   {{- $canonicalUrl := .Params.canonicalUrl | default .Permalink -}}
   {{- $headline := .Title -}}
   {{- $skillName := .Params.skillName | default .Title -}}
+  {{- $freshKey := .Params.freshnessKey | default (lower $skillName) -}}
   {{- $catName := .Params.categoryName | default "Catalog" -}}
   {{- $catUrl := printf "https://skills.danicat.dev/#%s" (.Params.category | default "all") -}}
-  {{- $skillDetailUrl := printf "https://skills.danicat.dev/%s/%s/" .Params.category .Params.skillFolder -}}
-  {{- $skillEntry := index $freshSkills (lower $skillName) -}}
+  {{- $parentRelUrl := .Params.parentUrl | default (printf "/%s/%s/" .Params.category .Params.skillFolder) -}}
+  {{- $skillDetailUrl := printf "https://skills.danicat.dev%s" $parentRelUrl -}}
+  {{- $skillEntry := index $freshSkills $freshKey -}}
   {{- $dateModified := $defaultDate -}}
   {{- if and $skillEntry (reflect.IsMap $skillEntry) -}}
     {{- with $skillEntry.lastCommitDate | default $skillEntry.lastModified -}}

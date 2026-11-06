@@ -11,7 +11,7 @@ description: >
   tightening prose, or focusing a design on what matters most.
 license: Apache-2.0
 metadata:
-  category: traits
+  category: workflows
   tags: "philosophy, minimalism, focus, ux, frontend, readability"
   author: Daniela Petruzalek (daniela@danicat.dev)
   version: "0.2.0"

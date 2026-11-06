@@ -30,7 +30,6 @@ const BASE_URL = 'https://skills.danicat.dev';
 
 const CATEGORY_ORDER = [
   { id: 'workflows', emoji: '🔄' },
-  { id: 'traits', emoji: '🧬' },
   { id: 'analytics', emoji: '📊' },
   { id: 'game-dev', emoji: '🕹️' },
   { id: 'media', emoji: '🎨' },
@@ -253,6 +252,7 @@ function buildDeterministicTarGz(files) {
 export function generateCatalog() {
   const translations = readRequiredJson('data/translations.json');
   const freshnessMap = readRequiredJson('data/freshness.json');
+  const pluginsConfig = readRequiredJson('data/plugins.json');
 
   const enCategories = translations?.en?.categories;
   if (!enCategories) {
@@ -272,6 +272,7 @@ export function generateCatalog() {
   const categories = [];
   const discoverySkills = [];
   const richSkills = [];
+  const richPlugins = [];
   const skillBodies = new Map();
   let archiveCount = 0;
   let skillMdCount = 0;
@@ -371,14 +372,133 @@ export function generateCatalog() {
         digest: `sha256:${digestHex}`,
       });
 
-      skillBodies.set(`${catDef.id}/${folder}`, {
+      skillBodies.set(skillId, {
         folder,
+        staticRelDir: `${catDef.id}/${folder}`,
         rawText,
         markdownBody: extractMarkdownBody(rawText),
         detailUrl: `${BASE_URL}/${catDef.id}/${folder}/`,
         installCommand: `npx skills add danicat/skills --skill ${fm.name} -y`,
       });
     }
+  }
+
+  // Scan plugins/<pluginId>/ and their bundled skills
+  for (const [pluginId, pCfg] of Object.entries(pluginsConfig).sort(([a], [b]) => a.localeCompare(b))) {
+    const pluginDir = path.join(ROOT_DIR, 'plugins', pluginId);
+    const manifestPath = path.join(pluginDir, 'plugin.json');
+    const readmePath = path.join(pluginDir, 'README.md');
+    if (!fs.existsSync(manifestPath) || !fs.existsSync(readmePath)) {
+      throw new Error(
+        `[Fail-Fast] Missing vendored plugin files for "${pluginId}". Run: node scripts/sync_plugins.mjs`
+      );
+    }
+
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const readmeText = fs.readFileSync(readmePath, 'utf8');
+    const skillsRoot = path.join(pluginDir, manifest.skills || 'skills');
+    const skillFolders = fs.existsSync(skillsRoot)
+      ? fs
+          .readdirSync(skillsRoot, { withFileTypes: true })
+          .filter((d) => d.isDirectory())
+          .map((d) => d.name)
+          .sort()
+      : [];
+
+    const bundledSkillNames = [];
+
+    for (const folder of skillFolders) {
+      const skillDir = path.join(skillsRoot, folder);
+      const relSkillPath = `plugins/${pluginId}/skills/${folder}/SKILL.md`;
+      const fullSkillPath = path.join(ROOT_DIR, relSkillPath);
+      if (!fs.existsSync(fullSkillPath)) {
+        continue;
+      }
+
+      const rawBytes = fs.readFileSync(fullSkillPath);
+      const rawText = rawBytes.toString('utf8');
+      const fm = parseFrontmatterStrict(rawText, relSkillPath);
+
+      const tags = fm.metadata.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const skillId = fm.name.toLowerCase();
+      bundledSkillNames.push(fm.name);
+
+      const files = collectSkillFiles(skillDir);
+      const isMultiFile = files.some((f) => f.relPath !== 'SKILL.md');
+      const skillMdUrl = `${BASE_URL}/plugins/${pluginId}/skills/${folder}/SKILL.md`;
+
+      let entryType;
+      let entryUrl;
+      let digestHex;
+
+      if (isMultiFile) {
+        entryType = 'archive';
+        const archiveFileName = `${folder}.tar.gz`;
+        entryUrl = `${BASE_URL}/.well-known/agent-skills/${archiveFileName}`;
+        const archiveBuffer = buildDeterministicTarGz(files);
+        digestHex = crypto.createHash('sha256').update(archiveBuffer).digest('hex');
+        fs.writeFileSync(path.join(wellKnownDir, archiveFileName), archiveBuffer);
+        archiveCount++;
+      } else {
+        entryType = 'skill-md';
+        entryUrl = skillMdUrl;
+        digestHex = crypto.createHash('sha256').update(rawBytes).digest('hex');
+        skillMdCount++;
+      }
+
+      discoverySkills.push({
+        name: fm.name,
+        type: entryType,
+        description: fm.description.trim(),
+        url: entryUrl,
+        digest: `sha256:${digestHex}`,
+      });
+
+      richSkills.push({
+        name: fm.name,
+        folder,
+        pluginId,
+        pluginDisplayName: manifest.displayName || pCfg.displayName || pluginId,
+        type: entryType,
+        description: fm.description.trim(),
+        category: fm.metadata.category,
+        tags,
+        author: fm.metadata.author,
+        version: fm.metadata.version,
+        license: fm.license,
+        url: skillMdUrl,
+        discoveryUrl: entryUrl,
+        digest: `sha256:${digestHex}`,
+      });
+
+      skillBodies.set(skillId, {
+        folder,
+        staticRelDir: `plugins/${pluginId}/skills/${folder}`,
+        rawText,
+        markdownBody: extractMarkdownBody(rawText),
+        detailUrl: `${BASE_URL}/plugins/${pluginId}/skills/${folder}/`,
+        installCommand: pCfg.installCommand,
+      });
+    }
+
+    richPlugins.push({
+      id: pluginId,
+      displayName: manifest.displayName || pCfg.displayName || pluginId,
+      description: manifest.description,
+      version: manifest.version,
+      tag: pCfg.tag,
+      repo: pCfg.repo,
+      category: pCfg.category || manifest.category || 'writing',
+      url: `${BASE_URL}/plugins/${pluginId}/README.md`,
+      detailUrl: `${BASE_URL}/plugins/${pluginId}/`,
+      installCommand: pCfg.installCommand || `npx skills add ${pCfg.repo} -y`,
+      readmeText,
+      skillNames: bundledSkillNames,
+    });
   }
 
   // Strict Cloudflare Agent Skills Discovery RFC v0.2.0 top-level object ($schema + skills only)
@@ -390,7 +510,14 @@ export function generateCatalog() {
   const indexJson = JSON.stringify(discoveryManifest, null, 2) + '\n';
 
   // Build llms.txt & root /index.md
-  let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and standards.\n\n`;
+  let llmsTxt = `# danicat/skills\n\n> A curated collection of specialized Agent Skills and Antigravity Plugins for coding, game development, generative media, writing, and standards.\n\n`;
+  if (richPlugins.length > 0) {
+    llmsTxt += `## Plugins\n\n`;
+    for (const p of richPlugins) {
+      llmsTxt += `- [${p.displayName}](${p.url}): ${p.description} (v${p.version} — includes skills: ${p.skillNames.join(', ')})\n`;
+    }
+    llmsTxt += `\n`;
+  }
   for (const cat of categories) {
     const catSkills = richSkills.filter((s) => s.category === cat.id);
     if (catSkills.length === 0) continue;
@@ -405,6 +532,9 @@ export function generateCatalog() {
   llmsTxt += `- [Agent Skills Discovery Index](${BASE_URL}/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.\n`;
   llmsTxt += `- [ARD Capability Manifest](${BASE_URL}/.well-known/ai-catalog.json): Agentic Resource Discovery (ARD) manifest with semantic representative queries.\n`;
   llmsTxt += `- [API Catalog](${BASE_URL}/.well-known/api-catalog): RFC 9727 linkset catalog of machine-readable endpoints.\n`;
+  if (richPlugins.length > 0) {
+    llmsTxt += `- [Plugins Index](${BASE_URL}/plugins/llms.txt): Directory-scoped \`llms.txt\` index for Antigravity plugins.\n`;
+  }
   for (const cat of categories) {
     const catSkills = richSkills.filter((s) => s.category === cat.id);
     if (catSkills.length === 0) continue;
@@ -412,14 +542,22 @@ export function generateCatalog() {
   }
 
   // Build llms-full.txt
-  let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills.\n\n---\n`;
+  let llmsFullTxt = `# danicat/skills (Full Instructions Catalog)\n\n> Complete collection of all Agent Skills and Antigravity Plugins.\n\n---\n`;
+  for (const p of richPlugins) {
+    llmsFullTxt += `\n# Plugin: ${p.displayName} (v${p.version})\n\n`;
+    llmsFullTxt += `> ${p.description}\n\n`;
+    llmsFullTxt += `**Web Page**: ${p.detailUrl}\n`;
+    llmsFullTxt += `**Source**: ${p.url}\n`;
+    llmsFullTxt += `**Install**: \`${p.installCommand}\`\n\n`;
+    llmsFullTxt += `${p.readmeText.trim()}\n\n---\n`;
+  }
   for (const cat of categories) {
     const catSkills = richSkills
       .filter((s) => s.category === cat.id)
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name));
     for (const s of catSkills) {
-      const meta = skillBodies.get(`${cat.id}/${s.folder}`);
+      const meta = skillBodies.get(s.name.toLowerCase());
       llmsFullTxt += `\n# Skill: ${s.name} (${s.category})\n\n`;
       llmsFullTxt += `> ${s.description}\n\n`;
       llmsFullTxt += `**Web Page**: ${meta.detailUrl}\n`;
@@ -450,6 +588,17 @@ export function generateCatalog() {
           'find coding, game-dev, media, workflow, and writing skills',
         ],
       },
+      ...richPlugins.map((p) => ({
+        identifier: `urn:air:skills.danicat.dev:plugin:${p.id}`,
+        displayName: `${p.displayName} (plugin)`,
+        type: 'text/markdown',
+        url: p.url,
+        representativeQueries: [
+          `install ${p.id} plugin for Antigravity`,
+          p.description,
+          `writing plugin with ${p.skillNames.join(', ')} skills`,
+        ],
+      })),
       ...richSkills.map((s) => ({
         identifier: `urn:air:skills.danicat.dev:skill:${s.name.toLowerCase()}`,
         displayName: `${s.name} (${s.category})`,
@@ -534,15 +683,45 @@ export function generateCatalog() {
     fs.writeFileSync(path.join(staticCatDir, 'index.md'), catLlmsTxt, 'utf8');
 
     for (const s of catSkills) {
-      const meta = skillBodies.get(`${cat.id}/${s.folder}`);
-      const staticSkillDir = path.join(staticCatDir, s.folder);
+      const meta = skillBodies.get(s.name.toLowerCase());
+      const staticSkillDir = path.join(ROOT_DIR, 'static', meta.staticRelDir);
       fs.mkdirSync(staticSkillDir, { recursive: true });
       fs.writeFileSync(path.join(staticSkillDir, 'index.md'), meta.rawText, 'utf8');
     }
   }
 
+  // Write static/plugins/llms.txt, static/plugins/index.md, and per-plugin index.md fallbacks
+  if (richPlugins.length > 0) {
+    const pluginsTrans = enCategories.plugins || {
+      name: 'Plugins',
+      description: 'Full-featured Antigravity plugins bundling sidecar editors, MCP servers, rules, and multi-stage skills.',
+    };
+    let pluginsLlmsTxt = `# ${pluginsTrans.name} — danicat/skills\n\n> ${pluginsTrans.description}\n\n## Plugins\n\n`;
+    for (const p of richPlugins) {
+      pluginsLlmsTxt += `- [${p.displayName}](${p.url}): ${p.description} (v${p.version})\n`;
+      const pSkills = richSkills.filter((s) => s.pluginId === p.id);
+      for (const s of pSkills) {
+        pluginsLlmsTxt += `  - [${s.name}](${s.url}): ${s.description}\n`;
+      }
+    }
+    pluginsLlmsTxt += `\n## Optional\n\n`;
+    pluginsLlmsTxt += `- [Root Catalog Index](${BASE_URL}/llms.txt): Main \`llms.txt\` directory across all categories.\n`;
+    pluginsLlmsTxt += `- [Full Instructions Catalog](${BASE_URL}/llms-full.txt): Complete bundle of all skill instructions.\n`;
+
+    const staticPluginsDir = path.join(ROOT_DIR, 'static', 'plugins');
+    fs.mkdirSync(staticPluginsDir, { recursive: true });
+    fs.writeFileSync(path.join(staticPluginsDir, 'llms.txt'), pluginsLlmsTxt, 'utf8');
+    fs.writeFileSync(path.join(staticPluginsDir, 'index.md'), pluginsLlmsTxt, 'utf8');
+
+    for (const p of richPlugins) {
+      const staticPluginDir = path.join(staticPluginsDir, p.id);
+      fs.mkdirSync(staticPluginDir, { recursive: true });
+      fs.writeFileSync(path.join(staticPluginDir, 'index.md'), p.readmeText, 'utf8');
+    }
+  }
+
   console.log(
-    `✅ Generated RFC v0.2.0 discovery index (${discoverySkills.length} skills: ${archiveCount} archives, ${skillMdCount} standalone skill-md) -> static/.well-known/agent-skills/index.json, llms.txt, llms-full.txt, .well-known/{ai-catalog.json,api-catalog}, and /index.md fallbacks`
+    `✅ Generated RFC v0.2.0 discovery index (${discoverySkills.length} skills: ${archiveCount} archives, ${skillMdCount} standalone skill-md, ${richPlugins.length} plugins) -> static/.well-known/agent-skills/index.json, llms.txt, llms-full.txt, .well-known/{ai-catalog.json,api-catalog}, and /index.md fallbacks`
   );
 
   return discoveryManifest;

@@ -2,11 +2,25 @@
   "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
+      "name": "abstract",
+      "type": "skill-md",
+      "description": "Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples. Applies Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test to turn raw facts into high-value knowledge without hollow platitudes. Activate when abstracting ideas, distilling lessons, or synthesizing principles from evidence.",
+      "url": "https://skills.danicat.dev/workflows/abstract/SKILL.md",
+      "digest": "sha256:5dd031efcaf5ed3ae854917aa7263dae4ff585a408f42803981ca3c533881011"
+    },
+    {
+      "name": "brainstorm",
+      "type": "skill-md",
+      "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N), /brainstorm, or when exploring non-obvious solutions, architectures, or creative directions.",
+      "url": "https://skills.danicat.dev/workflows/brainstorm/SKILL.md",
+      "digest": "sha256:1fde2c265ee5363c9687e138ed61c21d33d0065e1a9c7cf60509462bf1d97cdd"
+    },
+    {
       "name": "discovery",
       "type": "skill-md",
       "description": "Scientific and procedural problem-space exploration workflow that widens the investigative aperture across any domain to surface blind spots, hidden constraints, overlooked outliers, and unknown unknowns before narrowing on a choice. Frames and quantifies findings using a 6-tier evidence hierarchy. Activate when exploring a problem space, investigating systems or markets, hunting for hidden gems, or uncovering what an initial framing missed.",
       "url": "https://skills.danicat.dev/workflows/discovery/SKILL.md",
-      "digest": "sha256:2f99ea7f45c3a6355e5d852cb9ef307c4d6c928785c1a41a5063efc5835fe78e"
+      "digest": "sha256:369029a89c5b6d146cac5c3109f2bc96d9ff793533e6a2448860e479d1e2fc89"
     },
     {
       "name": "double-diamond",
@@ -21,6 +35,13 @@
       "description": "Cross-project and cross-session collaboration between Antigravity agents using the agentapi CLI and conversation_summaries.db. Finds active peer sessions across workspaces, looks up target project IDs, routes messages to other projects with return-address headers, and starts new sessions across workspaces. Activate when collaborating between agents in different projects, handing off tasks across workspaces, finding peer session IDs, or sending cross-project messages with agentapi.",
       "url": "https://skills.danicat.dev/workflows/intercom/SKILL.md",
       "digest": "sha256:938491225bc8e13a97207d0bf62f246521aa9e13874c97e74d8e335878cd628b"
+    },
+    {
+      "name": "less-is-more",
+      "type": "skill-md",
+      "description": "Life and craft philosophy inspired by MasterChef that teaches focusing on what is important and doing it well instead of crowding the plate with mediocre extras. Counters AI bloat across product scope, writing, architecture, and frontend UX by elevating the hero ingredient, applying the Inverted Pyramid, replacing noisy text buttons with Material Symbols icons and hover hints, hiding settings in non-modal popovers, and enforcing plain English. Activate when simplifying cluttered frontend interfaces, pruning feature scope, tightening prose, or focusing a design on what matters most.",
+      "url": "https://skills.danicat.dev/workflows/less-is-more/SKILL.md",
+      "digest": "sha256:67f9a6662039c5bf58077e6d0978ab6661a355c816ebc835993730dfbc13f2a7"
     },
     {
       "name": "parallel",
@@ -65,32 +86,11 @@
       "digest": "sha256:32db40e4acdf127e268e36c340a5a96aaa5b4c7092180980f30e6bda80199e7d"
     },
     {
-      "name": "abstract",
-      "type": "skill-md",
-      "description": "Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples. Applies Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test to turn raw facts into high-value knowledge without hollow platitudes. Activate when abstracting ideas, distilling lessons, or synthesizing principles from evidence.",
-      "url": "https://skills.danicat.dev/traits/abstract/SKILL.md",
-      "digest": "sha256:6ac20f03082a81d5ba6739e9ce865aba7b89e4a078b94f2f5b87b5480eefd443"
-    },
-    {
-      "name": "brainstorm",
-      "type": "skill-md",
-      "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N), /brainstorm, or when exploring non-obvious solutions, architectures, or creative directions.",
-      "url": "https://skills.danicat.dev/traits/brainstorm/SKILL.md",
-      "digest": "sha256:e312e06e36a5d84aef13ef18dd6609ef7fb813c16e4f3a6ce721714737584c65"
-    },
-    {
-      "name": "less-is-more",
-      "type": "skill-md",
-      "description": "Life and craft philosophy inspired by MasterChef that teaches focusing on what is important and doing it well instead of crowding the plate with mediocre extras. Counters AI bloat across product scope, writing, architecture, and frontend UX by elevating the hero ingredient, applying the Inverted Pyramid, replacing noisy text buttons with Material Symbols icons and hover hints, hiding settings in non-modal popovers, and enforcing plain English. Activate when simplifying cluttered frontend interfaces, pruning feature scope, tightening prose, or focusing a design on what matters most.",
-      "url": "https://skills.danicat.dev/traits/less-is-more/SKILL.md",
-      "digest": "sha256:edd0c841dafbacb0d88731266a9a8b6e6d285625f2b460ecfe1cfb94203df464"
-    },
-    {
       "name": "uno-reverse",
       "type": "skill-md",
       "description": "Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Prefers impartial dedicated subagent delegation to prevent context contamination and confirmation bias. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.",
-      "url": "https://skills.danicat.dev/traits/uno-reverse/SKILL.md",
-      "digest": "sha256:76d27abe27272513d93db16cf7c55e6c7e533672dc436b793bd6f9f43d2bb179"
+      "url": "https://skills.danicat.dev/workflows/uno-reverse/SKILL.md",
+      "digest": "sha256:42420d6935b4a02f915529e01f0f0faa958367179212fa7ea6946c9b67c5c1b5"
     },
     {
       "name": "buffer-analytics",
@@ -104,7 +104,7 @@
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
-      "digest": "sha256:f3cb461c6cba51c28af8b951e989f49b458bb66272b5c5c8690cfd29dc35c072"
+      "digest": "sha256:0d9d500f15be6a2a6b86e6bc8a6afefcfcfaf9875d9b37984a860d7b7c34bbdb"
     },
     {
       "name": "pagespeed-insights",
@@ -125,7 +125,7 @@
       "type": "archive",
       "description": "Mine and analyze Agent Skill usage, Context-Tax ROI, and trigger attribution from conversation transcripts in a local SQLite database. Scans conversation transcripts and installed skill tiers (built-in, plugin, global, workspace, and catalog) to detect zero-use shelfware and tune activation descriptions. Activate when analyzing skill usage over time, auditing system-prompt token overhead, measuring autonomous vs. explicit (::skill or //skill) triggers, or querying conversation skill events with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/skill-analytics.tar.gz",
-      "digest": "sha256:ffc1c959a1304f296e955ef767db7bb6ead1abf88460132b537f6e0899af040e"
+      "digest": "sha256:48617a1fd5752e1ba9d3ecd932ca11fa4d52e4472819ddf2a1f16edbb921ac69"
     },
     {
       "name": "ebitengineer",
@@ -287,6 +287,41 @@
       "description": "Editorial workflow and platform playbooks for drafting developer-native social media copy and campaigns. Extracts technical evidence via git log inspections or /grill-me interviews, establishes a canonical foundation narrative (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate when drafting social media posts, writing release announcements, authoring technical threads, or running developer campaigns.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/social-copy.tar.gz",
       "digest": "sha256:0e9ddb1f1a1c1ae916ea83b4e72384c1a2e6dc90c17ddba64a0bb0c97e113972"
+    },
+    {
+      "name": "draft",
+      "type": "skill-md",
+      "description": "Adaptive-voice technical writing workflow that drafts and expands engineering blog posts, tutorials, READMEs, and documentation matching the author's natural style.",
+      "url": "https://skills.danicat.dev/plugins/speedgrapher/skills/draft/SKILL.md",
+      "digest": "sha256:fb259d30c736ec6cd2f63dbbb6c228fa927d43c9aaa35abb240541be1f9a813b"
+    },
+    {
+      "name": "ideate",
+      "type": "skill-md",
+      "description": "Socratic technical discovery and inverted-pyramid outlining workflow that interviews engineers one question at a time and structures blog posts, READMEs, and documentation by descending reader value.",
+      "url": "https://skills.danicat.dev/plugins/speedgrapher/skills/ideate/SKILL.md",
+      "digest": "sha256:3ead9f4b6f7b8f1d3e1508064447e99ab2c9a8dea1035baed5b9d3fc27d9668a"
+    },
+    {
+      "name": "publish",
+      "type": "skill-md",
+      "description": "Editorial review and publication readiness workflow that audits prose quality, resolves or injects inline review comments, and verifies technical SEO, GEO, and frontmatter metadata.",
+      "url": "https://skills.danicat.dev/plugins/speedgrapher/skills/publish/SKILL.md",
+      "digest": "sha256:ee08f22d3d5a102d7be9e8d84885546ffc064c437b5d5e4699c06caa5c4af03d"
+    },
+    {
+      "name": "readability",
+      "type": "archive",
+      "description": "Technical copyediting workflow that replaces corporate jargon with plain English, removes synthetic AI phrasing, and resolves paragraph-level readability and grammar issues.",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/readability.tar.gz",
+      "digest": "sha256:657c565beb0ed94bb654c21c3af7326019c6e8019899eea1cb7bbe5d23ede404"
+    },
+    {
+      "name": "speedgrapher",
+      "type": "skill-md",
+      "description": "Opens the Speedgrapher side-panel Markdown editor in the Antigravity auxiliary pane by surfacing a sidecar://speedgrapher/panel/ pill in chat.",
+      "url": "https://skills.danicat.dev/plugins/speedgrapher/skills/speedgrapher/SKILL.md",
+      "digest": "sha256:1dde1eafe9bb4163ed1e3686297564e58deb7f7b0129e7a3ce87daf74feaccfc"
     }
   ]
 }

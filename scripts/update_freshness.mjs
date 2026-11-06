@@ -23,7 +23,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-const CATEGORIES = ['game-dev', 'media', 'coding', 'workflows', 'traits', 'writing', 'analytics'];
+const CATEGORIES = ['game-dev', 'media', 'coding', 'workflows', 'writing', 'analytics'];
 const PARAMS_TOML_PATH = path.join(ROOT_DIR, 'config', '_default', 'params.toml');
 const METRICS_PATH = path.join(ROOT_DIR, 'data', 'metrics_snapshot.json');
 const CURATION_PATH = path.join(ROOT_DIR, 'data', 'curation.json');
@@ -97,7 +97,7 @@ function isSubstantiveSkillCommit(sha, subject, skillId, relSkillDir, isInitialC
 
   const diff = execFileSync(
     'git',
-    ['show', '-M', '--format=', sha, '--', relSkillDir, `agents/${skillId}`, `coding/${skillId}`, `standards/${skillId}`, skillId],
+    ['show', '-M', '--format=', sha, '--', relSkillDir, `traits/${skillId}`, `agents/${skillId}`, `coding/${skillId}`, `standards/${skillId}`, skillId],
     { cwd: ROOT_DIR, encoding: 'utf8' }
   );
   const changedLines = diff
@@ -121,10 +121,22 @@ function isSubstantiveSkillCommit(sha, subject, skillId, relSkillDir, isInitialC
   return substantiveLines.length >= 4;
 }
 
+function resolveCommittedSkillPath(relFilePath) {
+  const porcelain = execFileSync('git', ['status', '--porcelain'], { cwd: ROOT_DIR, encoding: 'utf8' });
+  for (const line of porcelain.split('\n')) {
+    const match = line.match(/^R.\s+(.+?)\s+->\s+(.+)$/);
+    if (match && match[2].trim() === relFilePath) {
+      return match[1].trim();
+    }
+  }
+  return relFilePath;
+}
+
 function getGitHistoryStrict(relSkillDir, skillId, curation) {
+  const targetMdPath = resolveCommittedSkillPath(`${relSkillDir}/SKILL.md`);
   const logLines = execFileSync(
     'git',
-    ['log', '--follow', '--format=%H|%h|%aI|%s', '--', `${relSkillDir}/SKILL.md`],
+    ['log', '--follow', '--format=%H|%h|%aI|%s', '--', targetMdPath],
     { cwd: ROOT_DIR, encoding: 'utf8' }
   )
     .trim()
@@ -200,7 +212,7 @@ async function fetchLiveFirestoreSkillsMap() {
   for (const doc of data.documents || []) {
     const docId = (doc.name || '').split('/').pop() || '';
     const f = doc.fields || {};
-    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)-/, '');
+    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards|plugins)-/, '');
     const sId = String(rawSkill || '').toLowerCase();
     if (!sId) continue;
     if (!bySkill[sId]) {
@@ -232,9 +244,23 @@ async function fetchLiveFirestoreSkillsMap() {
   return bySkill;
 }
 
-async function fetchSkillsShTelemetry(skillId) {
-  const detailUrl = `https://www.skills.sh/danicat/skills/${skillId}`;
-  const auditUrl = `https://skills.sh/api/v1/skills/audit/danicat/skills/${skillId}`;
+function hydrateGitTimestamps(rawGit) {
+  const nowMs = Date.now();
+  const lastMs = new Date(rawGit.lastCommitAt).getTime();
+  const firstMs = new Date(rawGit.firstCommitAt || rawGit.lastCommitAt).getTime();
+  const ageDays = Math.max(0, Number(((nowMs - lastMs) / 86_400_000).toFixed(2)));
+  const plantedDaysAgo = Math.max(0, Number(((nowMs - firstMs) / 86_400_000).toFixed(2)));
+  return {
+    ...rawGit,
+    ageDays,
+    plantedDaysAgo,
+    isNew: plantedDaysAgo <= 14,
+  };
+}
+
+async function fetchSkillsShTelemetry(skillId, repo = 'danicat/skills') {
+  const detailUrl = `https://www.skills.sh/${repo}/${skillId}`;
+  const auditUrl = `https://skills.sh/api/v1/skills/audit/${repo}/${skillId}`;
 
   const [detailRes, auditRes] = await Promise.all([
     fetch(detailUrl, { headers: { 'User-Agent': 'skills.danicat.dev-freshness-harvester/1.0' } }),
@@ -471,7 +497,14 @@ async function main() {
     for (const folder of fs.readdirSync(catDir).sort()) {
       const skillMdPath = path.join(catDir, folder, 'SKILL.md');
       if (fs.existsSync(skillMdPath)) {
-        skillEntries.push({ category: cat, skillId: folder, relDir: `${cat}/${folder}` });
+        skillEntries.push({
+          category: cat,
+          skillId: folder,
+          displayName: folder,
+          url: `/${cat}/${folder}/`,
+          repo: 'danicat/skills',
+          relDir: `${cat}/${folder}`,
+        });
       }
     }
   }
@@ -490,7 +523,7 @@ async function main() {
       runs: 0,
       learns: 0,
     };
-    const skillsSh = await fetchSkillsShTelemetry(entry.skillId);
+    const skillsSh = await fetchSkillsShTelemetry(entry.skillId, entry.repo);
 
     const metrics = computeFreshnessMetrics({ git, firestore, skillsSh, curation });
 
@@ -508,6 +541,10 @@ async function main() {
 
     result[entry.skillId] = {
       id: entry.skillId,
+      displayName: entry.displayName,
+      url: entry.url,
+      repo: entry.repo,
+      pluginId: entry.pluginId || null,
       category: entry.category,
       score: metrics.score,
       sortScore: metrics.sortScore,

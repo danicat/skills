@@ -669,7 +669,7 @@ def discover_skills_inventory(
         candidates.append(script_repo_root)
 
     for cat_root in candidates:
-        for cat_name in ("workflows", "traits", "analytics", "coding", "game-dev", "media", "writing"):
+        for cat_name in ("workflows", "analytics", "coding", "game-dev", "media", "writing"):
             cat_dir = cat_root / cat_name
             if cat_dir.is_dir():
                 for skill_dir in sorted(cat_dir.iterdir()):

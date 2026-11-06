@@ -27,6 +27,18 @@ npx skills add danicat/skills -y
 
 ## Agent Skills
 
+### 🧩 Plugins (`plugins/`)
+Full-featured Antigravity plugins bundling sidecar editors, Model Context Protocol (MCP) servers, rules, and multi-stage writing skills.
+
+* **[`speedgrapher`](plugins/speedgrapher/README.md)**: Local-first editorial workbench for Antigravity with a side-panel Markdown editor, an MCP readability and SEO server, and five writing skills (`v0.13.2`):
+  * **[`ideate`](plugins/speedgrapher/skills/ideate/SKILL.md)**: Socratic technical discovery and inverted-pyramid outlining workflow that interviews engineers one question at a time and structures blog posts, READMEs, and documentation by descending reader value.
+  * **[`draft`](plugins/speedgrapher/skills/draft/SKILL.md)**: Adaptive-voice technical writing workflow that drafts and expands engineering blog posts, tutorials, READMEs, and documentation matching the author's natural style.
+  * **[`readability`](plugins/speedgrapher/skills/readability/SKILL.md)**: Technical copyediting workflow that replaces corporate jargon with plain English, removes synthetic AI phrasing, and resolves paragraph-level readability and grammar issues.
+  * **[`publish`](plugins/speedgrapher/skills/publish/SKILL.md)**: Editorial review and publication readiness workflow that audits prose quality, resolves or injects inline review comments, and verifies technical SEO, GEO, and frontmatter metadata.
+  * **[`speedgrapher`](plugins/speedgrapher/skills/speedgrapher/SKILL.md)**: Opens the Speedgrapher side-panel Markdown editor in the Antigravity auxiliary pane by surfacing a `sidecar://speedgrapher/panel/` pill in chat.
+
+---
+
 ### 🕹️ Games (`game-dev/`)
 Specialized skills for designing and building 2D games in Go with Ebitengine, chiptune DSP, and procedural generation.
 
@@ -63,27 +75,21 @@ Engineering workflow standards, compiler gates, package resolvers, architectural
 ---
 
 ### 🔄 Workflows (`workflows/`)
-Multi-agent swarm orchestration, evidence-first discovery, Agile spikes, and skill authoring workflows.
+Multi-agent swarm orchestration, evidence-first discovery, divergent ideation, philosophical abstraction, Agile spikes, radical simplification, and skill authoring workflows.
 
+* **[`abstract`](workflows/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
+* **[`brainstorm`](workflows/brainstorm/SKILL.md)**: Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms (taboo deflection, assumption flips, tension breaking, cross-domain transfer, and testable bets) and same-prompt parallel dispatch (`brainstorm(N)`) with Map-Reduce synthesis.
 * **[`discovery`](workflows/discovery/SKILL.md)**: Evidence-first fact-finding and source-grounding workflow that investigates technical, business, or cultural problem spaces, maps empirical findings across a 6-tier proof hierarchy (`[T1]`–`[T6]`), and surfaces unknowns before planning or action.
 * **[`double-diamond`](workflows/double-diamond/SKILL.md)**: Two-phase multi-agent orchestration for complex engineering initiatives separating problem space discovery from solution space implementation with human steering gates.
 * **[`intercom`](workflows/intercom/SKILL.md)**: Cross-project and cross-session collaboration between Antigravity agents using the `agentapi` CLI and `conversation_summaries.db`, with active session discovery, target project routing, and return-address headers.
+* **[`less-is-more`](workflows/less-is-more/SKILL.md)**: Life and craft philosophy for focusing on what matters and doing the essential things well instead of doing everything in a mediocre way. Inspired by MasterChef plating discipline—honoring the hero ingredient and executing 1–3 core elements to perfection—across product choices, writing, architecture, and frontend interfaces.
 * **[`parallel`](workflows/parallel/SKILL.md)**: General-purpose task parallelization and agent scaling engine across concurrent subagents.
 * **[`router`](workflows/router/SKILL.md)**: Automatic model and thinking-effort router (`router`, `router(N)`, `router(auto)`) that scores prompt complexity across `gemini-3.5-flash-lite`, `gemini-3.8-flash`, and `gemini-4-argon` (`low` -> `medium` -> `high`) and dispatches workers exclusively as headless `agy` CLI background jobs.
 * **[`show-me-the-money`](workflows/show-me-the-money/SKILL.md)**: Mine local conversation history, brain artifacts, and full session transcripts using parallel Flash/Flash-Lite `agy` CLI workers to recover high-value features lost to conversation drift or abandonment without burning frontier model quota.
 * **[`skill-optimizer`](workflows/skill-optimizer/SKILL.md)**: Meta-skill for authoring, auditing, and optimizing Agent Skills according to the official specification, trigger evaluation, and MCP setup (`https://agentskills.io/mcp`).
 * **[`spike`](workflows/spike/SKILL.md)**: Pragmatic Agile spike workflow for retiring technical, design, or functional risk before committing to implementation or estimates using spec/source audits, blast-radius traces, state-table walk-throughs, and throwaway probes.
 * **[`swarm-coding`](workflows/swarm-coding/SKILL.md)**: Parallelized multi-agent swarm task decomposition and coordination for complex full-stack features and refactorings.
-
----
-
-### 🧬 Traits (`traits/`)
-Level 3 behavioral traits and thinking lenses that shape how agents reason, abstract, ideate, and simplify.
-
-* **[`abstract`](traits/abstract/SKILL.md)**: Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples using Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test.
-* **[`brainstorm`](traits/brainstorm/SKILL.md)**: Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms (taboo deflection, assumption flips, tension breaking, cross-domain transfer, and testable bets) and same-prompt parallel dispatch (`brainstorm(N)`) with Map-Reduce synthesis.
-* **[`less-is-more`](traits/less-is-more/SKILL.md)**: Life and craft philosophy for focusing on what matters and doing the essential things well instead of doing everything in a mediocre way. Inspired by MasterChef plating discipline—honoring the hero ingredient and executing 1–3 core elements to perfection—across product choices, writing, architecture, and frontend interfaces.
-* **[`uno-reverse`](traits/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
+* **[`uno-reverse`](workflows/uno-reverse/SKILL.md)**: Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs.
 
 ---
 

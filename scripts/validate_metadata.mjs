@@ -42,7 +42,6 @@ const VALID_CATEGORIES = new Set([
   'media',
   'coding',
   'workflows',
-  'traits',
   'writing',
   'analytics'
 ]);
@@ -133,7 +132,7 @@ function parseFrontmatter(content) {
   return { data, rawYaml, body };
 }
 
-function validateSkillFile(filePath, isGateway = false) {
+function validateSkillFile(filePath, isGateway = false, expectedPluginId = null) {
   const errors = [];
   const warnings = [];
   const relPath = path.relative(ROOT_DIR, filePath);
@@ -198,9 +197,15 @@ function validateSkillFile(filePath, isGateway = false) {
   } else if (!VALID_CATEGORIES.has(meta.category)) {
     errors.push(`Invalid category "${meta.category}". Allowed categories: ${Array.from(VALID_CATEGORIES).join(', ')}`);
   } else if (!isGateway) {
-    const parentDir = path.basename(path.dirname(path.dirname(filePath)));
-    if (meta.category !== parentDir) {
-      errors.push(`metadata.category ("${meta.category}") does not match category directory ("${parentDir}")`);
+    if (expectedPluginId) {
+      if (meta.plugin !== expectedPluginId) {
+        errors.push(`metadata.plugin ("${meta.plugin || ''}") does not match parent plugin ("${expectedPluginId}")`);
+      }
+    } else {
+      const parentDir = path.basename(path.dirname(path.dirname(filePath)));
+      if (meta.category !== parentDir) {
+        errors.push(`metadata.category ("${meta.category}") does not match category directory ("${parentDir}")`);
+      }
     }
   }
 
@@ -263,6 +268,64 @@ export function validateAllSkills() {
       const skillFile = path.join(catDir, folder, 'SKILL.md');
       if (fs.existsSync(skillFile)) {
         results.push(validateSkillFile(skillFile, false));
+      }
+    }
+  }
+
+  // Validate Vendored Plugins & Bundled Plugin Skills
+  const pluginsJsonPath = path.join(ROOT_DIR, 'data', 'plugins.json');
+  if (fs.existsSync(pluginsJsonPath)) {
+    const pluginsConfig = JSON.parse(fs.readFileSync(pluginsJsonPath, 'utf8'));
+    for (const [pluginId, cfg] of Object.entries(pluginsConfig)) {
+      const pluginDir = path.join(ROOT_DIR, 'plugins', pluginId);
+      const pluginJsonFile = path.join(pluginDir, 'plugin.json');
+      const pluginReadmeFile = path.join(pluginDir, 'README.md');
+      const upstreamHistFile = path.join(pluginDir, '.upstream-history.json');
+      const pluginErrors = [];
+      const pluginWarnings = [];
+      let pluginVersion = 'unknown';
+
+      if (!fs.existsSync(pluginJsonFile)) {
+        pluginErrors.push('Missing plugins/<id>/plugin.json. Run: node scripts/sync_plugins.mjs');
+      } else {
+        const pManifest = JSON.parse(fs.readFileSync(pluginJsonFile, 'utf8'));
+        pluginVersion = pManifest.version || 'unknown';
+        if (`v${pluginVersion}` !== cfg.tag) {
+          pluginErrors.push(`Plugin tag mismatch: data/plugins.json has "${cfg.tag}", plugin.json has "v${pluginVersion}"`);
+        }
+      }
+      if (!fs.existsSync(pluginReadmeFile)) {
+        pluginErrors.push('Missing plugins/<id>/README.md');
+      }
+      if (!fs.existsSync(upstreamHistFile)) {
+        pluginErrors.push('Missing plugins/<id>/.upstream-history.json');
+      } else {
+        const hist = JSON.parse(fs.readFileSync(upstreamHistFile, 'utf8'));
+        if (hist.tag !== cfg.tag) {
+          pluginErrors.push(`.upstream-history.json tag ("${hist.tag}") does not match data/plugins.json ("${cfg.tag}")`);
+        }
+      }
+
+      results.push({
+        relPath: `plugins/${pluginId}/plugin.json`,
+        name: pluginId,
+        version: pluginVersion,
+        errors: pluginErrors,
+        warnings: pluginWarnings,
+      });
+
+      const pluginSkillsDir = path.join(pluginDir, 'skills');
+      if (fs.existsSync(pluginSkillsDir)) {
+        const pSkillFolders = fs.readdirSync(pluginSkillsDir, { withFileTypes: true })
+          .filter(d => d.isDirectory())
+          .map(d => d.name)
+          .sort();
+        for (const sFolder of pSkillFolders) {
+          const sFile = path.join(pluginSkillsDir, sFolder, 'SKILL.md');
+          if (fs.existsSync(sFile)) {
+            results.push(validateSkillFile(sFile, false, pluginId));
+          }
+        }
       }
     }
   }

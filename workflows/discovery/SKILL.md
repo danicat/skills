@@ -12,7 +12,7 @@ metadata:
   category: workflows
   tags: "discovery, exploration, divergence, problem-space, evidence, research"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -20,7 +20,7 @@ metadata:
 
 When given a goal, agents often lock onto the literal words of a prompt and rush toward the first obvious answer. In software, that tunnel vision misses hidden coupling and edge cases. In business, research, or media curation, it recycles common clichés and misses high-value outliers.
 
-`discovery` is a **scientific, divergent step that amplifies the problem space**. You might be mapping a software system, scouting business leads, or hunting for forgotten retro gaming gems and niche anime. In every case, widen the lens first. Rank your proof by source quality, and surface what the first framing missed.
+`discovery` is a **scientific, divergent step that amplifies the problem space**. While `brainstorm` generates option variability, `discovery` maps and grounds the problem space across all options without narrowing prematurely. You might be mapping a software system, scouting business leads, or hunting for forgotten retro gaming gems and niche anime. In every case, widen the lens first, rank your proof by source quality, and surface what the first framing missed.
 
 ---
 
@@ -91,8 +91,8 @@ Sweep the problem space across five outward-looking angles. You can inspect thes
   Call out findings that weren't in the first prompt. Look for hidden risks, design mismatches, unmet niches, or forgotten gems that reshape the search.
 - [ ] **Step 4: Tally the proof tiers**
   Count how many findings sit in each band (`[T1]` to `[T2]` hard facts, `[T3]` to `[T4]` expert or community signal, and `[T5]` open leads). List the remaining open questions.
-- [ ] **Step 5: Check gates and hand off**
-  Run the quality checks below, share the expanded map, and use `ask_question` if scope or taste trade-offs need user input.
+- [ ] **Step 5: Check gates and present the expanded map**
+  Run the quality checks below and present the expanded discovery map and open questions without converging early.
 
 ---
 

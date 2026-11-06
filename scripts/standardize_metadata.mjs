@@ -28,7 +28,6 @@ const VALID_CATEGORIES = [
   'media',
   'coding',
   'workflows',
-  'traits',
   'writing',
   'analytics',
   'standards'

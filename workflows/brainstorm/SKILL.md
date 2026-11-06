@@ -11,10 +11,10 @@ description: >
   architectures, or creative directions.
 license: Apache-2.0
 metadata:
-  category: traits
+  category: workflows
   tags: "ideation, divergence, creativity, architecture, subagents, trade-offs"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.2.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -26,7 +26,7 @@ Standard LLM brainstorming fails in four ways:
 3. **Parallel rail lock**: When parallel workers share fixed buckets, every worker walks down the same rails and returns near-twin ideas.
 4. **Checklist poisoning**: When the framing step dumps raw examples or topic lists into `Hard limits`, workers cram every prompt noun into the output instead of abstracting the core idea.
 
-`brainstorm` solves this with **essence-first framing**, **six symmetry-breaking steps**, and **same-prompt parallel dispatch** via `brainstorm(N)`. Instead of sorting ideas into fixed buckets or reciting a topic list, each run strips one-off details, burns the obvious default, and flips hidden premises. It then breaks the core bottleneck and frames **3 high-conviction testable bets**.
+`brainstorm` solves this with **essence-first framing**, **six symmetry-breaking steps**, and **same-prompt parallel dispatch** via `brainstorm(N)`. Instead of sorting ideas into fixed buckets or reciting a topic list, each run strips one-off details, burns the obvious default, and flips hidden premises. It then breaks the core bottleneck, frames **3 high-conviction testable bets**, and presents the options without prematurely converging.
 
 ---
 
@@ -51,7 +51,7 @@ Check the prompt to pick the right run mode:
 
 1. **Single-agent mode (`DOP = 1`, default)**:
    - Use when the user invokes `brainstorm` or `/brainstorm` with no count or `N <= 1`.
-   - Run the 6 algorithms directly in the current session to produce **3 distinct proposals**, then stop at `ask_question`.
+   - Run the 6 algorithms directly in the current session to produce **3 distinct proposals** and present them without converging.
 2. **Parallel dispatch mode (`DOP = N`, where `N > 1`)**:
    - Use when the user gives a worker count, such as `brainstorm(10)`, `/brainstorm 10`, `/brainstorm(10)`, or *"brainstorm this across 10 agents"*.
    - The active agent acts strictly as a **non-blocking lead**. It spawns `N` concurrent `research` subagents with `Model: "inherit"`, stops calling tools right away to end its turn, and runs the **Reduce pass** once all `N` workers finish.
@@ -62,7 +62,7 @@ In parallel mode, you test how the six steps and turn-1 probes lead equal agents
 
 - **Same prompt for all `N` workers**: Every subagent gets the **exact same problem setup and the exact same `brainstorm` instructions**.
 - **No per-worker personas or split lenses**: Never tell Worker 1 to focus on speed and Worker 2 to focus on cost. Never split fixed buckets across workers.
-- **Strip accidents out of `Hard limits`**: Before framing the problem, split the **essence**—the core goal and boundary rules—from **accidents** like tool names, URLs, or raw topic lists. Put only true structural bounds such as latency caps, word counts, or format rules into `Hard limits`. Pass raw examples and topic lists as `Context seeds` to abstract from, never as a checklist that every bet must repeat.
+- **Strip accidents out of `Hard limits`**: Before framing the problem, split the **essence** (the core goal and boundary rules) from **accidents** like tool names, URLs, or raw topic lists. Put only true structural bounds such as latency caps, word counts, or format rules into `Hard limits`. Pass raw examples and topic lists as `Context seeds` to abstract from, never as a checklist that every bet must repeat.
 - **Natural spread only**: Let turn-1 micro-probes, premise flips, cross-domain models, and token sampling drive the spread across workers.
 
 ```text
@@ -81,7 +81,7 @@ In parallel mode, you test how the six steps and turn-1 probes lead equal agents
 |                    \              |              /                      |
 |                     v             v             v                       |
 |                        LEAD AGENT REDUCE PASS                           |
-|         (Cluster 3N bets -> Gravity Well vs. Outliers -> User Gate)     |
+|       (Cluster 3N bets -> Gravity Well vs. Outliers -> Present Report)  |
 +-------------------------------------------------------------------------+
 ```
 
@@ -94,8 +94,8 @@ You are an independent brainstorm agent exploring high-signal options for the pr
 
 ### Problem setup and hard rules
 - **Goal**: [1-sentence core goal abstracted from raw examples]
-- **Hard limits**: [Strict structural bounds ONLY (e.g. latency, word count, format)—never a checklist of topics or examples]
-- **Context seeds**: [Raw examples, topics, or prior art to abstract from—never recite as a checklist]
+- **Hard limits**: [Strict structural bounds ONLY (e.g. latency, word count, format); never a checklist of topics or examples]
+- **Context seeds**: [Raw examples, topics, or prior art to abstract from; never recite as a checklist]
 - **Non-goals**: [What stays out of scope]
 
 ### Mandatory 6-step ideation algorithm
@@ -125,13 +125,13 @@ Once all `N` workers finish and wake the lead agent, don't dump `3 × N` raw ide
    Group all `3 × N` proposals by how they work under the hood. Ignore title changes, merge matching ideas into clusters, and count how many workers (`M` out of `N`) found each cluster on their own.
 2. **Map the signal bands**:
    Sort the clusters into three bands:
-   - **The gravity well (`>= 30%` of workers)**: Mechanisms reached by 30% or more of the workers on their own. This marks the safe default core—or shows where mode collapse still pulled agents together.
+   - **The gravity well (`>= 30%` of workers)**: Mechanisms reached by 30% or more of the workers on their own. This marks the safe default core, or shows where mode collapse still pulled agents together.
    - **The outlier frontier (1 to 2 workers)**: Unique mechanisms found by only one or two workers that escaped the gravity well. Treat these as top picks, because real breakthroughs often sit in the tails.
    - **Conflict forks**: Pairs of workers that reached clashing conclusions from the same prompt. These forks expose a hidden trade-off in the problem itself.
 3. **Prune weak or invalid ideas**:
    Drop any proposal that breaks a hard limit, fails Popper's flip test, or loses to another cluster on every metric.
-4. **Score spread and open selection gate**:
-   Count the session stats: `N` workers, `3N` raw proposals, `K` unique mechanisms, and the spread ratio `K / 3N`. Present the grouped report and call `ask_question` so the user can pick a winner or merge a core idea with an outlier.
+4. **Score spread and present the portfolio**:
+   Count the session stats: `N` workers, `3N` raw proposals, `K` unique mechanisms, and the spread ratio `K / 3N`. Present the grouped report so the full option set stays open for downstream exploration or user review.
 
 ---
 
@@ -144,22 +144,18 @@ Once all `N` workers finish and wake the lead agent, don't dump `3 × N` raw ide
   Write the **Banned default box** with 1 to 3 textbook answers. List 3 to 5 hidden premises, flip them, state the core `X vs. Y` conflict, and pull 1 to 2 cross-domain models.
 - [ ] **Step 3: Draft 3 testable bets**
   Write 3 distinct proposals. Each bet must include its **Popper flip-test claim**, **concrete sketch**, **cost floor**, and **stop rule**.
-- [ ] **Step 4: Run quality gate**
-  Check that none of the 3 bets repeat the banned default, stuff context seeds into a checklist, or share the same mechanism. Note how two bets might combine.
-- [ ] **Step 5: User selection gate (`ask_question`)**
-  Share the brainstorm report and call `ask_question` before touching any project source files.
+- [ ] **Step 4: Run quality gate & present options**
+  Check that none of the 3 bets repeat the banned default, stuff context seeds into a checklist, or share the same mechanism. Note how two bets might combine and present the brainstorm report without converging.
 
 ### Parallel lead checklist
 - [ ] **Step 1: Parse `N`, strip accidents, & frame shared problem setup**
-  Read the worker count `N`, separate structural `Hard limits` from raw `Context seeds`, and write the shared problem setup. Never put a list of user topics or examples into `Hard limits`. If hard limits conflict, call `ask_question` before spawning workers.
+  Read the worker count `N`, separate structural `Hard limits` from raw `Context seeds`, and write the shared problem setup. Never put a list of user topics or examples into `Hard limits`.
 - [ ] **Step 2: Dispatch `N` equal workers & yield turn**
   Spawn `N` concurrent `research` subagents with `Model: "inherit"` using the worker prompt template. Stop calling tools right away so the chat stays unblocked.
 - [ ] **Step 3: Cluster & map signal bands (Reduce)**
   When all `N` workers finish, group the `3 × N` raw bets into `K` unique mechanism clusters. Split them into the **Gravity well**, **Outlier frontier**, and **Conflict forks**.
-- [ ] **Step 4: Score spread & combine**
-  Compute the spread scorecard (`K` unique mechanisms out of `3N` raw bets, banned-default overlap, and top cross-domain models).
-- [ ] **Step 5: User selection gate (`ask_question`)**
-  Share the reduced report and call `ask_question` so the user can pick a path or merge mechanisms.
+- [ ] **Step 4: Score spread & present portfolio**
+  Compute the spread scorecard (`K` unique mechanisms out of `3N` raw bets, banned-default overlap, and top cross-domain models) and present the reduced report without converging.
 
 ---
 
@@ -171,7 +167,7 @@ Before showing results to the user, check all five rules:
 2. **Zero checklist stuffing**: Proposals abstract and unify `Context seeds` into a coherent mechanism or story rather than reciting every prompt noun as a list.
 3. **Distinct causal mechanisms**: No two final proposals differ only by library name, tuning flag, or label.
 4. **No vague labels**: Every proposal swaps `Low / Medium / High` ratings for a concrete sketch, a cost floor, a Popper flip test, and a clear stop rule.
-5. **Zero early edits**: Project source files stay untouched until the user picks an option via `ask_question`.
+5. **Pure divergence**: Present the options without forcing a premature selection gate or touching any project source files.
 
 ---
 
@@ -222,7 +218,7 @@ Before showing results to the user, check all five rules:
 - **Core conflict identified**: <Primary X vs. Y bottleneck>
 
 ## 2. The gravity well (Consensus core)
-*Mechanisms found by several workers on their own—the high-confidence default.*
+*Mechanisms found by several workers on their own, forming the high-confidence default.*
 
 ### Cluster 1: <Title> (`<M>/<N>` workers converged)
 - **The bet**: <Shared thesis & Popper flip test>
@@ -236,7 +232,7 @@ Before showing results to the user, check all five rules:
 ## 3. The outlier frontier (High-alpha breakthroughs)
 *Unique mechanisms found by only 1 or 2 workers that escaped mode collapse.*
 
-### Outlier A: <Title> (`1/<N>` workers—sparked by <flip or cross-domain model>)
+### Outlier A: <Title> (`1/<N>` workers, sparked by <flip or cross-domain model>)
 - **The bet**: <Non-obvious thesis>
 - **Core mechanism & concrete sketch**:
   ```<lang>

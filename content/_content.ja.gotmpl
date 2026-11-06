@@ -4,18 +4,18 @@
   "path" "/"
   "title" $t.ui.catalogTitle
   "description" ($t.ui.catalogSubtitle | plainify | truncate 160)
-  "aliases" (slice "/ja/agents/")
+  "aliases" (slice "/ja/agents/" "/ja/traits/")
   "params" (dict
     "description" $t.ui.catalogSubtitle
   )
 ) -}}
 
 {{- $categories := slice
+  (dict "id" "plugins" "emoji" "🧩" "weight" 5)
   (dict "id" "game-dev" "emoji" "🕹️" "weight" 10)
   (dict "id" "media" "emoji" "🎨" "weight" 20)
   (dict "id" "coding" "emoji" "💻" "weight" 30)
   (dict "id" "workflows" "emoji" "🔄" "weight" 40)
-  (dict "id" "traits" "emoji" "🧬" "weight" 45)
   (dict "id" "writing" "emoji" "✍️" "weight" 50)
   (dict "id" "analytics" "emoji" "📊" "weight" 60)
 -}}
@@ -105,9 +105,14 @@
       {{- if or (eq $topFolder "references") (eq $topFolder "scripts") (eq $topFolder "assets") (eq $topFolder "evals") -}}
         {{- $fName := index $pathSegs (sub (len $pathSegs) 1) -}}
         {{- $isMd := strings.HasSuffix $fName ".md" -}}
+        {{- $resTargetUrl := printf "/%s/%s/%s" $cat.id $folder $relPath -}}
+        {{- if $isMd -}}
+          {{- $resTargetUrl = printf "/%s/%s/%s" $cat.id $folder (replaceRE "\\.md$" ".html" $relPath | lower) -}}
+        {{- end -}}
         {{- $bundledResources = $bundledResources | append (dict
           "type" $topFolder
           "relPath" $relPath
+          "url" $resTargetUrl
           "name" $fName
           "isMarkdown" $isMd
           "sizeBytes" (len $fRes.Content)
@@ -117,10 +122,10 @@
 
     {{- $skillAliases := slice -}}
     {{- if eq $cat.id "workflows" -}}
-      {{- $skillAliases = slice (printf "/ja/agents/%s/" $folder) -}}
-    {{- else if eq $cat.id "traits" -}}
       {{- if eq $folder "less-is-more" -}}
-        {{- $skillAliases = slice "/ja/coding/less-is-more/" "/ja/agents/less-is-more/" -}}
+        {{- $skillAliases = slice "/ja/coding/less-is-more/" "/ja/agents/less-is-more/" "/ja/traits/less-is-more/" -}}
+      {{- else if or (eq $folder "abstract") (eq $folder "brainstorm") (eq $folder "uno-reverse") -}}
+        {{- $skillAliases = slice (printf "/ja/agents/%s/" $folder) (printf "/ja/traits/%s/" $folder) -}}
       {{- else -}}
         {{- $skillAliases = slice (printf "/ja/agents/%s/" $folder) -}}
       {{- end -}}
@@ -135,9 +140,12 @@
       "content" (dict "mediaType" "text/markdown" "value" $safeBody)
       "params" (dict
         "url" (printf "/ja/%s/%s/" $cat.id $folder)
+        "basePath" (printf "/%s/%s" $cat.id $folder)
         "aliases" $skillAliases
         "isCompanion" false
+        "isPlugin" false
         "skillName" $skillName
+        "freshnessKey" (lower $skillName)
         "folder" $folder
         "category" $cat.id
         "categoryName" $catName
@@ -159,6 +167,280 @@
         "githubUrl" (printf "https://github.com/danicat/skills/tree/main/%s/%s" $cat.id $folder)
         "relativePath" (printf "%s/%s/SKILL.md" $cat.id $folder)
         "bundledResources" $bundledResources
+      )
+    ) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $pCatTrans := index $t.categories "plugins" -}}
+{{- range $pluginId, $pCfg := site.Data.plugins -}}
+  {{- $manifestRes := resources.Get (printf "_plugins/%s/plugin.json" $pluginId) -}}
+  {{- $readmeRes := resources.Get (printf "_plugins/%s/README.md" $pluginId) -}}
+  {{- $histRes := resources.Get (printf "_plugins/%s/.upstream-history.json" $pluginId) -}}
+  {{- if and $manifestRes $readmeRes -}}
+    {{- $manifest := transform.Unmarshal $manifestRes.Content -}}
+    {{- $hist := dict -}}
+    {{- if $histRes -}}
+      {{- $hist = transform.Unmarshal $histRes.Content -}}
+    {{- end -}}
+    {{- $pluginGit := $hist.plugin | default dict -}}
+    {{- $pluginCommitSha := $pluginGit.lastCommitSha | default ($hist.commit | default "") -}}
+    {{- $pluginCommitDate := "" -}}
+    {{- with $pluginGit.lastCommitAt -}}
+      {{- $pluginCommitDate = substr (string .) 0 10 -}}
+    {{- end -}}
+    {{- $displayName := $manifest.displayName | default $pluginId -}}
+    {{- $enPluginDesc := $manifest.description | default "" | strings.TrimSpace -}}
+    {{- $freshnessKey := printf "plugin:%s" $pluginId -}}
+    {{- $pluginDesc := (index $t.skills $freshnessKey) | default $enPluginDesc -}}
+    {{- $pluginVersion := $manifest.version | default "0.1.0" -}}
+    {{- $logoUrl := printf "/plugins/%s/%s" $pluginId ($manifest.logo | default "assets/logo.svg") -}}
+    {{- $suggestedPrompts := $manifest.suggestedPrompts | default slice -}}
+    {{- $readmeRaw := $readmeRes.Content -}}
+    {{- $readmeSha := crypto.SHA256 $readmeRaw -}}
+    {{- $readmeNorm := replace $readmeRaw "\r\n" "\n" -}}
+    {{- $cleanReadme := replaceRE "^#[^\\n]+\\n+" "" (strings.TrimSpace $readmeNorm) -}}
+    {{- $cleanReadme = replaceRE "^!\\[[^\\]]*\\]\\([^)]+\\)\\n+" "" (strings.TrimSpace $cleanReadme) -}}
+    {{- $safeReadme := replaceRE "\\{\\{<([^>]+)>\\}\\}" "{{</*$1*/>}}" (strings.TrimSpace $cleanReadme) -}}
+    {{- $safeReadme = replaceRE "\\{\\{%([^%]+)%\\}\\}" "{{%/*$1*/%}}" $safeReadme -}}
+
+    {{- $pluginSkillsList := slice -}}
+    {{- $pSkillMatches := resources.Match (printf "_plugins/%s/skills/*/SKILL.md" $pluginId) -}}
+    {{- range $sRes := $pSkillMatches -}}
+      {{- $sPrefix := printf "_plugins/%s/skills/" $pluginId -}}
+      {{- $cleanSResName := strings.TrimPrefix "/" $sRes.Name -}}
+      {{- $relSPath := strings.TrimPrefix $sPrefix $cleanSResName -}}
+      {{- $sFolder := strings.TrimSuffix "/SKILL.md" $relSPath -}}
+      {{- $sNorm := replace $sRes.Content "\r\n" "\n" -}}
+      {{- $sYaml := "" -}}
+      {{- if strings.HasPrefix $sNorm "---\n" -}}
+        {{- $sTrimmed := strings.TrimPrefix "---\n" $sNorm -}}
+        {{- $sParts := split $sTrimmed "\n---\n" -}}
+        {{- if gt (len $sParts) 1 -}}
+          {{- $sYaml = index $sParts 0 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $sFm := dict -}}
+      {{- if $sYaml -}}
+        {{- $sFm = transform.Unmarshal $sYaml -}}
+      {{- end -}}
+      {{- $sName := $sFm.name | default $sFolder -}}
+      {{- $enSDesc := $sFm.description | default "" | strings.TrimSpace -}}
+      {{- $sDesc := (index $t.skills (lower $sName)) | default $enSDesc -}}
+      {{- $pluginSkillsList = $pluginSkillsList | append (dict
+        "name" $sName
+        "folder" $sFolder
+        "description" $sDesc
+        "url" (printf "/plugins/%s/skills/%s/" $pluginId $sFolder)
+      ) -}}
+    {{- end -}}
+
+    {{- $pluginBundledResources := slice -}}
+    {{- range $sRes := $pSkillMatches -}}
+      {{- $sPrefix := printf "_plugins/%s/skills/" $pluginId -}}
+      {{- $cleanSResName := strings.TrimPrefix "/" $sRes.Name -}}
+      {{- $relSPath := strings.TrimPrefix $sPrefix $cleanSResName -}}
+      {{- $sFolder := strings.TrimSuffix "/SKILL.md" $relSPath -}}
+      {{- $sGit := dict -}}
+      {{- if and $hist.skills (index $hist.skills $sFolder) -}}
+        {{- $sGit = index $hist.skills $sFolder -}}
+      {{- end -}}
+      {{- $sCommitSha := $sGit.lastCommitSha | default $pluginCommitSha -}}
+      {{- $sCommitDate := $pluginCommitDate -}}
+      {{- with $sGit.lastCommitAt -}}
+        {{- $sCommitDate = substr (string .) 0 10 -}}
+      {{- end -}}
+
+      {{- $sRaw := $sRes.Content -}}
+      {{- $sSha := crypto.SHA256 $sRaw -}}
+      {{- $sNorm := replace $sRaw "\r\n" "\n" -}}
+      {{- $sYaml := "" -}}
+      {{- $sBody := $sNorm -}}
+      {{- if strings.HasPrefix $sNorm "---\n" -}}
+        {{- $sTrimmed := strings.TrimPrefix "---\n" $sNorm -}}
+        {{- $sParts := split $sTrimmed "\n---\n" -}}
+        {{- if gt (len $sParts) 1 -}}
+          {{- $sYaml = index $sParts 0 -}}
+          {{- $sBody = delimit (after 1 $sParts) "\n---\n" -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $sFm := dict -}}
+      {{- if $sYaml -}}
+        {{- $sFm = transform.Unmarshal $sYaml -}}
+      {{- end -}}
+      {{- $sName := $sFm.name | default $sFolder -}}
+      {{- $enSDesc := $sFm.description | default "" | strings.TrimSpace -}}
+      {{- $sDesc := (index $t.skills (lower $sName)) | default $enSDesc -}}
+      {{- $sLicense := $sFm.license | default ($pCfg.license | default "Apache-2.0") -}}
+      {{- $sMeta := $sFm.metadata | default dict -}}
+      {{- $sVersion := $sMeta.version | default $pluginVersion -}}
+      {{- $sAuthor := $sMeta.author | default ($pCfg.author | default "Daniela Petruzalek (daniela@danicat.dev)") -}}
+      {{- $sCatId := $sMeta.category | default ($pCfg.category | default "writing") -}}
+      {{- $sCatTrans := index $t.categories $sCatId -}}
+      {{- $sCatEmoji := "✍️" -}}
+      {{- range $cItem := $categories -}}
+        {{- if eq $cItem.id $sCatId -}}
+          {{- $sCatEmoji = $cItem.emoji -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $sTags := slice -}}
+      {{- with $sMeta.tags -}}
+        {{- range (split . ",") -}}
+          {{- $tTag := strings.TrimSpace . -}}
+          {{- if $tTag -}}
+            {{- $sTags = $sTags | append $tTag -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $safeSBody := replaceRE "\\{\\{<([^>]+)>\\}\\}" "{{</*$1*/>}}" (strings.TrimSpace $sBody) -}}
+      {{- $safeSBody = replaceRE "\\{\\{%([^%]+)%\\}\\}" "{{%/*$1*/%}}" $safeSBody -}}
+
+      {{- $sBundled := slice -}}
+      {{- $sFilePrefix := printf "_plugins/%s/skills/%s/" $pluginId $sFolder -}}
+      {{- $allSFiles := resources.Match (printf "%s**" $sFilePrefix) -}}
+      {{- range $fRes := $allSFiles -}}
+        {{- $cleanFName := strings.TrimPrefix "/" $fRes.Name -}}
+        {{- $relPath := strings.TrimPrefix $sFilePrefix $cleanFName -}}
+        {{- $pathSegs := split $relPath "/" -}}
+        {{- $topFolder := index $pathSegs 0 -}}
+        {{- if or (eq $topFolder "references") (eq $topFolder "scripts") (eq $topFolder "assets") (eq $topFolder "evals") -}}
+          {{- $fName := index $pathSegs (sub (len $pathSegs) 1) -}}
+          {{- $isMd := strings.HasSuffix $fName ".md" -}}
+          {{- $refHtmlRel := replaceRE "\\.md$" ".html" $relPath | lower -}}
+          {{- $refUrl := printf "/plugins/%s/skills/%s/%s" $pluginId $sFolder (cond $isMd $refHtmlRel $relPath) -}}
+          {{- $sBundled = $sBundled | append (dict
+            "type" $topFolder
+            "relPath" $relPath
+            "url" $refUrl
+            "name" $fName
+            "isMarkdown" $isMd
+            "sizeBytes" (len $fRes.Content)
+          ) -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $pluginBundledResources = $pluginBundledResources | append (dict
+        "type" "skills"
+        "relPath" (printf "skills/%s/SKILL.md" $sFolder)
+        "url" (printf "/ja/plugins/%s/skills/%s/" $pluginId $sFolder)
+        "name" "SKILL.md"
+        "isMarkdown" true
+        "sizeBytes" (len $sRaw)
+      ) -}}
+
+      {{- $.AddPage (dict
+        "kind" "page"
+        "path" (printf "plugins/%s/skills/%s" $pluginId $sFolder)
+        "title" (printf "%s — %s Agent Skill (%s)" $sName $sCatTrans.name $displayName)
+        "description" ($sDesc | plainify | truncate 160)
+        "content" (dict "mediaType" "text/markdown" "value" $safeSBody)
+        "params" (dict
+          "url" (printf "/ja/plugins/%s/skills/%s/" $pluginId $sFolder)
+          "basePath" (printf "/plugins/%s/skills/%s" $pluginId $sFolder)
+          "isCompanion" false
+          "isPlugin" false
+          "skillName" $sName
+          "freshnessKey" (lower $sName)
+          "folder" $sFolder
+          "category" $sCatId
+          "categoryName" $sCatTrans.name
+          "categoryEmoji" $sCatEmoji
+          "parentPluginId" $pluginId
+          "parentPluginName" $displayName
+          "parentPluginUrl" (printf "/plugins/%s/" $pluginId)
+          "parentPluginLogo" $logoUrl
+          "releaseTag" $pCfg.tag
+          "repo" $pCfg.repo
+          "lastCommitSha" $sCommitSha
+          "lastCommitDate" $sCommitDate
+          "pluginSkills" $pluginSkillsList
+          "description" $sDesc
+          "license" $sLicense
+          "author" $sAuthor
+          "version" $sVersion
+          "sha256" $sSha
+          "digest" (printf "sha256:%s" $sSha)
+          "byteSize" (len $sRaw)
+          "tags" $sTags
+          "rawMarkdown" $sRaw
+          "pluginInstallCommand" $pCfg.installCommand
+          "installCommand" $pCfg.installCommand
+          "rawUrl" (printf "https://skills.danicat.dev/plugins/%s/skills/%s/SKILL.md" $pluginId $sFolder)
+          "detailUrl" (printf "https://skills.danicat.dev/ja/plugins/%s/skills/%s/" $pluginId $sFolder)
+          "githubUrl" (printf "https://github.com/%s/tree/%s/skills/%s" $pCfg.repo $pCfg.tag $sFolder)
+          "relativePath" (printf "plugins/%s/skills/%s/SKILL.md" $pluginId $sFolder)
+          "bundledResources" $sBundled
+        )
+      ) -}}
+    {{- end -}}
+
+    {{- $rulesRes := resources.Get (printf "_plugins/%s/rules/AGENTS.md" $pluginId) -}}
+    {{- if $rulesRes -}}
+      {{- $pluginBundledResources = $pluginBundledResources | append (dict
+        "type" "rules"
+        "relPath" "rules/AGENTS.md"
+        "url" (printf "/plugins/%s/rules/agents.html" $pluginId)
+        "name" "AGENTS.md"
+        "isMarkdown" true
+        "sizeBytes" (len $rulesRes.Content)
+      ) -}}
+    {{- end -}}
+
+    {{- $mcpRes := resources.Get (printf "_plugins/%s/mcp_config.json" $pluginId) -}}
+    {{- if $mcpRes -}}
+      {{- $pluginBundledResources = $pluginBundledResources | append (dict
+        "type" "mcp"
+        "relPath" "mcp_config.json"
+        "url" (printf "/plugins/%s/mcp_config.json" $pluginId)
+        "name" "mcp_config.json"
+        "isMarkdown" false
+        "sizeBytes" (len $mcpRes.Content)
+      ) -}}
+    {{- end -}}
+
+    {{- $.AddPage (dict
+      "kind" "page"
+      "path" (printf "plugins/%s" $pluginId)
+      "title" (printf "%s — %s" $displayName $pCatTrans.name)
+      "description" ($pluginDesc | plainify | truncate 160)
+      "content" (dict "mediaType" "text/markdown" "value" $safeReadme)
+      "params" (dict
+        "url" (printf "/ja/plugins/%s/" $pluginId)
+        "basePath" (printf "/plugins/%s" $pluginId)
+        "isCompanion" false
+        "isPlugin" true
+        "skillName" $displayName
+        "freshnessKey" $freshnessKey
+        "folder" $pluginId
+        "category" "plugins"
+        "categoryName" $pCatTrans.name
+        "categoryEmoji" "🧩"
+        "domainCategory" ($pCfg.category | default "writing")
+        "logoUrl" $logoUrl
+        "releaseTag" $pCfg.tag
+        "repo" $pCfg.repo
+        "lastCommitSha" $pluginCommitSha
+        "lastCommitDate" $pluginCommitDate
+        "suggestedPrompts" $suggestedPrompts
+        "pluginSkills" $pluginSkillsList
+        "description" $pluginDesc
+        "license" ($pCfg.license | default "Apache-2.0")
+        "author" ($pCfg.author | default "Daniela Petruzalek (daniela@danicat.dev)")
+        "version" $pluginVersion
+        "sha256" $readmeSha
+        "digest" (printf "sha256:%s" $readmeSha)
+        "byteSize" (len $readmeRaw)
+        "tags" ($pCfg.tags | default (slice "plugin" $pluginId))
+        "rawMarkdown" $readmeRaw
+        "pluginInstallCommand" $pCfg.installCommand
+        "installCommand" $pCfg.installCommand
+        "rawUrl" (printf "https://skills.danicat.dev/plugins/%s/README.md" $pluginId)
+        "detailUrl" (printf "https://skills.danicat.dev/ja/plugins/%s/" $pluginId)
+        "githubUrl" (printf "https://github.com/%s/tree/%s" $pCfg.repo $pCfg.tag)
+        "relativePath" (printf "plugins/%s/README.md" $pluginId)
+        "bundledResources" $pluginBundledResources
       )
     ) -}}
   {{- end -}}

@@ -1,0 +1,274 @@
+{{- $t := index site.Data.translations .Site.Language.Lang | default site.Data.translations.en -}}
+{{- $pluginName := .Params.skillName | default .Title -}}
+{{- $pluginKey := .Params.freshnessKey | default (printf "plugin:%s" .Params.folder) -}}
+{{- $catId := .Params.category | default "plugins" -}}
+{{- $catName := .Params.categoryName | default "Plugins" -}}
+{{- $catEmoji := .Params.categoryEmoji | default "🧩" -}}
+{{- $domainCatId := .Params.domainCategory | default "writing" -}}
+{{- $domainCatTrans := index $t.categories $domainCatId -}}
+{{- $metrics := site.Data.metrics_snapshot -}}
+{{- $m := index $metrics $pluginKey | default dict -}}
+{{- $stars := int ($m.likes | default 0) -}}
+{{- $views := int ($m.views | default 0) -}}
+{{- $releaseTag := .Params.releaseTag | default (printf "v%s" .Params.version) -}}
+{{- $repo := .Params.repo | default "danicat/speedgrapher" -}}
+{{- $sha := .Params.lastCommitSha | default "" -}}
+{{- $commitDate := .Params.lastCommitDate | default "" -}}
+{{- $pluginSkills := .Params.pluginSkills | default slice -}}
+{{- $prompts := .Params.suggestedPrompts | default slice -}}
+
+{{/* Breadcrumbs */}}
+<nav class="flex items-center flex-wrap gap-2 text-xs text-neutral-500 dark:text-neutral-400 mt-4 mb-3" aria-label="Breadcrumbs">
+  <a href="{{ "/" | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $t.ui.catalogTitle }}</a>
+  <span class="opacity-50">/</span>
+  <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $catEmoji }} {{ $catName }}</a>
+  <span class="opacity-50">/</span>
+  <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $pluginName }}</span>
+</nav>
+
+{{/* Plugin Hero Card */}}
+<section id="detailSkillCard" class="skill-card danicat-card mb-8">
+  <div>
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+      <div class="flex items-center flex-wrap gap-2">
+        <a href="{{ (printf "/#%s" $catId) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50/80 text-primary-700 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50 border border-primary-200/70 dark:border-primary-700/60 transition-colors no-underline">
+          <span>{{ $catEmoji }}</span>
+          <span>{{ $catName }}</span>
+        </a>
+        {{- if $domainCatTrans -}}
+          <a href="{{ (printf "/#%s" $domainCatId) | relLangURL }}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-primary-900/50 dark:hover:text-primary-300 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors no-underline">
+            <span>✍️</span>
+            <span>{{ $domainCatTrans.name }}</span>
+          </a>
+        {{- end -}}
+        <a href="{{ printf "https://github.com/%s/releases/tag/%s" $repo $releaseTag }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:bg-neutral-700 border border-neutral-200/80 dark:border-neutral-700/80 no-underline transition-colors" title="Pinned release tag">
+          <span>🏷️</span>
+          <span>{{ $releaseTag }}</span>
+        </a>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2">
+        <button type="button"
+                class="metric-pill star-btn"
+                id="detailStarBtn"
+                data-action="star"
+                title="Star this plugin"
+                onclick="handleStarToggle(this, '{{ $catId }}', '{{ $pluginKey }}')">
+          <svg class="star-icon" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="sr-only">Star </span>
+          <span class="metric-val star-count" id="detailStarCount">{{ $stars }}</span>
+        </button>
+
+        <div class="metric-pill view-pill" title="Total Views">
+          <svg class="metric-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span class="metric-val view-count" id="detailViewCount">{{ $views }}</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="copyDetailMarkdown(this, '{{ $t.ui.copyAsMarkdown }}')"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-primary-400 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+          title="Copy full README.md as Markdown">
+          <span>📋</span>
+          <span class="copy-md-label">{{ $t.ui.copyAsMarkdown }}</span>
+        </button>
+
+        <a href="{{ .Params.githubUrl }}"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="inline-flex items-center justify-center p-1.5 text-neutral-500 hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400 transition-colors no-underline"
+           aria-label="GitHub"
+           title="View on GitHub">
+          <span class="w-4 h-4 flex items-center justify-center">{{ partial "icon.html" "github" }}</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-4">
+      {{- with .Params.logoUrl -}}
+        <img src="{{ . | safeURL }}" alt="{{ $pluginName }} logo" class="w-14 h-14 rounded-xl border border-neutral-200/80 dark:border-neutral-700/80 bg-white dark:bg-neutral-900 p-2 shrink-0" loading="eager">
+      {{- end -}}
+      <div class="min-w-0 flex-1">
+        <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 mt-0 mb-1.5 leading-snug">
+          {{ $pluginName }}
+        </h1>
+        <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 leading-relaxed m-0">
+          {{ .Params.description }}
+        </p>
+      </div>
+    </div>
+
+    {{- if ne .Site.Language.Lang "en" -}}
+      <p class="mt-3 pt-2.5 border-t border-neutral-200/60 dark:border-neutral-700/60 text-xs text-neutral-500 dark:text-neutral-400 m-0">
+        {{ $t.ui.englishPromptNotice }}
+      </p>
+    {{- end -}}
+  </div>
+  <script type="application/json" id="detail-markdown-payload">{{ .Params.rawMarkdown | jsonify | safeJS }}</script>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 items-start">
+  <main class="lg:col-span-8 min-w-0 space-y-8">
+    {{- if gt (len $pluginSkills) 0 -}}
+      <section>
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 m-0">
+            Bundled Skills ({{ len $pluginSkills }})
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {{- range $ps := $pluginSkills -}}
+            <a href="{{ $ps.url | relLangURL }}" class="danicat-card p-4 block no-underline group hover:border-primary-500/60 transition-colors">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="text-base font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 font-mono">
+                  {{ $ps.name }}
+                </span>
+                <span class="text-xs text-primary-600 dark:text-primary-400 font-semibold">SKILL.md →</span>
+              </div>
+              <p class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed line-clamp-2 m-0">
+                {{ $ps.description }}
+              </p>
+            </a>
+          {{- end -}}
+        </div>
+      </section>
+    {{- end -}}
+
+    <article class="prose dark:prose-invert max-w-none skill-prose"{{ if ne .Language.Lang "en" }} lang="en"{{ end }}>
+      {{ .Content }}
+    </article>
+  </main>
+
+  <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+    {{/* Purpose-Built Plugin Install Card (No kungfu / npx skills tabs) */}}
+    <div class="danicat-card p-5">
+      <div class="flex items-center justify-between gap-2 mb-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Install Plugin</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/70 dark:border-neutral-700/70">{{ $releaseTag }}</span>
+      </div>
+
+      <div class="cmd-box-row">
+        <span class="cmd-text">{{ .Params.pluginInstallCommand }}</span>
+        <button type="button" class="cmd-copy-btn" aria-label="Copy command" onclick="copyInstallCommand('{{ .Params.pluginInstallCommand }}', this)" title="Copy command">
+          {{ $t.ui.copyBtn }}
+        </button>
+      </div>
+    </div>
+
+    {{/* Plugin Release & Manifest Card */}}
+    <div class="danicat-card p-5">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Plugin Release</span>
+        <a href="{{ printf "https://github.com/%s/releases/tag/%s" $repo $releaseTag }}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">
+          🏷️ {{ $releaseTag }} ↗
+        </a>
+      </div>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+          <span class="text-neutral-500 dark:text-neutral-400">Repository</span>
+          <a href="{{ printf "https://github.com/%s" $repo }}" target="_blank" rel="noopener noreferrer" class="font-mono text-neutral-800 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-400 no-underline">{{ $repo }} ↗</a>
+        </div>
+
+        {{- if $commitDate -}}
+          <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+            <span class="text-neutral-500 dark:text-neutral-400">Tag Commit</span>
+            <div class="flex items-center gap-1.5 font-mono text-neutral-800 dark:text-neutral-200">
+              <span>{{ $commitDate }}</span>
+              {{- if $sha -}}
+                <span class="opacity-40">·</span>
+                <a href="{{ printf "https://github.com/%s/commit/%s" $repo $sha }}" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ substr $sha 0 7 }}</a>
+              {{- end -}}
+            </div>
+          </div>
+        {{- end -}}
+
+        <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+          <span class="text-neutral-500 dark:text-neutral-400">Bundled Skills</span>
+          <span class="font-mono text-neutral-800 dark:text-neutral-200">{{ len $pluginSkills }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1">
+          <span class="text-neutral-500 dark:text-neutral-400">License</span>
+          <span class="font-mono text-neutral-800 dark:text-neutral-200">{{ .Params.license | default "Apache-2.0" }}</span>
+        </div>
+      </div>
+    </div>
+
+    {{/* Suggested Prompts Card */}}
+    {{- if gt (len $prompts) 0 -}}
+      <div class="danicat-card p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">Suggested Prompts</div>
+        <div class="space-y-2">
+          {{- range $p := $prompts -}}
+            <button type="button"
+                    onclick="copyInstallCommand({{ $p | jsonify }}, this)"
+                    class="w-full text-left p-2.5 rounded-lg text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-50 dark:bg-neutral-800/80 hover:bg-primary-50/70 dark:hover:bg-primary-900/30 border border-neutral-200/70 dark:border-neutral-700/70 transition-colors cursor-pointer leading-relaxed"
+                    title="Click to copy prompt">
+              “{{ $p }}”
+            </button>
+          {{- end -}}
+        </div>
+      </div>
+    {{- end -}}
+
+    {{- $headings := .Fragments.Headings -}}
+    {{- if gt (len $headings) 0 -}}
+      <div class="danicat-card p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{{ $t.ui.onThisPage }}</div>
+        <ul class="space-y-1.5 text-xs list-none p-0 m-0">
+          {{- range $h1 := $headings -}}
+            {{- if $h1.ID -}}
+              <li>
+                <a href="{{ printf "#%s" $h1.ID | safeURL }}" class="text-neutral-600 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h1.Title | plainify }}</a>
+              </li>
+            {{- end -}}
+            {{- range $h2 := $h1.Headings -}}
+              {{- if $h2.ID -}}
+                <li class="pl-3">
+                  <a href="{{ printf "#%s" $h2.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h2.Title | plainify }}</a>
+                </li>
+              {{- end -}}
+              {{- range $h3 := $h2.Headings -}}
+                {{- if $h3.ID -}}
+                  <li class="pl-6">
+                    <a href="{{ printf "#%s" $h3.ID | safeURL }}" class="text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline block py-0.5">{{ $h3.Title | plainify }}</a>
+                  </li>
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        </ul>
+      </div>
+    {{- end -}}
+
+    {{- with .Params.bundledResources -}}
+      {{- if gt (len .) 0 -}}
+        <div class="danicat-card p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{{ $t.ui.bundledFiles }}</div>
+          <ul class="space-y-2 text-xs font-mono list-none p-0 m-0">
+            {{- range $r := . -}}
+              {{- $icon := "📁" -}}
+              {{- if $r.isMarkdown -}}
+                {{- $icon = "📄" -}}
+              {{- else if strings.HasSuffix $r.name ".json" -}}
+                {{- $icon = "📋" -}}
+              {{- end -}}
+              <li>
+                <a href="{{ $r.url | safeURL }}" class="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 no-underline break-all">
+                  <span>{{ $icon }}</span>
+                  <span>{{ $r.relPath }}</span>
+                </a>
+              </li>
+            {{- end -}}
+          </ul>
+        </div>
+      {{- end -}}
+    {{- end -}}
+  </aside>
+</div>
