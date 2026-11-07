@@ -104,7 +104,7 @@
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
-      "digest": "sha256:0d9d500f15be6a2a6b86e6bc8a6afefcfcfaf9875d9b37984a860d7b7c34bbdb"
+      "digest": "sha256:f3cb461c6cba51c28af8b951e989f49b458bb66272b5c5c8690cfd29dc35c072"
     },
     {
       "name": "pagespeed-insights",

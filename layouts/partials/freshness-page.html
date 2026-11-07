@@ -91,18 +91,18 @@
   <section class="danicat-card p-6">
     <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 mt-0 mb-3">Formula</h2>
     <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3">
-      Each proven skill combines substantive Git commit age (<code>U</code>, 45-day half-life) with usage (<code>V</code>) across <code>kungfu</code> CLI telemetry, <code>npx skills</code> installs, and web interactions:
+      Each proven skill combines substantive Git commit recency (<code>U</code>, 45-day half-life, 80% weight) with adoption from <code>npx skills</code> installs (<code>I</code>, 20% weight):
     </p>
     <div class="p-3.5 rounded-lg bg-neutral-100 dark:bg-neutral-800/90 font-mono text-xs text-neutral-800 dark:text-neutral-200 space-y-1.5 mb-3">
       <div>U = 0.5 ^ (age_days / 45)</div>
-      <div>V = log_norm(kungfu_cli + npx_skills + web_activity)</div>
-      <div>Vitality = round(80 × (1 - (1 - U) × (1 - 0.85 × V × U^0.25)))</div>
-      <div>Adoption = round(20 × V × U^0.35)</div>
+      <div>I = min(1.0, log10(1 + npx_installs) / log10(1 + 25))</div>
+      <div>Vitality = round(80 × U)</div>
+      <div>Adoption = round(20 × I)</div>
       <div>Score = clamp(0, 100, Vitality + Adoption - Penalty)</div>
     </div>
     <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-1.5 m-0 pl-4">
       <li><strong>No-op commit filter:</strong> Repo-wide metadata edits, license header sweeps, and directory moves are ignored when computing <code>age_days</code>.</li>
-      <li><strong>Data sources:</strong> Combines <code>kungfu</code> CLI telemetry (<code>loads</code>, <code>runs</code>, <code>learns</code> synced to Firestore), raw <code>npx skills</code> installs from <code>skills.sh</code>, and web engagement.</li>
+      <li><strong>Data sources:</strong> Substantive Git commit history (80% weight) and verified <code>npx skills</code> install metrics from <code>skills.sh</code> (20% weight).</li>
     </ul>
   </section>
 
@@ -135,7 +135,6 @@
           <th class="num-col">Vitality</th>
           <th class="num-col">Adoption</th>
           <th class="num-col">Recency</th>
-          <th class="num-col">kungfu</th>
           <th class="num-col">npx skills</th>
           <th>Updated</th>
           <th>Security</th>
@@ -168,7 +167,6 @@
               {{- end -}}
             </td>
             <td class="num-col">{{ $f.updateFreshness }}%</td>
-            <td class="num-col font-semibold">{{ $f.kungfuTotal | default 0 }}</td>
             <td class="num-col">{{ $f.installs | default 0 }}</td>
             <td class="nowrap-col font-mono text-xs text-neutral-600 dark:text-neutral-300">
               <span>{{ $f.lastCommitDate }}</span>

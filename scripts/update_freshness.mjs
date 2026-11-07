@@ -220,22 +220,12 @@ async function fetchLiveFirestoreSkillsMap() {
         likes: 0,
         views: 0,
         copies: 0,
-        loads: 0,
-        pageLoads: 0,
-        subpathLoads: 0,
-        runs: 0,
-        learns: 0,
         lastUpdated: null,
       };
     }
     bySkill[sId].likes += parseIntField(f.likes);
     bySkill[sId].views += parseIntField(f.views);
     bySkill[sId].copies += parseIntField(f.copies);
-    bySkill[sId].loads += parseIntField(f.loads);
-    bySkill[sId].pageLoads += parseIntField(f.page_loads);
-    bySkill[sId].subpathLoads += parseIntField(f.subpath_loads);
-    bySkill[sId].runs += parseIntField(f.runs);
-    bySkill[sId].learns += parseIntField(f.learns);
     if (f.lastUpdated?.timestampValue) {
       bySkill[sId].lastUpdated = f.lastUpdated.timestampValue;
     }
@@ -332,29 +322,18 @@ async function fetchSkillsShTelemetry(skillId, repo = 'danicat/skills') {
   };
 }
 
-function computeFreshnessMetrics({ git, firestore, skillsSh, curation }) {
-  // 1. Substantive Git Recency U in [0, 1] with 45-day half-life
+function computeFreshnessMetrics({ git, skillsSh, curation }) {
+  // 1. Substantive Git Recency U in [0, 1] with 45-day half-life (80% weight)
   const uRaw = Math.pow(0.5, git.ageDays / 45);
   const updateFreshness = Math.round(100 * uRaw);
+  const vitalityPoints = Math.round(80 * uRaw);
 
-  // 2. Raw Usage Signals across KungFu CLI (Firestore) + npx skills (skills.sh) + Web (Firestore)
+  // 2. npx skills Installs (20% weight)
   const rawW = skillsSh.weeklyInstalls || [0, 0, 0, 0, 0, 0, 0, 0];
   const npxAllTime = Number(skillsSh.installs || 0);
 
-  const kfLoads =
-    Number(firestore.loads || 0) +
-    Number(firestore.pageLoads || 0) +
-    Number(firestore.subpathLoads || 0);
-  const kfRuns = Number(firestore.runs || 0);
-  const kfLearns = Number(firestore.learns || 0);
-  const kfTotal = kfLoads + kfRuns + kfLearns;
-
-  const likes = Number(firestore.likes || 0);
-  const views = Number(firestore.views || 0);
-  const copies = Number(firestore.copies || 0);
-
   // Gate 0: Newly added skill without proven user activity yet -> 🌱 New
-  const isUnproven = git.plantedDaysAgo <= 14 && npxAllTime <= 2 && kfTotal === 0 && likes === 0;
+  const isUnproven = git.plantedDaysAgo <= 14 && npxAllTime <= 2;
 
   if (isUnproven) {
     const tierInfo = classifyTier(null);
@@ -373,10 +352,6 @@ function computeFreshnessMetrics({ git, firestore, skillsSh, curation }) {
       trendRatio: 0,
       trendLabel: 'Unproven',
       securityPenalty: 0,
-      kungfuLoads: kfLoads,
-      kungfuRuns: kfRuns,
-      kungfuLearns: kfLearns,
-      kungfuTotal: kfTotal,
     };
   }
 
@@ -386,9 +361,9 @@ function computeFreshnessMetrics({ git, firestore, skillsSh, curation }) {
   const trendRatio = Number(((recent3Wk + 0.25) / (hist5Wk + 0.25)).toFixed(2));
 
   let trendLabel = 'Stable';
-  if (trendRatio >= 1.25 || kfTotal >= 15) {
+  if (trendRatio >= 1.25) {
     trendLabel = 'Growing';
-  } else if (trendRatio >= 0.75 || kfTotal >= 3) {
+  } else if (trendRatio >= 0.75) {
     trendLabel = 'Stable';
   } else if (trendRatio >= 0.35) {
     trendLabel = 'Decaying';
@@ -396,31 +371,12 @@ function computeFreshnessMetrics({ git, firestore, skillsSh, curation }) {
     trendLabel = 'Flatlined';
   }
 
-  // Combine KungFu CLI usage + npx skills installs + Web engagement
-  const usagePoints =
-    kfLoads * 2.5 +
-    kfRuns * 3.5 +
-    kfLearns * 4.0 +
-    likes * 4.0 +
-    copies * 1.5 +
-    views * 0.15 +
-    npxAllTime * 0.5 +
-    recent3Wk * 1.5;
+  // 20% weight: log-normalized installs against a target benchmark of 25 installs
+  const iRaw = Math.min(1.0, Math.log10(1 + npxAllTime) / Math.log10(1 + 25));
+  const usageFreshness = Math.round(100 * iRaw);
+  const adoptionBonusPoints = Math.round(20 * iRaw);
 
-  const hasDirectSignal = kfTotal + likes > 0;
-  let vRaw = Math.min(1.0, Math.log10(1 + usagePoints) / Math.log10(1 + 55));
-  if (!hasDirectSignal) {
-    vRaw = Math.min(0.42, vRaw * 0.65);
-  }
-  const usageFreshness = Math.round(100 * vRaw);
-
-  // 3. Vitality (0-80 pts) + Adoption Bonus (0-20 pts)
-  const vitality = 80 * (1 - (1 - uRaw) * (1 - 0.85 * vRaw * Math.pow(uRaw, 0.25)));
-  const adoptionBonus = 20 * vRaw * Math.pow(uRaw, 0.35);
-  const vitalityPoints = Math.round(vitality);
-  const adoptionBonusPoints = Math.round(adoptionBonus);
-
-  // 4. Security Penalty
+  // 3. Security Penalty
   let securityPenalty = 0;
   const audits = skillsSh.securityAudits || {};
   const hasOverride = Boolean(curation?.auditOverride);
@@ -454,15 +410,11 @@ function computeFreshnessMetrics({ git, firestore, skillsSh, curation }) {
     trendRatio,
     trendLabel,
     securityPenalty,
-    kungfuLoads: kfLoads,
-    kungfuRuns: kfRuns,
-    kungfuLearns: kfLearns,
-    kungfuTotal: kfTotal,
   };
 }
 
 async function main() {
-  console.log('✨ Harvesting Skill Freshness (Git + KungFu CLI + skills.sh + Web)...\n');
+  console.log('✨ Harvesting Skill Freshness (Git 80% + npx skills 20%)...\n');
 
   const existingSnapshot = fs.existsSync(METRICS_PATH)
     ? JSON.parse(fs.readFileSync(METRICS_PATH, 'utf8'))
@@ -480,11 +432,6 @@ async function main() {
       likes: Math.max(Number(prev.likes || 0), data.likes),
       views: Math.max(Number(prev.views || 0), data.views),
       copies: Math.max(Number(prev.copies || 0), data.copies),
-      loads: data.loads,
-      pageLoads: data.pageLoads,
-      subpathLoads: data.subpathLoads,
-      runs: data.runs,
-      learns: data.learns,
       lastUpdated: data.lastUpdated || prev.lastUpdated || null,
     };
   }
@@ -517,15 +464,10 @@ async function main() {
       likes: 0,
       views: 0,
       copies: 0,
-      loads: 0,
-      pageLoads: 0,
-      subpathLoads: 0,
-      runs: 0,
-      learns: 0,
     };
     const skillsSh = await fetchSkillsShTelemetry(entry.skillId, entry.repo);
 
-    const metrics = computeFreshnessMetrics({ git, firestore, skillsSh, curation });
+    const metrics = computeFreshnessMetrics({ git, skillsSh, curation });
 
     const scanners = Object.values(skillsSh.securityAudits || {});
     const passedCount = scanners.filter((s) => s.status === 'pass').length;
@@ -569,10 +511,6 @@ async function main() {
       installs: skillsSh.installs,
       weeklyInstalls: skillsSh.weeklyInstalls,
       currentWeeklyInstalls: skillsSh.weeklyInstalls[7] || 0,
-      kungfuLoads: metrics.kungfuLoads,
-      kungfuRuns: metrics.kungfuRuns,
-      kungfuLearns: metrics.kungfuLearns,
-      kungfuTotal: metrics.kungfuTotal,
       likes: Number(firestore.likes || 0),
       views: Number(firestore.views || 0),
       copies: Number(firestore.copies || 0),
@@ -589,7 +527,7 @@ async function main() {
 
     const scoreDisplay = metrics.score === null ? 'NEW' : `${String(metrics.score).padStart(3)}%`;
     console.log(
-      `  ${metrics.tierEmoji} ${entry.skillId.padEnd(22)} ${scoreDisplay} (${metrics.tierLabel.padEnd(7)}) | U=${String(metrics.updateFreshness).padStart(3)}% V=${String(metrics.usageFreshness).padStart(3)}% | npx=${String(skillsSh.installs).padStart(2)} kf=${String(metrics.kungfuTotal).padStart(2)} | last=${git.lastCommitAt.slice(0, 10)} (${String(Math.round(git.ageDays)).padStart(3)}d)`
+      `  ${metrics.tierEmoji} ${entry.skillId.padEnd(22)} ${scoreDisplay} (${metrics.tierLabel.padEnd(7)}) | Git=${String(metrics.updateFreshness).padStart(3)}% (${metrics.vitalityPoints}pts) | npx=${String(skillsSh.installs).padStart(2)} (${metrics.adoptionBonusPoints}pts) | last=${git.lastCommitAt.slice(0, 10)} (${String(Math.round(git.ageDays)).padStart(3)}d)`
     );
   }
 

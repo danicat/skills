@@ -118,7 +118,7 @@ Raw metrics ingestion and SQLite data warehousing for search performance, web tr
 
 ## Freshness
 
-Every skill in [skills.danicat.dev](https://skills.danicat.dev/freshness/) has a freshness score calculated from substantive Git commit age (`U`, 45-day half-life), `kungfu` CLI telemetry (`loads`, `runs`, `learns`), `npx skills` installs, and web engagement across **🌱 New**, **✨ Mint** (`90–100%`), **🌿 Fresh** (`70–89%`), **🕸️ Stale** (`50–69%`), **🤢 Spoiled** (`25–49%`), and **🦠 Rotten** (`0–24%`).
+Every skill in [skills.danicat.dev](https://skills.danicat.dev/freshness/) has a freshness score calculated from substantive Git commit age (`U`, 45-day half-life, 80%), `npx skills` installs (20%), and security audit status across **🌱 New**, **✨ Mint** (`90–100%`), **🌿 Fresh** (`70–89%`), **🕸️ Stale** (`50–69%`), **🤢 Spoiled** (`25–49%`), and **🦠 Rotten** (`0–24%`).
 
 ## Graveyard
 

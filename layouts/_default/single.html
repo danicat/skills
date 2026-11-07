@@ -41,7 +41,6 @@
   {{- $fWeekly := slice 0 0 0 0 0 0 0 0 -}}
   {{- $fAllTime := 0 -}}
   {{- $fCurWeek := 0 -}}
-  {{- $fKfTotal := 0 -}}
   {{- $fAudits := dict -}}
   {{- $fPlainNote := "" -}}
   {{- $fEditorialNote := "" -}}
@@ -59,7 +58,6 @@
     {{- $fWeekly = $f.weeklyInstalls | default (slice 0 0 0 0 0 0 0 0) -}}
     {{- $fAllTime = int ($f.installs | default 0) -}}
     {{- $fCurWeek = int ($f.currentWeeklyInstalls | default 0) -}}
-    {{- $fKfTotal = int ($f.kungfuTotal | default 0) -}}
     {{- $fAudits = $f.securityAudits | default dict -}}
     {{- $fPlainNote = $f.securityNote | default "" -}}
     {{- $fEditorialNote = $f.editorialNote | default "" -}}
@@ -283,11 +281,11 @@
               </div>
             </div>
 
-            {{/* KungFu CLI + npx skills Usage */}}
+            {{/* npx skills Installs */}}
             <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
-              <span class="text-neutral-500 dark:text-neutral-400">Usage</span>
+              <span class="text-neutral-500 dark:text-neutral-400">Installs</span>
               <span class="font-mono text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
-                {{ $fKfTotal }} kungfu · {{ $fAllTime }} npx
+                {{ $fAllTime }} npx
               </span>
             </div>
 

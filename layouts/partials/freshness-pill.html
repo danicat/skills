@@ -17,10 +17,6 @@
 {{- $secPenalty := int $f.securityPenalty -}}
 {{- $ageDays := int (math.Round $f.ageDays) -}}
 {{- $lastDate := $f.lastCommitDate -}}
-{{- $kfTotal := int $f.kungfuTotal -}}
-{{- $kfLoads := int $f.kungfuLoads -}}
-{{- $kfRuns := int $f.kungfuRuns -}}
-{{- $kfLearns := int $f.kungfuLearns -}}
 {{- $installs := int $f.installs -}}
 {{- $curWeek := int $f.currentWeeklyInstalls -}}
 {{- $stars := int (.stars | default ($f.likes | default 0)) -}}
@@ -54,11 +50,11 @@
     {{- else -}}
       <span class="fb-section">
         <span class="fb-row">
-          <span class="fb-label">Vitality (0–80)</span>
+          <span class="fb-label">Recency (0–80)</span>
           <span class="fb-val">{{ $vitalityPts }} / 80</span>
         </span>
         <span class="fb-row">
-          <span class="fb-label">Adoption (0–20)</span>
+          <span class="fb-label">Installs (0–20)</span>
           <span class="fb-val">+{{ $bonusPts }} / 20</span>
         </span>
         {{- if gt $secPenalty 0 -}}
@@ -74,20 +70,12 @@
 
     <span class="fb-section">
       <span class="fb-row">
-        <span class="fb-label">Recency (U={{ $uPct }}%)</span>
+        <span class="fb-label">Git recency (80%)</span>
         <span class="fb-val">{{ if eq $ageDays 0 }}today{{ else }}{{ $ageDays }}d ago{{ end }} · {{ $lastDate }}</span>
       </span>
       <span class="fb-row">
-        <span class="fb-label">Usage (V={{ $vPct }}%)</span>
-        <span class="fb-val">{{ $f.trendLabel | default "Stable" }}</span>
-      </span>
-      <span class="fb-row fb-sub">
-        <span class="fb-label">kungfu CLI</span>
-        <span class="fb-val">{{ $kfTotal }} ({{ $kfLoads }}L{{ if gt $kfRuns 0 }} · {{ $kfRuns }}R{{ end }}{{ if gt $kfLearns 0 }} · {{ $kfLearns }}I{{ end }})</span>
-      </span>
-      <span class="fb-row fb-sub">
-        <span class="fb-label">npx skills</span>
-        <span class="fb-val">{{ $installs }} ({{ $curWeek }}/wk)</span>
+        <span class="fb-label">npx skills (20%)</span>
+        <span class="fb-val">{{ $installs }} ({{ $curWeek }}/wk) · {{ $f.trendLabel | default "Stable" }}</span>
       </span>
       <span class="fb-row fb-sub">
         <span class="fb-label">Web</span>

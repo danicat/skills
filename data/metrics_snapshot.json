@@ -3,407 +3,246 @@
     "likes": 3,
     "views": 46,
     "copies": 6,
-    "loads": 30,
-    "pageLoads": 8,
-    "subpathLoads": 21,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-05T23:36:22.385Z"
   },
   "intercom": {
     "likes": 0,
     "views": 2,
     "copies": 1,
-    "loads": 26,
-    "pageLoads": 6,
-    "subpathLoads": 2,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T14:43:01.661Z"
   },
   "parallel": {
     "likes": 3,
     "views": 12,
     "copies": 6,
-    "loads": 64,
-    "pageLoads": 23,
-    "subpathLoads": 9,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-06T19:54:19.875Z"
   },
   "skill-optimizer": {
     "likes": 2,
     "views": 14,
     "copies": 2,
-    "loads": 34,
-    "pageLoads": 13,
-    "subpathLoads": 0,
-    "runs": 23,
-    "learns": 0,
     "lastUpdated": "2026-11-05T23:36:22.385Z"
   },
   "swarm-coding": {
     "likes": 4,
     "views": 34,
     "copies": 4,
-    "loads": 37,
-    "pageLoads": 16,
-    "subpathLoads": 21,
-    "runs": 0,
-    "learns": 1,
     "lastUpdated": "2026-11-05T13:01:40.230Z"
   },
   "uno-reverse": {
     "likes": 2,
     "views": 37,
     "copies": 3,
-    "loads": 66,
-    "pageLoads": 18,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-22T02:07:29.746Z"
   },
   "buffer-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 29,
-    "pageLoads": 0,
-    "subpathLoads": 6,
-    "runs": 29,
-    "learns": 0,
     "lastUpdated": "2026-10-30T22:44:15.807Z"
   },
   "google-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 1,
-    "loads": 31,
-    "pageLoads": 2,
-    "subpathLoads": 11,
-    "runs": 50,
-    "learns": 0,
     "lastUpdated": "2026-11-03T00:11:47.607Z"
   },
   "search-analytics": {
     "likes": 0,
     "views": 3,
     "copies": 0,
-    "loads": 28,
-    "pageLoads": 1,
-    "subpathLoads": 3,
-    "runs": 27,
-    "learns": 0,
     "lastUpdated": "2026-10-30T07:47:42.448Z"
   },
   "adr-template": {
     "likes": 1,
     "views": 8,
     "copies": 2,
-    "loads": 3,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-09-25T11:28:31.326Z"
   },
   "engineering-flow": {
     "likes": 1,
     "views": 19,
     "copies": 4,
-    "loads": 11,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-05T23:36:22.385Z"
   },
   "godoctor": {
     "likes": 2,
     "views": 14,
     "copies": 4,
-    "loads": 21,
-    "pageLoads": 6,
-    "subpathLoads": 9,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-06T09:46:56.492Z"
   },
   "google-oss": {
     "likes": 1,
     "views": 2,
     "copies": 0,
-    "loads": 31,
-    "pageLoads": 0,
-    "subpathLoads": 10,
-    "runs": 1,
-    "learns": 0,
     "lastUpdated": "2026-09-24T14:53:12.994Z"
   },
   "latest-version": {
     "likes": 2,
     "views": 3,
     "copies": 2,
-    "loads": 3,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-04T17:13:33.082Z"
   },
   "pyhd": {
     "likes": 1,
     "views": 4,
     "copies": 2,
-    "loads": 3,
-    "pageLoads": 0,
-    "subpathLoads": 1,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T13:48:02.865Z"
   },
   "rfc-template": {
     "likes": 1,
     "views": 4,
     "copies": 1,
-    "loads": 5,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-09T22:02:51.003Z"
   },
   "ebitengineer": {
     "likes": 1,
     "views": 17,
     "copies": 3,
-    "loads": 30,
-    "pageLoads": 5,
-    "subpathLoads": 15,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-03T02:45:58.289Z"
   },
   "game-design": {
     "likes": 3,
     "views": 14,
     "copies": 6,
-    "loads": 7,
-    "pageLoads": 0,
-    "subpathLoads": 4,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-23T16:11:10.823Z"
   },
   "procedural-art": {
     "likes": 0,
     "views": 11,
     "copies": 2,
-    "loads": 16,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-03T02:45:58.289Z"
   },
   "procedural-composer": {
     "likes": 1,
     "views": 1,
     "copies": 2,
-    "loads": 13,
-    "pageLoads": 3,
-    "subpathLoads": 3,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-03T02:45:58.289Z"
   },
   "sprite-animation": {
     "likes": 0,
     "views": 10,
     "copies": 1,
-    "loads": 4,
-    "pageLoads": 0,
-    "subpathLoads": 1,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "vibe-game-developer": {
     "likes": 1,
     "views": 6,
     "copies": 3,
-    "loads": 18,
-    "pageLoads": 4,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-05T13:01:40.230Z"
   },
   "lyria": {
     "likes": 0,
     "views": 5,
     "copies": 0,
-    "loads": 3,
-    "pageLoads": 0,
-    "subpathLoads": 4,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "nano-banana": {
     "likes": 2,
     "views": 7,
     "copies": 0,
-    "loads": 12,
-    "pageLoads": 2,
-    "subpathLoads": 8,
-    "runs": 3,
-    "learns": 0,
     "lastUpdated": "2026-11-03T00:11:47.607Z"
   },
   "buffer": {
     "likes": 0,
     "views": 6,
     "copies": 1,
-    "loads": 35,
-    "pageLoads": 1,
-    "subpathLoads": 8,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-30T07:47:42.448Z"
   },
   "deslopify": {
     "likes": 1,
     "views": 17,
     "copies": 3,
-    "loads": 10,
-    "pageLoads": 0,
-    "subpathLoads": 3,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "google-blog-style": {
     "likes": 0,
     "views": 7,
     "copies": 0,
-    "loads": 5,
-    "pageLoads": 0,
-    "subpathLoads": 5,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-21T00:55:27.605Z"
   },
   "inverted-pyramid": {
     "likes": 1,
     "views": 3,
     "copies": 0,
-    "loads": 14,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-05T13:01:40.230Z"
   },
   "seo-optimizer": {
     "likes": 1,
     "views": 7,
     "copies": 0,
-    "loads": 15,
-    "pageLoads": 2,
-    "subpathLoads": 18,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-11-03T01:02:54.348Z"
   },
   "social-copy": {
     "likes": 1,
     "views": 6,
     "copies": 1,
-    "loads": 39,
-    "pageLoads": 0,
-    "subpathLoads": 31,
-    "runs": 0,
-    "learns": 0,
     "lastUpdated": "2026-10-30T22:44:15.807Z"
   },
   "kungfu": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 322,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 1,
-    "lastUpdated": "2026-11-03T01:02:54.348Z"
+    "lastUpdated": "2026-11-07T00:02:24.832Z"
   },
   "skill-analytics": {
     "likes": 0,
     "views": 4,
     "copies": 0,
-    "loads": 9,
-    "pageLoads": 1,
-    "subpathLoads": 4,
-    "runs": 46,
-    "learns": 0,
     "lastUpdated": "2026-11-03T00:11:47.607Z"
   },
   "less-is-more": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 5,
-    "pageLoads": 1,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
-    "lastUpdated": "2026-10-21T00:55:27.605Z"
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
   },
   "show-me-the-money": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 6,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
-    "lastUpdated": "2026-10-21T14:43:01.661Z"
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
   },
   "gemini-omni": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 1,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
-    "lastUpdated": "2026-11-05T13:01:40.230Z"
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
   },
   "veo": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 1,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
-    "lastUpdated": "2026-11-05T13:01:40.230Z"
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
   },
   "pagespeed-insights": {
     "likes": 0,
     "views": 0,
     "copies": 0,
-    "loads": 3,
-    "pageLoads": 0,
-    "subpathLoads": 0,
-    "runs": 0,
-    "learns": 0,
-    "lastUpdated": "2026-11-05T13:01:40.230Z"
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
+  },
+  "abstract": {
+    "likes": 0,
+    "views": 0,
+    "copies": 0,
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
+  },
+  "brainstorm": {
+    "likes": 0,
+    "views": 0,
+    "copies": 0,
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
+  },
+  "discovery": {
+    "likes": 0,
+    "views": 0,
+    "copies": 0,
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
+  },
+  "spike": {
+    "likes": 0,
+    "views": 0,
+    "copies": 0,
+    "lastUpdated": "2026-11-07T00:02:22.623Z"
   }
 }
