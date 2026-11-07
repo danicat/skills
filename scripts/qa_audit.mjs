@@ -184,7 +184,7 @@ export function runAudit() {
     }
   }
 
-  const expectedCategories = ['plugins', 'coding', 'game-dev', 'media', 'workflows', 'writing', 'analytics'];
+  const expectedCategories = ['coding', 'game-dev', 'media', 'workflows', 'writing', 'analytics'];
   for (const cat of expectedCategories) {
     if (!existsExactFile(path.join(SITE_DIR, cat, 'llms.txt'))) {
       assetErrors.push(`[Agent Readiness] Missing per-category llms.txt: _site/${cat}/llms.txt`);

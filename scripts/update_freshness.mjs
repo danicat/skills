@@ -212,7 +212,7 @@ async function fetchLiveFirestoreSkillsMap() {
   for (const doc of data.documents || []) {
     const docId = (doc.name || '').split('/').pop() || '';
     const f = doc.fields || {};
-    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards|plugins)-/, '');
+    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)-/, '');
     const sId = String(rawSkill || '').toLowerCase();
     if (!sId) continue;
     if (!bySkill[sId]) {
@@ -486,7 +486,6 @@ async function main() {
       displayName: entry.displayName,
       url: entry.url,
       repo: entry.repo,
-      pluginId: entry.pluginId || null,
       category: entry.category,
       score: metrics.score,
       sortScore: metrics.sortScore,

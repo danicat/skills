@@ -89,11 +89,6 @@
         "name": "Analytics",
         "subtitle": "Local SQLite pipelines for GA4, Search Console, and Buffer metrics.",
         "description": "Ingest Google Analytics 4, Google Search Console, and Buffer metrics into local SQLite warehouses for deep SQL querying."
-      },
-      "plugins": {
-        "name": "Plugins",
-        "subtitle": "Multi-component Antigravity plugins bundling UI sidecars, MCP servers, rules, and Agent Skills.",
-        "description": "Install full-featured Antigravity plugins combining side-panel UI extensions, Model Context Protocol (MCP) servers, workspace rules, and curated Agent Skills."
       }
     },
     "skills": {}
@@ -188,11 +183,6 @@
         "name": "Analytics",
         "subtitle": "Pipelines locais em SQLite para métricas do GA4, Search Console e Buffer.",
         "description": "Extraia e armazene métricas do Google Analytics 4, Google Search Console e Buffer em bancos SQLite locais para análises aprofundadas em SQL."
-      },
-      "plugins": {
-        "name": "Plugins",
-        "subtitle": "Plugins completos para o Antigravity combinando painéis laterais, servidores MCP, regras e Agent Skills.",
-        "description": "Instale plugins para o Antigravity que integram extensões visuais no painel lateral, servidores Model Context Protocol (MCP), regras de workspace e conjuntos de Agent Skills."
       }
     },
     "skills": {
@@ -226,16 +216,9 @@
       "uno-reverse": "Simplificação radical, red-teaming e advogado do diabo baseado na Navalha de Occam para arquitetura de software, PRDs e fluxos de agentes. Desafia abstrações especulativas e escopo inflado propondo primitivas mínimas que entregam 90% do valor com 10% da complexidade.",
       "buffer": "Gerencie, escreva, agende e publique conteúdo em redes sociais conectadas (LinkedIn, X/Twitter, Bluesky e outras) usando a CLI do Buffer (@bufferapp/cli). Inclui inspeção de canais, agendamento com validação dry-run, gestão de rascunhos e introspecção GraphQL.",
       "deslopify": "Diretrizes editoriais e fluxo de reescrita para eliminar clichês de IA, vícios de linguagem e enchimento artificial. Identifica e remove vocabulário repetitivo de IA, paralelismos negativos e resumos redundantes para restaurar a cadência humana natural.",
-      "google-blog-style": "Guia de estilo, padrões de conformidade legal e fluxo de validação para o Google Developers Blog. Aplica metas de legibilidade técnica (Fog Index 12–15), tom profissional, linguagem inclusiva e validação automatizada via Vale.",
       "inverted-pyramid": "Guia estrutural e modelo editorial para organizar artigos técnicos, documentação e arquivos README. Aplica a Pirâmide Invertida para posicionar resumos de alto valor e quickstarts acionáveis no topo, seguidos por fluxos de uso e detalhes arquiteturais.",
       "seo-optimizer": "Guia de SEO técnico e Generative Engine Optimization (GEO) para documentação e blogs de engenharia. Otimiza conteúdo para mecanismos de busca e motores de resposta de IA, separa summary humano de description de busca, valida JSON-LD e mantém o llms.txt.",
       "social-copy": "Fluxo editorial e playbooks por plataforma para redigir posts e campanhas técnicas em redes sociais. Extrai evidências técnicas via git log ou entrevistas /grill-me, estabelece uma narrativa base (CANONICAL.md) e adapta o texto para LinkedIn, X/Twitter e Bluesky.",
-      "plugin:speedgrapher": "Assistente de escrita técnica, editor Markdown em painel lateral, servidor Model Context Protocol (MCP) e suíte de Agent Skills para o Antigravity: legibilidade Gunning Fog, detecção de clichês de IA, revisão gramatical com Vale e auditoria de SEO/GEO técnico.",
-      "speedgrapher": "Abre o editor Markdown do Speedgrapher no painel auxiliar do Antigravity exibindo um atalho interativo sidecar://speedgrapher/panel/ no chat.",
-      "ideate": "Fluxo socrático de descoberta técnica e estruturação em Pirâmide Invertida que entrevista engenheiros uma pergunta por vez e organiza artigos, READMEs e documentação por ordem decrescente de valor para o leitor.",
-      "draft": "Fluxo de escrita técnica com adaptação de voz que redige e expande artigos de engenharia, tutoriais, READMEs e documentação preservando o estilo natural da pessoa autora.",
-      "readability": "Fluxo de edição técnica que substitui jargões corporativos por linguagem clara, elimina clichês sintéticos de IA e corrige problemas de legibilidade e gramática por parágrafo.",
-      "publish": "Fluxo de revisão editorial e prontidão para publicação que audita a qualidade do texto, resolve ou insere comentários de revisão inline e verifica SEO técnico, GEO e metadados de frontmatter.",
       "buffer-analytics": "Colete e analise dados de redes sociais do Buffer em um banco SQLite local. Armazena todo o histórico de publicações e métricas de engajamento, cliques e visualizações para consultas em SQL e identificação dos melhores horários e conteúdos.",
       "google-analytics": "Colete e analise dados do Google Analytics 4 (GA4) em um banco SQLite local. Armazena visualizações de página, usuários ativos, tempo de leitura, origens de tráfego e cliques externos para consultas SQL e relatórios de performance do site.",
       "pagespeed-insights": "Execute, extraia e depure relatórios Mobile e Desktop do Google PageSpeed Insights (pagespeed.web.dev) via Chrome DevTools MCP. Lê o JSON bruto do Lighthouse Result (LHR) diretamente de window.__LIGHTHOUSE_MOBILE_JSON__ e window.__LIGHTHOUSE_DESKTOP_JSON__ sem snapshots pesados de DOM para corrigir Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index).",
@@ -333,11 +316,6 @@
         "name": "アナリティクス",
         "subtitle": "GA4、Search Console、Bufferの指標をローカルSQLiteで高速SQL分析。",
         "description": "Google Analytics 4、Google Search Console、BufferのデータをローカルSQLiteデータベースに収集し、SQLクエリで詳細に分析。"
-      },
-      "plugins": {
-        "name": "プラグイン",
-        "subtitle": "サイドパネルUI、MCPサーバー、ルール、Agent Skillsを統合したAntigravityプラグイン。",
-        "description": "サイドパネルUI拡張、Model Context Protocol (MCP) サーバー、ワークスペースルール、厳選されたAgent Skillsを一つにまとめたAntigravityプラグイン。"
       }
     },
     "skills": {
@@ -371,16 +349,9 @@
       "uno-reverse": "ソフトウェアアーキテクチャ、PRD、エージェント設計に対する抜本的シンプル化・レッドチーミング（オッカムの剃刀）。過剰な機能追加や投機的な抽象化を排し、10% の仕組みで 90% の価値を生む最小プリミティブを提案します。",
       "buffer": "Buffer CLI (@bufferapp/cli) を用いて LinkedIn、X/Twitter、Bluesky などのSNS投稿を作成・予約・公開するスキル。チャンネル確認、dry-run 安全検証付きのキュー予約、下書き管理、GraphQL スキーマ調査をサポートします。",
       "deslopify": "AI 特有の決まり文句（クリシェ）、過剰な比喩、冗長なフィラー表現を排除して人間らしい自然な文体に戻す編集ワークフロー。AI 頻出語彙や不自然な対比構文、重複するまとめを検出・修正します。",
-      "google-blog-style": "Google Developers Blog 向けのスタイルガイド、法務コンプライアンス基準、および検証ワークフロー。技術記事の可読性目標（Fog Index 12〜15）、専門的で包括的な表現、Vale による自動検証を適用します。",
       "inverted-pyramid": "技術記事、開発者ドキュメント、README を構造化する「逆ピラミッド」編集モデル。最も価値の高い要約と即実行できるクイックスタートを冒頭に配置し、実践フロー、アーキテクチャ詳細へと段階的に展開します。",
       "seo-optimizer": "開発者ドキュメントや技術ブログ向けの技術 SEO および生成エンジン最適化（GEO）ガイド。検索エンジンと AI 回答エンジンの双方に最適化し、要約とメタデータの分離、JSON-LD 構造化データ検証、llms.txt の維持を行います。",
       "social-copy": "開発者向け SNS 投稿やキャンペーンを起案する編集ワークフローとプラットフォーム別プレイブック。git log 調査や /grill-me インタビューから技術的根拠を抽出し、CANONICAL.md を核に LinkedIn・X・Bluesky 向け投稿を作成します。",
-      "plugin:speedgrapher": "Antigravity 向けの技術ライティング支援プラグイン。サイドパネル Markdown エディタ、Model Context Protocol (MCP) サーバー、および5つのライティングスキルを統合し、Gunning Fog 可読性評価、AI 特有表現（slop）の検出、Vale 文法チェック、技術 SEO/GEO 監査を提供します。",
-      "speedgrapher": "チャット内に sidecar://speedgrapher/panel/ ピルを表示し、Antigravity の補助ペインで Speedgrapher サイドパネル Markdown エディタを開きます。",
-      "ideate": "一問一答のソクラテス式インタビューで技術的な核心を引き出し、読者価値の高い順（逆ピラミッド構造）にブログ記事、README、ドキュメントの構成案を作成するワークフロー。",
-      "draft": "著者の自然な文体に合わせてエンジニアリングブログ、チュートリアル、README、技術ドキュメントを執筆・展開する適応型ライティングワークフロー。",
-      "readability": "ビジネス専門用語を平易な英語に置き換え、AI 特有の不自然な表現を排除し、段落単位の可読性と文法の問題を解消する技術コピーエディティングワークフロー。",
-      "publish": "文章品質の監査、インラインレビューコメントの解決・挿入、および技術 SEO・GEO・フロントマターメタデータの検証を行う公開前編集レビューワークフロー。",
       "buffer-analytics": "Buffer の SNS 投稿履歴とエンゲージメント指標をローカル SQLite データベースに収集・分析するスキル。LinkedIn、X/Twitter、Bluesky などのクリック数・閲覧数を SQL でクエリし、最適な投稿時間帯や高反応コンテンツを特定します。",
       "google-analytics": "Google Analytics 4 (GA4) のアクセス解析データをローカル SQLite データベースに収集・分析するスキル。ページビュー、アクティブユーザー、滞在時間、流入元、外部リンククリックを保存し、SQL でサイト成果を検証します。",
       "pagespeed-insights": "Chrome DevTools MCP を用いて Google PageSpeed Insights (pagespeed.web.dev) のモバイル・デスクトップ両レポートを実行・抽出・診断するスキル。DOM スナップショットを使わず window.__LIGHTHOUSE_MOBILE_JSON__ と window.__LIGHTHOUSE_DESKTOP_JSON__ から生の Lighthouse Result (LHR) JSON を直接読み取り、Core Web Vitals（LCP、CLS、TBT、FCP、Speed Index）のボトルネックを特定・改善します。",

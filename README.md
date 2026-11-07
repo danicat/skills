@@ -27,18 +27,6 @@ npx skills add danicat/skills -y
 
 ## Agent Skills
 
-### 🧩 Plugins (`plugins/`)
-Full-featured Antigravity plugins bundling sidecar editors, Model Context Protocol (MCP) servers, rules, and multi-stage writing skills.
-
-* **[`speedgrapher`](plugins/speedgrapher/README.md)**: Local-first editorial workbench for Antigravity with a side-panel Markdown editor, an MCP readability and SEO server, and five writing skills (`v0.13.2`):
-  * **[`ideate`](plugins/speedgrapher/skills/ideate/SKILL.md)**: Socratic technical discovery and inverted-pyramid outlining workflow that interviews engineers one question at a time and structures blog posts, READMEs, and documentation by descending reader value.
-  * **[`draft`](plugins/speedgrapher/skills/draft/SKILL.md)**: Adaptive-voice technical writing workflow that drafts and expands engineering blog posts, tutorials, READMEs, and documentation matching the author's natural style.
-  * **[`readability`](plugins/speedgrapher/skills/readability/SKILL.md)**: Technical copyediting workflow that replaces corporate jargon with plain English, removes synthetic AI phrasing, and resolves paragraph-level readability and grammar issues.
-  * **[`publish`](plugins/speedgrapher/skills/publish/SKILL.md)**: Editorial review and publication readiness workflow that audits prose quality, resolves or injects inline review comments, and verifies technical SEO, GEO, and frontmatter metadata.
-  * **[`speedgrapher`](plugins/speedgrapher/skills/speedgrapher/SKILL.md)**: Opens the Speedgrapher side-panel Markdown editor in the Antigravity auxiliary pane by surfacing a `sidecar://speedgrapher/panel/` pill in chat.
-
----
-
 ### 🕹️ Games (`game-dev/`)
 Specialized skills for designing and building 2D games in Go with Ebitengine, chiptune DSP, and procedural generation.
 
@@ -98,7 +86,6 @@ Editorial guidelines, Inverted Pyramid hierarchy, AI slop removal, social copy, 
 
 * **[`buffer`](writing/buffer/SKILL.md)**: Manage, draft, schedule, and publish social media content across connected channels using the Buffer CLI.
 * **[`deslopify`](writing/deslopify/SKILL.md)**: Re-write, edit, and purge text of common AI tropes, clichés, and formulaic filler using strict editorial guidelines.
-* **[`google-blog-style`](writing/google-blog-style/SKILL.md)**: Official style guide and compliance rules for the Google Developers Blog, including Gunning Fog readability and Vale style checks.
 * **[`inverted-pyramid`](writing/inverted-pyramid/SKILL.md)**: Action-first, summary-first information hierarchy for technical documentation and developer guides.
 * **[`seo-optimizer`](writing/seo-optimizer/SKILL.md)**: Technical SEO and Generative Engine Optimization (GEO) for developer blogs and documentation, including metadata split (summary vs. description), heading hierarchies, and `llms.txt` generation.
 * **[`social-copy`](writing/social-copy/SKILL.md)**: Draft, audit, and optimize high-performing technical and developer social media copy across LinkedIn, Twitter/X, Bluesky, Instagram, Reddit, and Threads.
@@ -134,6 +121,7 @@ Retired skills live in the **[Graveyard](https://skills.danicat.dev/graveyard/)*
 | `agy-extensions` | Mar 23 – Mar 26, 2026 | Replaced by official `agy-customizations` skill | `agy-customizations` | `kungfu forget agy-extensions` |
 | `experiment-analyst` | Mar 15 – Apr 7, 2026 | Niche analysis skill not meant for general use | None | `kungfu forget experiment-analyst` |
 | `catalog` | Feb 14 – Apr 2026 | Unnecessary; replaced by `kungfu list` and `kungfu find` | `kungfu list` / `kungfu find` | `kungfu forget catalog` |
+| `google-blog-style` | Feb 2026 – Nov 2026 | Never used in real life | None | `kungfu forget google-blog-style` |
 
 ---
 

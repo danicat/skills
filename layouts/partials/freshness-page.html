@@ -145,9 +145,7 @@
           {{- $hasCliNote := in (lower ($f.securityNote | default "")) "snyk" | or (in (lower ($f.securityNote | default "")) "static scanner") -}}
           <tr>
             <td class="nowrap-col font-semibold">
-              {{- $rowUrl := $f.url | default (printf "/%s/%s/" $f.category $f.id) -}}
-              {{- $rowName := $f.displayName | default $f.id -}}
-              <a href="{{ $rowUrl | relLangURL }}" class="text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $rowName }}</a>
+              <a href="{{ (printf "/%s/%s/" $f.category $f.id) | relLangURL }}" class="text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $f.id }}</a>
             </td>
             <td class="nowrap-col">
               {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "showTierLabel" true "alignLeft" true) }}

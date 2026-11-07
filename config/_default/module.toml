@@ -49,10 +49,6 @@
   target = "static/writing"
 
 [[mounts]]
-  source = "plugins"
-  target = "static/plugins"
-
-[[mounts]]
   source = "workflows"
   target = "assets/_skills/workflows"
 
@@ -75,7 +71,3 @@
 [[mounts]]
   source = "writing"
   target = "assets/_skills/writing"
-
-[[mounts]]
-  source = "plugins"
-  target = "assets/_plugins"

@@ -570,20 +570,16 @@
         var href = titleLink ? titleLink.getAttribute('href') : ('/' + cat + '/' + skillId + '/');
         var descEl = card.querySelector('p');
         var description = descEl ? descEl.textContent.trim() : (card.getAttribute('data-desc') || '');
-        var detailUrl = new URL(href, window.location.origin).href;
-        var rawUrl = card.getAttribute('data-raw-url') || (window.location.origin + '/' + cat + '/' + skillId + '/SKILL.md');
-        var kungfuCmd = card.getAttribute('data-kungfu-cmd') || ('kungfu load ' + name);
-        var installCmd = card.getAttribute('data-install-cmd') || ('npx skills add danicat/skills --skill ' + name + ' -y');
         return {
           name: name,
           category: cat,
           description: description,
           tags: (card.getAttribute('data-tags') || '').split(/\s+/).filter(Boolean),
-          detailUrl: detailUrl,
-          rawUrl: rawUrl,
-          indexMdUrl: detailUrl.replace(/\/$/, '') + '/index.md',
-          kungfuCommand: kungfuCmd,
-          installCommand: installCmd
+          detailUrl: new URL(href, window.location.origin).href,
+          rawUrl: window.location.origin + '/' + cat + '/' + skillId + '/SKILL.md',
+          indexMdUrl: window.location.origin + '/' + cat + '/' + skillId + '/index.md',
+          kungfuCommand: 'kungfu load ' + name,
+          installCommand: 'npx skills add danicat/skills --skill ' + name + ' -y'
         };
       }
 
@@ -600,7 +596,7 @@
               },
               category: {
                 type: 'string',
-                description: 'Optional category ID filter (all, plugins, game-dev, media, coding, workflows, writing, analytics).'
+                description: 'Optional category ID filter (all, game-dev, media, coding, workflows, writing, analytics).'
               }
             }
           },

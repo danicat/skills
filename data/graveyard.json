@@ -176,5 +176,27 @@
     "legacyAliases": [
       "/catalog/"
     ]
+  },
+  {
+    "id": "google-blog-style",
+    "name": "google-blog-style",
+    "formerCategory": "writing",
+    "categoryEmoji": "✍️",
+    "retiredAt": "2026-11-07",
+    "lifespan": "Feb 2026 – Nov 2026",
+    "lastCommitSha": "159f311",
+    "installs": 21,
+    "causeOfDeath": "Never used in practice",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Never used in real life. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget google-blog-style",
+    "legacyAliases": [
+      "/google-blog-style/",
+      "/writing/google-blog-style/"
+    ]
   }
 ]

@@ -4,28 +4,24 @@
 {{- $freshMap := site.Data.freshness -}}
 {{- $graveyard := site.Data.graveyard | default slice -}}
 {{- $sections := .Site.Sections.ByWeight -}}
-{{- $allCatalogPages := where (where site.RegularPages "Params.isCompanion" false) "Params.isSpecialPage" "ne" true -}}
 {{- $skillItems := slice -}}
-{{- range $s := $allCatalogPages.ByTitle -}}
-  {{- $skillId := $s.Params.freshnessKey | default (lower $s.Params.skillName) -}}
-  {{- $isPluginEntity := or $s.Params.isPlugin $s.Params.parentPluginId -}}
-  {{- $m := index $metrics $skillId | default dict -}}
-  {{- $f := index $freshMap $skillId -}}
-  {{- if and (not $isPluginEntity) (not $f) -}}
-    {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+{{- range $sec := $sections -}}
+  {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
+  {{- range $s := $secSkills.ByTitle -}}
+    {{- $skillId := lower $s.Params.skillName -}}
+    {{- $m := index $metrics $skillId | default dict -}}
+    {{- $f := index $freshMap $skillId -}}
+    {{- if not $f -}}
+      {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
+    {{- end -}}
+    {{- $stars := int ($m.likes | default 0) -}}
+    {{- $views := int ($m.views | default 0) -}}
+    {{- $sortFreshness := int $f.sortScore -}}
+    {{- $popScore := add (mul 100 $stars) $views -}}
+    {{- $defaultScore := add (mul 10 $sortFreshness) $popScore -}}
+    {{- $sortKey := printf "%010d-%04d-%08d-%08d-%s" (sub 9999999999 $defaultScore) (sub 9999 $sortFreshness) (sub 99999999 $stars) (sub 99999999 $views) $skillId -}}
+    {{- $skillItems = $skillItems | append (dict "page" $s "sortKey" $sortKey) -}}
   {{- end -}}
-  {{- $stars := int ($m.likes | default 0) -}}
-  {{- $views := int ($m.views | default 0) -}}
-  {{- $sortFreshness := 85 -}}
-  {{- if $f -}}
-    {{- $sortFreshness = int $f.sortScore -}}
-  {{- else if $s.Params.isPlugin -}}
-    {{- $sortFreshness = 92 -}}
-  {{- end -}}
-  {{- $popScore := add (mul 100 $stars) $views -}}
-  {{- $defaultScore := add (mul 10 $sortFreshness) $popScore -}}
-  {{- $sortKey := printf "%010d-%04d-%08d-%08d-%s" (sub 9999999999 $defaultScore) (sub 9999 $sortFreshness) (sub 99999999 $stars) (sub 99999999 $views) $skillId -}}
-  {{- $skillItems = $skillItems | append (dict "page" $s "sortKey" $sortKey) -}}
 {{- end -}}
 {{- $sortedItems := sort $skillItems "sortKey" "asc" -}}
 
@@ -74,7 +70,7 @@
   <div class="flex flex-wrap items-center gap-1.5" id="categoryFilters">
     <button type="button" class="pill-btn active" data-cat="all">{{ $t.ui.allFilter }} ({{ len $sortedItems }})</button>
     {{- range $sec := $sections -}}
-      {{- $secSkills := where $allCatalogPages "Params.category" $sec.Params.categoryId -}}
+      {{- $secSkills := where $sec.Pages "Params.isCompanion" false -}}
       <button type="button" class="pill-btn" data-cat="{{ $sec.Params.categoryId }}">
         {{ $sec.Params.categoryEmoji }} {{ $sec.Params.categoryName }} ({{ len $secSkills }})
       </button>

@@ -21,7 +21,6 @@ static/media/
 static/workflows/
 static/writing/
 static/analytics/
-static/plugins/
 static/freshness/
 static/graveyard/
 .DS_Store

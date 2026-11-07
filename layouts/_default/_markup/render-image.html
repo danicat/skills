@@ -1,9 +1,12 @@
-{{- $dest := .Destination -}}
-{{- $src := $dest -}}
-{{- if and (not (strings.HasPrefix $dest "http://")) (not (strings.HasPrefix $dest "https://")) (not (strings.HasPrefix $dest "/")) (not (strings.HasPrefix $dest "data:")) -}}
-  {{- $basePath := .Page.Params.basePath | default (printf "/%s/%s" .Page.Params.category .Page.Params.folder) -}}
-  {{- if $basePath -}}
-    {{- $src = path.Clean (printf "%s/%s" $basePath $dest) -}}
+{{- $src := .Destination -}}
+{{- if and (not (strings.HasPrefix $src "http://")) (not (strings.HasPrefix $src "https://")) (not (strings.HasPrefix $src "data:")) (not (strings.HasPrefix $src "/")) -}}
+  {{- if and (not .Page.Params.isCompanion) .Page.Params.category .Page.Params.folder -}}
+    {{- $src = path.Clean (printf "/%s/%s/%s" .Page.Params.category .Page.Params.folder $src) -}}
   {{- end -}}
 {{- end -}}
-<img src="{{ $src | safeURL }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
+<figure class="content-img my-4">
+  <img src="{{ $src | safeURL }}" alt="{{ .PlainText }}" loading="lazy" class="rounded-lg border border-neutral-200 dark:border-neutral-700 nozoom">
+  {{- if .PlainText -}}
+    <figcaption class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{{ .PlainText }}</figcaption>
+  {{- end -}}
+</figure>
