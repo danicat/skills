@@ -154,14 +154,14 @@
               {{- if $f.isUnproven -}}
                 <span class="text-neutral-400">—</span>
               {{- else -}}
-                <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $f.vitalityPoints }}</span><span class="text-neutral-400">/80</span>
+                <span class="font-semibold text-neutral-800 dark:text-neutral-200">{{ $f.vitalityPoints }}</span><span class="text-neutral-400">/70</span>
               {{- end -}}
             </td>
             <td class="num-col">
               {{- if $f.isUnproven -}}
                 <span class="text-neutral-400">—</span>
               {{- else -}}
-                <span class="font-semibold text-neutral-800 dark:text-neutral-200">+{{ $f.adoptionBonusPoints }}</span><span class="text-neutral-400">/20</span>
+                <span class="font-semibold text-neutral-800 dark:text-neutral-200">+{{ $f.adoptionBonusPoints }}</span><span class="text-neutral-400">/30</span>
               {{- end -}}
             </td>
             <td class="num-col">{{ $f.updateFreshness }}%</td>
