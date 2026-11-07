@@ -323,12 +323,12 @@ async function fetchSkillsShTelemetry(skillId, repo = 'danicat/skills') {
 }
 
 function computeFreshnessMetrics({ git, skillsSh, curation }) {
-  // 1. Substantive Git Recency U in [0, 1] with 45-day half-life (80% weight)
+  // 1. Substantive Git Recency U in [0, 1] with 45-day half-life (70% weight)
   const uRaw = Math.pow(0.5, git.ageDays / 45);
   const updateFreshness = Math.round(100 * uRaw);
-  const vitalityPoints = Math.round(80 * uRaw);
+  const vitalityPoints = Math.round(70 * uRaw);
 
-  // 2. npx skills Installs (20% weight)
+  // 2. npx skills Installs (30% weight)
   const rawW = skillsSh.weeklyInstalls || [0, 0, 0, 0, 0, 0, 0, 0];
   const npxAllTime = Number(skillsSh.installs || 0);
 
@@ -371,10 +371,10 @@ function computeFreshnessMetrics({ git, skillsSh, curation }) {
     trendLabel = 'Flatlined';
   }
 
-  // 20% weight: log-normalized installs against a target benchmark of 25 installs
+  // 30% weight: log-normalized installs against a target benchmark of 25 installs
   const iRaw = Math.min(1.0, Math.log10(1 + npxAllTime) / Math.log10(1 + 25));
   const usageFreshness = Math.round(100 * iRaw);
-  const adoptionBonusPoints = Math.round(20 * iRaw);
+  const adoptionBonusPoints = Math.round(30 * iRaw);
 
   // 3. Security Penalty
   let securityPenalty = 0;
@@ -414,7 +414,7 @@ function computeFreshnessMetrics({ git, skillsSh, curation }) {
 }
 
 async function main() {
-  console.log('✨ Harvesting Skill Freshness (Git 80% + npx skills 20%)...\n');
+  console.log('✨ Harvesting Skill Freshness (Git 70% + npx skills 30%)...\n');
 
   const existingSnapshot = fs.existsSync(METRICS_PATH)
     ? JSON.parse(fs.readFileSync(METRICS_PATH, 'utf8'))

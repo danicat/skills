@@ -50,12 +50,12 @@
     {{- else -}}
       <span class="fb-section">
         <span class="fb-row">
-          <span class="fb-label">Recency (0–80)</span>
-          <span class="fb-val">{{ $vitalityPts }} / 80</span>
+          <span class="fb-label">Recency (0–70)</span>
+          <span class="fb-val">{{ $vitalityPts }} / 70</span>
         </span>
         <span class="fb-row">
-          <span class="fb-label">Installs (0–20)</span>
-          <span class="fb-val">+{{ $bonusPts }} / 20</span>
+          <span class="fb-label">Installs (0–30)</span>
+          <span class="fb-val">+{{ $bonusPts }} / 30</span>
         </span>
         {{- if gt $secPenalty 0 -}}
           <span class="fb-row fb-penalty">
@@ -70,11 +70,11 @@
 
     <span class="fb-section">
       <span class="fb-row">
-        <span class="fb-label">Git recency (80%)</span>
+        <span class="fb-label">Git recency (70%)</span>
         <span class="fb-val">{{ if eq $ageDays 0 }}today{{ else }}{{ $ageDays }}d ago{{ end }} · {{ $lastDate }}</span>
       </span>
       <span class="fb-row">
-        <span class="fb-label">npx skills (20%)</span>
+        <span class="fb-label">npx skills (30%)</span>
         <span class="fb-val">{{ $installs }} ({{ $curWeek }}/wk) · {{ $f.trendLabel | default "Stable" }}</span>
       </span>
       <span class="fb-row fb-sub">

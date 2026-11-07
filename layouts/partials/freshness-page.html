@@ -91,18 +91,18 @@
   <section class="danicat-card p-6">
     <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-50 mt-0 mb-3">Formula</h2>
     <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3">
-      Each proven skill combines substantive Git commit recency (<code>U</code>, 45-day half-life, 80% weight) with adoption from <code>npx skills</code> installs (<code>I</code>, 20% weight):
+      Each proven skill combines substantive Git commit recency (<code>U</code>, 45-day half-life, 70% weight) with adoption from <code>npx skills</code> installs (<code>I</code>, 30% weight):
     </p>
     <div class="p-3.5 rounded-lg bg-neutral-100 dark:bg-neutral-800/90 font-mono text-xs text-neutral-800 dark:text-neutral-200 space-y-1.5 mb-3">
       <div>U = 0.5 ^ (age_days / 45)</div>
       <div>I = min(1.0, log10(1 + npx_installs) / log10(1 + 25))</div>
-      <div>Vitality = round(80 × U)</div>
-      <div>Adoption = round(20 × I)</div>
+      <div>Vitality = round(70 × U)</div>
+      <div>Adoption = round(30 × I)</div>
       <div>Score = clamp(0, 100, Vitality + Adoption - Penalty)</div>
     </div>
     <ul class="text-xs text-neutral-600 dark:text-neutral-300 space-y-1.5 m-0 pl-4">
       <li><strong>No-op commit filter:</strong> Repo-wide metadata edits, license header sweeps, and directory moves are ignored when computing <code>age_days</code>.</li>
-      <li><strong>Data sources:</strong> Substantive Git commit history (80% weight) and verified <code>npx skills</code> install metrics from <code>skills.sh</code> (20% weight).</li>
+      <li><strong>Data sources:</strong> Substantive Git commit history (70% weight) and verified <code>npx skills</code> install metrics from <code>skills.sh</code> (30% weight).</li>
     </ul>
   </section>
 
