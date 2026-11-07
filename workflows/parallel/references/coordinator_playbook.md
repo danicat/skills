@@ -61,10 +61,13 @@ When invoking workers via `invoke_subagent`:
 
 ### Mandatory Subagent Configuration Rules:
 1. **Model Selection**: ALWAYS set `Model: 'inherit'`. Never hardcode a specific model name. This guarantees seamless model and reasoning effort inheritance.
-2. **Explicit Output Contract**: Every worker prompt must instruct the subagent:
+2. **Explicit Output Contract (Two-Tier Protocol)**: Every worker prompt must instruct the subagent:
    - What specific slice or angle to investigate or build.
-   - Where to write intermediate artifacts (e.g., `staging/worker_<id>.md`).
-   - To send its final report back to the parent using `send_message`.
+   - To write its exhaustive output, raw logs, and full analysis directly to disk (e.g., `staging/worker_<id>.md` or `<scratch>/worker_<id>.md`).
+   - To send only a compact completion message (< 2,000 characters) via `send_message` containing:
+     - Status: pass, fail, or blocked.
+     - Path to the disk output file.
+     - A bulleted list: `Must-Keep Mental Models & Deal-Breakers`.
 3. **No Sibling Messaging**: Workers do not know about other workers. They report strictly up to the parent.
 
 ---
@@ -130,10 +133,11 @@ If a subagent encounters an ambiguous requirement:
 
 When all worker tasks conclude:
 
-1. **Audit**: Verify all deliverables are present and free of dummy placeholders.
-2. **Reconcile**: Merge staged files, wire modules, or build the synthesized comparison matrix.
-3. **Validate**: If applicable, run verification checks (lint, build, unit test, link audit).
-4. **Deliver**: Present the consolidated outcome to the user with a concise summary of parallel execution statistics:
+1. **Audit Deliverables**: Verify all deliverables exist on disk and are free of dummy placeholders.
+2. **Reconcile Must-Keep Models**: Check off every worker's `Must-Keep Mental Models & Deal-Breakers` bullet list against the synthesis to guarantee zero signal loss across context boundaries.
+3. **Merge & Reconcile**: Merge staged files, wire modules, or build the synthesized comparison matrix.
+4. **Validate**: If applicable, run verification checks (lint, build, unit test, link audit).
+5. **Deliver**: Present the consolidated outcome to the user with a concise summary of parallel execution statistics:
    - Total workers executed.
    - Tasks completed.
    - Key findings / architectural deliverables.

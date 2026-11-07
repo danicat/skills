@@ -48,7 +48,7 @@
       "type": "archive",
       "description": "General-purpose task parallelization and agent scaling engine. Orchestrates concurrent subagents for ANY task (research, analysis, writing, coding, planning, evaluation) across arbitrary parallel budgets. Enforces immediate main session unblocking, flat orthogonal task partitioning, and agent racing / tournament comparisons. Activate whenever the user invokes /parallel, requests parallel execution, specifies a DOP/budget, or wants concurrent agent swarms.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/parallel.tar.gz",
-      "digest": "sha256:5c1173364f31bef6f42ebac6a74f95062b6aace088d790c7f1f405e80e242b36"
+      "digest": "sha256:03ad167c5bf6b080c08b8578d7e8c3655f4bb1b30eb7180c9515409b86e37a98"
     },
     {
       "name": "router",

@@ -16,7 +16,7 @@ metadata:
   category: workflows
   tags: "parallel, concurrency, subagents, scaling, orchestration, racing, dop"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.2.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -79,7 +79,7 @@ The ROOT agent activating `/parallel` operates strictly as a **non-blocking Coor
 Unless explicitly racing, tasks must be sliced along **orthogonal, disjoint boundaries**:
 - Each worker owns an exclusive file, topic facet, test module, or data chunk.
 - **Single Writer Principle**: Only one subagent is granted write authority to any single file or resource.
-- **Staging Pattern**: When outputs must combine into a single document or module, workers output to isolated staging files (`staging/chunk_*.md`), which the Coordinator reconciles during the Reduce step.
+- **Staging Pattern (Two-Tier Protocol)**: When outputs must combine into a single document or module, workers output to isolated staging files (`staging/chunk_*.md`), which the Coordinator reconciles during the Reduce step. Workers never dump full raw payload text across chat messages; chat is reserved strictly for status, output paths, and deal-breakers checklists (< 2,000 characters).
 
 ### 6. The Key Exception: Agent Racing & Tournaments
 The singular exception to orthogonal partitioning is **Agent Racing**:
