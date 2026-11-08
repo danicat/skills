@@ -45,7 +45,6 @@ Audio, image, and video generation using Google AI models via the `gemini-api` C
 * **[`gemini-omni`](media/gemini-omni/SKILL.md)**: Conversational video generation, multimodal video editing, frame interpolation, and video extension using Gemini Omni 1.1 Flash (`gemini-omni-1.1-flash`).
 * **[`lyria`](media/lyria/SKILL.md)**: High-fidelity 44.1 kHz stereo music and soundtrack generation from text prompts and images using Google's Lyria 3.5 and Lyria 3 models.
 * **[`nano-banana`](media/nano-banana/SKILL.md)**: Conversational image generation and editing using Google's native Nano Banana models with character consistency support.
-* **[`veo`](media/veo/SKILL.md)**: Cinematic video generation with native synchronized audio, first-and-last-frame interpolation, multi-image asset direction, and scene extension using Google Veo models.
 
 ---
 

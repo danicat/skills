@@ -40,7 +40,6 @@
 - [gemini-omni](https://skills.danicat.dev/media/gemini-omni/SKILL.md): Conversational video generation, multimodal video editing, first-and-last-frame interpolation, multi-reference video synthesis, and video extension using Gemini Omni 1.1 Flash (gemini-omni-1.1-flash) via the gemini-api CLI and Google Gen AI SDKs. Generates 3s-10s video clips (extendable up to 40s) from 360p to 4K with native synchronized audio, dialogue, and sound effects. Activate when generating videos from text, animating starting/ending frames, editing existing videos conversationally, or extending video clips.
 - [lyria](https://skills.danicat.dev/media/lyria/SKILL.md): Generative music and audio synthesis from text prompts or reference images using Google Lyria models via the gemini-api CLI and Google Gen AI SDKs. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3.5 and lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.
 - [nano-banana](https://skills.danicat.dev/media/nano-banana/SKILL.md): Conversational image generation and multimodal image editing using Google Nano Banana models via the gemini-api CLI and Google Gen AI SDKs. Generates high-resolution images (512px, 1K, 2K, 4K), performs style transfers and mask-based image edits ("banana this"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.
-- [veo](https://skills.danicat.dev/media/veo/SKILL.md): Cinematic video generation with native synchronized audio, first-and-last-frame interpolation, multi-image asset direction, and scene extension using Google Veo models (veo-3.1-generate-preview, veo-3.1-fast-generate-preview, veo-3.1-lite-generate-preview, veo-3.0-generate-001) and the gemini-api CLI or Google Gen AI SDKs. Generates 4s, 6s, or 8s clips at 720p, 1080p, or 4K (extendable up to 148s). Activate when generating cinematic Veo videos, interpolating keyframes, directing scenes with up to 3 asset references, or extending Veo clips.
 
 ## Engineering
 
@@ -62,7 +61,7 @@
 
 ## Optional
 
-- [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 40 skill instructions in a single file for large-context models.
+- [Full Instructions Catalog](https://skills.danicat.dev/llms-full.txt): Complete bundle of all 39 skill instructions in a single file for large-context models.
 - [Agent Skills Discovery Index](https://skills.danicat.dev/.well-known/agent-skills/index.json): RFC v0.2.0 well-known discovery index with SHA-256 digests.
 - [ARD Capability Manifest](https://skills.danicat.dev/.well-known/ai-catalog.json): Agentic Resource Discovery (ARD) manifest with semantic representative queries.
 - [API Catalog](https://skills.danicat.dev/.well-known/api-catalog): RFC 9727 linkset catalog of machine-readable endpoints.

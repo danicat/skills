@@ -191,13 +191,6 @@
       "digest": "sha256:fd578b0da251ec4c85ee108dc4c38fdc9783b4e2d0ded8605cf139b19ce7929d"
     },
     {
-      "name": "veo",
-      "type": "archive",
-      "description": "Cinematic video generation with native synchronized audio, first-and-last-frame interpolation, multi-image asset direction, and scene extension using Google Veo models (veo-3.1-generate-preview, veo-3.1-fast-generate-preview, veo-3.1-lite-generate-preview, veo-3.0-generate-001) and the gemini-api CLI or Google Gen AI SDKs. Generates 4s, 6s, or 8s clips at 720p, 1080p, or 4K (extendable up to 148s). Activate when generating cinematic Veo videos, interpolating keyframes, directing scenes with up to 3 asset references, or extending Veo clips.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/veo.tar.gz",
-      "digest": "sha256:2a0d35f2b5da4457f8528389a7c0a5de91e76dcccab6c51ed8b1f70e8d46244b"
-    },
-    {
       "name": "adr-template",
       "type": "skill-md",
       "description": "Guide and template for authoring and maintaining Architecture Decision Records (ADRs). Captures structural decisions, background context, trade-offs, and compliance verification in lightweight, immutable markdown records to preserve engineering context. Activate when making significant architectural choices, documenting technical trade-offs, proposing major refactorings, or authoring ADRs.",

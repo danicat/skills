@@ -198,5 +198,27 @@
       "/google-blog-style/",
       "/writing/google-blog-style/"
     ]
+  },
+  {
+    "id": "veo",
+    "name": "veo",
+    "formerCategory": "media",
+    "categoryEmoji": "🎨",
+    "retiredAt": "2026-11-08",
+    "lifespan": "Oct 2026 – Nov 2026",
+    "lastCommitSha": "a722f02",
+    "installs": 2,
+    "causeOfDeath": "Model deprecated in favour of gemini omni",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Model deprecated in favour of gemini-omni.",
+    "successorId": "gemini-omni",
+    "successorUrl": "/media/gemini-omni/",
+    "migrationCommand": "kungfu forget veo && kungfu learn gemini-omni",
+    "legacyAliases": [
+      "/veo/",
+      "/media/veo/"
+    ]
   }
 ]
