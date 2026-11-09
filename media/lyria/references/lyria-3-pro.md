@@ -1,7 +1,7 @@
 # Lyria 3 Pro (`lyria-3-pro-preview`) Model Card
 
 ## Overview
-**Lyria 3 Pro** (`lyria-3-pro-preview`) is Google's flagship music generation model. It is architected for full-length songs and complex musical compositions featuring multi-section structures (intro, verse, chorus, bridge, solo, outro), explicit timestamp controls, dynamic intensity shaping, and multilingual vocal synthesis.
+**Lyria 3 Pro** (`lyria-3-pro-preview`) is Google's full-length preview music generation model. It is designed for full-length songs and musical compositions featuring multi-section structures (intro, verse, chorus, bridge, solo, outro), explicit timestamp controls, dynamic intensity shaping, and multilingual vocal synthesis.
 
 - **Model Code**: `lyria-3-pro-preview`
 - **Release Date**: March 2026
@@ -29,7 +29,7 @@
 ## Advanced Composition Features
 
 ### 1. Timestamp & Section Arrangement Control
-Lyria 3 Pro interprets precise timestamp blocks to coordinate instrument entrances, vocal delivery, and dynamic transitions:
+Lyria 3 Pro interprets timestamp blocks to coordinate instrument entrances, vocal delivery, and dynamic transitions:
 
 ```text
 [0:00 - 0:15] Intro: Slow atmospheric synthesizer pad in D minor with light rain sounds.
@@ -56,15 +56,23 @@ Counting down the golden days
 ```
 
 ### 3. Multimodal Image-to-Song Generation
-Pass up to 10 images (e.g. concept art, character designs, landscapes) to generate a customized thematic soundtrack that captures the emotional tone and aesthetic mood.
+Pass up to 10 images (such as concept art, character designs, or landscapes) to generate a thematic soundtrack that captures the emotional tone and mood.
 
 ---
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — Full Song with Timestamps & Structure
+### 1. Python Script (`uv run scripts/lyria.py`) & `gemini-api` CLI
 
 ```bash
+# Generate with uv run scripts/lyria.py (supports GEMINI_API_KEY or Vertex AI / ADC)
+uv run scripts/lyria.py \
+  -p "An emotional cinematic folk song in E Minor at 90 BPM with fingerpicked acoustic guitar and cello." \
+  -m lyria-3-pro-preview \
+  -f mountain_folk.mp3 \
+  --lyrics-file mountain_folk_lyrics.txt
+
+# Or generate with gemini-api CLI
 gemini-api music \
   -m lyria-3-pro-preview \
   -f mountain_folk_prompt.txt \
@@ -103,7 +111,7 @@ if interaction.output_text:
         f.write(interaction.output_text)
 ```
 
-### 2. Multimodal Concept-to-Soundtrack (Python)
+### 3. Multimodal Concept-to-Soundtrack (Python)
 
 ```python
 import base64
@@ -121,7 +129,7 @@ interaction = client.interactions.create(
         {"type": "image", "data": read_b64("concept_art.jpg"), "mime_type": "image/jpeg"},
         {
             "type": "text",
-            "text": "Compose a sweeping orchestral film score reflecting the epic scale and mysterious mood of this landscape. Instrumental only.",
+            "text": "Compose a sweeping orchestral score reflecting the scale and mysterious mood of this landscape. Instrumental only, no vocals.",
         },
     ],
 )

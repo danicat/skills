@@ -1,9 +1,10 @@
 # Nano Banana 2 (`gemini-3.1-flash-image`) Model Card
 
 ## Overview
-**Nano Banana 2** (`gemini-3.1-flash-image`) is Google's flagship multimodal creative workhorse model. It delivers the optimal balance of speed, intelligence, high-fidelity visual composition, and 4K output generation, featuring native web search grounding, image search grounding, and video context understanding.
+**Nano Banana 2** (`gemini-3.1-flash-image`) is Google's multimodal creative workhorse model. It balances speed, spatial composition, and 4K output generation, featuring native web search grounding, image search grounding, and video context understanding.
 
 - **Model Code**: `gemini-3.1-flash-image`
+- **CLI Aliases**: `nano-banana-2`, `gemini-3.1-flash-image`
 - **Release Date**: February 2026
 - **Status**: General Availability (GA)
 - **DeepMind Model Card**: [gemini-3-1-flash-image](https://deepmind.google/models/model-cards/gemini-3-1-flash-image/)
@@ -18,7 +19,7 @@
 | **Output Modalities** | Image and Text (Interleaved) |
 | **Input Token Limit** | 131,072 tokens |
 | **Output Token Limit** | 32,768 tokens |
-| **Supported Resolutions** | `512px` (0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
+| **Supported Resolutions** | `512px` (`512` / 0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
 | **Aspect Ratios** | 14 discrete ratios (incl. extreme wide/tall `1:4`, `4:1`, `1:8`, `8:1`) |
 | **Thinking Process** | Supported (`minimal` [default], `high`) |
 | **Search Grounding** | **Web Search Grounding** + **Google Image Search Grounding** |
@@ -85,7 +86,19 @@ Control reasoning depth with `thinking_level`:
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — 4K High-Resolution Generation
+### 1. `uv run skills/nano-banana/scripts/banana.py`: 4K High-Resolution Generation
+
+```bash
+uv run skills/nano-banana/scripts/banana.py \
+  -p "A cinematic wide-angle shot of an ancient observatory on a mountain peak under the Aurora Borealis" \
+  -f "observatory_4k.png" \
+  -m "nano-banana-2" \
+  -r "4K" \
+  -a "16:9" \
+  --thinking-level "high"
+```
+
+### 2. `gemini-api` CLI: 4K High-Resolution Generation
 
 ```bash
 gemini-api image "A cinematic wide-angle shot of an ancient observatory on a mountain peak under the Aurora Borealis" \
@@ -96,7 +109,7 @@ gemini-api image "A cinematic wide-angle shot of an ancient observatory on a mou
   --out observatory_4k.png
 ```
 
-### 2. Python SDK (`google-genai`) - 4K High-Resolution Generation
+### 3. Python SDK (`google-genai`): 4K High-Resolution Generation
 
 ```python
 import base64
@@ -120,7 +133,7 @@ if interaction.output_image:
         f.write(base64.b64decode(interaction.output_image.data))
 ```
 
-### 2. Multi-Reference Character & Object Editing
+### 4. Multi-Reference Character & Object Editing
 
 ```python
 import base64

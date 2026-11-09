@@ -1,9 +1,10 @@
 # Nano Banana 2.1 (`gemini-nano-banana-2.1`) Model Card
 
 ## Overview
-**Nano Banana 2.1** (`gemini-nano-banana-2.1`) is Google's next-generation multimodal creative workhorse built on the **Gemini 3.6 Flash** architecture. Released on October 6, 2026, it delivers enhanced spatial composition, seamless panoramic synthesis across 14 aspect ratios, mask-based conversational editing, three-tier controllable thinking (`minimal`, `medium`, `high`), real-time Google Web and Image Search grounding, and multi-reference character consistency across up to 14 anchors.
+**Nano Banana 2.1** (`gemini-nano-banana-2.1`) is Google's multimodal creative workhorse built on the **Gemini 3.6 Flash** architecture. Released on October 6, 2026, it delivers strong spatial composition, seamless panoramic synthesis across 14 aspect ratios, mask-based conversational editing, three-tier controllable thinking (`minimal`, `medium`, `high`), real-time Google Web and Image Search grounding, and multi-reference character consistency across up to 14 anchors.
 
-- **Model Code**: `gemini-nano-banana-2.1` (default model for `gemini-api image`)
+- **Model Code**: `gemini-nano-banana-2.1` (default model for `scripts/banana.py` and `gemini-api image`)
+- **CLI Aliases**: `nano-banana-2.1` (default), `nano-banana-2-1`, `gemini-nano-banana-2.1`
 - **Architecture**: Gemini 3.6 Flash
 - **Release Date**: October 6, 2026
 - **Status**: General Availability (GA)
@@ -18,10 +19,10 @@
 | **Output Modalities** | Image and Text (Interleaved) |
 | **Input Token Limit** | 131,072 tokens |
 | **Output Token Limit** | 32,768 tokens |
-| **Supported Resolutions** | `512` (512px / 0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
-| **Aspect Ratios** | All 14 discrete ratios (`1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`) with panoramic seam/tiling elimination |
+| **Supported Resolutions** | `512px` (`512` / 0.5K), `1K` (1024px), `2K` (2048px), `4K` (4096px) |
+| **Aspect Ratios** | All 14 discrete ratios (`1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`) with panoramic seam and tiling elimination |
 | **Thinking Process** | Supported (`minimal` [default], `medium`, `high`) |
-| **Search Grounding** | **Google Web Search (`web_search`)** + **Google Image Search (`image_search`)** |
+| **Search Grounding** | **Google Web Search (`--search` / `web_search`)** + **Google Image Search (`--image-search` / `image_search`)** |
 | **Reference Anchors** | Up to 14 reference images (up to 10 object anchors + up to 4 character resemblance anchors) |
 | **Conversational Editing** | Multi-turn mask-based inpainting, outpainting, and local regional edits |
 | **Watermarking** | SynthID (Always On) + C2PA Metadata |
@@ -39,7 +40,7 @@
 | **`3:2`** | 632 × 424 | 747 | 1264 × 848 | 1,120 | 2528 × 1696 | 1,680 | 5056 × 3392 | 2,520 |
 | **`3:4`** | 448 × 600 | 747 | 896 × 1200 | 1,120 | 1792 × 2400 | 1,680 | 3584 × 4800 | 2,520 |
 | **`4:1`** | 1024 × 256 | 747 | 2048 × 512 | 1,120 | 4096 × 1024 | 1,680 | 8192 × 2048 | 2,520 |
-| **`4:3`** | 600 × 448 | 747 | 1200 × 896 | 1,120 | 2400 × 1792 | 1,120 | 4800 × 3584 | 2,520 |
+| **`4:3`** | 600 × 448 | 747 | 1200 × 896 | 1,120 | 2400 × 1792 | 1,680 | 4800 × 3584 | 2,520 |
 | **`4:5`** | 464 × 576 | 747 | 928 × 1152 | 1,120 | 1856 × 2304 | 1,680 | 3712 × 4608 | 2,520 |
 | **`5:4`** | 576 × 464 | 747 | 1152 × 928 | 1,120 | 2304 × 1856 | 1,680 | 4608 × 3712 | 2,520 |
 | **`8:1`** | 1536 × 192 | 747 | 3072 × 384 | 1,120 | 6144 × 768 | 1,680 | 12288 × 1536 | 2,520 |
@@ -52,28 +53,54 @@
 ## Capabilities & Key Features
 
 ### 1. Three-Tier Controllable Thinking (`minimal`, `medium`, `high`)
-Nano Banana 2.1 introduces the `medium` thinking level on top of `minimal` and `high`:
+Nano Banana 2.1 adds the `medium` thinking level between `minimal` and `high`:
 - **`"minimal"`**: Fast synthesis with minimal pre-generation reasoning latency.
 - **`"medium"`**: Balanced spatial layout planning, typography verification, and perspective coherence with sub-second reasoning overhead (exclusive to `gemini-nano-banana-2.1`).
-- **`"high"`**: Deep compositional planning for multi-character scenes, intricate architectural perspectives, complex lighting, and dense infographic text.
+- **`"high"`**: Deep compositional planning for `4x4` sprite grids, multi-character scenes, intricate architectural perspectives, complex lighting, and dense infographic text.
 
 ### 2. Panoramic Seam & Tiling Elimination (`1:4`, `4:1`, `1:8`, `8:1`)
-Built on Gemini 3.6 Flash attention windows, Nano Banana 2.1 eliminates repetition seams and horizon discontinuities across extreme panoramic (`4:1`, `8:1`) and vertical scroll (`1:4`, `1:8`) ratios, making it ideal for 2D game parallax backgrounds, seamless level strips, and website hero banners.
+Built on Gemini 3.6 Flash attention windows, Nano Banana 2.1 eliminates repetition seams and horizon breaks across extreme panoramic (`4:1`, `8:1`) and vertical scroll (`1:4`, `1:8`) ratios. This makes it well suited for 2D game parallax backgrounds, seamless level strips, and website banners.
 
 ### 3. Mask-Based Conversational Editing & Multi-Reference Consistency
-Pass up to 14 reference images (up to 10 object references + 4 character anchors) alongside optional binary/alpha mask inputs to perform surgical regional inpainting while preserving surrounding pixels and character identity.
+Pass up to 14 reference images (up to 10 object references + 4 character anchors) alongside optional binary or alpha mask inputs to run local regional inpainting while preserving surrounding pixels and character identity.
 
 ### 4. Google Web Search & Image Search Grounding
-Query Google Web Search and Google Image Search in real time to ground generated visuals in verified facts, real-world landmarks, current events, and accurate visual taxonomy.
+Query Google Web Search and Google Image Search in real time to ground generated visuals in verified facts, real-world landmarks, and accurate visual taxonomy.
 
 ### 5. Video Context Understanding
-Pass YouTube URLs or MP4 files to synthesize keyframe illustrations, sprite sheets, or promotional posters grounded in temporal video context.
+Pass YouTube URLs or MP4 files to synthesize keyframe illustrations, sprite sheets, or promotional posters grounded in video context.
 
 ---
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — 4K Panoramic Generation with `medium` Thinking & Search Grounding
+### 1. `uv run skills/nano-banana/scripts/banana.py`: 4K Panoramic Generation with `medium` Thinking & Search Grounding
+
+```bash
+uv run skills/nano-banana/scripts/banana.py \
+  -p "A seamless 2D side-scrolling pixel-art parallax background of a bioluminescent crystal cavern" \
+  -f "cavern_parallax_4k.png" \
+  -m "nano-banana-2.1" \
+  -r "4K" \
+  -a "4:1" \
+  --thinking-level "medium" \
+  --image-search
+```
+
+### 2. `uv run skills/nano-banana/scripts/banana.py`: Reference-Locked `4x4` Game Sprite Grid
+
+```bash
+uv run skills/nano-banana/scripts/banana.py \
+  -p "Keep the exact character identity, proportions, and 4-step color swatches from the reference sheet. Generate a uniform 4x4 sprite sheet grid (4 rows, 4 columns) on a flat unlit #00FF00 background with at least 15% empty #00FF00 margin inside every cell, no grid lines, and no text labels. Row 1: idle. Row 2: walk. Row 3: run. Row 4: 4-phase jump arc including mid-air apex pose." \
+  -i "character_sheet.png" \
+  -f "raw_grid_part1.png" \
+  -m "nano-banana-2.1" \
+  -r "2K" \
+  -a "1:1" \
+  --thinking-level "high"
+```
+
+### 3. `gemini-api` CLI: 4K Panoramic Generation with `medium` Thinking & Search Grounding
 
 ```bash
 gemini-api image "A seamless 2D side-scrolling pixel-art parallax background of a bioluminescent crystal cavern" \
@@ -84,21 +111,7 @@ gemini-api image "A seamless 2D side-scrolling pixel-art parallax background of 
   --out cavern_parallax_4k.png
 ```
 
-### 2. `gemini-api` CLI — Multi-Reference Character Consistency
-
-```bash
-gemini-api image "Keep the exact character identity, purple hair, glasses, and chibi proportions from the reference images. Generate a 4-frame horizontal sprite sheet of Dani casting a glowing lightning spell, solid magenta (#FF00FF) background." \
-  -m gemini-nano-banana-2.1 \
-  -i references/chibi-dani.png \
-  -i references/celebrating-dani.png \
-  -i references/speaker-dani.png \
-  --aspect-ratio 4:1 \
-  --image-size 2K \
-  --body '{"generation_config":{"thinking_level":"high"}}' \
-  --out dani_spell_sheet.png
-```
-
-### 3. Python SDK (`google-genai`) — 4K Panoramic Generation with `medium` Thinking & Image Search
+### 4. Python SDK (`google-genai`): 4K Panoramic Generation with `medium` Thinking & Image Search
 
 ```python
 import base64
@@ -123,7 +136,7 @@ if interaction.output_image:
         f.write(base64.b64decode(interaction.output_image.data))
 ```
 
-### 2. Python SDK (`google-genai`) — Multi-Reference Character Consistency & Mask-Based Editing
+### 5. Python SDK (`google-genai`): Multi-Reference Character Consistency
 
 ```python
 import base64
@@ -138,27 +151,25 @@ def encode_png(path: str) -> str:
 interaction = client.interactions.create(
     model="gemini-nano-banana-2.1",
     input=[
-        {"type": "image", "data": encode_png("references/chibi-dani.png"), "mime_type": "image/png"},
-        {"type": "image", "data": encode_png("references/celebrating-dani.png"), "mime_type": "image/png"},
-        {"type": "image", "data": encode_png("references/speaker-dani.png"), "mime_type": "image/png"},
+        {"type": "image", "data": encode_png("character_sheet.png"), "mime_type": "image/png"},
         {
             "type": "text",
             "text": (
-                "Keep the exact character identity, purple hair, glasses, and chibi proportions from the reference images. "
-                "Generate a 4-frame horizontal sprite sheet of Dani casting a glowing lightning spell, solid magenta (#FF00FF) background."
+                "Keep the exact character identity, proportions, and color swatches from the reference sheet. "
+                "Generate a uniform 4x4 sprite sheet grid on a flat unlit #00FF00 background with 15% empty cell margins."
             ),
         },
     ],
     generation_config={"thinking_level": "high"},
-    response_format={"type": "image", "aspect_ratio": "4:1", "image_size": "2K"},
+    response_format={"type": "image", "aspect_ratio": "1:1", "image_size": "2K"},
 )
 
 if interaction.output_image:
-    with open("dani_spell_sheet.png", "wb") as f:
+    with open("raw_grid_part1.png", "wb") as f:
         f.write(base64.b64decode(interaction.output_image.data))
 ```
 
-### 3. JavaScript / TypeScript SDK (`@google/genai`)
+### 6. JavaScript / TypeScript SDK (`@google/genai`)
 
 ```typescript
 import { GoogleGenAI } from "@google/genai";
@@ -191,7 +202,7 @@ async function generateBanner() {
 generateBanner();
 ```
 
-### 4. Go SDK (`google.golang.org/genai`)
+### 7. Go SDK (`google.golang.org/genai`)
 
 ```go
 package main
@@ -215,7 +226,7 @@ func main() {
 	resp, err := client.Models.GenerateContent(
 		ctx,
 		"gemini-nano-banana-2.1",
-		genai.Text("A clean 16-bit SNES style treasure chest sprite on a solid #FF00FF background"),
+		genai.Text("A clean 16-bit SNES style treasure chest sprite on a solid #00FF00 background"),
 		&genai.GenerateContentConfig{
 			ResponseModalities: []string{"IMAGE"},
 		},

@@ -1,9 +1,10 @@
 # Nano Banana Pro (`gemini-3-pro-image`) Model Card
 
 ## Overview
-**Nano Banana Pro** (`gemini-3-pro-image`) is Google's state-of-the-art visual foundation model designed for professional studio asset production, complex multi-reference character and style consistency, high-precision typography rendering, and interleaved multi-image narrative composition.
+**Nano Banana Pro** (`gemini-3-pro-image`) is Google's visual foundation model designed for studio asset production, multi-reference character and style consistency, typography rendering, and interleaved multi-image narrative composition.
 
 - **Model Code**: `gemini-3-pro-image`
+- **CLI Aliases**: `nano-banana-pro`, `gemini-3-pro-image`
 - **Release Date**: November 2025
 - **Status**: General Availability (GA)
 - **DeepMind Model Card**: [gemini-3-pro-image](https://deepmind.google/models/model-cards/gemini-3-pro-image/)
@@ -48,8 +49,8 @@
 ## Capabilities & Key Features
 
 ### 1. Multi-Reference Character & Style Consistency
-Nano Banana Pro excels at maintaining exact facial, anatomical, and wardrobe consistency across varied poses, while simultaneously adhering to an artistic style defined by separate reference images:
-- **Object Anchors (up to 6)**: Maintain exact physical proportions and logo placements.
+Nano Banana Pro excels at maintaining facial, anatomical, and wardrobe consistency across varied poses, while adhering to an artistic style defined by separate reference images:
+- **Object Anchors (up to 6)**: Maintain physical proportions and logo placements.
 - **Character Anchors (up to 5)**: Preserve identity across 360-degree viewpoints and emotional expressions.
 - **Style References (up to 3)**: Match custom painterly or graphic art styles.
 
@@ -63,7 +64,21 @@ Can produce multi-panel graphic novels, children's book spreads, or technical st
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — Multi-Reference Style & Character Consistency
+### 1. `uv run skills/nano-banana/scripts/banana.py`: Multi-Reference Style & Character Consistency
+
+```bash
+uv run skills/nano-banana/scripts/banana.py \
+  -p "Render the character from images 1 and 2 wearing a leather flight jacket and aviator goggles, standing beside a vintage plane. Recreate the entire scene in the exact watercolor and ink style of image 3." \
+  -i "references/character_face.png" \
+  -i "references/character_body.png" \
+  -i "references/art_style.png" \
+  -f "character_rendered.png" \
+  -m "nano-banana-pro" \
+  -r "2K" \
+  -a "3:2"
+```
+
+### 2. `gemini-api` CLI: Multi-Reference Style & Character Consistency
 
 ```bash
 gemini-api image "Render the character from images 1 and 2 wearing a leather flight jacket and aviator goggles, standing beside a vintage plane. Recreate the entire scene in the exact watercolor and ink style of image 3." \
@@ -76,7 +91,7 @@ gemini-api image "Render the character from images 1 and 2 wearing a leather fli
   --out character_rendered.png
 ```
 
-### 2. Studio-Quality 4K Asset Production with Search Grounding
+### 3. Studio-Quality 4K Asset Production with Search Grounding (Python SDK)
 
 ```python
 import base64
@@ -100,7 +115,7 @@ if interaction.output_image:
         f.write(base64.b64decode(interaction.output_image.data))
 ```
 
-### 2. Multi-Reference Style & Character Consistency
+### 4. Multi-Reference Style & Character Consistency (Python SDK)
 
 ```python
 import base64

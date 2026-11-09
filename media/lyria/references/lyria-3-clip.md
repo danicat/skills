@@ -1,7 +1,7 @@
 # Lyria 3 Clip (`lyria-3-clip-preview`) Model Card
 
 ## Overview
-**Lyria 3 Clip** (`lyria-3-clip-preview`) is Google's high-speed music generation model optimized for short clips, loops, social audio, and rapid style prototyping. It generates fixed 30-second stereo audio tracks along with synchronized lyric transcriptions and musical structure from text prompts or visual reference images.
+**Lyria 3 Clip** (`lyria-3-clip-preview`) is Google's high-speed music generation model optimized for short clips, 30-second game loops, social audio, and rapid style prototyping. It generates fixed 30-second stereo audio tracks along with synchronized lyric transcriptions and musical structure from text prompts or visual reference images.
 
 - **Model Code**: `lyria-3-clip-preview`
 - **Release Date**: March 2026
@@ -29,28 +29,35 @@
 ## Capabilities & Limitations
 
 ### Strengths
-1. **Fast Prototyping**: Low latency generation suited for iterating on musical genres, chord progressions, and tempos.
+1. **Fast Prototyping**: Low-latency generation suited for iterating on musical genres, chord progressions, and tempos.
 2. **Multimodal Composition**: Composes audio beds reflecting the palette, lighting, and mood of up to 10 input images.
-3. **Instrumental Isolation**: Produces clean instrumental backing tracks without vocal artifacts when prompted with `"Instrumental only"`.
-4. **Synchronized Lyrics**: Returns lyric structure in the `output_text` / steps schema.
+3. **Instrumental Isolation**: Produces clean instrumental backing tracks without vocal artifacts when prompted with `"Instrumental only, no vocals"`.
+4. **Synchronized Lyrics**: Returns lyric structure in the `output_text` field.
 
 ### Limitations
-- **Fixed Duration**: Always produces exactly 30 seconds. For longer compositions or multi-minute songs, use **Lyria 3 Pro** (`lyria-3-pro-preview`).
+- **Fixed Duration**: Always produces 30 seconds. For longer compositions or multi-minute songs, use **Lyria 3.5** (`lyria-3.5`) or **Lyria 3 Pro** (`lyria-3-pro-preview`).
 - **Single-Turn**: Does not support sequential multi-turn audio inpainting or stem editing.
 
 ---
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — 30-Second Chiptune Clip
+### 1. Python Script (`uv run scripts/lyria.py`) & `gemini-api` CLI
 
 ```bash
+# Generate a 30-second chiptune clip via uv run scripts/lyria.py (supports GEMINI_API_KEY or Vertex AI / ADC)
+uv run scripts/lyria.py \
+  -p "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only, no vocals." \
+  -m lyria-3-clip \
+  -f chiptune.mp3
+
+# Or generate with gemini-api CLI
 gemini-api music "An energetic 8-bit chiptune arcade melody at 140 BPM in C major. Instrumental only, no vocals." \
   -m lyria-3-clip-preview \
   --out chiptune.mp3
 ```
 
-### 2. Python SDK (`google-genai`) - Interactions API
+### 2. Python SDK (`google-genai`, Interactions API)
 
 ```python
 import base64
@@ -72,7 +79,7 @@ if interaction.output_text:
     print("Song Structure / Lyrics:\n", interaction.output_text)
 ```
 
-### 2. JavaScript / TypeScript SDK (`@google/genai`)
+### 3. JavaScript / TypeScript SDK (`@google/genai`)
 
 ```typescript
 import { GoogleGenAI } from "@google/genai";
@@ -83,7 +90,7 @@ const ai = new GoogleGenAI({});
 async function generateClip() {
   const interaction = await ai.interactions.create({
     model: "lyria-3-clip-preview",
-    input: "A 30-second lo-fi hip-hop loop with vinyl crackle and mellow electric piano at 85 BPM. Instrumental only.",
+    input: "A 30-second lo-fi hip-hop loop with vinyl crackle and mellow electric piano at 85 BPM. Instrumental only, no vocals.",
   });
 
   if (interaction.output_audio) {
@@ -94,7 +101,7 @@ async function generateClip() {
 generateClip();
 ```
 
-### 3. REST / cURL
+### 4. REST / cURL
 
 ```bash
 curl -s -X POST \
@@ -103,6 +110,6 @@ curl -s -X POST \
   -H "Content-Type: application/json" \
   -d '{
     "model": "lyria-3-clip-preview",
-    "input": "A bright bossa nova guitar piece in F major. Instrumental only."
+    "input": "A bright bossa nova guitar piece in F major. Instrumental only, no vocals."
   }'
 ```

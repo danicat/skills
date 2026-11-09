@@ -1,9 +1,10 @@
 # Nano Banana 2 Lite (`gemini-3.1-flash-lite-image`) Model Card
 
 ## Overview
-**Nano Banana 2 Lite** (`gemini-3.1-flash-lite-image`) is Google's ultra-high-velocity, cost-efficient image generation model designed for real-time consumer applications, conversational image editing, and high-volume generation pipelines.
+**Nano Banana 2 Lite** (`gemini-3.1-flash-lite-image`) is Google's high-velocity, cost-efficient image generation model designed for real-time consumer applications, conversational image editing, and high-volume generation pipelines.
 
 - **Model Code**: `gemini-3.1-flash-lite-image`
+- **CLI Aliases**: `nano-banana-2-lite`, `nano-banana-lite`, `gemini-3.1-flash-lite-image`
 - **Release Date**: June 2026
 - **Status**: General Availability (GA)
 - **DeepMind Model Card**: [gemini-3-1-flash-lite-image](https://deepmind.google/models/model-cards/gemini-3-1-flash-lite-image/)
@@ -22,7 +23,7 @@
 | **Generation Latency** | Sub-2 seconds (< 2s) end-to-end |
 | **Function Calling** | Supported |
 | **Thinking Mode** | Supported (`minimal` [default], `high`) |
-| **Search Grounding** | ❌ Not Supported |
+| **Search Grounding** | Not Supported |
 | **Watermarking** | SynthID (Always On) + C2PA Metadata |
 
 ---
@@ -53,13 +54,13 @@ Nano Banana 2 Lite generates images within a 1K bounding box across 14 discrete 
 ## Capabilities & Limitations
 
 ### Strengths
-1. **Ultra-Low Latency**: Optimized for real-time interaction, UI mockups, stickers, and fast conversational iteration.
+1. **Low Latency**: Optimized for real-time interaction, UI mockups, stickers, and fast conversational iteration.
 2. **Cost Efficiency**: Lowest compute and token consumption in the Nano Banana family.
-3. **Conversational Multi-Turn Edits**: Fast local modifications (e.g. "change hair color to blue", "add sunglasses").
+3. **Conversational Multi-Turn Edits**: Fast local modifications (such as changing hair color or adding accessories).
 4. **Function Calling**: Fully integrated with tool-calling workflows.
 
 ### Limitations
-- **Resolution Capped at 1K**: Cannot generate 2K (`2048px`) or 4K (`4096px`) images. Use **Nano Banana 2** or **Nano Banana Pro** for 2K/4K.
+- **Resolution Capped at 1K**: Cannot generate 2K (`2048px`) or 4K (`4096px`) images. Use **Nano Banana 2.1**, **Nano Banana 2**, or **Nano Banana Pro** for 2K/4K.
 - **No Search Grounding**: Does not support real-time web or image search grounding tools.
 - **Single/Local Reference Focus**: Best for single-image edits; not optimized for complex multi-character cross-scene consistency.
 
@@ -67,7 +68,17 @@ Nano Banana 2 Lite generates images within a 1K bounding box across 14 discrete 
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — Fast 1K Generation
+### 1. `uv run skills/nano-banana/scripts/banana.py`: Fast 1K Generation
+
+```bash
+uv run skills/nano-banana/scripts/banana.py \
+  -p "A vibrant sticker of a cute robot drinking bubble tea, white background" \
+  -f "robot_sticker.png" \
+  -m "nano-banana-2-lite" \
+  -a "1:1"
+```
+
+### 2. `gemini-api` CLI: Fast 1K Generation
 
 ```bash
 gemini-api image "A vibrant sticker of a cute robot drinking bubble tea, white background" \
@@ -77,7 +88,7 @@ gemini-api image "A vibrant sticker of a cute robot drinking bubble tea, white b
   --out robot_sticker.png
 ```
 
-### 2. Python SDK (`google-genai`) - Interactions API
+### 3. Python SDK (`google-genai`): Interactions API
 
 ```python
 import base64
@@ -85,7 +96,7 @@ from google import genai
 
 client = genai.Client()
 
-# Ultra-fast text-to-image generation
+# Fast text-to-image generation
 interaction = client.interactions.create(
     model="gemini-3.1-flash-lite-image",
     input="A vibrant sticker of a cute robot drinking bubble tea, white background",
@@ -101,7 +112,7 @@ if interaction.output_image:
         f.write(base64.b64decode(interaction.output_image.data))
 ```
 
-### 2. Python SDK (`google-genai`) - Models API (`generate_content`)
+### 4. Python SDK (`google-genai`): Models API (`generate_content`)
 
 ```python
 from google import genai
@@ -121,7 +132,7 @@ for part in response.candidates[0].content.parts:
         break
 ```
 
-### 3. JavaScript / TypeScript SDK (`@google/genai`)
+### 5. JavaScript / TypeScript SDK (`@google/genai`)
 
 ```typescript
 import { GoogleGenAI } from "@google/genai";
@@ -148,7 +159,7 @@ async function generate() {
 generate();
 ```
 
-### 4. REST / cURL
+### 6. REST / cURL
 
 ```bash
 curl -s -X POST \

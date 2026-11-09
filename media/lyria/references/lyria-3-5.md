@@ -1,7 +1,7 @@
 # Lyria 3.5 (`lyria-3.5`) Model Card
 
 ## Overview
-**Lyria 3.5** (`lyria-3.5`) is Google's state-of-the-art flagship music generation model. It produces high-fidelity **44.1 kHz stereo audio**, full songs with structural arrangements (intro, verses, chorus, bridge, solo, outro), expressive vocal synthesis, and dynamic intensity shaping from text prompts or visual reference images.
+**Lyria 3.5** (`lyria-3.5`) is Google's flagship music generation model. It produces **44.1 kHz stereo audio**, full songs with structural arrangements (intro, verses, chorus, bridge, solo, outro), expressive vocal synthesis, and dynamic intensity shaping from text prompts or visual reference images.
 
 - **Model Code**: `lyria-3.5`
 - **Release Date**: Mid-2026
@@ -56,25 +56,42 @@ Chasing dreams until the morning light
 ```
 
 ### 3. Multimodal Image-to-Music Guidance
-Supply up to 10 reference images (concept art, photos, storyboards) to direct the emotional palette, genre mood, and aesthetic tone of the composition.
+Supply up to 10 reference images (concept art, title screens, photos, storyboards) to direct the emotional palette, genre mood, and aesthetic tone of the composition.
 
 ### 4. Clean Instrumental Backing Tracks
-Add `"Instrumental only, no vocals"` to synthesize pristine background beds, game soundtracks, or podcast scoring without vocal bleed or artifacts.
+Add `"Instrumental only, no vocals"` to synthesize background beds, game soundtracks, or podcast scoring without vocal bleed.
 
 ---
 
 ## CLI & SDK Examples
 
-### 1. `gemini-api` CLI — Full Song from Prompt File
+### 1. Python Script (`uv run scripts/lyria.py`) & `gemini-api` CLI
 
 ```bash
+# Generate with uv run scripts/lyria.py (supports GEMINI_API_KEY or Vertex AI / ADC)
+uv run scripts/lyria.py \
+  -p "An atmospheric lo-fi jazz track at 85 BPM in E Minor. Instrumental only, no vocals." \
+  -f lofi_track.mp3 \
+  -m lyria-3.5 \
+  --lyrics-file lofi_track_structure.txt
+
+# Or explicitly pass Vertex AI / Gemini Enterprise flags (ADC via gcloud auth application-default login)
+uv run scripts/lyria.py \
+  --vertexai \
+  --project "${GOOGLE_CLOUD_PROJECT}" \
+  --location "${GOOGLE_CLOUD_LOCATION:-us-central1}" \
+  -p "An atmospheric lo-fi jazz track at 85 BPM in E Minor. Instrumental only, no vocals." \
+  -f lofi_track.mp3 \
+  -m lyria-3.5
+
+# Or generate with gemini-api CLI from a prompt file
 gemini-api music \
   -m lyria-3.5 \
   -f lofi_prompt.txt \
   --out lofi_track.mp3
 ```
 
-### 2. Full Song with Timestamps & Lyrics (Python - Interactions API)
+### 2. Full Song with Timestamps & Lyrics (Python Interactions API)
 
 ```python
 import base64
@@ -107,7 +124,7 @@ if interaction.output_text:
         f.write(interaction.output_text)
 ```
 
-### 2. Multimodal Concept-to-Soundtrack (Python)
+### 3. Multimodal Concept-to-Soundtrack (Python)
 
 ```python
 import base64
@@ -125,7 +142,7 @@ interaction = client.interactions.create(
         {"type": "image", "data": read_b64("concept_art.jpg"), "mime_type": "image/jpeg"},
         {
             "type": "text",
-            "text": "Compose a sweeping cinematic orchestral film score reflecting the epic scale and mysterious tone of this concept art. Instrumental only.",
+            "text": "Compose a sweeping cinematic orchestral score reflecting the scale and mysterious tone of this concept art. Instrumental only, no vocals.",
         },
     ],
 )
@@ -135,7 +152,7 @@ if interaction.output_audio:
         f.write(base64.b64decode(interaction.output_audio.data))
 ```
 
-### 3. JavaScript / TypeScript SDK (`@google/genai`)
+### 4. JavaScript / TypeScript SDK (`@google/genai`)
 
 ```typescript
 import { GoogleGenAI } from "@google/genai";
@@ -146,7 +163,7 @@ const ai = new GoogleGenAI({});
 async function generateSong() {
   const interaction = await ai.interactions.create({
     model: "lyria-3.5",
-    input: "An uplifting synthwave anthem at 124 BPM in A Minor with retro analog synthesizers and punchy drum machine. Instrumental only.",
+    input: "An uplifting synthwave anthem at 124 BPM in A Minor with retro analog synthesizers and punchy drum machine. Instrumental only, no vocals.",
   });
 
   if (interaction.output_audio) {
