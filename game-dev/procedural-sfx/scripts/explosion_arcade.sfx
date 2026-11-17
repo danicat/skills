@@ -1,0 +1,7 @@
+title "Arcade Chiptune Explosion"
+type sfx
+
+inst sub_drop   wave=triangle freq=160Hz->24Hz vol=0.35 adsr=0.004,0.12,0.20,0.30
+inst lfsr_crush preset=explosion_arcade vol=0.36 lpf=1400->160 q=1.9
+track sub  sub_drop:   160Hz->24Hz:420ms
+track grit lfsr_crush: lfsr_crush:650ms

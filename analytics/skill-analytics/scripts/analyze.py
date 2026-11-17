@@ -13,22 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+
 """
-Skill Analytics: Universal Agent Skill Usage & Context-Tax ROI Engine.
+Skill Analytics: Universal Agent Skill Usage & Prompt-Tax ROI Engine.
 
 Mines all local agent conversations (0% sampling), inventories all installed and catalog
 skills across built-in, plugin, global, workspace, and catalog tiers, and populates
-a local SQLite warehouse (`skill_analytics.db`) for deep SQL analytics and optimization.
+a local SQLite warehouse (`skill_analytics.db`) for SQL analytics and portfolio tuning.
 
 Capabilities:
-1. Universal Skill Activation Mapping (`view_file` on any `SKILL.md`, companion `references/`,
-   `scripts/`, and CLI invocations in transcripts).
-2. Context-Tax vs. Activation ROI (`v_skill_roi`) — compares each skill's Tier-1 system-prompt
-   token footprint against real conversation activations to detect shelfware vs. high-ROI skills.
-3. Trigger Attribution (`v_trigger_attribution`) — classifies activations into `autonomous`
+1. Universal Skill Activation Mapping (`read_file` and `view_file` on any `SKILL.md`,
+   companion `references/`, `scripts/`, and CLI invocations in transcripts).
+2. Prompt-Tax vs. Activation ROI (`v_skill_roi`): compares each skill's Tier-1 system-prompt
+   token footprint (raw and Gemini 4 implicit-cache adjusted) against real conversation
+   activations to detect shelfware vs. high-ROI skills.
+3. Trigger Attribution (`v_trigger_attribution`): classifies activations into `autonomous`
    (frontmatter description match), `user_explicit` (`::skill`, `//skill`, `/skill`), and
    `rule_driven` to help `skill-optimizer` refine skill descriptions.
-4. Search Gap Discovery (`v_search_gaps`) — surfaces search queries in transcripts that did
+4. Search Gap Discovery (`v_search_gaps`): surfaces search queries in transcripts that did
    not lead to a skill activation.
 """
 
@@ -51,70 +57,97 @@ DEFAULT_SUMMARIES_DB = HOME_DIR / ".gemini" / "antigravity" / "conversation_summ
 DEFAULT_DB_PATH = pathlib.Path("skill_analytics.db")
 
 BUILTIN_KNOWN_SKILLS = {
-    "kungfu",
-    "godoctor",
-    "ebitengineer",
-    "game-design",
-    "procedural-art",
-    "procedural-composer",
-    "sprite-animation",
-    "vibe-game-developer",
-    "lyria",
-    "nano-banana",
+    "abstract",
+    "adk-ui",
     "adr-template",
-    "engineering-flow",
-    "google-oss",
-    "latest-version",
-    "pyhd",
-    "rfc-template",
-    "double-diamond",
-    "intercom",
-    "parallel",
-    "skill-optimizer",
-    "skill-analytics",
-    "swarm-coding",
-    "uno-reverse",
-    "buffer",
-    "deslopify",
-    "google-blog-style",
-    "inverted-pyramid",
-    "seo-optimizer",
-    "social-copy",
-    "buffer-analytics",
-    "google-analytics",
-    "search-analytics",
-    "pagespeed-insights",
-    "gemma4go",
-    "gemini-api-dev",
-    "gemini-interactions-api",
-    "gemini-live-api-dev",
-    "gemini-omni-flash-api",
-    "tech-interviewer",
-    "tech-publisher",
-    "tech-reviewer",
-    "tech-writer",
-    "speedgrapher",
-    "generative_ui",
-    "antigravity-guide",
+    "ag-ui-a2ui-integration",
     "agy-customizations",
+    "antigravity-guide",
     "automation",
     "brain-visualizer",
+    "brainstorm",
+    "buffer",
+    "buffer-analytics",
     "chrome-devtools",
     "chrome-extensions",
     "a11y-debugging",
     "debug-optimize-lcp",
     "memory-leak-debugging",
     "modern-web-guidance",
+    "design-docs",
+    "deslopify",
+    "developing-genkit-go",
+    "developing-genkit-js",
+    "discovery",
+    "double-diamond",
+    "draft",
+    "dream",
+    "ebitengineer",
+    "engineering-flow",
+    "finding-google-skills",
+    "game-design",
+    "game-dev-studio",
+    "gcloud",
+    "gemini-api-dev",
+    "gemini-interactions-api",
+    "gemini-live-api-dev",
+    "gemini-omni",
+    "gemini-omni-flash-api",
+    "gemma4go",
+    "generative_ui",
+    "godoctor",
+    "google-analytics",
+    "google-blog-style",
+    "google-cloud-recipe-auth",
+    "google-cloud-recipe-onboarding",
+    "google-oss",
+    "ideate",
+    "intercom",
+    "inverted-pyramid",
+    "kungfu",
+    "latest-version",
+    "less-is-more",
+    "lyria",
+    "migrate-agent-settings",
+    "migrate-workflows",
+    "nano-banana",
+    "pagespeed-insights",
     "paint-studio",
+    "parallel",
     "playtest-studio",
     "plugin",
+    "procedural-art",
+    "procedural-composer",
+    "procedural-music",
+    "procedural-sfx",
+    "publish",
+    "pyhd",
+    "readability",
+    "retrieving-developer-knowledge",
+    "rfc-template",
+    "run-workflow",
+    "search-analytics",
+    "seo-optimizer",
+    "show-me-the-money",
+    "skill-analytics",
+    "skill-optimizer",
+    "social-copy",
+    "speedgrapher",
+    "spike",
+    "sprite-animation",
+    "sprite-design",
+    "swarm",
+    "swarm-coding",
+    "swarm_monitor",
+    "tech-interviewer",
+    "tech-publisher",
+    "tech-reviewer",
+    "tech-writer",
     "troubleshooting",
     "ui-extension",
     "ui-plugin-navigation",
-    "migrate-workflows",
-    "developing-genkit-go",
-    "developing-genkit-js",
-    "ag-ui-a2ui-integration",
+    "uno-reverse",
+    "vibe-game-developer",
 }
 
 KNOWN_SUBCOMMANDS = {
@@ -131,6 +164,7 @@ KNOWN_SUBCOMMANDS = {
     "forget",
     "unlearn",
     "catalog",
+    "telemetry",
     "version",
     "help",
 }
@@ -254,17 +288,17 @@ MODERN_COLON_RE = re.compile(
     r"(?:^|(?<![:\w/\\]))"
     r"(::(?:\+\+\*|\+\*|\+\+|\+|--|-|\*|>|:|\^_?\^|@\^?)?"
     r"[a-zA-Z0-9_][a-zA-Z0-9_./@:!-]*)"
-    r"(?:\(([^)\s\n]{1,40})\)?)?"
+    r"(?:\(([^)\n]{1,80})\)?)?"
 )
 
 SKILL_MD_PATH_RE = re.compile(
     r"(?:^|/)([^/]+)/SKILL\.md$"
 )
 SKILL_RESOURCE_PATH_RE = re.compile(
-    r"(?:^|/)(?:skills|_skills)/([^/]+)/(references|examples|assets|scripts|evals)/(.+)$"
+    r"(?:^|/)([^/]+)/(references|examples|assets|scripts|evals|resources)/(.+)$"
 )
 DIRECT_SCRIPT_EXEC_RE = re.compile(
-    r"(?:^|\s|\"|')([^\s\"']*/([^/\s\"']+)/scripts/([a-zA-Z0-9_.-]+\.(?:py|sh|mjs|js|ts)))"
+    r"(?:^|\s|\"|')([^\s\"']*/([^/\s\"']+)/scripts/([a-zA-Z0-9_.-]+\.(?:py|sh|mjs|js|ts|go)))"
 )
 
 SCHEMA_DDL = """
@@ -381,7 +415,11 @@ ORDER BY total_events DESC;
 DROP VIEW IF EXISTS v_skill_roi;
 CREATE VIEW v_skill_roi AS
 WITH total_convs AS (
-    SELECT MAX(1, COUNT(*)) AS conv_count FROM conversations WHERE has_transcript = 1
+    SELECT
+        MAX(1, COUNT(*)) AS conv_count,
+        MAX(1, COALESCE(SUM(planner_steps), 0)) AS total_planner_steps
+    FROM conversations
+    WHERE has_transcript = 1
 ),
 skill_usage AS (
     SELECT
@@ -389,22 +427,22 @@ skill_usage AS (
         SUM(CASE WHEN is_self_test = 0 AND (
             (invocation_kind = 'cli_invocation' AND subcommand = 'load' AND page_number = 1 AND subpath_or_script IS NULL)
             OR (invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND subpath_or_script = '--load')
-            OR invocation_kind = 'direct_skill_view'
+            OR (invocation_kind = 'direct_skill_view' AND COALESCE(page_number, 1) = 1)
         ) THEN 1 ELSE 0 END) AS total_activations,
         SUM(CASE WHEN is_self_test = 0 AND trigger_mode = 'autonomous' AND (
             (invocation_kind = 'cli_invocation' AND subcommand = 'load' AND page_number = 1 AND subpath_or_script IS NULL)
             OR (invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND subpath_or_script = '--load')
-            OR invocation_kind = 'direct_skill_view'
+            OR (invocation_kind = 'direct_skill_view' AND COALESCE(page_number, 1) = 1)
         ) THEN 1 ELSE 0 END) AS autonomous_activations,
         SUM(CASE WHEN is_self_test = 0 AND trigger_mode = 'user_explicit' AND (
             (invocation_kind = 'cli_invocation' AND subcommand = 'load' AND page_number = 1 AND subpath_or_script IS NULL)
             OR (invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND subpath_or_script = '--load')
-            OR invocation_kind = 'direct_skill_view'
+            OR (invocation_kind = 'direct_skill_view' AND COALESCE(page_number, 1) = 1)
         ) THEN 1 ELSE 0 END) AS explicit_activations,
         SUM(CASE WHEN is_self_test = 0 AND trigger_mode = 'rule_driven' AND (
             (invocation_kind = 'cli_invocation' AND subcommand = 'load' AND page_number = 1 AND subpath_or_script IS NULL)
             OR (invocation_kind = 'cli_invocation' AND subcommand = 'learn' AND subpath_or_script = '--load')
-            OR invocation_kind = 'direct_skill_view'
+            OR (invocation_kind = 'direct_skill_view' AND COALESCE(page_number, 1) = 1)
         ) THEN 1 ELSE 0 END) AS rule_activations,
         SUM(CASE WHEN is_self_test = 0 AND (
             invocation_kind = 'skill_resource_view'
@@ -445,6 +483,15 @@ SELECT
         WHEN COALESCE(i.is_always_in_prompt, 0) = 1 THEN COALESCE(i.tier1_tokens_est, 0) * tc.conv_count
         ELSE 0
     END AS cumulative_prompt_tax_tokens,
+    CASE
+        WHEN COALESCE(i.is_always_in_prompt, 0) = 1 THEN CAST(
+            ROUND(
+                COALESCE(i.tier1_tokens_est, 0) * tc.conv_count
+                + 0.10 * COALESCE(i.tier1_tokens_est, 0) * MAX(0, tc.total_planner_steps - tc.conv_count)
+            ) AS INTEGER
+        )
+        ELSE 0
+    END AS cache_adjusted_tax_tokens,
     u.last_used_at,
     CASE
         WHEN COALESCE(i.is_always_in_prompt, 0) = 1 AND COALESCE(u.total_activations, 0) = 0 AND COALESCE(u.script_runs, 0) = 0
@@ -629,8 +676,11 @@ def discover_skills_inventory(
             return
         try:
             text = md_path.read_text(encoding="utf-8", errors="replace")
-        except Exception:
-            return
+        except Exception as exc:
+            fail_fast(
+                "Failed reading SKILL.md during inventory scan",
+                context={"skill_md_path": str(md_path), "source_tier": source_tier, "error": str(exc)},
+            )
         fm = parse_skill_frontmatter(text)
         skill_name = fm["name"] or md_path.parent.name
         desc = fm["description"]
@@ -1025,7 +1075,7 @@ def extract_user_notations(
             raw_tok = m.group(1)
             paren_arg = m.group(2)
             start_pos = m.start(1)
-            if start_pos > 0 and line[start_pos - 1] not in (" ", "\t", "(", "[", "\"", "'"):
+            if start_pos > 0 and line[start_pos - 1] not in (" ", "\t", ",", "(", "[", "\"", "'"):
                 continue
             classified = classify_modern_colon_token(raw_tok, paren_arg, known_skills)
             if not classified:
@@ -1053,6 +1103,39 @@ def extract_user_notations(
                     "is_self_test": 0,
                 }
             )
+            if paren_arg:
+                for inner in MODERN_COLON_RE.finditer(paren_arg):
+                    inner_tok = inner.group(1)
+                    inner_paren = inner.group(2)
+                    inner_start = inner.start(1)
+                    if inner_start > 0 and paren_arg[inner_start - 1] not in (" ", "\t", ",", "(", "[", "\"", "'"):
+                        continue
+                    inner_classified = classify_modern_colon_token(inner_tok, inner_paren, known_skills)
+                    if not inner_classified:
+                        continue
+                    inner_subcmd, inner_skill, inner_subpath = inner_classified
+                    if inner_skill:
+                        explicit_skills.add(inner_skill)
+                    inner_full = f"{inner_tok}({inner_paren})" if inner_paren else inner_tok
+                    events.append(
+                        {
+                            "conversation_id": conv_id,
+                            "step_index": step_index,
+                            "step_created_at": step_created_at,
+                            "step_type": step_type,
+                            "invocation_kind": "user_notation",
+                            "notation_type": "modern_::",
+                            "subcommand": inner_subcmd,
+                            "target_skill": inner_skill,
+                            "raw_args": inner_full,
+                            "subpath_or_script": inner_subpath,
+                            "page_number": 1,
+                            "trigger_mode": "user_explicit",
+                            "source_tier": "user_prompt",
+                            "raw_snippet": line_stripped[:240],
+                            "is_self_test": 0,
+                        }
+                    )
 
     return events, explicit_skills
 
@@ -1252,7 +1335,7 @@ def parse_kungfu_cli_segment(
             target_skill = ",".join(positionals)
             subpath_or_script = "MULTI_SKILL_SHOW"
 
-    elif subcommand == "catalog":
+    elif subcommand in {"catalog", "telemetry"}:
         positionals = [a for a in rest if not a.startswith("-")]
         if positionals:
             subpath_or_script = " ".join(positionals)
@@ -1286,19 +1369,38 @@ def parse_kungfu_cli_segment(
     }
 
 
-def classify_skill_path_tier(norm_path: str) -> Tuple[str, int]:
+def classify_skill_path_tier(norm_path: str, home_dir: pathlib.Path = HOME_DIR) -> Tuple[str, int]:
     """Return (source_tier, is_self_test) for a SKILL.md or resource file path."""
+    home_norm = str(home_dir).replace("\\", "/").rstrip("/")
     if "/.gemini/antigravity/builtin/skills/" in norm_path:
         return ("builtin", 0)
     if "/.gemini/config/plugins/" in norm_path:
         return ("plugin", 0)
-    if "/.gemini/config/skills/" in norm_path or "/.agents/skills/" in norm_path:
+    if (
+        "/.gemini/config/skills/" in norm_path
+        or norm_path.startswith(f"{home_norm}/.agents/skills/")
+        or norm_path.startswith("/.agents/skills/")
+        or re.match(r"^/(?:Users|home)/[^/]+/\.agents/skills/", norm_path)
+    ):
         return ("global", 0)
-    if "/.agents/skills/" in norm_path:
+    if "/.agents/skills/" in norm_path or norm_path.startswith(".agents/skills/"):
         return ("workspace", 0)
-    if "/projects/kungfu/skills/kungfu/SKILL.md" in norm_path:
-        return ("repo_authoring", 1)
     return ("repo_authoring", 1)
+
+
+def _match_known_skill_resource(norm_path: str, known_skills: Set[str]) -> Optional[Tuple[str, str, str]]:
+    """Locate `<skill>/<resource_dir>/<rel_path>` even when ancestor folders share resource names."""
+    parts = norm_path.split("/")
+    resource_dirs = {"references", "examples", "assets", "scripts", "evals", "resources"}
+    for i in range(1, len(parts) - 1):
+        if parts[i] in resource_dirs and parts[i - 1] in known_skills:
+            rel_path = "/".join(parts[i + 1 :])
+            if rel_path:
+                return (parts[i - 1], parts[i], rel_path)
+    m_res = SKILL_RESOURCE_PATH_RE.search(norm_path)
+    if m_res and m_res.group(1) in known_skills:
+        return (m_res.group(1), m_res.group(2), m_res.group(3))
+    return None
 
 
 def extract_planner_invocations(
@@ -1312,13 +1414,22 @@ def extract_planner_invocations(
 ) -> List[Dict[str, Any]]:
     """
     Extract all skill events from PLANNER_RESPONSE tool_calls:
-    1. `direct_skill_view` (`view_file` on any `*/<skill>/SKILL.md`)
-    2. `skill_resource_view` (`view_file` on any `*/<skill>/(references|scripts|assets|examples)/*`)
+    1. `direct_skill_view` (`read_file`, `view_file` on any `*/<skill>/SKILL.md`)
+    2. `skill_resource_view` (`read_file`, `view_file` on any `*/<skill>/(references|scripts|assets|examples|evals|resources)/*`)
     3. `cli_invocation` (`kungfu <subcmd>` or direct execution of `*/<skill>/scripts/*`)
     """
     events: List[Dict[str, Any]] = []
     if not isinstance(tool_calls, list):
         return events
+
+    file_tools = {
+        "read_file",
+        "default_api:read_file",
+        "view_file",
+        "default_api:view_file",
+        "view_file_outline",
+        "default_api:view_file_outline",
+    }
 
     for tc in tool_calls:
         if not isinstance(tc, dict):
@@ -1334,9 +1445,20 @@ def extract_planner_invocations(
             continue
 
         # 1. File views (`SKILL.md` or companion resource)
-        if name in {"view_file", "default_api:view_file", "view_file_outline", "default_api:view_file_outline"}:
-            abs_path = unwrap_json_string(args.get("AbsolutePath") or args.get("FilePath") or "")
+        if name in file_tools:
+            abs_path = unwrap_json_string(
+                args.get("Path") or args.get("AbsolutePath") or args.get("FilePath") or args.get("path") or ""
+            )
             norm_path = abs_path.replace("\\", "/")
+            file_subcmd = "read_file" if "read_file" in name else "view_file"
+            start_line = args.get("StartLine")
+            byte_offset = args.get("ByteOffset")
+            page_num = (
+                2
+                if (isinstance(start_line, int) and start_line > 1)
+                or (isinstance(byte_offset, int) and byte_offset > 0)
+                else 1
+            )
 
             m_skill = SKILL_MD_PATH_RE.search(norm_path)
             if m_skill:
@@ -1356,11 +1478,11 @@ def extract_planner_invocations(
                             "step_type": step_type,
                             "invocation_kind": "direct_skill_view",
                             "notation_type": None,
-                            "subcommand": "view_file",
+                            "subcommand": file_subcmd,
                             "target_skill": skill_name,
                             "raw_args": norm_path,
                             "subpath_or_script": "SKILL.md",
-                            "page_number": 1,
+                            "page_number": page_num,
                             "trigger_mode": trigger_mode,
                             "source_tier": source_tier,
                             "raw_snippet": f"{name}({norm_path})",
@@ -1369,30 +1491,29 @@ def extract_planner_invocations(
                     )
                 continue
 
-            m_res = SKILL_RESOURCE_PATH_RE.search(norm_path)
-            if m_res:
-                skill_name, res_folder, res_rel = m_res.group(1), m_res.group(2), m_res.group(3)
+            res_match = _match_known_skill_resource(norm_path, known_skills)
+            if res_match:
+                skill_name, res_folder, res_rel = res_match
                 source_tier, is_self_test = classify_skill_path_tier(norm_path)
-                if skill_name in known_skills:
-                    events.append(
-                        {
-                            "conversation_id": conv_id,
-                            "step_index": step_index,
-                            "step_created_at": step_created_at,
-                            "step_type": step_type,
-                            "invocation_kind": "skill_resource_view",
-                            "notation_type": None,
-                            "subcommand": f"view_{res_folder}",
-                            "target_skill": skill_name,
-                            "raw_args": norm_path,
-                            "subpath_or_script": f"{res_folder}/{res_rel}",
-                            "page_number": 1,
-                            "trigger_mode": "autonomous",
-                            "source_tier": source_tier,
-                            "raw_snippet": f"{name}({norm_path})",
-                            "is_self_test": is_self_test,
-                        }
-                    )
+                events.append(
+                    {
+                        "conversation_id": conv_id,
+                        "step_index": step_index,
+                        "step_created_at": step_created_at,
+                        "step_type": step_type,
+                        "invocation_kind": "skill_resource_view",
+                        "notation_type": None,
+                        "subcommand": f"view_{res_folder}",
+                        "target_skill": skill_name,
+                        "raw_args": norm_path,
+                        "subpath_or_script": f"{res_folder}/{res_rel}",
+                        "page_number": page_num,
+                        "trigger_mode": "autonomous",
+                        "source_tier": source_tier,
+                        "raw_snippet": f"{name}({norm_path})",
+                        "is_self_test": is_self_test,
+                    }
+                )
 
         # 2. CLI command executions (`kungfu ...` or direct skill script execution)
         if name in {"run_command", "default_api:run_command"}:

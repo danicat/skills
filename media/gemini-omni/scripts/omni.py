@@ -13,9 +13,9 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.12"
 # dependencies = [
-#     "google-genai>=1.68.0",
+#     "google-genai>=3.3.0",
 #     "google-auth>=2.0.0",
 # ]
 # ///
@@ -28,13 +28,11 @@ import shutil
 import subprocess
 import sys
 import time
+from typing import Any
+from urllib.parse import urlsplit
 import warnings
 
-warnings.filterwarnings("ignore", category=SyntaxWarning, module="google.genai")
-
-import google.auth
-from google import genai
-from google.genai.errors import APIError
+warnings.filterwarnings("ignore", category=SyntaxWarning, module=r"google\.genai.*")
 
 DEFAULT_MODEL = "gemini-omni-1.2-flash"
 DEFAULT_LOCATION = "global"
@@ -48,25 +46,27 @@ MODEL_MAP = {
     "gemini-omni-flash-1.2": "gemini-omni-1.2-flash",
     "gemini-omni-flash-1.2-preview": "gemini-omni-1.2-flash",
     "omni-flash-1.2": "gemini-omni-1.2-flash",
-    "gemini-omni-1.1-flash": "gemini-omni-1.1-flash",
-    "gemini-omni-1.1": "gemini-omni-1.1-flash",
-    "omni-1.1-flash": "gemini-omni-1.1-flash",
-    "omni-1.1": "gemini-omni-1.1-flash",
-    "flash-1.1": "gemini-omni-1.1-flash",
-    "1.1": "gemini-omni-1.1-flash",
-    "gemini-omni-1.1-flash-preview": "gemini-omni-1.1-flash-preview",
-    "gemini-omni-flash-1.1-preview": "gemini-omni-1.1-flash-preview",
 }
 
 DEPRECATED_MODELS = {
     "gemini-omni-flash-preview",
 }
 
+DEPRECATED_1_1_MODELS = {
+    "gemini-omni-1.1-flash",
+    "gemini-omni-1.1",
+    "omni-1.1-flash",
+    "omni-1.1",
+    "flash-1.1",
+    "1.1",
+    "gemini-omni-1.1-flash-preview",
+    "gemini-omni-flash-1.1-preview",
+}
+
 VALID_RESOLUTIONS = ["360p", "720p", "1080p", "4k"]
 VALID_UPSCALE_RESOLUTIONS = ["720p", "1080p", "4k"]
 VALID_ASPECT_RATIOS = ["16:9", "9:16"]
 VALID_DURATIONS_1_2 = [f"{s}s" for s in range(3, 16)]
-VALID_DURATIONS_1_1 = [f"{s}s" for s in range(3, 11)]
 VALID_TASKS = [
     "text_to_video",
     "image_to_video",
@@ -85,13 +85,35 @@ DEPRECATED_CONTROL_TAGS = (
     "[# References",
 )
 
+IMAGE_MIME_TYPES = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+}
+
+VIDEO_MIME_TYPES = {
+    ".mp4": "video/mp4",
+    ".mov": "video/quicktime",
+    ".webm": "video/webm",
+    ".mpeg": "video/mpeg",
+    ".mpegs": "video/mpegs",
+    ".mpg": "video/mpg",
+    ".wmv": "video/wmv",
+    ".3gp": "video/3gpp",
+    ".3gpp": "video/3gpp",
+    ".flv": "video/x-flv",
+}
+
 AUTH_HELP_MESSAGE = (
-    "Authenticate using Vertex AI / Gemini Enterprise (Application Default Credentials):\n"
+    "Authenticate using Gemini Enterprise / Vertex AI (Application Default Credentials):\n"
     "  gcloud auth application-default login --billing-project YOUR_PROJECT_ID\n"
     "  export GOOGLE_CLOUD_PROJECT=\"YOUR_PROJECT_ID\"\n"
     "  export GOOGLE_CLOUD_LOCATION=\"global\"\n"
-    "  export GOOGLE_GENAI_USE_VERTEXAI=\"true\"\n"
-    "  (or pass --vertexai --project \"YOUR_PROJECT_ID\" --location \"global\")\n\n"
+    "  export GOOGLE_GENAI_USE_ENTERPRISE=\"true\"\n"
+    "  (or pass --enterprise --project \"YOUR_PROJECT_ID\" --location \"global\")\n\n"
     "Or authenticate with a Gemini Developer API key:\n"
     "  export GEMINI_API_KEY=\"your-api-key\"\n\n"
     "AGENT INSTRUCTION: Fail fast with zero fallbacks. Do NOT attempt rogue workarounds, "
@@ -107,8 +129,13 @@ def resolve_model(model_name: str | None) -> str:
     key = model_name.strip()
     if key in DEPRECATED_MODELS:
         raise ValueError(
-            f"Model '{key}' was shut down on October 22, 2026. "
-            f"Use '{DEFAULT_MODEL}' (or 'gemini-omni-1.1-flash')."
+            f"Model '{key}' was shut down on October 22, 2026 "
+            "(deprecated on Agent Platform November 6, 2026). "
+            f"Use '{DEFAULT_MODEL}'."
+        )
+    if key in DEPRECATED_1_1_MODELS:
+        raise ValueError(
+            f"Model '{key}' is deprecated. Migrate to '{DEFAULT_MODEL}'."
         )
     if key not in MODEL_MAP:
         supported = ", ".join(sorted(MODEL_MAP.keys()))
@@ -136,30 +163,37 @@ def check_deprecated_control_tags(prompt: str | None) -> list[str]:
 
 
 def detect_mime_type(path: str) -> str:
-    """Detect media MIME type from file extension or URI."""
-    lower = path.lower()
-    if lower.endswith((".jpg", ".jpeg")):
-        return "image/jpeg"
-    if lower.endswith(".png"):
-        return "image/png"
-    if lower.endswith(".webp"):
-        return "image/webp"
-    if lower.endswith(".mp4") or "youtube.com" in lower or "youtu.be" in lower:
+    """Detect media MIME type from file extension or URI, failing fast on unsupported formats."""
+    cleaned = path.strip()
+    lower = cleaned.lower()
+    if "youtube.com" in lower or "youtu.be" in lower:
         return "video/mp4"
-    if lower.endswith(".webm"):
-        return "video/webm"
-    if lower.endswith(".mov"):
-        return "video/mov"
-    return "application/octet-stream"
+
+    path_part = urlsplit(lower).path if "://" in lower else lower
+    _, ext = os.path.splitext(path_part)
+    if ext in IMAGE_MIME_TYPES:
+        return IMAGE_MIME_TYPES[ext]
+    if ext in VIDEO_MIME_TYPES:
+        return VIDEO_MIME_TYPES[ext]
+
+    if cleaned.startswith(("files/", "http://", "https://", "gs://")) and ext == "":
+        return "application/octet-stream"
+
+    supported = ", ".join(sorted([*IMAGE_MIME_TYPES.keys(), *VIDEO_MIME_TYPES.keys()]))
+    raise ValueError(
+        f"Unsupported input media format '{ext or '(none)'}' for '{path}'. Supported extensions: {supported}."
+    )
 
 
-def classify_input_media(inputs: list[str]) -> tuple[list[str], list[str]]:
+def classify_input_media(inputs: list[str], task: str | None = None) -> tuple[list[str], list[str]]:
     """Classify input paths/URIs into (images, videos)."""
     images: list[str] = []
     videos: list[str] = []
     for item in inputs:
         mime = detect_mime_type(item)
-        if mime.startswith("video/"):
+        if mime.startswith("video/") or (
+            mime == "application/octet-stream" and task in ("upscale", "edit", "extend")
+        ):
             videos.append(item)
         else:
             images.append(item)
@@ -167,23 +201,16 @@ def classify_input_media(inputs: list[str]) -> tuple[list[str], list[str]]:
 
 
 def validate_video_request(args, model_id: str) -> None:
-    """Validate CLI arguments against Gemini Omni 1.2 Flash and 1.1 Flash constraints."""
+    """Validate CLI arguments against Gemini Omni 1.2 Flash constraints."""
     seconds = parse_duration_seconds(args.duration)
 
-    if model_id in ("gemini-omni-1.1-flash", "gemini-omni-1.1-flash-preview"):
-        if seconds < 3 or seconds > 10:
-            raise ValueError(
-                f"Duration '{args.duration}' is not supported by '{model_id}'. "
-                "Gemini Omni 1.1 Flash supports '3s' to '10s'. Use 'gemini-omni-1.2-flash' for '11s' to '15s' videos."
-            )
-    else:
-        if seconds < 3 or seconds > 15:
-            raise ValueError(
-                f"Duration '{args.duration}' is out of range for '{model_id}'. "
-                "Supported durations are '3s' to '15s' (whole seconds)."
-            )
+    if seconds < 3 or seconds > 15:
+        raise ValueError(
+            f"Duration '{args.duration}' is out of range for '{model_id}'. "
+            "Supported durations are '3s' to '15s' (whole seconds)."
+        )
 
-    images, videos = classify_input_media(args.input or [])
+    images, videos = classify_input_media(args.input or [], getattr(args, "task", None))
 
     if len(images) > 10:
         raise ValueError(
@@ -262,16 +289,22 @@ def build_interaction_kwargs(args, model_id: str) -> dict:
     if args.input:
         input_payload: list[dict] | str = []
         for media_path in args.input:
-            if media_path.startswith(("files/", "http://", "https://", "gs://")):
-                mime = detect_mime_type(media_path)
+            mime = detect_mime_type(media_path)
+            if mime == "application/octet-stream":
+                media_type = (
+                    "video"
+                    if getattr(args, "task", None) in ("upscale", "edit", "extend")
+                    else "image"
+                )
+            else:
                 media_type = "video" if mime.startswith("video/") else "image"
+
+            if media_path.startswith(("files/", "http://", "https://", "gs://")):
                 entry: dict = {"type": media_type, "uri": media_path}
                 if media_path.startswith("gs://") and mime != "application/octet-stream":
                     entry["mime_type"] = mime
                 input_payload.append(entry)
             else:
-                mime = detect_mime_type(media_path)
-                media_type = "video" if mime.startswith("video/") else "image"
                 with open(media_path, "rb") as f:
                     b64_data = base64.b64encode(f.read()).decode("utf-8")
                 input_payload.append(
@@ -308,9 +341,17 @@ def build_interaction_kwargs(args, model_id: str) -> dict:
     return kwargs
 
 
-def init_client(args) -> genai.Client:
-    """Initialize Google GenAI Client with Vertex AI ADC or Gemini API Key (fail-fast, zero fallbacks)."""
+def init_client(args) -> Any:
+    """Initialize Google GenAI Client with Gemini Enterprise / Vertex AI ADC or Gemini API Key."""
+    import google.auth
+    from google import genai
+
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    env_enterprise = os.environ.get("GOOGLE_GENAI_USE_ENTERPRISE", "").strip().lower() in (
+        "true",
+        "1",
+        "yes",
+    )
     env_vertex = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").strip().lower() in (
         "true",
         "1",
@@ -318,19 +359,22 @@ def init_client(args) -> genai.Client:
     )
     env_project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT")
 
-    use_vertex = bool(
-        getattr(args, "vertexai", False)
+    use_enterprise = bool(
+        getattr(args, "enterprise", False)
+        or getattr(args, "vertexai", False)
         or getattr(args, "project", None) is not None
+        or getattr(args, "location", None) is not None
+        or env_enterprise
         or env_vertex
         or (env_project and not api_key)
     )
 
-    if use_vertex:
+    if use_enterprise:
         try:
             credentials, default_project = google.auth.default()
         except Exception as e:
             print(
-                f"Error: Failed to load Google Cloud Application Default Credentials for Vertex AI: {e}\n\n"
+                f"Error: Failed to load Google Cloud Application Default Credentials for Gemini Enterprise / Vertex AI: {e}\n\n"
                 f"{AUTH_HELP_MESSAGE}",
                 file=sys.stderr,
             )
@@ -351,8 +395,9 @@ def init_client(args) -> genai.Client:
 
         if not project:
             print(
-                "Error: Vertex AI requested (--vertexai, --project, or GOOGLE_GENAI_USE_VERTEXAI=true), "
-                "but no GCP Project ID was found. Pass --project <PROJECT_ID>, set GOOGLE_CLOUD_PROJECT, "
+                "Error: Gemini Enterprise / Vertex AI requested (--enterprise, --vertexai, --project, "
+                "or GOOGLE_GENAI_USE_ENTERPRISE=true), but no GCP Project ID was found. "
+                "Pass --project <PROJECT_ID>, set GOOGLE_CLOUD_PROJECT, "
                 "or run 'gcloud auth application-default login --billing-project <PROJECT_ID>'.\n\n"
                 f"{AUTH_HELP_MESSAGE}",
                 file=sys.stderr,
@@ -360,7 +405,7 @@ def init_client(args) -> genai.Client:
             sys.exit(1)
 
         return genai.Client(
-            vertexai=True,
+            enterprise=True,
             project=project,
             location=location,
             credentials=credentials,
@@ -368,8 +413,8 @@ def init_client(args) -> genai.Client:
 
     if not api_key:
         print(
-            "Error: Missing credentials. Neither Vertex AI (GOOGLE_CLOUD_PROJECT / --vertexai / ADC) "
-            "nor GEMINI_API_KEY is configured.\n\n"
+            "Error: Missing credentials. Neither Gemini Enterprise / Vertex AI "
+            "(GOOGLE_CLOUD_PROJECT / --enterprise / ADC) nor GEMINI_API_KEY is configured.\n\n"
             f"{AUTH_HELP_MESSAGE}",
             file=sys.stderr,
         )
@@ -378,7 +423,7 @@ def init_client(args) -> genai.Client:
     return genai.Client(api_key=api_key)
 
 
-def extract_video_from_interaction(client: genai.Client, interaction) -> tuple[bytes | None, str | None]:
+def extract_video_from_interaction(client: Any, interaction) -> tuple[bytes | None, str | None]:
     """Extract video bytes or a Cloud Storage URI from an Interaction response."""
     output_video = getattr(interaction, "output_video", None)
     if output_video:
@@ -458,7 +503,7 @@ def extract_audio_track_to_wav(video_path: str, wav_path: str, sample_rate: int 
         raise RuntimeError(f"ffmpeg audio extraction failed: {res.stderr.strip()}")
 
 
-def run_video(client: genai.Client, args, model_id: str, output_path: str) -> None:
+def run_video(client: Any, args, model_id: str, output_path: str) -> None:
     """Execute video generation, editing, extension, or upscaling via the Interactions API."""
     kwargs = build_interaction_kwargs(args, model_id)
     interaction = client.interactions.create(**kwargs)
@@ -502,7 +547,8 @@ def build_parser() -> argparse.ArgumentParser:
             "Gemini Omni CLI (scripts/omni.py): Generate, edit, interpolate, extend, and upscale "
             "videos with native synchronized audio using Gemini Omni 1.2 Flash (gemini-omni-1.2-flash) "
             "via the Interactions API."
-        )
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
         "prompt_pos",
@@ -538,8 +584,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_MODEL,
         help=(
             f"Model ID or alias (default: {DEFAULT_MODEL}). "
-            "Supported aliases: gemini-omni-1.2-flash, omni-1.2-flash, omni-1.2, 1.2, flash-1.2, "
-            "gemini-omni-1.1-flash, omni-1.1-flash, 1.1."
+            "Supported aliases: gemini-omni-1.2-flash, omni-1.2-flash, omni-1.2, 1.2, flash-1.2."
         ),
     )
     parser.add_argument(
@@ -548,9 +593,10 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         help=(
-            "Input image (.png, .jpg, .webp) or video (.mp4, .mov, .webm) path, Files API URI (files/...), "
-            "or Cloud Storage URI (gs://...) for frame animation, interpolation, reference generation, "
-            "editing, extension, or upscaling (repeatable)."
+            "Input image (.jpg, .jpeg, .png, .webp, .heic, .heif) or video (.mp4, .mov [video/quicktime], "
+            ".webm, .mpeg, .mpg, .wmv, .3gp, .flv) path, Files API URI (files/...), or Cloud Storage URI "
+            "(gs://...) for frame animation, interpolation, reference generation, editing, extension, or "
+            "upscaling (repeatable)."
         ),
     )
     parser.add_argument(
@@ -630,19 +676,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional output WAV path to extract the generated video's synchronized audio as 44.1 kHz 16-bit stereo PCM via ffmpeg",
     )
     parser.add_argument(
+        "--enterprise",
+        action="store_true",
+        help="Use Gemini Enterprise / Vertex AI with Application Default Credentials (ADC)",
+    )
+    parser.add_argument(
         "--vertexai",
         action="store_true",
-        help="Use Vertex AI / Gemini Enterprise with Application Default Credentials (ADC)",
+        help="Alias for --enterprise (Vertex AI Application Default Credentials)",
     )
     parser.add_argument(
         "--project",
         default=None,
-        help="GCP Project ID for Vertex AI (defaults to GOOGLE_CLOUD_PROJECT or ADC billing project)",
+        help="GCP Project ID for Gemini Enterprise / Vertex AI (defaults to GOOGLE_CLOUD_PROJECT or ADC billing project)",
     )
     parser.add_argument(
         "--location",
         default=None,
-        help=f"GCP Location for Vertex AI (defaults to GOOGLE_CLOUD_LOCATION or '{DEFAULT_LOCATION}')",
+        help=f"GCP Location for Gemini Enterprise / Vertex AI (defaults to GOOGLE_CLOUD_LOCATION or '{DEFAULT_LOCATION}')",
     )
     parser.add_argument(
         "--dry-run",
@@ -726,6 +777,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     client = init_client(args)
+    from google.genai.errors import APIError
 
     try:
         run_video(client, args, model_id, output_path)

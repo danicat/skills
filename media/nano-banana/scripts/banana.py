@@ -13,9 +13,9 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.12"
 # dependencies = [
-#     "google-genai>=2.3.0",
+#     "google-genai>=3.3.0",
 #     "pillow>=10.0.0",
 #     "google-auth>=2.0.0",
 # ]
@@ -27,13 +27,7 @@ import os
 import sys
 import warnings
 
-warnings.filterwarnings("ignore", category=SyntaxWarning, module="google.genai")
-
-from PIL import Image
-import google.auth
-from google import genai
-from google.genai import types
-from google.genai.errors import APIError
+warnings.filterwarnings("ignore", category=SyntaxWarning, module=r"google\.genai.*")
 
 MODEL_MAP = {
     "nano-banana-2.1": "gemini-nano-banana-2.1",
@@ -50,18 +44,28 @@ MODEL_MAP = {
 
 VALID_ASPECT_RATIOS = [
     "1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3",
-    "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"
+    "4:5", "5:4", "8:1", "9:16", "16:9", "21:9",
 ]
 
 EXTENDED_ASPECT_RATIOS = {"1:4", "4:1", "1:8", "8:1"}
 
+IMAGE_MIME_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+}
+
 AUTH_REMEDIATION_MESSAGE = (
     "Authentication guidance:\n"
-    "  Option 1 - Vertex AI / Gemini Enterprise (Application Default Credentials):\n"
+    "  Option 1: Vertex AI / Gemini Enterprise (Application Default Credentials):\n"
     "    gcloud auth application-default login\n"
     "    export GOOGLE_CLOUD_PROJECT=\"your-gcp-project-id\"\n"
-    "    export GOOGLE_CLOUD_LOCATION=\"us-central1\"\n"
-    "  Option 2 - Gemini Developer API (API Key):\n"
+    "    export GOOGLE_CLOUD_LOCATION=\"global\"\n"
+    "    export GOOGLE_GENAI_USE_ENTERPRISE=\"true\"\n"
+    "  Option 2: Gemini Developer API (API Key):\n"
     "    export GEMINI_API_KEY=\"your-api-key\"\n"
     "CRITICAL FOR AGENTS: Fail fast. Do NOT attempt unauthorized workarounds, fallback image generators, "
     "or procedural placeholder files. Stop immediately, report this exact authentication error to the user, "
@@ -69,183 +73,279 @@ AUTH_REMEDIATION_MESSAGE = (
 )
 
 
-def validate_capabilities(args, model_id):
+def resolve_model(model_arg: str) -> str:
+    """Resolve CLI model alias to canonical model ID and reject retired or shut-down models."""
+    normalized = model_arg.strip()
+    if normalized.startswith("imagen-"):
+        print(
+            f"Error: Imagen models ('{normalized}') shut down on August 17, 2026. "
+            "Migrate to 'nano-banana-2.1' (gemini-nano-banana-2.1) or 'nano-banana-pro' (gemini-3-pro-image).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if normalized in ("nano-banana", "gemini-2.5-flash-image") or normalized.endswith("-preview"):
+        print(
+            f"Error: Legacy or retired model '{normalized}' is not supported. "
+            "Migrate to 'nano-banana-2.1' (gemini-nano-banana-2.1) or 'nano-banana-2-lite' (gemini-3.1-flash-lite-image).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if normalized not in MODEL_MAP:
+        print(
+            f"Error: Unsupported model '{normalized}'. Valid choices: {', '.join(MODEL_MAP.keys())}.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    return MODEL_MAP[normalized]
+
+
+def detect_mime_type(img_path: str) -> str:
+    """Map supported input image file extensions to MIME types, failing fast otherwise."""
+    _, ext = os.path.splitext(img_path.lower())
+    if ext not in IMAGE_MIME_TYPES:
+        supported = ", ".join(sorted(IMAGE_MIME_TYPES.keys()))
+        raise ValueError(f"Unsupported input image format '{ext or '(none)'}' for '{img_path}'. Supported: {supported}.")
+    return IMAGE_MIME_TYPES[ext]
+
+
+def save_output_image(filename: str, img_bytes: bytes) -> None:
+    """Write image bytes to disk after ensuring parent directories exist."""
+    out_dir = os.path.dirname(os.path.abspath(filename))
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    with open(filename, "wb") as f:
+        f.write(img_bytes)
+
+
+def normalize_image_size(resolution: str) -> str:
+    """Normalize shorthand '512' resolution flag to '512px' for API payloads."""
+    return "512px" if resolution == "512" else resolution
+
+
+def validate_capabilities(args, model_id: str) -> None:
     """Validate requested CLI arguments against model capability constraints."""
-    # Input images limit
     if len(args.input_image) > 14:
         print("Error: Maximum of 14 input/reference images allowed.", file=sys.stderr)
         sys.exit(1)
 
-    # Resolution validation
-    if args.resolution in ["2K", "4K"]:
-        if model_id == "gemini-3.1-flash-lite-image":
-            print(
-                f"Error: Resolution '{args.resolution}' is not supported by {args.model}. "
-                "2K and 4K output requires 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro'.",
-                file=sys.stderr
-            )
-            sys.exit(1)
-
-    if args.resolution in ["512px", "512"] and model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image"]:
+    if args.resolution in ("2K", "4K") and model_id == "gemini-3.1-flash-lite-image":
         print(
-            f"Error: Resolution '{args.resolution}' is only supported by 'nano-banana-2.1' (gemini-nano-banana-2.1) "
-            "and 'nano-banana-2' (gemini-3.1-flash-image).",
-            file=sys.stderr
+            f"Error: Resolution '{args.resolution}' is not supported by {args.model}. "
+            "2K and 4K output requires 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro'.",
+            file=sys.stderr,
         )
         sys.exit(1)
 
-    # Aspect ratio validation
-    if args.aspect_ratio in EXTENDED_ASPECT_RATIOS:
-        if model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image", "gemini-3.1-flash-lite-image"]:
-            print(
-                f"Error: Aspect ratio '{args.aspect_ratio}' is only supported by "
-                "'nano-banana-2.1', 'nano-banana-2', and 'nano-banana-2-lite'.",
-                file=sys.stderr
-            )
-            sys.exit(1)
+    if args.resolution in ("512px", "512") and model_id != "gemini-3.1-flash-image":
+        print(
+            f"Error: Resolution '{args.resolution}' is only supported by 'nano-banana-2' (gemini-3.1-flash-image), "
+            f"not '{args.model}' ({model_id}). Use '1K', '2K', or '4K'.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    # Search Grounding validation
-    if args.search or args.image_search:
-        if model_id == "gemini-3.1-flash-lite-image":
-            print(
-                f"Error: Search grounding is not supported by {args.model}. "
-                "Use 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro' for Google Search grounding.",
-                file=sys.stderr
-            )
-            sys.exit(1)
+    if args.aspect_ratio in EXTENDED_ASPECT_RATIOS and model_id == "gemini-3-pro-image":
+        print(
+            f"Error: Aspect ratio '{args.aspect_ratio}' is only supported by "
+            "'nano-banana-2.1', 'nano-banana-2', and 'nano-banana-2-lite'.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    if args.image_search and model_id not in ["gemini-nano-banana-2.1", "gemini-3.1-flash-image"]:
+    if (args.search or args.image_search) and model_id == "gemini-3.1-flash-lite-image":
+        print(
+            f"Error: Search grounding is not supported by {args.model}. "
+            "Use 'nano-banana-2.1', 'nano-banana-2', or 'nano-banana-pro' for Google Search grounding.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if args.image_search and model_id not in ("gemini-nano-banana-2.1", "gemini-3.1-flash-image"):
         print(
             "Error: Google Image Search Grounding (--image-search) is only supported by "
             "'nano-banana-2.1' and 'nano-banana-2'.",
-            file=sys.stderr
+            file=sys.stderr,
         )
         sys.exit(1)
 
-    # Thinking level validation
     if args.thinking_level == "medium" and model_id != "gemini-nano-banana-2.1":
         print(
             f"Error: Thinking level 'medium' is only supported by 'nano-banana-2.1' (gemini-nano-banana-2.1), "
             f"not {args.model}.",
-            file=sys.stderr
+            file=sys.stderr,
         )
         sys.exit(1)
 
 
+def build_models_config(args, image_size: str):
+    """Build GenerateContentConfig for Models API requests."""
+    from google.genai import types
+
+    config_kwargs: dict = {
+        "response_modalities": ["TEXT", "IMAGE"],
+        "image_config": types.ImageConfig(
+            aspect_ratio=args.aspect_ratio,
+            image_size=image_size,
+        ),
+    }
+
+    if args.thinking_level:
+        config_kwargs["thinking_config"] = types.ThinkingConfig(thinking_level=args.thinking_level)
+
+    if args.image_search:
+        config_kwargs["tools"] = [
+            types.Tool(
+                google_search=types.GoogleSearch(
+                    search_types=types.SearchTypes(
+                        web_search=types.WebSearch(),
+                        image_search=types.ImageSearch(),
+                    )
+                )
+            )
+        ]
+    elif args.search:
+        config_kwargs["tools"] = [types.Tool(google_search=types.GoogleSearch())]
+
+    return types.GenerateContentConfig(**config_kwargs)
+
+
 def init_client(args):
-    """Initialize Google GenAI Client with Vertex AI ADC or Gemini API Key (fail-fast, zero fallbacks)."""
+    """Initialize Google Gen AI client with Enterprise/Vertex AI ADC or Gemini API Key."""
+    import google.auth
+    from google import genai
+
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    use_vertex = (
+    env_enterprise = os.environ.get("GOOGLE_GENAI_USE_ENTERPRISE", "").strip().lower() in ("true", "1", "yes")
+    env_vertex = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").strip().lower() in ("true", "1", "yes")
+    env_project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT")
+
+    use_enterprise = (
         args.vertexai
+        or args.enterprise
         or args.project is not None
         or args.location is not None
-        or os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() in ("true", "1", "yes")
-        or (not api_key and bool(os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT")))
+        or env_enterprise
+        or env_vertex
+        or (not api_key and bool(env_project))
     )
 
-    if use_vertex:
+    if use_enterprise:
         try:
             credentials, default_project = google.auth.default()
         except Exception as e:
             print(
-                f"Error: Failed to load Google Cloud Application Default Credentials for Vertex AI: {e}\n"
+                f"Error: Failed to load Google Cloud Application Default Credentials for Vertex AI / Gemini Enterprise: {e}\n"
                 f"{AUTH_REMEDIATION_MESSAGE}",
                 file=sys.stderr,
             )
             sys.exit(1)
 
-        project = (
-            args.project
-            or os.environ.get("GOOGLE_CLOUD_PROJECT")
-            or os.environ.get("GCP_PROJECT")
-            or default_project
-        )
-        location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
+        project = args.project or env_project or default_project
+        location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION") or "global"
 
         if not project:
             print(
-                "Error: Vertex AI requested or inferred, but no GCP Project ID was found.\n"
+                "Error: Vertex AI / Gemini Enterprise requested or inferred, but no GCP Project ID was found.\n"
                 f"{AUTH_REMEDIATION_MESSAGE}",
-                file=sys.stderr
+                file=sys.stderr,
             )
             sys.exit(1)
 
-        return genai.Client(vertexai=True, project=project, location=location, credentials=credentials)
+        return genai.Client(enterprise=True, project=project, location=location, credentials=credentials)
 
     if not api_key:
         print(
-            "Error: GEMINI_API_KEY environment variable is not set and Vertex AI is not configured.\n"
+            "Error: GEMINI_API_KEY environment variable is not set and Vertex AI / Gemini Enterprise is not configured.\n"
             f"{AUTH_REMEDIATION_MESSAGE}",
-            file=sys.stderr
+            file=sys.stderr,
         )
         sys.exit(1)
 
     return genai.Client(api_key=api_key)
 
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate, edit, and transform images using Google Nano Banana foundation models."
+        description="Generate, edit, and transform images using Google Nano Banana foundation models.",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("-p", "--prompt", required=True, help="Text prompt describing the image to generate or edit")
-    parser.add_argument("-f", "--filename", required=True, help="Output image filename (e.g. output.png)")
+    parser.add_argument("-f", "--filename", required=True, help="Output image filename (such as output.png)")
     parser.add_argument("-i", "--input-image", action="append", default=[], help="Path to input/reference image(s) (up to 14)")
     parser.add_argument(
-        "-m", "--model",
-        choices=list(MODEL_MAP.keys()),
+        "-m",
+        "--model",
         default="nano-banana-2.1",
-        help="Model selection (default: nano-banana-2.1)"
+        help=(
+            "Model selection (default: nano-banana-2.1, alias nano-banana-2-1):\n"
+            "  nano-banana-2.1, nano-banana-2-lite, nano-banana-2, nano-banana-pro"
+        ),
     )
     parser.add_argument(
-        "-r", "--resolution",
+        "-r",
+        "--resolution",
         choices=["512px", "512", "1K", "2K", "4K"],
         default="1K",
-        help="Output resolution (default: 1K)"
+        help="Output resolution (default: 1K; 512px is only supported on nano-banana-2)",
     )
     parser.add_argument(
-        "-a", "--aspect-ratio",
+        "-a",
+        "--aspect-ratio",
         choices=VALID_ASPECT_RATIOS,
         default="1:1",
-        help="Output aspect ratio (default: 1:1)"
+        help="Output aspect ratio (default: 1:1)",
     )
     parser.add_argument(
         "--thinking-level",
         choices=["minimal", "medium", "high"],
-        help="Thinking process level: minimal, medium (Nano Banana 2.1 only), or high"
+        help="Thinking process level: minimal, medium (Nano Banana 2.1 only, default), or high",
     )
     parser.add_argument(
         "--search",
         action="store_true",
-        help="Enable Google Search grounding (Banana 2.1, Banana 2, and Banana Pro)"
+        help="Enable Google Search grounding (Banana 2.1, Banana 2, and Banana Pro)",
     )
     parser.add_argument(
         "--image-search",
         action="store_true",
-        help="Enable Google Image Search grounding (Banana 2.1 and Banana 2)"
+        help="Enable Google Image Search grounding (Banana 2.1 and Banana 2)",
     )
     parser.add_argument(
         "--api",
         choices=["interactions", "models"],
         default="interactions",
-        help="Underlying API method: 'interactions' (Interactions API, default) or 'models' (generate_content)"
+        help="Underlying API method: 'interactions' (Interactions API, default) or 'models' (generate_content)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Validate model capabilities and configuration without calling the API"
+        help="Validate model capabilities and configuration without calling the API",
+    )
+    parser.add_argument(
+        "--enterprise",
+        action="store_true",
+        help="Force Gemini Enterprise / Vertex AI authentication via Application Default Credentials",
     )
     parser.add_argument(
         "--vertexai",
         action="store_true",
-        help="Force Vertex AI / Gemini Enterprise authentication via Application Default Credentials"
+        help="Alias for --enterprise (Vertex AI Application Default Credentials)",
     )
-    parser.add_argument("--project", help="GCP Project ID for Vertex AI")
-    parser.add_argument("--location", help="GCP Location for Vertex AI (default: GOOGLE_CLOUD_LOCATION or us-central1)")
+    parser.add_argument("--project", help="GCP Project ID for Vertex AI / Gemini Enterprise")
+    parser.add_argument("--location", help="GCP Location for Vertex AI / Gemini Enterprise (default: GOOGLE_CLOUD_LOCATION or global)")
+    return parser
 
+
+def main() -> None:
+    parser = build_parser()
     args = parser.parse_args()
-    model_id = MODEL_MAP[args.model]
+    model_id = resolve_model(args.model)
 
     validate_capabilities(args, model_id)
+    image_size = normalize_image_size(args.resolution)
 
     print(f"Model: {model_id} ({args.model})")
     print(f"Resolution: {args.resolution} | Aspect Ratio: {args.aspect_ratio}")
@@ -253,19 +353,23 @@ def main():
         print(f"Reference Images ({len(args.input_image)}): {args.input_image}")
     print(f"Output: {args.filename}")
 
+    models_config = build_models_config(args, image_size) if args.api == "models" else None
+
     if args.dry_run:
         print("Dry run validation succeeded.")
         return
 
     client = init_client(args)
 
+    from google.genai.errors import APIError
+    from PIL import Image
+
     try:
         if args.api == "interactions":
-            # Build Interactions API payload
             response_format = {
                 "type": "image",
                 "aspect_ratio": args.aspect_ratio,
-                "image_size": args.resolution,
+                "image_size": image_size,
             }
 
             tools = []
@@ -281,13 +385,7 @@ def main():
             if args.input_image:
                 input_payload = []
                 for img_path in args.input_image:
-                    mime = "image/png"
-                    lower_path = img_path.lower()
-                    if lower_path.endswith((".jpg", ".jpeg")):
-                        mime = "image/jpeg"
-                    elif lower_path.endswith(".webp"):
-                        mime = "image/webp"
-
+                    mime = detect_mime_type(img_path)
                     with open(img_path, "rb") as f:
                         b64_data = base64.b64encode(f.read()).decode("utf-8")
                     input_payload.append({"type": "image", "data": b64_data, "mime_type": mime})
@@ -312,7 +410,7 @@ def main():
                 img_bytes = base64.b64decode(interaction.output_image.data)
             else:
                 for step in getattr(interaction, "steps", []):
-                    if step.type == "model_output":
+                    if getattr(step, "type", "") == "model_output":
                         for block in getattr(step, "content", []):
                             if getattr(block, "type", "") == "image" and getattr(block, "data", None):
                                 img_bytes = base64.b64decode(block.data)
@@ -321,24 +419,28 @@ def main():
             if not img_bytes:
                 raise ValueError("No image returned from Interactions API response.")
 
-            with open(args.filename, "wb") as f:
-                f.write(img_bytes)
+            save_output_image(args.filename, img_bytes)
 
         else:
-            # Models API (generate_content)
             contents = []
             for img_path in args.input_image:
-                contents.append(Image.open(img_path))
+                detect_mime_type(img_path)
+                with Image.open(img_path) as img:
+                    img.load()
+                    contents.append(img.copy())
             contents.append(args.prompt)
 
             response = client.models.generate_content(
                 model=model_id,
-                contents=contents
+                contents=contents,
+                config=models_config,
             )
 
             img_bytes = None
             if response.candidates and response.candidates[0].content:
                 for part in response.candidates[0].content.parts:
+                    if getattr(part, "thought", False):
+                        continue
                     if part.inline_data and part.inline_data.data:
                         img_bytes = part.inline_data.data
                         break
@@ -346,8 +448,7 @@ def main():
             if not img_bytes:
                 raise ValueError("No image data found in generate_content response candidates.")
 
-            with open(args.filename, "wb") as f:
-                f.write(img_bytes)
+            save_output_image(args.filename, img_bytes)
 
         print(f"Success! Image saved to {args.filename}")
 

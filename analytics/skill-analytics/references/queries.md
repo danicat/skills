@@ -1,12 +1,12 @@
-# Skill Analytics SQL Query Cookbook
+# Skill analytics SQL query cookbook
 
-All SQL recipes below run directly against `skill_analytics.db` using `uv run scripts/analyze.py query "<SQL>"`. Use these queries for skill optimization and description refinement to prune shelfware skills, tune under-performing frontmatter descriptions, and discover catalog gaps.
+All SQL recipes below run directly against `skill_analytics.db` using `uv run scripts/analyze.py query "<SQL>"`. Use these queries for portfolio tuning, description refinement, and catalog gap discovery.
 
 ---
 
-## 1. Shelfware & Context-Tax Audit (Always-In-Prompt Skills with 0 Activations)
+## 1. Idle always-in-prompt skills audit (zero activations)
 
-Identifies built-in, plugin, and globally installed skills that consume system-prompt tokens on every turn (`is_always_in_prompt = 1`) but have never been activated or executed in production conversations.
+Identifies built-in, plugin, and globally installed skills that consume system-prompt tokens on every turn (`is_always_in_prompt = 1`) without production activations, showing both uncached exposure and Gemini 4 90% cache-adjusted token overhead (`cache_adjusted_tax_tokens`):
 
 ```sql
 SELECT
@@ -15,6 +15,7 @@ SELECT
     source_origin,
     tier1_tokens_est,
     cumulative_prompt_tax_tokens,
+    cache_adjusted_tax_tokens,
     roi_recommendation
 FROM v_skill_roi
 WHERE is_always_in_prompt = 1
@@ -25,9 +26,9 @@ ORDER BY tier1_tokens_est DESC, skill_name ASC;
 
 ---
 
-## 2. High-Demand JIT Skills to Promote to Global Scope
+## 2. High-demand JIT skills to promote to global scope
 
-Finds catalog skills frequently loaded on-demand via `kungfu load` (`PROMOTE_TO_GLOBAL`) that are not yet installed globally.
+Finds catalog skills loaded often on-demand (`PROMOTE_TO_GLOBAL`) that are not yet installed globally:
 
 ```sql
 SELECT
@@ -47,9 +48,9 @@ ORDER BY total_activations DESC, conversations_used DESC;
 
 ---
 
-## 3. Trigger Attribution Audit for Description Refinement (Manual Override vs. Autonomous Match)
+## 3. Trigger attribution audit (manual overrides vs. autonomous match)
 
-Pinpoints skills that users must manually invoke with `::skill`, `//skill`, or `/skill` because agents fail to match their frontmatter `description` autonomously (`NEEDS_DESCRIPTION_TUNING` or `WEAK_AUTONOMOUS_TRIGGER`).
+Pinpoints skills that users invoke manually (`::skill`, `//skill`, or `/skill`) because agents miss their frontmatter descriptions (`NEEDS_DESCRIPTION_TUNING` or `WEAK_AUTONOMOUS_TRIGGER`):
 
 ```sql
 SELECT
@@ -67,9 +68,9 @@ ORDER BY explicit_activations DESC, total_activations DESC;
 
 ---
 
-## 4. Progressive Disclosure Depth (Root Loads vs. Reference Reads & Script Runs)
+## 4. Progressive disclosure depth (root loads vs. reference and script use)
 
-Measures how deeply agents engage with each skill's Tier-3 companion `references/` and `scripts/` after loading the main `SKILL.md`.
+Measures how deeply agents engage with each skill's companion `references/` and `scripts/` after loading `SKILL.md`:
 
 ```sql
 SELECT
@@ -87,9 +88,9 @@ LIMIT 20;
 
 ---
 
-## 5. Catalog Gap Discovery (Unmet `kungfu find` and `:?` Searches)
+## 5. Catalog gap discovery (unmet `kungfu find` and `:?` searches)
 
-Lists search queries issued via `kungfu find` or `:?` that did not result in a subsequent skill load within 12 steps, revealing missing topics in the catalog.
+Lists search queries issued through `kungfu find` or `:?` that did not result in a subsequent skill load within 12 steps:
 
 ```sql
 SELECT
@@ -105,9 +106,9 @@ ORDER BY search_count DESC, last_searched_at DESC;
 
 ---
 
-## 6. User Prompt Notation Adoption Over Time (`::skill` vs. `//skill` vs. `:?`)
+## 6. User prompt notation adoption over time (`::skill` vs. `//skill` vs. `:?`)
 
-Tracks the evolution of user prompt shortcut notations across conversations.
+Tracks user prompt shortcut notations across conversations:
 
 ```sql
 SELECT
@@ -124,9 +125,9 @@ ORDER BY day DESC, notation_count DESC;
 
 ---
 
-## 7. Multi-Skill Conversation Workflows (Co-Occurrence per Conversation)
+## 7. Multi-skill conversation workflows (co-occurrence per conversation)
 
-Identifies conversations that activated multiple distinct skills, showing which skills are frequently combined in complex tasks.
+Identifies conversations that activated multiple distinct skills, showing which skills combine in complex tasks:
 
 ```sql
 SELECT

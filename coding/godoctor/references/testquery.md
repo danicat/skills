@@ -1,123 +1,159 @@
-# TestQuery SQL Test Analytics Guide
+# TestQuery SQL test analytics guide
 
-[TestQuery](https://github.com/danicat/testquery) records Go test execution logs and statement coverage into a local SQLite database (`testquery.db`), enabling fast SQL-driven test analytics and coverage queries.
+[TestQuery](https://github.com/danicat/testquery) (`tq`, verified against `v0.3.0`) indexes Go test execution logs and statement coverage into SQLite (`.godoctor/testquery.db` or `testquery.db`), allowing fast SQL queries over failures, slow tests, and uncovered branches.
 
-## Key Features & Safeguards
+## Key features and execution modes
 
-- **Zero-Fallback & Binary Discovery**: TestQuery executes directly from `$PATH` or as configured in `.godoctor.yaml`. Dynamic `go run` compilation fallbacks are banned to eliminate execution delays.
-- **Concurrent SQLite Backend**: Maintains test execution metrics in `.godoctor/testquery.db` with concurrent read and write support.
-- **Unrestricted SQL Queries**: GoDoctor SafeShell supports standard SQL comparison operators (`<`, `>`, `<=`, `>=`), multiline queries (`\n`), string concatenation (`||`), and semicolons.
-- **Auto-Synchronization**: Running `godoctor call test` automatically indexes test execution results and statement coverage into `testquery.db`.
+- **Offline mode**: Build a persistent database once with `tq build` (or `godoctor call test`), then query repeatedly with `--db`.
+- **Live mode**: Run tests and query results in memory in a single step using `--pkg ./...` (without `--db`).
+- **Zero-fallback binary lookup**: GoDoctor runs `tq` or `testquery` directly from `$PATH` or `.godoctor.yaml` without slow dynamic `go run` compilation.
+- **Concurrent SQLite WAL mode**: Multiple readers can query `.godoctor/testquery.db` while GoDoctor stores test results.
+- **Unrestricted SQL queries**: SafeShell permits SQLite comparison operators (`<`, `>`, `<=`, `>=`), multiline queries, string concatenation (`||`), and semicolons.
 
----
+## Database schema reference (`tq v0.3.0`)
 
-## Database Schema Reference
+All tables normalize `package` to the full Go module import path and `file` to the workspace-relative path.
 
-| Table | Purpose | Key Columns |
+### Core `tq` tables
+
+| Table | Purpose | Columns |
 | :--- | :--- | :--- |
-| `all_tests` | Test outcomes, execution times, and log output lines. | `time`, `action` (`pass`/`fail`), `package`, `test`, `elapsed`, `output` |
-| `all_coverage` | Statement execution counts by block. | `package`, `file`, `function_name`, `start_line`, `end_line`, `stmt_num`, `count` |
-| `test_coverage` | Mapping of individual tests to statement blocks. | `test_name`, `package`, `file`, `start_line`, `end_line`, `stmt_num`, `count` |
-| `all_code` | Source code lines for join-based inspection. | `package`, `file`, `line_number`, `content` |
-| `selene` | AST mutation records and statuses. | `id`, `mutator`, `file`, `line`, `col`, `status` (`'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`), `killed_by` |
-| `selene_tests` | Test effectiveness and mutation kill counts. | `test_name`, `package`, `status`, `mutations_killed`, `killed_mutant_ids` |
+| `all_tests` | Test outcomes, hierarchy, duration, and output (`PRIMARY KEY (package, test)`). | `time`, `action` (`'pass'`/`'fail'`), `status`, `package`, `test`, `parent_test`, `is_subtest`, `is_parent`, `elapsed`, `output` |
+| `all_coverage` | Statement execution counts per basic block. | `package`, `file`, `start_line`, `start_col`, `end_line`, `end_col`, `stmt_num`, `count`, `function_name` |
+| `test_coverage` | Leaf test-to-block mapping (populated when `--per-test-coverage` is enabled; `true` by default). | `test_package`, `test_name`, `package`, `file`, `start_line`, `start_col`, `end_line`, `end_col`, `stmt_num`, `count`, `function_name` |
+| `all_code` | Indexed Go source lines for SQL joins. | `package`, `file`, `line_number`, `content` |
+| `metadata` | Key-value build properties (`pkg`, `per_test_coverage`). | `key`, `value` |
 
-### Predefined Views
-- `failed_tests`: Lists all failed test cases with execution time.
-- `passed_tests`: Lists passing test cases.
-- `missing_coverage`: Uncovered statements (`count = 0`).
-- `code_coverage`: Percentage coverage aggregated by package and file.
-- `selene_survived`: Surviving mutants that escaped existing test assertions.
-- `selene_zero_kill_tests`: Tests that executed without catching any AST mutants.
-- `selene_summary`: High-level mutation statistics and test suite score.
-- `selene_excluded`: Mutants excluded for filesystem or process safety.
+> [!TIP]
+> Parent table-driven tests (`t.Run`) appear in `all_tests` with `is_parent = 1`. Always filter `WHERE is_parent = 0` or query `leaf_tests` so parent containers are not double-counted alongside subtests.
 
----
+### Selene extension tables
 
-## Installation & Environment Verification
+Populated when `selene -db` runs against the same SQLite database (see [references/selene.md](selene.md)):
 
-Verify installed tools using GoDoctor:
+| Table | Purpose | Columns |
+| :--- | :--- | :--- |
+| `selene` | AST mutant records and statuses (`'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`). | `id`, `mutator`, `file`, `package`, `function_name`, `line`, `col`, `status`, `killed_by` |
+| `selene_kills` | Many-to-many link between killed mutants and catching tests. | `mutant_id`, `package`, `test_name` |
+| `selene_tests` | Per-test kill totals across mutation runs. | `test_name`, `package`, `status`, `mutations_killed`, `killed_mutant_ids` |
+
+### Built-in views
+
+10 views built by `tq v0.3.0`:
+
+- `leaf_tests`: All columns from `all_tests` with `is_parent = 0` (executable leaf tests and subtests only).
+- `passed_tests`: Passing leaf tests (`package`, `test`, `elapsed`).
+- `failed_tests`: Failing leaf tests (`package`, `test`, `elapsed`, `output`).
+- `slow_tests`: Leaf tests ordered by `elapsed DESC` (`package`, `test`, `action`, `elapsed`).
+- `test_summary`: Per-package counts (`leaf_tests`, `subtests`, `total_events`, `passed`, `failed`, `total_elapsed`).
+- `missing_coverage`: Uncovered statement blocks (`package`, `function_name`, `file`, `start_line`, `start_col`, `end_line`, `end_col`).
+- `code_coverage`: Non-test Go source lines joined with execution counts (`package`, `file`, `line_number`, `content`, `covered`).
+- `file_coverage`: Per-file statement totals (`package`, `file`, `covered_stmts`, `total_stmts`, `coverage_pct`).
+- `package_coverage`: Per-package statement totals (`package`, `covered_stmts`, `total_stmts`, `coverage_pct`).
+- `uncovered_lines`: Distinct non-test source lines inside uncovered blocks (`package`, `file`, `line_number`, `content`, `function_name`).
+
+4 additional views created by `selene -db`:
+
+- `selene_survived`, `selene_zero_kill_tests`, `selene_summary`, and `selene_excluded`.
+
+## Installation and environment verification
+
+Verify binaries and versions through GoDoctor:
+
 ```bash
 godoctor check
+tq version
 ```
 
-Install or upgrade TestQuery via Go toolchain:
+Install or upgrade the `tq` CLI via Go:
+
 ```bash
 go install github.com/danicat/testquery@latest
 ```
 
----
-
 ## Configuration via `.godoctor.yaml`
 
-Configure TestQuery parameters in `.godoctor.yaml`:
+Settings in `godoctor init` (`v0.34.0`) use `binary_name` and `db_path`:
 
 ```yaml
 tools:
   testquery:
-    command: "testquery"
+    binary_name: "testquery"
     recommended_version: "latest"
     pkg: "github.com/danicat/testquery@latest"
-    config: ".godoctor/testquery.db"
+    db_path: ".godoctor/testquery.db"
+    format: "table"
     timeout: "2m"
     disabled: false
 
 testquery:
   db_path: ".godoctor/testquery.db"
+  wal_mode: true
+  busy_timeout: "5s"
   format: "table"
 
 features:
   testquery_sync: true
+  testquery_compat: true
 ```
 
----
-
-## Querying Test Analytics
+## Querying test analytics
 
 ### 1. Via GoDoctor CLI (`godoctor call tq`)
-Always specify an absolute directory path for `dir`:
+
+Always supply an absolute directory path for `dir`:
+
 ```bash
-godoctor call tq '{"dir": "/absolute/path/to/project", "query": "SELECT package, test, elapsed FROM all_tests WHERE action = '\''fail'\''"}'
+godoctor call tq '{"dir": "/absolute/path/to/project", "query": "SELECT package, test, elapsed FROM failed_tests"}'
 ```
 
-### 2. In MCP Mode (`test_query`)
+### 2. Via MCP (`test_query`)
+
 ```json
 {
   "dir": "/absolute/path/to/project",
-  "query": "SELECT package, test, elapsed FROM all_tests WHERE action = 'fail';"
+  "query": "SELECT package, test, elapsed FROM failed_tests;"
 }
 ```
 
-### 3. Direct CLI Tool (if in PATH)
+### 3. Direct `tq` CLI commands
+
 ```bash
-testquery query --db testquery.db "SELECT * FROM all_tests WHERE action = 'fail'"
+# Offline mode: build once, then query fast
+tq build --output .godoctor/testquery.db --pkg ./...
+tq query "SELECT * FROM failed_tests" --db .godoctor/testquery.db
+tq query "SELECT * FROM package_coverage ORDER BY coverage_pct ASC" --db .godoctor/testquery.db --format json
+
+# Find all tests covering a specific file line
+tq explain internal/auth/token.go:42 --db .godoctor/testquery.db
+
+# Live mode: run tests and query in memory without writing a database file
+tq query "SELECT * FROM slow_tests LIMIT 10" --pkg ./...
+
+# Print the full built-in schema and example queries
+tq schema
 ```
 
----
+## Common SQL query recipes
 
-## Common SQL Query Recipes
+### 1. Show recent test failures with full output
 
-### 1. Show Recent Test Failures with Outputs
 ```sql
 SELECT package, test, elapsed, output
-FROM all_tests
-WHERE action = 'fail'
-ORDER BY time DESC;
+FROM failed_tests
+ORDER BY elapsed DESC;
 ```
 
-### 2. Identify Packages with Lowest Statement Coverage
+### 2. Rank packages by lowest statement coverage
+
 ```sql
-SELECT
-    package,
-    SUM(CASE WHEN count > 0 THEN stmt_num ELSE 0 END) AS covered_stmts,
-    SUM(stmt_num) AS total_stmts,
-    ROUND(100.0 * SUM(CASE WHEN count > 0 THEN stmt_num ELSE 0 END) / SUM(stmt_num), 2) AS coverage_pct
-FROM all_coverage
-GROUP BY package
+SELECT package, covered_stmts, total_stmts, coverage_pct
+FROM package_coverage
 ORDER BY coverage_pct ASC;
 ```
 
-### 3. Find Uncovered Code Blocks in a Package
+### 3. Find uncovered functions in a specific package
+
 ```sql
 SELECT file, function_name, start_line, end_line, stmt_num
 FROM all_coverage
@@ -125,38 +161,37 @@ WHERE count = 0 AND package LIKE '%auth%'
 ORDER BY file, start_line;
 ```
 
-### 4. Locate Exact Source Lines of Uncovered Statements
+### 4. List exact uncovered source lines
+
 ```sql
-SELECT c.file, c.line_number, c.content
-FROM all_code c
-JOIN all_coverage cov
-  ON c.file = cov.file
- AND c.line_number BETWEEN cov.start_line AND cov.end_line
-WHERE cov.count = 0
-ORDER BY c.file, c.line_number;
+SELECT package, file, line_number, function_name, content
+FROM uncovered_lines
+ORDER BY file, line_number;
 ```
 
-### 5. Find Slowest Passing Tests (> 0.25s)
+### 5. Find slowest leaf tests (`> 0.25s`)
+
 ```sql
 SELECT package, test, elapsed
-FROM all_tests
+FROM slow_tests
 WHERE action = 'pass' AND elapsed > 0.25
-ORDER BY elapsed DESC;
+LIMIT 20;
 ```
 
-### 6. Inspect Test Coverage for a Specific Function
+### 6. Find tests exercising a specific file line
+
 ```sql
-SELECT file, start_line, end_line, count
-FROM all_coverage
-WHERE function_name = 'ValidateToken'
-ORDER BY start_line;
+SELECT DISTINCT test_package, test_name
+FROM test_coverage
+WHERE file LIKE '%token.go'
+  AND start_line <= 42 AND end_line >= 42
+  AND count > 0
+ORDER BY test_name;
 ```
 
----
+## Notes and best practices
 
-## Notes & Best Practices
-
-- **Auto-Generation**: `testquery.db` is updated automatically whenever `godoctor call test` runs. If `testquery.db` does not exist when `godoctor call tq` is invoked, GoDoctor builds it first.
-- **Absolute Directory Required**: The `dir` parameter is strictly required and must be an absolute path.
-- **SQL String Literal Syntax**: In SQLite, string literals must use single quotes `'...'` (e.g. `WHERE status = 'killed'`). In JSON payloads, escape single quotes appropriately (`'\''` in bash single-quoted strings or standard JSON strings).
-- **Concurrency Safety**: WAL mode allows concurrent queries while tests are writing. Avoid launching concurrent full test runs while mutation testing is in flight to prevent database lock contention.
+- **Automatic database updates**: `godoctor call test` (except `level: "fast"`) updates `.godoctor/testquery.db` automatically. If no database exists when calling `godoctor call tq`, GoDoctor builds it first.
+- **Inspect leaf counts properly**: Use `leaf_tests`, `passed_tests`, `failed_tests`, `slow_tests`, or `test_summary` instead of raw `COUNT(*)` over `all_tests` so subtest parents (`is_parent = 1`) are excluded.
+- **JSON escaping**: In SQLite, quote string literals with single quotes (`'...'`). Escape single quotes when wrapping queries in single-quoted bash arguments.
+- **Avoid write contention**: WAL mode supports concurrent reads, but avoid running `godoctor call test` or `tq build` in parallel with `selene` mutation testing.

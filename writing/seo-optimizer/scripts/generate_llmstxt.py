@@ -19,7 +19,7 @@
 # ///
 
 """
-Generates a standard-compliant /llms.txt from markdown posts.
+Generates a standard-compliant /llms.txt (and optional /llms-full.txt) from markdown posts.
 Follows the official specification at https://llmstxt.org/.
 """
 
@@ -29,6 +29,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
+
+TRANSLATION_STEM_RE = re.compile(r"^.+\.[a-z]{2}(?:-[a-z]{2,4})?$")
 
 
 def parse_frontmatter(content: str) -> Tuple[Dict[str, Any], str]:
@@ -116,56 +118,71 @@ def parse_frontmatter(content: str) -> Tuple[Dict[str, Any], str]:
     return frontmatter, body
 
 
-def generate_llms_txt(
+def collect_posts(
     content_dir: str,
     base_url: str = "https://example.com",
-    site_title: str = "Developer Documentation & Engineering Blog",
-    site_summary: str = "Curated technical articles, developer guides, and engineering field notes."
-) -> str:
-    """Scans posts and outputs a spec-compliant llms.txt string."""
+    url_prefix: str = "posts",
+    include_translations: bool = False,
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Scans page bundles and standalone markdown files and groups non-draft posts by category."""
     path = Path(content_dir)
-    posts = []
+    base = base_url.rstrip("/")
+    prefix = url_prefix.strip("/")
+    by_category: Dict[str, List[Dict[str, Any]]] = {}
 
-    for md_file in path.glob("**/index.md"):
+    for md_file in sorted(path.glob("**/*.md")):
+        # Skip section landing files (_index.md, _index.ja.md)
+        if md_file.stem == "_index" or md_file.stem.startswith("_index."):
+            continue
+        if not include_translations and TRANSLATION_STEM_RE.match(md_file.stem):
+            continue
+
         content = md_file.read_text(encoding="utf-8")
         fm, body = parse_frontmatter(content)
 
-        # Skip drafts
         if fm.get("draft") is True:
             continue
 
-        title = fm.get("title", md_file.parent.name)
-        desc = fm.get("description") or fm.get("summary") or ""
-        cat = fm.get("categories", ["General"])
-        if isinstance(cat, list) and cat:
-            cat = cat[0]
+        if md_file.name == "index.md":
+            rel_slug = md_file.parent.relative_to(path)
         else:
-            cat = str(cat) if cat else "General"
+            rel_slug = md_file.relative_to(path).with_suffix("")
 
-        # Calculate URL path
-        rel_parent = md_file.parent.relative_to(path)
-        slug = str(rel_parent).strip("/")
-        url = f"{base_url.rstrip('/')}/posts/{slug}/"
+        slug = "" if str(rel_slug) in ("", ".") else str(rel_slug).replace(os.sep, "/").strip("/")
+        url_parts = [p for p in (prefix, slug) if p]
+        url = f"{base}/{'/'.join(url_parts)}/" if url_parts else f"{base}/"
 
-        posts.append({
+        title = str(fm.get("title") or (md_file.parent.name if md_file.name == "index.md" else md_file.stem))
+        desc = str(fm.get("description") or fm.get("summary") or "")
+        cat_val = fm.get("categories", ["General"])
+        if isinstance(cat_val, list) and cat_val:
+            cat = str(cat_val[0])
+        else:
+            cat = str(cat_val) if cat_val else "General"
+
+        post = {
             "title": title,
             "description": desc,
             "category": cat,
             "url": url,
-            "date": fm.get("date", ""),
-        })
+            "date": str(fm.get("date", "")),
+            "body": body,
+        }
+        by_category.setdefault(cat, []).append(post)
 
-    # Sort posts by category then date descending
-    posts.sort(key=lambda p: (p["category"], str(p["date"])), reverse=True)
+    for cat in by_category:
+        by_category[cat].sort(key=lambda p: (p["date"], p["title"]), reverse=True)
 
-    # Group by category
-    by_category: Dict[str, List[Dict[str, Any]]] = {}
-    for p in posts:
-        cat = p["category"]
-        if cat not in by_category:
-            by_category[cat] = []
-        by_category[cat].append(p)
+    return by_category
 
+
+def format_llms_txt(
+    by_category: Dict[str, List[Dict[str, Any]]],
+    base_url: str = "https://example.com",
+    site_title: str = "Developer Documentation and Engineering Blog",
+    site_summary: str = "Curated technical articles, developer guides, and engineering field notes.",
+) -> str:
+    """Formats collected posts into a spec-compliant llms.txt index."""
     lines = [
         f"# {site_title}",
         "",
@@ -175,9 +192,9 @@ def generate_llms_txt(
         "",
     ]
 
-    for cat_name, cat_posts in sorted(by_category.items()):
+    for cat_name in sorted(by_category):
         lines.append(f"## {cat_name}")
-        for p in cat_posts:
+        for p in by_category[cat_name]:
             desc_part = f": {p['description']}" if p["description"] else ""
             lines.append(f"- [{p['title']}]({p['url']}){desc_part}")
         lines.append("")
@@ -191,12 +208,66 @@ def generate_llms_txt(
     return "\n".join(lines)
 
 
+def format_llms_full_txt(
+    by_category: Dict[str, List[Dict[str, Any]]],
+    site_title: str = "Developer Documentation and Engineering Blog",
+    site_summary: str = "Curated technical articles, developer guides, and engineering field notes.",
+) -> str:
+    """Formats collected posts into a full-text llms-full.txt Markdown corpus."""
+    lines = [
+        f"# {site_title}",
+        "",
+        f"> {site_summary}",
+        "",
+    ]
+
+    for cat_name in sorted(by_category):
+        lines.append(f"## {cat_name}")
+        lines.append("")
+        for p in by_category[cat_name]:
+            lines.append(f"### {p['title']}")
+            lines.append(f"Source: {p['url']}")
+            if p["description"]:
+                lines.append(f"Summary: {p['description']}")
+            lines.append("")
+            lines.append(p["body"])
+            lines.append("")
+
+    return "\n".join(lines)
+
+
+def generate_llms_txt(
+    content_dir: str,
+    base_url: str = "https://example.com",
+    site_title: str = "Developer Documentation and Engineering Blog",
+    site_summary: str = "Curated technical articles, developer guides, and engineering field notes.",
+    url_prefix: str = "posts",
+    include_translations: bool = False,
+) -> str:
+    """Scans posts and outputs a spec-compliant llms.txt string."""
+    by_category = collect_posts(
+        content_dir=content_dir,
+        base_url=base_url,
+        url_prefix=url_prefix,
+        include_translations=include_translations,
+    )
+    return format_llms_txt(
+        by_category=by_category,
+        base_url=base_url,
+        site_title=site_title,
+        site_summary=site_summary,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate llms.txt standard index from markdown posts.")
     parser.add_argument("--content-dir", default="content/posts", help="Directory containing posts")
     parser.add_argument("--output", default="static/llms.txt", help="Output file path")
+    parser.add_argument("--llms-full", default=None, help="Optional output path for full-text llms-full.txt corpus")
     parser.add_argument("--base-url", default="https://example.com", help="Site base URL")
+    parser.add_argument("--url-prefix", default="posts", help="URL path prefix under base-url (default: posts)")
     parser.add_argument("--site-title", default="Engineering Blog", help="Site title")
+    parser.add_argument("--include-translations", action="store_true", help="Include suffixed locale files such as .ja.md")
 
     args = parser.parse_args()
 
@@ -205,8 +276,14 @@ def main():
         print(f"Error: Content directory '{args.content_dir}' not found.", file=sys.stderr)
         sys.exit(1)
 
-    llms_content = generate_llms_txt(
+    by_category = collect_posts(
         content_dir=args.content_dir,
+        base_url=args.base_url,
+        url_prefix=args.url_prefix,
+        include_translations=args.include_translations,
+    )
+    llms_content = format_llms_txt(
+        by_category=by_category,
         base_url=args.base_url,
         site_title=args.site_title,
     )
@@ -215,6 +292,16 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(llms_content, encoding="utf-8")
     print(f"Generated spec-compliant llms.txt at {out_path} ({len(llms_content.splitlines())} lines)")
+
+    if args.llms_full:
+        full_content = format_llms_full_txt(
+            by_category=by_category,
+            site_title=args.site_title,
+        )
+        full_path = Path(args.llms_full)
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        full_path.write_text(full_content, encoding="utf-8")
+        print(f"Generated llms-full.txt at {full_path} ({len(full_content.splitlines())} lines)")
 
 
 if __name__ == "__main__":

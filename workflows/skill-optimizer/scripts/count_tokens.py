@@ -16,7 +16,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "google-genai>=1.0.0",
+#     "google-genai>=3.3.0",
 #     "google-auth>=2.0.0",
 #     "pyyaml>=6.0",
 # ]
@@ -47,15 +47,28 @@ BODY_LINE_LIMIT = 500
 
 def get_genai_client(location: str = "global", project: str | None = None):
     """
-    Initialize GenAI client with ADC (Vertex AI) or API key.
-    Prefers API key if GEMINI_API_KEY is explicitly set; otherwise defaults to ADC on Vertex AI.
+    Initialize GenAI client with ADC (Gemini Enterprise / Vertex AI) or API key.
+    Uses Enterprise / Vertex AI ADC if GOOGLE_GENAI_USE_ENTERPRISE or GOOGLE_GENAI_USE_VERTEXAI
+    is set; otherwise prefers GEMINI_API_KEY if set, falling back to ADC.
     """
     from google import genai
 
-    if os.environ.get("GEMINI_API_KEY"):
-        return genai.Client(), "gemini-api-key"
+    use_enterprise = os.environ.get("GOOGLE_GENAI_USE_ENTERPRISE", "").strip().lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    use_vertex = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").strip().lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    api_key = os.environ.get("GEMINI_API_KEY")
 
-    # Fallback to Application Default Credentials (ADC) via Vertex AI
+    if api_key and not (use_enterprise or use_vertex):
+        return genai.Client(api_key=api_key), "gemini-api-key"
+
+    # Fallback to Application Default Credentials (ADC) via Gemini Enterprise / Vertex AI
     if not project:
         project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT")
     if not project:
@@ -65,8 +78,8 @@ def get_genai_client(location: str = "global", project: str | None = None):
         except Exception:
             project = None
 
-    client = genai.Client(vertexai=True, project=project, location=location)
-    auth_label = f"adc (vertexai, project={project or 'default'}, location={location})"
+    client = genai.Client(enterprise=True, project=project, location=location)
+    auth_label = f"adc (enterprise, project={project or 'default'}, location={location})"
     return client, auth_label
 
 
@@ -197,7 +210,7 @@ def analyze_skill(skill_file: Path, client, model: str, use_heuristic: bool) -> 
         },
         "catalog": {
             "tokens": catalog_tokens,
-            "canonical": fm_data.get("metadata", {}).get("canonical", "none"),
+            "catalog": (fm_data.get("metadata") or {}).get("catalog", "none"),
         },
         "body": {
             "lines": body_lines,
@@ -277,18 +290,18 @@ def main():
     )
     parser.add_argument(
         "--model",
-        default="gemini-3.7-flash",
-        help="Gemini model to use for token calculation (default: gemini-3.7-flash)",
+        default="gemini-4-hydrogen",
+        help="Gemini model to use for token calculation (default: gemini-4-hydrogen)",
     )
     parser.add_argument(
         "--location",
         default="global",
-        help="Vertex AI location for ADC authentication (default: global)",
+        help="Gemini Enterprise / Vertex AI location for ADC authentication (default: global)",
     )
     parser.add_argument(
         "--project",
         default=None,
-        help="GCP Project ID for Vertex AI ADC auth (defaults to ADC / GOOGLE_CLOUD_PROJECT)",
+        help="GCP Project ID for Gemini Enterprise / Vertex AI ADC auth (defaults to ADC / GOOGLE_CLOUD_PROJECT)",
     )
     parser.add_argument(
         "--heuristic-only",

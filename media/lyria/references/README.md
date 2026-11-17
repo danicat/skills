@@ -1,21 +1,21 @@
-# Lyria 3 References & Model Cards
+# Lyria 3 references and model cards
 
-This directory contains technical model cards, capability specifications, arrangement guides, and integration details for Google's **Lyria 3** music generation models.
+This directory contains model cards, capability specifications, arrangement guides, and SDK integration examples for Google's **Lyria 3** music generation models.
 
-## Model Cards & Technical References
+## Model cards and technical references
 
-- **[Lyria 3.5 (`lyria-3.5`)](lyria-3-5.md)**: Flagship music generation model for full-length songs, multi-section arrangements, expressive vocals, game soundtracks, and multimodal composition.
-- **[Lyria 3 Clip (`lyria-3-clip-preview`)](lyria-3-clip.md)**: 30-second music clips, short stage loops, menu beds, and rapid style prototyping.
-- **[Lyria 3 Pro (`lyria-3-pro-preview`)](lyria-3-pro.md)**: Legacy full-length preview model (up to 184 seconds) with multi-section structures and timestamp controls.
+- **[Lyria 3.5 (`lyria-3.5`)](lyria-3-5.md)**: Flagship music generation model for multi-minute songs, structured arrangements, expressive vocals, WAV/MP3 export, and multimodal composition.
+- **[Lyria 3 Clip (`lyria-3-clip-preview`)](lyria-3-clip.md)**: Fixed 30-second MP3 music clips, short beds, and rapid style prototyping.
+- **[Lyria 3 Pro (`lyria-3-pro-preview`)](lyria-3-pro.md)**: Preview full-length model (up to 184 seconds, MP3) with multi-section structures and timestamp controls.
 
 ---
 
-## Composition Quick Reference
+## Composition quick reference
 
-When prompting Lyria models, combine these structural building blocks:
+When prompting Lyria models, combine these building blocks:
 
-1. **Genre & Style**: Define the core musical style (such as `lo-fi hip-hop`, `synthwave`, `chamber orchestra`, `delta blues`).
-2. **Instrumentation**: Specify lead and rhythm instruments (such as `Rhodes piano`, `808 bass`, `acoustic nylon guitar`, `cello section`).
-3. **Tempo & Key**: Set musical parameters (such as `120 BPM`, `in D minor`, `slow waltz tempo`).
-4. **Vocals vs. Instrumental**: Add `"Instrumental only, no vocals"` for gameplay BGM beds, or provide bracketed section lyrics (`[Verse 1]`, `[Chorus]`).
-5. **Timestamps (Lyria 3.5 / Pro)**: Use time ranges (`[0:00 - 0:15] Intro...`) to coordinate dynamics and intro/loop boundaries.
+1. **Genre and style**: Define the musical style (such as `lo-fi hip-hop`, `synthwave`, `chamber orchestra`, `delta blues`).
+2. **Instrumentation**: Name lead and rhythm instruments (such as `Rhodes piano`, `808 bass`, `acoustic nylon guitar`, `cello section`).
+3. **Tempo and key**: Set musical parameters (such as `120 BPM`, `in D minor`, `slow waltz tempo`).
+4. **Vocals vs. instrumental**: Add `"Instrumental only, no vocals"` for clean background beds, or provide bracketed section lyrics (`[Verse 1]`, `[Chorus]`).
+5. **Timestamps (Lyria 3.5 and Lyria 3 Pro)**: Use time ranges (`[0:00 - 0:15] Intro...`) to guide section transitions and dynamics.

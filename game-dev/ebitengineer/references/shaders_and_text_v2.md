@@ -102,8 +102,9 @@ import (
 )
 
 type ShaderPass struct {
-	shader  *ebiten.Shader
-	op      ebiten.DrawRectShaderOptions
+	shader     *ebiten.Shader
+	op         ebiten.DrawRectShaderOptions
+	flashColor []float32
 }
 
 func NewShaderPass(kageSource []byte) (*ShaderPass, error) {
@@ -114,7 +115,10 @@ func NewShaderPass(kageSource []byte) (*ShaderPass, error) {
 	if err != nil {
 		return nil, fmt.Errorf("render: compile Kage shader: %w", err)
 	}
-	sp := &ShaderPass{shader: sh}
+	sp := &ShaderPass{
+		shader:     sh,
+		flashColor: []float32{1.0, 1.0, 1.0},
+	}
 	sp.op.Uniforms = make(map[string]any, 8)
 	return sp, nil
 }
@@ -125,7 +129,7 @@ func (sp *ShaderPass) DrawSpriteWithFlash(dst, src *ebiten.Image, x, y float64, 
 	sp.op.GeoM.Translate(x, y)
 	sp.op.Images[0] = src
 	sp.op.Uniforms["FlashAmount"] = flashAmount
-	sp.op.Uniforms["FlashColor"] = []float32{1.0, 1.0, 1.0}
+	sp.op.Uniforms["FlashColor"] = sp.flashColor
 	dst.DrawRectShader(b.Dx(), b.Dy(), sp.shader, &sp.op)
 }
 ```

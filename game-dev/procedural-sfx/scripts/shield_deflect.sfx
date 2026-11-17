@@ -1,0 +1,5 @@
+title "Shield Energy Deflect"
+type sfx
+
+inst ping preset=shield_deflect vol=0.34 mod_index=5.0->1.0
+track main ping: 920Hz->420Hz:220ms

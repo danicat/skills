@@ -13,16 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Test Suite for google-analytics
 Validates:
 1. SQLite schema DDL, indexes, and all 7 analytical views (v_daily_summary, v_page_performance,
    v_channel_performance, v_geo_breakdown, v_events_summary, v_outbound_links, v_milestone_impact).
-2. Data insertion, referential integrity, and cohort computations.
+2. Data insertion, weighted bounce/dwell rollups, and cohort computations.
 3. Every SQL query used as an example in SKILL.md and references/queries.md.
-4. Pre-packaged reports in scripts/google_analytics.py.
-5. Dynamic extraction and execution of all SQL code blocks in markdown documentation.
-6. CLI argument parsing and help interface.
+4. Pre-packaged reports in scripts/google_analytics.py (full-history default and optional --days).
+5. Multi-page RunReportRequest offset pagination.
+6. Dynamic extraction and execution of all SQL code blocks in markdown documentation.
+7. CLI argument parsing, help interface, and validation.
 """
 
 import os
@@ -30,7 +35,10 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 # Locate directory roots
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -202,9 +210,9 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
 
         # 5. Outbound Clicks
         outbound_data = [
-            ('prop_123', '2026-08-01', 'https://github.com/danicat/skills', '/docs/getting-started', 'United States', 45, 40),
+            ('prop_123', '2026-08-01', 'https://github.com/example/agent-skills', '/docs/getting-started', 'United States', 45, 40),
             ('prop_123', '2026-08-01', 'https://sqlite.org/wal.html', '/blog/sqlite-analytics-guide', 'United Kingdom', 28, 25),
-            ('prop_123', '2026-08-15', 'https://github.com/danicat/skills', '/tutorials/building-agent-skills', 'United States', 62, 55),
+            ('prop_123', '2026-08-15', 'https://github.com/example/agent-skills', '/tutorials/building-agent-skills', 'United States', 62, 55),
             ('prop_123', '2026-08-15', 'https://news.ycombinator.com', '/blog/sqlite-analytics-guide', 'United States', 35, 30),
         ]
         for o in outbound_data:
@@ -301,7 +309,7 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
                 SUM(total_users) AS unique_readers,
                 ROUND(SUM(total_dwell_min), 1) AS total_dwell_minutes,
                 ROUND(SUM(total_dwell_min) * 60.0 / MAX(SUM(total_users), 1), 1) AS avg_dwell_per_user_sec,
-                ROUND(AVG(avg_bounce_pct), 1) AS avg_bounce_pct
+                ROUND(SUM(avg_bounce_pct * total_sessions) / MAX(SUM(total_sessions), 1), 1) AS avg_bounce_pct
             FROM v_page_performance
             GROUP BY content_category
             ORDER BY total_page_views DESC;
@@ -314,7 +322,7 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
                 SUM(active_users) AS total_users,
                 SUM(screen_page_views) AS total_page_views,
                 ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) AS avg_dwell_sec,
-                ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+                ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
             FROM daily_pages
             WHERE country IS NOT NULL AND country != '' AND country != '(not set)'
             GROUP BY country
@@ -329,7 +337,9 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
                 SUM(total_sessions) AS sessions,
                 SUM(total_users) AS users,
                 SUM(total_new_users) AS new_users,
-                ROUND(AVG(engagement_rate_pct), 1) || '%' AS avg_engagement_rate,
+                ROUND(SUM(total_engaged_sessions) * 100.0 / MAX(SUM(total_sessions), 1), 1) || '%' AS avg_engagement_rate,
+                ROUND(SUM(total_dwell_min) * 60.0 / MAX(SUM(total_sessions), 1), 1) || 's' AS avg_dwell,
+                CASE WHEN SUM(total_engaged_sessions) > 0 THEN ROUND(SUM(total_dwell_min) * 60.0 / SUM(total_engaged_sessions), 1) ELSE 0.0 END || 's' AS engaged_dwell,
                 ROUND(SUM(total_dwell_min), 1) AS total_dwell_min
             FROM v_channel_performance
             GROUP BY channel_group, source_medium
@@ -389,94 +399,140 @@ class TestGoogleAnalyticsQueries(unittest.TestCase):
                 self.assertGreater(len(rows), 0, f"Recipe #{idx} returned empty result.")
 
     def test_prepackaged_cli_reports(self):
-        reports = {
-            "overview": """
-                SELECT
-                    COUNT(DISTINCT date) AS active_days,
-                    SUM(total_sessions) AS total_sessions,
-                    SUM(total_active_users) AS total_active_users,
-                    SUM(total_page_views) AS total_views,
-                    ROUND(AVG(total_engagement_min), 1) AS avg_daily_engagement_min,
-                    ROUND(AVG(avg_bounce_pct), 1) AS overall_bounce_pct
-                FROM v_daily_summary
-                LIMIT 30;
-            """,
-            "top-pages": """
-                SELECT
-                    page_path,
-                    page_title,
-                    total_views,
-                    total_users,
-                    avg_dwell_sec || 's' AS dwell,
-                    avg_bounce_pct || '%' AS bounce
-                FROM v_page_performance
-                ORDER BY total_views DESC
-                LIMIT 15;
-            """,
-            "channels": """
-                SELECT
-                    channel_group,
-                    source_medium,
-                    total_sessions,
-                    total_users,
-                    engagement_rate_pct || '%' AS eng_rate,
-                    total_dwell_min || 'm' AS dwell,
-                    avg_bounce_pct || '%' AS bounce
-                FROM v_channel_performance
-                WHERE total_sessions > 5
-                ORDER BY total_sessions DESC
-                LIMIT 15;
-            """,
-            "geo": """
-                SELECT
-                    country,
-                    total_sessions,
-                    total_users,
-                    total_page_views,
-                    avg_dwell_sec || 's' AS avg_dwell,
-                    avg_bounce_pct || '%' AS bounce
-                FROM v_geo_breakdown
-                ORDER BY total_sessions DESC
-                LIMIT 10;
-            """,
-            "events": """
-                SELECT
-                    event_name,
-                    total_events,
-                    total_users
-                FROM v_events_summary;
-            """,
-            "outbound": """
-                SELECT
-                    link_url,
-                    total_clicks,
-                    total_users,
-                    referring_pages_count
-                FROM v_outbound_links
-                ORDER BY total_clicks DESC
-                LIMIT 15;
-            """,
-            "milestone-impact": """
-                SELECT
-                    commit_hash,
-                    milestone_title,
-                    milestone_date,
-                    cohort,
-                    days_tracked,
-                    total_views,
-                    total_users,
-                    total_sessions,
-                    avg_engagement_sec || 's' AS avg_dwell,
-                    avg_bounce_pct || '%' AS bounce
-                FROM v_milestone_impact;
-            """,
-        }
-        for name, sql in reports.items():
+        for name in google_analytics.VALID_REPORTS:
             with self.subTest(report_name=name):
-                cursor = self.conn.execute(sql)
+                _, sql, params = google_analytics.build_report_query(name)
+                cursor = self.conn.execute(sql, params)
                 rows = cursor.fetchall()
                 self.assertIsNotNone(rows)
                 self.assertGreater(len(rows), 0, f"Report '{name}' returned empty result.")
+
+    def test_weighted_bounce_and_milestone_dwell(self):
+        """Verifies session-weighted bounce rate and user-weighted milestone dwell time."""
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.executescript(google_analytics.SCHEMA_DDL)
+        conn.execute(
+            "INSERT INTO site_milestones (commit_hash, event_date, title) VALUES ('m1', '2026-08-10', 'Release')"
+        )
+        # 1000 sessions at 10% bounce + 10 sessions at 90% bounce -> weighted bounce = 109 / 1010 = 10.8%
+        # 100 users with 5000s + 10 users with 500s -> weighted avg engagement = 5500 / 110 = 50.0s
+        conn.executemany(
+            """INSERT INTO daily_pages (
+                property_id, date, page_path, page_title, country, device_category, source_medium,
+                screen_page_views, active_users, sessions, user_engagement_duration, bounce_rate
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [
+                ("p1", "2026-08-01", "/", "Home", "United States", "desktop", "google / organic", 1100, 100, 1000, 5000.0, 0.10),
+                ("p1", "2026-08-01", "/", "Home", "Canada", "mobile", "direct / none", 12, 10, 10, 500.0, 0.90),
+            ],
+        )
+        daily = conn.execute("SELECT avg_bounce_pct FROM v_daily_summary WHERE date = '2026-08-01'").fetchone()
+        page = conn.execute("SELECT avg_bounce_pct FROM v_page_performance WHERE page_path = '/'").fetchone()
+        milestone = conn.execute("SELECT avg_engagement_sec, avg_bounce_pct FROM v_milestone_impact").fetchone()
+        self.assertEqual(daily["avg_bounce_pct"], 10.8)
+        self.assertEqual(page["avg_bounce_pct"], 10.8)
+        self.assertEqual(milestone["avg_engagement_sec"], 50.0)
+        self.assertEqual(milestone["avg_bounce_pct"], 10.8)
+        conn.close()
+
+    def test_report_overview_full_history_and_optional_days(self):
+        """Ensures report overview defaults to all tracked dates and filters only when --days is set."""
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.executescript(google_analytics.SCHEMA_DDL)
+        conn.executemany(
+            """INSERT INTO daily_pages (
+                property_id, date, page_path, page_title, country, device_category, source_medium,
+                screen_page_views, active_users, sessions, user_engagement_duration, bounce_rate
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [
+                ("p1", "2026-06-01", "/", "Home", "US", "desktop", "google / organic", 100, 80, 90, 900.0, 0.20),
+                ("p1", "2026-08-01", "/", "Home", "US", "desktop", "google / organic", 150, 120, 130, 1200.0, 0.20),
+                ("p1", "2026-08-15", "/", "Home", "US", "desktop", "google / organic", 200, 160, 180, 1800.0, 0.15),
+                ("p1", "2026-08-16", "/", "Home", "US", "desktop", "google / organic", 250, 200, 220, 2400.0, 0.10),
+            ],
+        )
+
+        # Default (days=None) covers the entire history including 2026-06-01
+        title_all, sql_all, params_all = google_analytics.build_report_query("overview", days=None)
+        row_all = conn.execute(sql_all, params_all).fetchone()
+        self.assertIn("All Tracked Dates", title_all)
+        self.assertEqual(row_all["first_date"], "2026-06-01")
+        self.assertEqual(row_all["last_date"], "2026-08-16")
+        self.assertEqual(row_all["active_days"], 4)
+
+        # Explicit 30-day window anchored on latest ingested date (2026-08-16 -> >= 2026-07-18)
+        title_30, sql_30, params_30 = google_analytics.build_report_query("overview", days=30)
+        row_30 = conn.execute(sql_30, params_30).fetchone()
+        self.assertIn("Last 30 Days", title_30)
+        self.assertEqual(row_30["first_date"], "2026-08-01")
+        self.assertEqual(row_30["active_days"], 3)
+
+        # Explicit 7-day window anchored on latest ingested date (2026-08-16 -> >= 2026-08-10)
+        _, sql_7, params_7 = google_analytics.build_report_query("overview", days=7)
+        row_7 = conn.execute(sql_7, params_7).fetchone()
+        self.assertEqual(row_7["first_date"], "2026-08-15")
+        self.assertEqual(row_7["active_days"], 2)
+        conn.close()
+
+    def test_ingest_daily_pages_multipage_pagination(self):
+        """Verifies RunReportRequest offset pagination fetches every batch across multiple pages."""
+        offsets_seen = []
+
+        def make_row(date_val, path_val):
+            return SimpleNamespace(
+                dimension_values=[
+                    SimpleNamespace(value=date_val),
+                    SimpleNamespace(value=path_val),
+                    SimpleNamespace(value="Title"),
+                    SimpleNamespace(value="United States"),
+                    SimpleNamespace(value="desktop"),
+                    SimpleNamespace(value="google / organic"),
+                ],
+                metric_values=[
+                    SimpleNamespace(value="10"),
+                    SimpleNamespace(value="8"),
+                    SimpleNamespace(value="9"),
+                    SimpleNamespace(value="120.0"),
+                    SimpleNamespace(value="0.25"),
+                ],
+            )
+
+        pages = {
+            0: SimpleNamespace(
+                rows=[make_row("20260801", "/p1"), make_row("20260801", "/p2")],
+                row_count=3,
+            ),
+            2: SimpleNamespace(
+                rows=[make_row("20260801", "/p3")],
+                row_count=3,
+            ),
+        }
+
+        class FakeClient:
+            def run_report(self, req):
+                offsets_seen.append(req.offset)
+                return pages[req.offset]
+
+        conn = sqlite3.connect(":memory:")
+        conn.executescript(google_analytics.SCHEMA_DDL)
+        with patch.multiple(
+            google_analytics,
+            RunReportRequest=SimpleNamespace,
+            DateRange=SimpleNamespace,
+            Dimension=SimpleNamespace,
+            Metric=SimpleNamespace,
+        ):
+            total = google_analytics.ingest_daily_pages(
+                FakeClient(), conn, "prop_123", "2026-08-01", "2026-08-01", page_limit=2
+            )
+
+        self.assertEqual(offsets_seen, [0, 2])
+        self.assertEqual(total, 3)
+        stored = conn.execute("SELECT COUNT(*) FROM daily_pages").fetchone()[0]
+        self.assertEqual(stored, 3)
+        conn.close()
 
     def test_markdown_query_extraction(self):
         """Extracts and executes every ```sql block found across all markdown docs in skill."""
@@ -518,6 +574,15 @@ class TestGoogleAnalyticsCLI(unittest.TestCase):
         self.assertIn("report", result.stdout)
         self.assertIn("query", result.stdout)
         self.assertIn("annotate", result.stdout)
+
+    def test_cli_report_invalid_days_fails_fast(self):
+        script_path = os.path.join(SCRIPT_DIR, "google_analytics.py")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "test.db")
+            cmd = [sys.executable, script_path, "report", "overview", "--days", "0", "--db", db_path]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--days", result.stderr)
 
 
 if __name__ == "__main__":

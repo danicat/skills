@@ -1,10 +1,10 @@
-# Schema.org Structured Data Guide for Technical Publications
+# Schema.org structured data guide for technical publications
 
 A comprehensive reference for generating, validating, and embedding Schema.org JSON-LD structured data in developer blogs, technical documentation, and software engineering sites, fully aligned with official Google Search Central guidelines.
 
 ---
 
-## 1. Why Structured Data Matters for AI & Search
+## 1. Why structured data matters for AI and search
 
 Structured data using **JSON-LD (JavaScript Object Notation for Linked Data)** bridges the gap between raw markdown prose and semantic machine comprehension. It serves two distinct discovery surfaces:
 
@@ -16,7 +16,7 @@ Structured data using **JSON-LD (JavaScript Object Notation for Linked Data)** b
 
 ---
 
-## 2. Recommended Schemas by Content Type
+## 2. Recommended schemas by content type
 
 | Content Type | Primary Schema Type | Key Properties |
 | :--- | :--- | :--- |
@@ -32,9 +32,9 @@ Structured data using **JSON-LD (JavaScript Object Notation for Linked Data)** b
 
 ---
 
-## 3. Complete Copy-Pasteable JSON-LD Templates
+## 3. Copy-pasteable JSON-LD templates
 
-### 3.1. `TechArticle` & `Article` (Developer Tutorial / Deep Dive)
+### 3.1. `TechArticle` and `Article` (developer tutorial or deep dive)
 
 Use `TechArticle` for coding tutorials, architectural analyses, and technical guides. Fall back to `Article` for general engineering commentary.
 
@@ -92,7 +92,7 @@ Use `TechArticle` for coding tutorials, architectural analyses, and technical gu
 
 ---
 
-### 3.2. `WebSite` (Official Site Name in SERPs)
+### 3.2. `WebSite` (official site name in SERPs)
 
 Place this schema on the homepage or in the site-wide base template to control how Google Search renders your site name and alternate names in search result headers.
 
@@ -115,7 +115,7 @@ Place this schema on the homepage or in the site-wide base template to control h
 
 ---
 
-### 3.3. `ProfilePage` (Author Bio & About Pages)
+### 3.3. `ProfilePage` (author bio and about pages)
 
 Google uses `ProfilePage` structured data to power author knowledge cards, verify author authority (E-E-A-T), and disambiguate creators across social platforms.
 
@@ -151,7 +151,7 @@ Google uses `ProfilePage` structured data to power author knowledge cards, verif
 
 ---
 
-### 3.4. `Organization` (Brand Identity & Entity Grounding)
+### 3.4. `Organization` (brand identity and entity grounding)
 
 Declares the publishing entity, official brand logo, and authoritative web footprints.
 
@@ -184,7 +184,7 @@ Declares the publishing entity, official brand logo, and authoritative web footp
 
 ---
 
-### 3.5. `SoftwareApplication` (CLI Tools, Libraries & Open Source Packages)
+### 3.5. `SoftwareApplication` (CLI tools, libraries, and open source packages)
 
 Use this schema when releasing or documenting software packages, CLI utilities, or Go modules.
 
@@ -216,7 +216,7 @@ Use this schema when releasing or documenting software packages, CLI utilities, 
 
 ---
 
-### 3.6. `VideoObject` (Embedded Technical Walkthroughs & Talks)
+### 3.6. `VideoObject` (embedded technical walkthroughs and talks)
 
 Use when embedding YouTube, Vimeo, or self-hosted video recordings of tutorials, presentations, or demos.
 
@@ -247,7 +247,7 @@ Use when embedding YouTube, Vimeo, or self-hosted video recordings of tutorials,
 
 ---
 
-### 3.7. `ImageObject` (Technical Diagrams & Licensable Media)
+### 3.7. `ImageObject` (technical diagrams and licensable media)
 
 Enables enhanced image previews and Google Images "Licensable" badges for proprietary architectural diagrams and graphics.
 
@@ -269,7 +269,7 @@ Enables enhanced image previews and Google Images "Licensable" badges for propri
 
 ---
 
-### 3.8. Subscription & Paywalled Content
+### 3.8. Subscription and paywalled content
 
 When offering gated technical whitepapers or paywalled deep dives, mark the paywalled section explicitly to prevent cloaking penalties.
 
@@ -300,7 +300,7 @@ When offering gated technical whitepapers or paywalled deep dives, mark the payw
 
 ---
 
-### 3.9. `BreadcrumbList` (Navigational Trail)
+### 3.9. `BreadcrumbList` (navigational trail)
 
 Generates clean breadcrumb paths in Google Search results instead of raw URL strings.
 
@@ -333,9 +333,9 @@ Generates clean breadcrumb paths in Google Search results instead of raw URL str
 
 ---
 
-## 4. Structured Data Quality Policies & Rich Result Limits
+## 4. Structured data quality policies and rich result limits
 
-### 4.1. Official Google Deprecations & Restrictions
+### 4.1. Official Google deprecations and restrictions
 
 Stay current with Google Search Central policy updates regarding rich result eligibility:
 
@@ -348,7 +348,7 @@ Stay current with Google Search Central policy updates regarding rich result eli
 
 ---
 
-### 4.2. Core Quality Policies & Validation Rules
+### 4.2. Core quality policies and validation rules
 
 To prevent algorithmic demotion or manual actions for spammy structured data:
 
@@ -358,7 +358,7 @@ To prevent algorithmic demotion or manual actions for spammy structured data:
 
 ---
 
-### 4.3. Interaction with Robots Directives
+### 4.3. Interaction with robots directives
 
 Understanding how Googlebot reconciles robots meta tags with Schema markup:
 
@@ -371,9 +371,9 @@ Understanding how Googlebot reconciles robots meta tags with Schema markup:
 
 ---
 
-## 5. Implementation in Static Site Generators
+## 5. Implementation in static site generators
 
-### 5.1. Hugo Partial Implementation
+### 5.1. Hugo partial implementation
 
 In `layouts/partials/schema.html`:
 
@@ -451,11 +451,11 @@ In `layouts/partials/schema.html`:
 
 ---
 
-## 6. Agent Skills & Open Knowledge Catalogs (`@graph` Architecture)
+## 6. Agent skills and open knowledge catalogs (`@graph` architecture)
 
-For developer portals, agent skill registries, and open-source documentation hubs (e.g. `skills.danicat.dev`), multiple Schema entities must be interconnected cleanly in a single `@graph` array.
+For developer portals, agent skill registries, and open-source documentation hubs (e.g. `skills.example.com`), multiple Schema entities must be interconnected cleanly in a single `@graph` array.
 
-### 6.1. Skill Detail Page Schema (`@graph` Implementation)
+### 6.1. Skill detail page schema (`@graph` implementation)
 
 Combines `Person` (author), `Organization` (consistent publishing entity), `SoftwareApplication` (the skill package), `TechArticle` (the documentation), and `BreadcrumbList` (navigation):
 
@@ -465,46 +465,45 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://danicat.dev/#person",
-      "name": "Daniela Petruzalek",
-      "jobTitle": "Senior Developer Relations Engineer",
+      "@id": "https://example.com/about/#person",
+      "name": "Jane Doe",
+      "jobTitle": "Principal Software Engineer",
       "worksFor": {
         "@type": "Organization",
-        "name": "Google",
-        "url": "https://about.google/"
+        "name": "Example Corp",
+        "url": "https://example.com/"
       },
-      "url": "https://danicat.dev",
-      "image": "https://danicat.dev/images/chibi-dani.png",
+      "url": "https://example.com/about/",
+      "image": "https://example.com/images/avatar.png",
       "sameAs": [
-        "https://github.com/danicat",
-        "https://linkedin.com/in/petruzalek",
-        "https://bsky.app/profile/danicat83.bsky.social",
-        "https://x.com/danicat83",
-        "https://sessionize.com/daniela"
+        "https://github.com/example",
+        "https://www.linkedin.com/in/example/",
+        "https://bsky.app/profile/example.bsky.social",
+        "https://x.com/example"
       ]
     },
     {
       "@type": "Organization",
-      "@id": "https://danicat.dev/#organization",
-      "name": "danicat.dev",
-      "url": "https://danicat.dev",
+      "@id": "https://example.com/#organization",
+      "name": "Example Engineering",
+      "url": "https://example.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://danicat.dev/apple-touch-icon.png"
+        "url": "https://example.com/apple-touch-icon.png"
       }
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://docs.example.com/tools/acme-cli/#software",
+      "@id": "https://skills.example.com/tools/acme-cli/#software",
       "name": "acme-cli",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Cross-platform",
-      "image": "https://danicat.dev/apple-touch-icon.png",
+      "image": "https://example.com/apple-touch-icon.png",
       "description": "Best practices and guidelines for building developer workflows with acme-cli.",
       "softwareVersion": "1.2.0",
       "license": "https://www.apache.org/licenses/LICENSE-2.0",
-      "url": "https://docs.example.com/tools/acme-cli/",
-      "downloadUrl": "https://docs.example.com/tools/acme-cli/SKILL.md",
+      "url": "https://skills.example.com/tools/acme-cli/",
+      "downloadUrl": "https://skills.example.com/tools/acme-cli/SKILL.md",
       "codeRepository": "https://github.com/example/acme-cli",
       "offers": {
         "@type": "Offer",
@@ -513,69 +512,69 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
       },
       "author": {
         "@type": "Person",
-        "@id": "https://danicat.dev/#person",
-        "name": "Daniela Petruzalek",
-        "url": "https://danicat.dev"
+        "@id": "https://example.com/about/#person",
+        "name": "Jane Doe",
+        "url": "https://example.com/about/"
       },
       "publisher": {
         "@type": "Organization",
-        "@id": "https://danicat.dev/#organization",
-        "name": "danicat.dev"
+        "@id": "https://example.com/#organization",
+        "name": "Example Engineering"
       }
     },
     {
       "@type": "TechArticle",
-      "@id": "https://docs.example.com/tools/acme-cli/#article",
+      "@id": "https://skills.example.com/tools/acme-cli/#article",
       "headline": "acme-cli Documentation",
       "description": "Best practices and guidelines for building developer workflows with acme-cli.",
-      "image": "https://danicat.dev/apple-touch-icon.png",
-      "url": "https://docs.example.com/tools/acme-cli/",
+      "image": "https://example.com/apple-touch-icon.png",
+      "url": "https://skills.example.com/tools/acme-cli/",
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://docs.example.com/tools/acme-cli/"
+        "@id": "https://skills.example.com/tools/acme-cli/"
       },
-      "datePublished": "2025-01-01T00:00:00Z",
+      "datePublished": "2026-01-01T00:00:00Z",
       "dateModified": "2026-08-20T00:00:00Z",
       "author": {
         "@type": "Person",
-        "@id": "https://danicat.dev/#person",
-        "name": "Daniela Petruzalek",
-        "url": "https://danicat.dev"
+        "@id": "https://example.com/about/#person",
+        "name": "Jane Doe",
+        "url": "https://example.com/about/"
       },
       "publisher": {
         "@type": "Organization",
-        "@id": "https://danicat.dev/#organization",
-        "name": "danicat.dev",
+        "@id": "https://example.com/#organization",
+        "name": "Example Engineering",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://danicat.dev/apple-touch-icon.png"
+          "url": "https://example.com/apple-touch-icon.png"
         }
       },
       "about": {
-        "@id": "https://docs.example.com/tools/acme-cli/#software"
+        "@id": "https://skills.example.com/tools/acme-cli/#software"
       }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://docs.example.com/tools/acme-cli/#breadcrumbs",
+      "@id": "https://skills.example.com/tools/acme-cli/#breadcrumbs",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
           "name": "Catalog",
-          "item": "https://docs.example.com/"
+          "item": "https://skills.example.com/"
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Developer Tools",
-          "item": "https://docs.example.com/tools/"
+          "item": "https://skills.example.com/tools/"
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": "acme-cli",
-          "item": "https://docs.example.com/tools/acme-cli/"
+          "item": "https://skills.example.com/tools/acme-cli/"
         }
       ]
     }
@@ -585,7 +584,7 @@ Combines `Person` (author), `Organization` (consistent publishing entity), `Soft
 
 ---
 
-### 6.2. Catalog Root / Homepage Schema
+### 6.2. Catalog root and homepage schema
 
 On catalog root domains, define the global `@graph` connecting the author, publisher organization, `WebSite` entity (for Google Site Names), and the `CollectionPage`:
 
@@ -595,48 +594,47 @@ On catalog root domains, define the global `@graph` connecting the author, publi
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://danicat.dev/#person",
-      "name": "Daniela Petruzalek",
-      "url": "https://danicat.dev",
-      "jobTitle": "Senior Developer Relations Engineer",
+      "@id": "https://example.com/about/#person",
+      "name": "Jane Doe",
+      "url": "https://example.com/about/",
+      "jobTitle": "Principal Software Engineer",
       "worksFor": {
         "@type": "Organization",
-        "name": "Google",
-        "url": "https://about.google/"
+        "name": "Example Corp",
+        "url": "https://example.com/"
       },
-      "image": "https://danicat.dev/images/chibi-dani.png",
+      "image": "https://example.com/images/avatar.png",
       "sameAs": [
-        "https://github.com/danicat",
-        "https://linkedin.com/in/petruzalek",
-        "https://bsky.app/profile/danicat83.bsky.social",
-        "https://x.com/danicat83",
-        "https://sessionize.com/daniela"
+        "https://github.com/example",
+        "https://www.linkedin.com/in/example/",
+        "https://bsky.app/profile/example.bsky.social",
+        "https://x.com/example"
       ]
     },
     {
       "@type": "Organization",
-      "@id": "https://danicat.dev/#organization",
-      "name": "danicat.dev",
-      "url": "https://danicat.dev",
+      "@id": "https://example.com/#organization",
+      "name": "Example Engineering",
+      "url": "https://example.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://danicat.dev/apple-touch-icon.png"
+        "url": "https://example.com/apple-touch-icon.png"
       }
     },
     {
       "@type": "WebSite",
-      "@id": "https://danicat.dev/#website",
-      "url": "https://skills.danicat.dev/",
-      "name": "danicat/skills",
+      "@id": "https://example.com/#website",
+      "url": "https://skills.example.com/",
+      "name": "example/skills",
       "description": "A curated collection of specialized Agent Skills for coding, game development, generative media, writing, and engineering standards.",
-      "publisher": { "@id": "https://danicat.dev/#organization" }
+      "publisher": { "@id": "https://example.com/#organization" }
     },
     {
       "@type": "CollectionPage",
-      "@id": "https://skills.danicat.dev/#catalog",
-      "url": "https://skills.danicat.dev/",
+      "@id": "https://skills.example.com/#catalog",
+      "url": "https://skills.example.com/",
       "name": "Agent Skills Catalog",
-      "isPartOf": { "@id": "https://danicat.dev/#website" },
+      "isPartOf": { "@id": "https://example.com/#website" },
       "about": {
         "@type": "ItemList",
         "name": "All Agent Skills",
@@ -646,7 +644,7 @@ On catalog root domains, define the global `@graph` connecting the author, publi
             "position": 1,
             "name": "acme-cli",
             "description": "Best practices for building developer workflows with acme-cli.",
-            "url": "https://docs.example.com/tools/acme-cli/"
+            "url": "https://skills.example.com/tools/acme-cli/"
           }
         ]
       }
@@ -657,23 +655,23 @@ On catalog root domains, define the global `@graph` connecting the author, publi
 
 ---
 
-## 7. Google Rich Results Data Quality & Warning Elimination Guide
+## 7. Google Rich Results data quality and warning elimination guide
 
 When validating with [Google's Rich Results Test](https://search.google.com/test/rich-results), Google enforces strict property rules:
 
 | Issue / Warning in Test | Root Cause | Exact Solution |
 | :--- | :--- | :--- |
 | **"No rich results detected" on Homepage** | Normal behavior: Google Rich Results tool only evaluates rich snippet card types (Articles, Products, Recipes). Root `Person`, `Organization`, and `WebSite` nodes are used for Google Knowledge Graph and Site Names, not rich snippets. | No fix needed. Ensure `WebSite.name`, `Organization.logo`, and `Person.sameAs` are present for Knowledge Graph. |
-| **"Missing field 'image'" (in 'TechArticle' or 'Article')** | Google requires a hero image or app icon for visual article cards. | Add `"image": "https://danicat.dev/apple-touch-icon.png"` (or an array of 16x9, 4x3, 1x1 image URLs) directly to `TechArticle`. |
-| **"Missing field 'name' (in 'author')"** | Referring to `author` solely by `@id` causes isolated entity validators to fail if they do not resolve the graph link inline. | Inline the author name & URL: <br>`"author": { "@type": "Person", "@id": "https://danicat.dev/#person", "name": "Daniela Petruzalek", "url": "https://danicat.dev" }` |
-| **"Missing field 'publisher.logo'"** | `publisher` reference lacks a resolvable image URL. | Include `"logo": { "@type": "ImageObject", "url": "https://danicat.dev/apple-touch-icon.png" }` on the `Organization`. |
+| **"Missing field 'image'" (in 'TechArticle' or 'Article')** | Google requires a hero image or app icon for visual article cards. | Add `"image": "https://example.com/apple-touch-icon.png"` (or an array of 16x9, 4x3, 1x1 image URLs) directly to `TechArticle`. |
+| **"Missing field 'name' (in 'author')"** | Referring to `author` solely by `@id` causes isolated entity validators to fail if they do not resolve the graph link inline. | Inline the author name & URL: <br>`"author": { "@type": "Person", "@id": "https://example.com/about/#person", "name": "Jane Doe", "url": "https://example.com/about/" }` |
+| **"Missing field 'publisher.logo'"** | `publisher` reference lacks a resolvable image URL. | Include `"logo": { "@type": "ImageObject", "url": "https://example.com/apple-touch-icon.png" }` on the `Organization`. |
 | **"Unrecognized value for 'operatingSystem'"** | Using `"Any"` is non-standard in Google's taxonomy. | Change `"Any"` to `"Cross-platform"` or `"macOS, Linux, Windows"`. |
-| **"Invalid 'mainEntityOfPage'"** | Providing `mainEntityOfPage` as a plain string URL can fail type checkers. | Format as an object: <br>`"mainEntityOfPage": { "@type": "WebPage", "@id": "https://skills.danicat.dev/..." }` |
-| **Organization Identity Inconsistency** | Child pages define competing organization entities (e.g., `danicat/skills` vs `danicat.dev`). | Standardize the organization root entity across all pages to `https://danicat.dev/#organization` with name `"danicat.dev"`. |
+| **"Invalid 'mainEntityOfPage'"** | Providing `mainEntityOfPage` as a plain string URL can fail type checkers. | Format as an object: <br>`"mainEntityOfPage": { "@type": "WebPage", "@id": "https://skills.example.com/..." }` |
+| **Organization Identity Inconsistency** | Child pages define competing organization entities (e.g., `example/skills` vs `example.com`). | Standardize the organization root entity across all pages to `https://example.com/#organization` with name `"Example Engineering"`. |
 
 ---
 
-## 8. Testing & Validation Checklist
+## 8. Testing and validation checklist
 
 Always validate your structured data prior to publication:
 

@@ -10,104 +10,98 @@ description: >
 license: Apache-2.0
 metadata:
   category: analytics
-  tags: "buffer, social-media, analytics, sql, metrics, optimization"
+  tags: "buffer, social-media, engagement, impressions, posts"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.0"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Buffer Analytics: SQLite Ingestion & SQL Query Engine
+# Buffer analytics
 
-The `buffer-analytics` skill provides high-performance data warehousing and SQL querying for social media data downloaded via the Buffer CLI (`@bufferapp/cli`). It ingests raw payloads without filtering into a local SQLite database and provides a SQL interface for deep content crunching.
+The `buffer-analytics` skill pulls social post history and engagement metrics through the Buffer CLI (`@bufferapp/cli`) into a local `SQLite` database (`buffer_analytics.db`). It keeps complete raw JSON payloads alongside normalized relational tables for SQL querying.
 
 ## Available scripts
-- `scripts/buffer_analytics.py`: Automated sync and report CLI (incremental sync, backfill, pre-packaged reports, ad-hoc queries). Executed via `uv run scripts/buffer_analytics.py` (requires Node.js 18+ and `@bufferapp/cli`).
-- `scripts/test_buffer_analytics.py`: Unit and regression test suite validating schema, query extraction, and CLI flags.
+- `scripts/buffer_analytics.py`: Automated sync, reporting, and SQL CLI (`uv run scripts/buffer_analytics.py`; requires `Node.js 20+` and `@bufferapp/cli`).
+- `scripts/test_buffer_analytics.py`: Unit and regression suite covering schema definitions, Markdown SQL blocks, backfill filters, and CLI commands.
 
 ---
 
-## ⚡ Quick Start & Primary Actions
+## Quick start and primary actions
 
-All operations are driven via the bundled Python script in `scripts/buffer_analytics.py`:
+Run all operations with `scripts/buffer_analytics.py`:
 
 ```bash
-# 1. Incremental Sync (New posts + 2-day lookback metrics refresh)
+# 1. Incremental sync (new posts plus a 2-day lookback metrics refresh)
 uv run scripts/buffer_analytics.py sync --db path/to/database.db
 
-# 2. Full Historical Backfill (Paginates through entire history)
+# 2. Full historical backfill (paginates through full post history)
 uv run scripts/buffer_analytics.py sync --full --db path/to/database.db
 
-# 3. Run Pre-Packaged Reports
+# 3. Run pre-packaged reports
 uv run scripts/buffer_analytics.py report overview --db path/to/database.db
 uv run scripts/buffer_analytics.py report top-posts --db path/to/database.db
 uv run scripts/buffer_analytics.py report channels --db path/to/database.db
 uv run scripts/buffer_analytics.py report timing --db path/to/database.db
 uv run scripts/buffer_analytics.py report hooks --db path/to/database.db
 
-# 4. Run Ad-Hoc SQL Query
+# 4. Run an ad-hoc SQL query
 uv run scripts/buffer_analytics.py query "SELECT service, AVG(impressions), AVG(reactions) FROM v_posts_summary WHERE status = 'sent' GROUP BY service" --db path/to/database.db
 ```
 
-If `--db` is omitted, the script defaults to `buffer_analytics.db` in the current working directory.
+When you omit `--db`, the script defaults to `buffer_analytics.db` in the current working directory.
 
 ---
 
-## 🗄️ Database Schema & Relational Structure
+## Database schema and relational structure
 
-The database maintains 6 normalized relational tables and high-performance SQL views. Detailed DDL and schema definitions are in [`references/schema.md`](references/schema.md).
+The database maintains `6` tables and `1` pivoted view (`v_posts_summary`). See [`references/schema.md`](references/schema.md) for full column definitions and constraints.
 
 ### Tables
 
-1. **`channels`**: Connected social accounts and metadata.
-   - Key columns: `id` (PK), `organization_id`, `name`, `service` (`linkedin`, `twitter`, `bluesky`), `display_name`, `timezone`, `is_disconnected`, `raw_json`, `synced_at`.
-2. **`posts`**: Individual posts, scheduling state, and content.
-   - Key columns: `id` (PK), `channel_id` (FK), `channel_service`, `status` (`sent`, `scheduled`, `draft`), `text`, `external_link`, `sent_at`, `due_at`, `char_count`, `word_count`, `has_link`, `has_media`, `thread_count`, `raw_json`, `synced_at`.
-3. **`post_metrics`**: Time-series metrics per post.
-   - Key columns: `id` (PK), `post_id` (FK), `channel_service`, `metric_type` (`impressions`, `reach`, `reactions`, `comments`, `reposts`, `clicks`, `engagementRate`), `value`, `synced_at`.
-4. **`post_assets`**: Attached images, videos, and media URLs.
-   - Key columns: `id` (PK), `post_id` (FK), `type`, `mime_type`, `source`, `thumbnail`, `raw_json`.
-5. **`post_tags`**: Campaign and topic tags assigned in Buffer.
-   - Key columns: `id`, `post_id` (FK), `name`, `color`.
-6. **`sync_history`**: Audit trail of all sync executions.
-   - Key columns: `id` (PK), `channel_id`, `sync_mode`, `posts_fetched`, `posts_inserted`, `posts_updated`, `started_at`, `status`.
+1. **`channels`**: Connected social accounts and metadata (`id`, `organization_id`, `name`, `service`, `display_name`, `timezone`, `is_disconnected`, `raw_json`, `synced_at`).
+2. **`posts`**: Individual posts, scheduling status, body copy, and link flags (`id`, `channel_id`, `channel_service`, `status`, `text`, `external_link`, `sent_at`, `due_at`, `char_count`, `word_count`, `has_link`, `has_media`, `thread_count`, `raw_json`, `synced_at`).
+3. **`post_metrics`**: Metrics per post (`id`, `post_id`, `channel_service`, `metric_type`, `value`, `synced_at`).
+4. **`post_assets`**: Attached images, videos, and media URLs (`id`, `post_id`, `type`, `mime_type`, `source`, `thumbnail`, `raw_json`).
+5. **`post_tags`**: Campaign tags assigned in Buffer (`id`, `post_id`, `name`, `color`).
+6. **`sync_history`**: Audit log of sync runs (`id`, `channel_id`, `sync_mode`, `posts_fetched`, `posts_inserted`, `posts_updated`, `started_at`, `status`).
 
 ---
 
-## 📊 Core Analytical View: `v_posts_summary`
+## Core analytical view: `v_posts_summary`
 
-The primary view for SQL analytics is `v_posts_summary`, which pivots metrics and computes calendar dimensions:
+The main reporting view `v_posts_summary` pivots per-post metrics and calendar dimensions:
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
-| `post_id` | `TEXT` | Buffer Post ID |
-| `service` | `TEXT` | Network (`linkedin`, `twitter`, `bluesky`) |
-| `channel_name` | `TEXT` | Account handle/name |
-| `status` | `TEXT` | `sent`, `scheduled`, `draft` |
-| `sent_at` | `TEXT` | Full ISO timestamp |
+| `post_id` | `TEXT` | Buffer post ID |
+| `service` | `TEXT` | Social network (`linkedin`, `twitter`, `bluesky`) |
+| `channel_name` | `TEXT` | Account handle or name |
+| `status` | `TEXT` | `sent`, `scheduled`, or `draft` |
+| `sent_at` | `TEXT` | Full ISO publication timestamp |
 | `sent_date` | `TEXT` | Publication date (`YYYY-MM-DD`) |
 | `year_month` | `TEXT` | Calendar month (`YYYY-MM`) |
-| `day_of_week` | `TEXT` | Day name (`Monday`, `Tuesday`, etc.) |
-| `hour_of_day` | `INTEGER` | UTC hour (0–23) |
-| `char_count` / `word_count` | `INTEGER` | Text length metrics |
-| `has_link` / `has_media` | `INTEGER` | 1 if link or media is present |
-| `thread_count` | `INTEGER` | Number of posts in thread |
-| `impressions` | `REAL` | Total impressions / views |
+| `day_of_week` | `TEXT` | Day name (`Monday` through `Sunday`) |
+| `hour_of_day` | `INTEGER` | UTC hour (`0 to 23`) |
+| `char_count` / `word_count` | `INTEGER` | Body text length metrics |
+| `has_link` / `has_media` | `INTEGER` | `1` when post body/attachments contain a URL or media |
+| `thread_count` | `INTEGER` | Number of items in thread |
+| `impressions` | `REAL` | Total impressions or views |
 | `reach` | `REAL` | Unique accounts reached |
 | `reactions` | `REAL` | Likes and reactions |
 | `comments` | `REAL` | Comments received |
-| `reposts` | `REAL` | Retweets / reshares |
+| `reposts` | `REAL` | Shares and quotes |
 | `clicks` | `REAL` | Link click count |
-| `engagement_rate` | `REAL` | Total engagement % |
-| `external_link` | `TEXT` | Live post URL |
-| `text` | `TEXT` | Full text copy |
+| `engagement_rate` | `REAL` | Engagement percentage |
+| `external_link` | `TEXT` | Live post permalink |
+| `text` | `TEXT` | Full post text copy |
 
 ---
 
-## 🔍 SQL Analytics Cookbook
+## SQL analytics cookbook
 
-Pre-tested SQL query recipes are documented in [`references/queries.md`](references/queries.md).
+Pre-tested queries live in [`references/queries.md`](references/queries.md).
 
-### 1. Best Day of the Week by Channel
+### 1. Best day of the week by channel
 ```sql
 SELECT
     service,
@@ -122,7 +116,7 @@ GROUP BY service, day_of_week
 ORDER BY service, avg_impressions DESC;
 ```
 
-### 2. Best Posting Hours (UTC)
+### 2. Best posting hours (UTC)
 ```sql
 SELECT
     service,
@@ -137,11 +131,11 @@ HAVING COUNT(*) >= 3
 ORDER BY avg_impressions DESC;
 ```
 
-### 3. Impact of Links in Body vs. First Comment
+### 3. In-body URLs vs. posts without body links
 ```sql
 SELECT
     service,
-    CASE WHEN has_link = 1 THEN 'Link in Body' ELSE 'No Link / First Comment' END AS placement,
+    CASE WHEN has_link = 1 THEN 'In-body URL' ELSE 'No in-body URL' END AS placement,
     COUNT(*) AS posts,
     ROUND(AVG(impressions), 0) AS avg_impressions,
     ROUND(AVG(reactions), 1) AS avg_reactions
@@ -152,9 +146,9 @@ GROUP BY placement;
 
 ---
 
-## 📚 Progressive Disclosure & References
+## Progressive disclosure and references
 
-- **Full DDL Schema Reference**: [`references/schema.md`](references/schema.md) — Exact SQL table definitions, column types, constraints, and views.
-- **SQL Query Recipes**: [`references/queries.md`](references/queries.md) — Analytical queries for timing, link penalties, hooks, and topic cohorts.
-- **Workflows Guide**: [`references/workflows.md`](references/workflows.md) — Operational guidance for periodic backfills and cron automations.
-- **Inquiry Playbook**: [`references/inquiry_playbook.md`](references/inquiry_playbook.md) — Strategic questions for campaign and social retrospectives.
+- **Full DDL schema reference**: [`references/schema.md`](references/schema.md): Exact `SQLite` table definitions, column types, constraints, and views.
+- **SQL query recipes**: [`references/queries.md`](references/queries.md): Analytical queries for timing, link placement, hooks, and topic cohorts.
+- **Workflows guide**: [`references/workflows.md`](references/workflows.md): Operational commands for full syncs, incremental updates, and scheduled automation.
+- **Inquiry playbook**: [`references/inquiry_playbook.md`](references/inquiry_playbook.md): Statistical baselines (`SQLite` medians) and campaign retrospective guides.

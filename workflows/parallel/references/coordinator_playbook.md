@@ -1,143 +1,123 @@
-# Coordinator Playbook & Operational Protocols
+# Coordinator playbook and operational protocols
 
-This reference guide provides the step-by-step operational protocol for the ROOT Coordinator agent executing under the `/parallel` skill.
+This guide covers the step-by-step operational protocol for the Root Coordinator running the parallel workflow.
 
 ---
 
-## 1. The Coordinator Mandate
+## 1. The Coordinator mandate
 
 The Root Coordinator is an architectural director and workflow manager.
 
 > [!IMPORTANT]
-> **The Three Invariants of the Parallel Coordinator:**
-> 1. **Immediate Yield (Hard Constraint)**: You MUST stop calling tools immediately after spawning workers so the user chat session remains unblocked and responsive.
-> 2. **Delegation over Execution**: You MUST NEVER perform the execution tasks yourself (e.g., writing large production code, running full benchmark sweeps, doing deep web crawls). Subagents do the work; the Coordinator coordinates and synthesizes.
-> 3. **Sole User Interface**: Subagents do not possess `ask_question`. All user clarifications must be routed through the Coordinator.
+> **The three invariants of the parallel Coordinator:**
+> 1. **Immediate Yield (Hard Constraint):** End your turn immediately after dispatching workers so the main chat session remains unblocked and responsive.
+> 2. **Delegation over Execution:** Never perform heavy execution directly (such as writing bulk production code, running long benchmark sweeps, or crawling large doc sets). Subagents execute; the Coordinator plans, dispatches, and reconciles.
+> 3. **Sole User Interface:** Subagents never prompt the user directly. Route all user clarifications through the Coordinator.
 
 ---
 
-## 2. Invocation Parsing & Budget Calculation
+## 2. Budget resolution and auto sizing
 
-When invoked with `/parallel`, parse the user's intent systematically:
+Resolve the user's requested concurrency budget (`DOP`) before slicing the task:
 
-```
-+--------------------------------------------------------------------------+
-|                       BUDGET RESOLUTION RULES                            |
-|                                                                          |
-|  Expression                              Calculated DOP / Action         |
-|  ----------------------------------------------------------------------  |
-|  /parallel 6                             DOP = 6                         |
-|  /parallel dop: 8                        DOP = 8                         |
-|  /parallel budget 4                      DOP = 4                         |
-|  /parallel 3 planning, 8 execution       Phase 1: DOP = 3; Phase 2: 8    |
-|  /parallel (no number provided)          Default DOP = 5 (or 10 if large)|
-|  /parallel 1 (minimum budget)            DOP = 1 (spawns 1 worker subagent|
-|                                          to keep main session unblocked!)|
-+--------------------------------------------------------------------------+
-```
+| User Specification | Resolved DOP / Action |
+| :--- | :--- |
+| **Numeric budget** (`DOP = 6`, `budget 4`, `6 workers`) | `DOP = N` |
+| **Automatic sizing** (`parallel(auto)`, `DOP = auto`, keyword `auto`) | Coordinator selects optimal `DOP` balancing orthogonality, isolation, and cost |
+| **Multi-phase budget** (`plan with DOP 3, build with 8`, or `plan with auto, build with 10`) | Phase-specific `DOP` applied at each stage barrier |
+| **No budget specified** | Resolve using `auto` (typically `3` to `5` workers, or `8` to `10` for large codebases) |
+| **Minimum budget** (`DOP = 1`) | Spawns `1` worker subagent so the main session remains unblocked |
 
-### Budget Utilization Principle:
-- It is strongly recommended to use the **full allocated budget** to maximize concurrency and throughput.
-- At minimum, the task must use at least **1 subagent**. Even with `DOP = 1`, the Coordinator dispatches the task to a subagent and yields the turn, ensuring the main chat session remains unblocked for user interaction.
+### `parallel(auto)` sizing procedure
 
----
+When `DOP` is set to `auto` (via `parallel(auto)`, `DOP = auto`, or an omitted count):
+1. **Find natural orthogonal slices:** Count distinct modules, files, research facets, or chapters that have no shared write targets.
+2. **Preserve context isolation:** Keep noisy reads, deep logs, or competing designs in separate workers so one slice does not pollute another.
+3. **Avoid over-splitting:** Merge tiny or tightly coupled micro-tasks into a single worker whenever dispatch and Reduce overhead would outweigh parallel speedup.
+4. **Declare your chosen `DOP`:** Briefly state the chosen worker count and rationale when acknowledging dispatch to the user.
 
-## 3. Subagent Definition & Dispatch Standards
-
-When invoking workers via `invoke_subagent`:
-
-```json
-{
-  "Subagents": [
-    {
-      "TypeName": "research",
-      "Role": "Facet A Researcher",
-      "Prompt": "Investigate ... Return findings via send_message to parent.",
-      "Model": "inherit"
-    }
-  ]
-}
-```
-
-### Mandatory Subagent Configuration Rules:
-1. **Model Selection**: ALWAYS set `Model: 'inherit'`. Never hardcode a specific model name. This guarantees seamless model and reasoning effort inheritance.
-2. **Explicit Output Contract (Two-Tier Protocol)**: Every worker prompt must instruct the subagent:
-   - What specific slice or angle to investigate or build.
-   - To write its exhaustive output, raw logs, and full analysis directly to disk (e.g., `staging/worker_<id>.md` or `<scratch>/worker_<id>.md`).
-   - To send only a compact completion message (< 2,000 characters) via `send_message` containing:
-     - Status: pass, fail, or blocked.
-     - Path to the disk output file.
-     - A bulleted list: `Must-Keep Mental Models & Deal-Breakers`.
-3. **No Sibling Messaging**: Workers do not know about other workers. They report strictly up to the parent.
+### Budget utilization rule
+- When the user sets an **explicit numeric `DOP`**, use the full allocated budget whenever enough independent slices exist.
+- At minimum, delegate to **1 subagent** (`DOP >= 1`) so the Coordinator session never blocks on inline execution.
 
 ---
 
-## 4. The Fire-and-Yield Execution Step
+## 3. Worker briefing and dispatch standards
 
-After calling `invoke_subagent`, the Coordinator executes the following sequence:
+Dispatch parallel workers concurrently using clear, self-contained briefings:
 
+```markdown
+Role: [Specific Slice Role, e.g., Facet A Researcher or Package Author]
+Slice Scope: [Exclusive topic facet, module, or target file paths]
+Off-Limits Paths: [Everything outside assigned slice]
+Output File: Write full findings, raw logs, or staged draft to staging/worker_<id>.md
+Return Summary (< 2,000 chars):
+- Status: pass, fail, or blocked
+- Output file path on disk
+- Must-Keep Mental Models and Deal-Breakers (concise bullets)
 ```
-[ Call invoke_subagent(Subagents=[...]) ]
+
+### Mandatory worker configuration rules
+1. **Model Inheritance:** By default, workers inherit the parent session's model, reasoning effort, and workspace capabilities unless the user explicitly asks for a specific tier.
+2. **Two-Tier Output Contract:** Workers save exhaustive outputs, logs, or staged drafts to disk (`staging/worker_<id>.md`) and return only a compact status summary (`< 2,000` characters) to the Coordinator.
+3. **No Sibling Messaging:** Workers operate independently and communicate only upward to the Coordinator.
+
+---
+
+## 4. The fire-and-yield execution step
+
+After launching workers, execute this sequence cleanly:
+
+```text
+[ Dispatch N parallel worker briefings ]
                   |
                   v
-[ Provide brief, clean user acknowledgement ]
-  "Dispatched N parallel workers. Standing by for progress..."
+[ Post brief user acknowledgement ]
+  "Dispatched N parallel workers (DOP = N). Standing by for results..."
                   |
                   v
 [ STOP CALLING TOOLS IMMEDIATELY ]
-  (Turn ends. Main session is completely unblocked.)
+  (Turn ends. Main session stays completely unblocked.)
 ```
 
-### DO NOT:
-- Do NOT call `sleep` or schedule arbitrary timers to wait for workers.
-- Do NOT call `manage_task(Action="status")` or poll in a loop.
-- The messaging system will automatically wake the Coordinator when a worker calls `send_message`.
+### Never do
+- Never run `sleep`, busy-wait timers, or synchronous polling loops while waiting for workers.
+- Never check worker status in a tight loop; rely on reactive wakeups when workers finish.
 
 ---
 
-## 5. Reactive Event Handling
+## 5. Reactive event handling
 
-While workers execute in the background, the Coordinator will wake up on two distinct events:
+While workers run in the background, the Coordinator responds to three event types:
 
-### Event A: Subagent Progress or Completion Message
-1. Ingest the worker's findings or verification logs.
-2. Check off the completed subtask in the coordinator's internal state.
-3. If more tasks remain in the backlog (`Tasks > DOP`), immediately dispatch the next task to a fresh worker.
-4. If all tasks for the current phase are complete, trigger the **Reduce** step.
-5. If the phase is part of a multi-phase pipeline, prepare and dispatch the next phase.
+### Event A: worker completion or progress update
+1. Ingest the worker's summary and verify the output file on disk.
+2. Mark the completed slice in your internal tracking list.
+3. If queued items remain (`Tasks > DOP`), launch a fresh worker for the next slice.
+4. Once all phase tasks finish, run the **Reduce** phase.
+5. If part of a multi-phase pipeline, verify the stage barrier and dispatch the next phase.
 
-### Event B: User In-Flight Interruption or Steering
-Because the main session is unblocked, the user may send messages at any time:
+### Event B: user in-flight interruption or steering
+Because the main session stays unblocked, the user can send messages mid-run:
 
-1. **Status Inquiry ("What's the status?", "How is it going?"):**
-   - Call `manage_subagents(Action="list")` to inspect live states.
-   - Present a concise, crisp progress report.
-   - Yield turn immediately.
-2. **Scope Revision ("Also look into aspect Z", "Prioritize Y"):**
-   - If workers are already in-flight, send guidance via `send_message` or adjust the backlog.
-   - If necessary, terminate obsolete workers via `manage_subagents(Action="kill")`.
-3. **Cancellation ("Stop this"):**
-   - Call `manage_subagents(Action="kill_all")`.
-   - Acknowledge cancellation to user and yield.
+1. **Status inquiry (`"What is the status?"`):** Inspect active worker states, present a crisp summary, and yield immediately.
+2. **Scope revision (`"Also inspect Z"`, `"Prioritize Y"`):** Redirect active workers or update remaining queued slices; cancel obsolete tasks if needed.
+3. **Cancellation (`"Stop this"`):** Cancel all running workers, confirm cancellation to the user, and yield.
 
-### Event C: Subagent Escalation / Question
-If a subagent encounters an ambiguous requirement:
-1. Subagent sends message to Coordinator.
-2. Coordinator evaluates whether user input is needed.
-3. If yes, Coordinator calls `ask_question` to clarify with user.
-4. Coordinator relays the user's answer back to the subagent via `send_message`.
+### Event C: worker escalation or ambiguity
+If a worker hits a missing decision or requirement conflict:
+1. Worker pauses and reports the ambiguity upward to the Coordinator.
+2. Coordinator checks existing workspace files and specs to see whether the answer is already on disk.
+3. If user judgment is genuinely needed, Coordinator asks the user directly and relays the decision back to the worker.
 
 ---
 
-## 6. The Reduce & Delivery Protocol
+## 6. The Reduce and delivery protocol
 
-When all worker tasks conclude:
+When all workers finish:
 
-1. **Audit Deliverables**: Verify all deliverables exist on disk and are free of dummy placeholders.
-2. **Reconcile Must-Keep Models**: Check off every worker's `Must-Keep Mental Models & Deal-Breakers` bullet list against the synthesis to guarantee zero signal loss across context boundaries.
-3. **Merge & Reconcile**: Merge staged files, wire modules, or build the synthesized comparison matrix.
-4. **Validate**: If applicable, run verification checks (lint, build, unit test, link audit).
-5. **Deliver**: Present the consolidated outcome to the user with a concise summary of parallel execution statistics:
-   - Total workers executed.
-   - Tasks completed.
-   - Key findings / architectural deliverables.
+1. **Audit deliverables:** Verify that all expected output files exist on disk and contain no leftover placeholders (`TODO`, `FIXME`, or stubs).
+2. **Reconcile Must-Keep models:** Check off every worker's `Must-Keep Mental Models and Deal-Breakers` bullets so critical constraints are not lost during synthesis.
+3. **Merge and integrate:** Assemble staged files into the final target, wire modules together, or compile the comparison matrix.
+4. **Validate:** Run integrated build, test, lint, or link verification across the combined output.
+5. **Deliver:** Present the final verified result with concise execution stats (workers deployed, slices completed, and key findings).

@@ -1,0 +1,5 @@
+title "Crystal Gem Shimmer"
+type sfx
+
+inst gem preset=gem_shimmer vol=0.28 mod_index=3.0->0.5
+track sparkle gem: G6:60ms B6:60ms D7:70ms G7:250ms

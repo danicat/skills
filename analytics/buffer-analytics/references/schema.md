@@ -1,10 +1,10 @@
-# Buffer Analytics SQLite Schema Reference
+# Buffer analytics SQLite schema reference
 
 The Buffer Analytics database is created and maintained automatically by `scripts/buffer_analytics.py`. Database tables, indexes, and analytical views are provisioned during sync operations.
 
 ---
 
-## 1. Relational Tables
+## 1. Relational tables
 
 ### `channels`
 Stores connected social media channel profiles and account configuration.
@@ -51,7 +51,7 @@ Stores individual social media posts, scheduling lifecycle status, and text cont
 | `first_comment` | `TEXT` | | Scheduled first comment text |
 | `char_count` | `INTEGER` | | Total character count of post body |
 | `word_count` | `INTEGER` | | Total word count of post body |
-| `has_link` | `INTEGER` | DEFAULT 0 | 1 if post contains URLs or external links |
+| `has_link` | `INTEGER` | DEFAULT 0 | `1` if post body or link attachment contains a URL (excludes the post's own `external_link` permalink) |
 | `has_media` | `INTEGER` | DEFAULT 0 | 1 if post contains image or video attachments |
 | `raw_json` | `TEXT` | NOT NULL | Complete raw JSON payload from Buffer API |
 | `synced_at` | `TEXT` | NOT NULL | Timestamp of local database sync |
@@ -125,7 +125,7 @@ Audit log recording every backfill and incremental sync operation.
 
 ---
 
-## 2. Analytical SQL Views
+## 2. Analytical SQL views
 
 ### `v_posts_summary`
 Primary analytical view flattening posts with pivoted metrics, engagement rate calculations, and temporal calendar dimensions.
@@ -140,10 +140,10 @@ Primary analytical view flattening posts with pivoted metrics, engagement rate c
 | `sent_date` | `TEXT` | Date string (`YYYY-MM-DD`) |
 | `year_month` | `TEXT` | Year and month string (`YYYY-MM`) |
 | `day_of_week` | `TEXT` | Full day name (`Monday`, `Tuesday`, `Wednesday`, etc.) |
-| `hour_of_day` | `INTEGER` | UTC hour of publication (0 to 23) |
+| `hour_of_day` | `INTEGER` | UTC hour of publication (`0 to 23`) |
 | `char_count` | `INTEGER` | Body text character count |
 | `word_count` | `INTEGER` | Body text word count |
-| `has_link` | `INTEGER` | 1 if external links are present in text |
+| `has_link` | `INTEGER` | `1` when a URL appears in post text or link attachment metadata |
 | `has_media` | `INTEGER` | 1 if image or video attachments are present |
 | `thread_count` | `INTEGER` | Number of posts in thread |
 | `external_link` | `TEXT` | Live social network URL |

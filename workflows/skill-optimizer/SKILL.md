@@ -11,7 +11,7 @@ metadata:
   category: workflows
   tags: "skills, agent-skills, optimization, standards"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.2"
+  version: "0.6.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -21,7 +21,7 @@ Procedures, authoring principles, and quality standards for creating, auditing, 
 
 ## Available scripts
 
-- **`scripts/count_tokens.py`** — Audits skills and categories against Tier 1, 2, and 3 token limits using Vertex AI ADC, Gemini API, or offline heuristic.
+- **`scripts/count_tokens.py`**: Audits skills and categories against Tier 1, 2, and 3 token limits using Gemini Enterprise / Vertex AI ADC, Gemini API, or an offline heuristic.
 
 ---
 
@@ -29,19 +29,19 @@ Procedures, authoring principles, and quality standards for creating, auditing, 
 
 Skills use a 3-tier progressive disclosure model to minimize token consumption:
 
-1. **Tier 1 — Routing & Discovery Metadata** (~50–100 words / <= 150 tokens):
+1. **Tier 1: Routing & Discovery Metadata** (~50–100 words / <= 150 tokens):
    - **Fields**: `name` (1–64 characters) and `description` (1–1024 characters).
    - **Runtime behavior**: Injected into the model's system prompt at startup for all available skills so the orchestrator can route tasks accurately.
    - **Budget limit**: Keep routing tokens <= 150 (ideal ~100 tokens). Keep description <= 1024 characters.
 
-2. **Tier 2 — Skill Instructions & Body** (< 5,000 tokens / < 500 lines):
+2. **Tier 2: Skill Instructions & Body** (< 5,000 tokens / < 500 lines):
    - **Scope**: The main `SKILL.md` body (excluding frontmatter).
    - **Runtime behavior**: Loaded into active context only when the skill is explicitly activated.
    - **Budget limit**: Strict limit of <= 5,000 tokens and <= 500 lines. Move detailed API tables, expansive guides, and catalogs into Tier 3.
 
-3. **Tier 3 — On-Demand Resources & References**:
+3. **Tier 3: On-Demand Resources & References**:
    - **Scope**: Subdirectories loaded only when explicitly requested by instructions:
-     - `references/`: Domain guides, schemas, cheat sheets, and syntax rules. Formatted as **Open Knowledge Format (OKF v0.2)** concept markdown documents with YAML frontmatter (`type`, `resource`, `sources`, `verified`) and an `index.md` bundle map for progressive disclosure.
+     - `references/`: Domain guides, schemas, cheat sheets, and syntax rules stored as focused Markdown files for progressive disclosure.
      - `scripts/`: Executable helper tools and automation scripts.
      - `assets/`: Static templates, seed data, or boilerplate files.
 
@@ -49,7 +49,7 @@ Skills use a 3-tier progressive disclosure model to minimize token consumption:
 
 ## Frontmatter Specification & Metadata Guidelines
 
-Every skill must provide valid YAML frontmatter containing core identifiers, licensing, and an authoritative canonical URL:
+Every skill must provide valid YAML frontmatter containing core identifiers, licensing, and a catalog URL:
 
 ```yaml
 ---
@@ -64,7 +64,7 @@ metadata:
   tags: "go, refactoring, testing, quality"
   author: Maintainer Name (maintainer@example.com)
   version: "1.0.0"
-  canonical: https://skills.example.com/coding/my-skill/
+  catalog: https://skills.example.com
 compatibility: Requires Go 1.22+
 allowed-tools: Bash(go:*) Read
 ---
@@ -76,7 +76,7 @@ allowed-tools: Bash(go:*) Read
 - `name` (required): 1-64 characters, lowercase alphanumeric and single hyphens (`a-z`, `0-9`, `-`). No consecutive hyphens (`--`), no leading/trailing hyphens. Must match directory name exactly.
 - `description` (required): 1-1024 characters. Non-empty. Follows the 3-Part Skill Description Blueprint (Definition & Scope + Superpower + Human Triggers). Do not include internal implementation plumbing.
 - `license` (required): Short SPDX license identifier (e.g., `Apache-2.0`, `MIT`) or path to a bundled license.
-- `compatibility` (optional): Environment or tool requirements (e.g., `Requires Python 3.11+`). Omit if standard.
+- `compatibility` (optional): Plain string stating environment or runtime requirements per the Agent Skills specification (e.g., `Requires Python 3.12+ and uv`, max 500 characters). Never use a nested YAML mapping or list. Omit if standard.
 - `allowed-tools` (optional): Space-separated list of pre-approved tools (experimental).
 
 #### 2. Metadata Block (`metadata`)
@@ -84,8 +84,8 @@ allowed-tools: Bash(go:*) Read
 - `tags` (recommended): 3 to 6 high-level domain anchors for search and categorization. Avoid redundant synonym stuffing.
 - `author` (recommended): Maintainer attribution string (e.g., `Author Name (email@example.com)` or organization name).
 - `version` (recommended): Semantic Versioning SemVer 2.0.0 (`MAJOR.MINOR.PATCH`).
-- `canonical` (recommended): The authoritative web URL pointing to the skill's published documentation (e.g., `https://skills.example.com/<category>/<skill-name>/`).
-  - **Single Canonical URL Standard**: Avoid duplicating `homepage` and `repository` fields in frontmatter when a single canonical URL suffices. This reduces metadata overhead by ~60–80 tokens per skill while maintaining full provenance.
+- `catalog` (recommended): Base URL of the published Agent Skills catalog hosting the skill (e.g., `https://skills.example.com`, serving `.well-known/agent-skills/index.json`).
+  - **Single Catalog URL Standard**: Avoid duplicating `homepage` and `repository` fields in frontmatter when a single `catalog` URL suffices. This reduces metadata overhead by ~60 to 80 tokens per skill while preserving provenance.
 
 #### 3. Zero Contamination Gate
 All public skills must be strictly generic, modular, and platform-agnostic:
@@ -146,9 +146,9 @@ uv run scripts/count_tokens.py path/to/my-skill/SKILL.md --json
 ```
 
 **Authentication & Models**:
-- **Vertex AI ADC (Default)**: Automatically detects Application Default Credentials (`gcloud auth application-default login`) with model `gemini-3.7-flash` and location `global`.
+- **Gemini Enterprise / Vertex AI ADC (Default)**: Automatically detects Application Default Credentials (`gcloud auth application-default login`, or `GOOGLE_GENAI_USE_ENTERPRISE=true` / `GOOGLE_GENAI_USE_VERTEXAI=true`) with model `gemini-4-hydrogen` and location `global`.
 - **Gemini Developer API**: Set `export GEMINI_API_KEY="..."` to authenticate directly via Gemini API.
-- **Offline Fallback**: Automatically falls back to an offline ~4 chars/token heuristic if no network or credentials are available.
+- **Offline Fallback**: Pass `--heuristic-only` (or let the script fall back automatically when offline) to estimate ~4 chars/token without network calls.
 
 ### Stage 2: Description, Trigger & Tag Optimization
 
@@ -175,6 +175,7 @@ The frontmatter `description` is the primary text loaded by orchestrators at sta
 #### Trigger Discipline (The Anti-Pushy Rule)
 - **Eliminate Artificial Coercion**: Avoid phrases like *"Activate even if the user does not explicitly mention..."* or *"Trigger whenever anything related is requested"*. Overly aggressive trigger language causes false positives and pollutes the context window during multi-turn chats.
 - **Describe Problem Traits, Not Model Behavior**: Guide the orchestrator by detailing the **problem symptoms**, **task objectives**, and **domain vocabulary** that uniquely require this skill. Let clear architectural boundaries drive routing decisions naturally.
+- **Respect Native Slash Commands & Modes**: Never register triggers that collide with built-in host commands or workflows (such as `/swarm`, `/grill-me`, `/boost`, `/teamwork`, or `/plan`). Keep Tier 1 descriptions tight: warm turns benefit from implicit prefix caching, while parallel subagent spawns and Orchestrator model switches pay full uncached system-prompt prefill.
 
 #### Tag Taxonomy Guidelines
 - Choose **3 to 6 high-level domain anchors** for search indices.
@@ -185,7 +186,7 @@ The frontmatter `description` is the primary text loaded by orchestrators at sta
 
 ### Stage 3: Core Principles for Skill Body Design
 
-Every skill body must adhere to these 6 instructional standards:
+Every skill body must adhere to these 7 instructional standards:
 
 1. **Teach Practices, Not Passive Declarations**:
    - Provide concrete, repeatable workflows, architectural patterns, commands, and debugging steps.
@@ -210,6 +211,10 @@ Every skill body must adhere to these 6 instructional standards:
 6. **Zero Contamination**:
    - Ensure all instructions, examples, and scripts are 100% generic, platform-agnostic, and safe for public open-source distribution.
 
+7. **Design for Native Reasoning & Plan-Execute Split**:
+   - Modern reasoning models (such as Gemini 4 Carbon, Argon, and Hydrogen) plan and think natively across configurable effort levels (`low`, `medium`, `high`, `xhigh`). Do not bloat Tier 2 bodies with step-by-step chain-of-thought scripts or basic language tutorials the model already knows.
+   - Spend tokens on non-obvious domain invariants, breaking API constraints, failure traps, and exact verification commands so both read-only planning models and fast execution models succeed on the first pass.
+
 ### Stage 4: Script Design & Bundling
 When bundling helper scripts into `scripts/`:
 - **Relative Path Invocations**: In `SKILL.md`, all execution examples must use relative paths from the skill root directory (e.g., `uv run scripts/analyze.py input.json`). Never prefix with category directories or template variables (`{skillDir}`, `{baseDir}`).
@@ -232,98 +237,3 @@ Enhance skills with proven structural patterns:
 - **Workflow Checklists**: Use markdown task lists (`- [ ] Step 1...`) for multi-stage processes.
 - **Validation Loops**: Require running a validator script or checklist, inspecting errors, and iterating until passing.
 - **Plan-Validate-Execute**: For batch or high-risk tasks, require generating a plan file, validating against schema, and executing only after validation passes.
-
----
-
-## Case Studies: 3 Representative Before & After Optimizations
-
-The following 3 case studies demonstrate how to apply these principles across three major skill archetypes:
-
-### Case Study 1: Process Orchestration & Context Isolation
-
-* **Scenario**: Complex orchestration and multi-phase methodologies.
-* **Anti-Pattern (AI Slop & Procedural Choreography ❌)**:
-  ```yaml
-  description: >
-    Orchestrate complex engineering initiatives using the Double Diamond framework
-    (Inception -> Discover -> Define -> Develop -> Deliver). Researches codebase constraints
-    before writing code to resolve ambiguity, establish scope, and prevent architectural mistakes.
-    Produces a technical specification for user review, then parallelizes development across
-    independent subagents with automated compiler and test quality gates. Activate for high-ambiguity
-    spikes, major refactors, multi-agent coding swarms, or explicit research-then-implement
-    workflows. Do not use for single-file edits or simple bug fixes.
-  tags: "agents, agile, swarm, orchestration, architecture, planning, research, problem-framing, parallel-coding, subagents, quality-gates"
-  ```
-* **Best Practice (Clean Definition & Architectural Superpower ✅)**:
-  ```yaml
-  description: >
-    Development methodology to perform tasks using the Double Diamond framework,
-    following the process: Inception -> Discovery -> Definition -> Development and
-    Delivery. Uses parallel subagents to perform the tasks ensuring context
-    isolation for optimal results. Activate when the user requests to use the
-    Double Diamond methodology, when they mention terms like inception and
-    discovery, or when tackling problems that require out of the box thinking,
-    reducing ambiguity and/or enterprise grade quality levels.
-  tags: "inception, delivery, agile, planning, research, subagents"
-  ```
-* **Why it works**: Replaces artificial procedural narration with a direct definition, highlights the real architectural superpower (**context isolation**), anchors triggers to human problem traits, and reduces redundant tags to 6 high-signal anchors.
-
----
-
-### Case Study 2: Developer Tooling & Safety Gates
-
-* **Scenario**: Language tooling, linters, code quality, and testing frameworks.
-* **Anti-Pattern (Generic Linter Jargon & Self-Referential Tags ❌)**:
-  ```yaml
-  description: >
-    Developer tooling for Go that enforces language style, idioms, code formatting,
-    testing standards, and complexity limits. Includes automated AST validation,
-    rollback guards for broken changes, Selene mutation testing to expose blind spots,
-    and multi-tiered testing loops. Activate when authoring or refactoring Go code,
-    debugging compilation issues, auditing test suite strength, reducing cyclomatic
-    complexity, or ensuring strict adherence to idiomatic Go conventions.
-  tags: "my-go-linter, go, golang, ast, selene, mutation-testing, testing, refactoring, quality"
-  ```
-* **Best Practice (Concrete Safety Mechanisms & Value Framing ✅)**:
-  ```yaml
-  description: >
-    Developer tooling and architectural safety rules for Go. Orchestrates
-    high-level Go toolchain and static analysis utilities (gofmt, goimports,
-    go vet, modernize, golangci-lint, deadcode), guards edits with compiler
-    rollback gates, eliminates blind spots via Selene mutation testing, and
-    enables fast test and coverage analytics with TestQuery SQLite queries.
-    Activate when writing or refactoring Go code, fixing compilation or test
-    failures, auditing test thoroughness, or enforcing idiomatic Go standards.
-  tags: "go, golang, testing, refactoring, quality, mutation-testing"
-  ```
-* **Why it works**: Highlights the concrete toolchain orchestration and safety mechanisms (**compiler rollback gates** and **SQLite coverage analytics**), removes self-referential tag noise (`my-go-linter`), and frames value around preventing broken builds.
-
----
-
-### Case Study 3: Ecosystem Scoping & Organizational Standards
-
-* **Scenario**: Brand-specific or organizationally bounded guidelines.
-* **Anti-Pattern (Vague General Purpose Claims ❌)**:
-  ```yaml
-  description: >
-    Standards, compliance verification, and licensing automation for Google
-    open-source software and personal projects by Googlers. Ensures proper
-    application of the Apache 2.0 license, license headers using addlicense,
-    copyright attributions, repository disclaimers, and open-source release
-    readiness. Activate when preparing a repository for public open-source
-    release, auditing license headers, checking copyright statements, or ensuring
-    compliance with open-source policies.
-  tags: "standards, org-oss, license, apache-2-0, compliance, addlicense, disclaimer"
-  ```
-* **Best Practice (Explicit Organizational Boundaries & Brand Tag ✅)**:
-  ```yaml
-  description: >
-    Compliance guide and licensing automation strictly for Google Open Source
-    projects and personal projects created by Googlers. Applies Apache 2.0
-    license headers via addlicense, verifies copyright attributions, and
-    configures mandatory repository disclaimers. Activate when preparing Google
-    open-source or Googler personal repositories for public release, auditing
-    license headers, or verifying open-source policy compliance.
-  tags: "google, open-source, licensing, compliance, standards, copyright"
-  ```
-* **Why it works**: Explicitly defines the organizational boundary ("strictly for Google Open Source projects and personal projects created by Googlers") to prevent misuse on generic third-party open-source, and adds the essential `google` ecosystem tag.

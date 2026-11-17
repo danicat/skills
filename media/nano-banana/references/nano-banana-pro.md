@@ -5,7 +5,7 @@
 
 - **Model Code**: `gemini-3-pro-image`
 - **CLI Aliases**: `nano-banana-pro`, `gemini-3-pro-image`
-- **Release Date**: November 2025
+- **Release Date**: May 28, 2026 (GA; preview released November 2025)
 - **Status**: General Availability (GA)
 - **DeepMind Model Card**: [gemini-3-pro-image](https://deepmind.google/models/model-cards/gemini-3-pro-image/)
 
@@ -64,10 +64,10 @@ Can produce multi-panel graphic novels, children's book spreads, or technical st
 
 ## CLI & SDK Examples
 
-### 1. `uv run skills/nano-banana/scripts/banana.py`: Multi-Reference Style & Character Consistency
+### 1. `uv run scripts/banana.py`: Multi-Reference Style & Character Consistency
 
 ```bash
-uv run skills/nano-banana/scripts/banana.py \
+uv run scripts/banana.py \
   -p "Render the character from images 1 and 2 wearing a leather flight jacket and aviator goggles, standing beside a vintage plane. Recreate the entire scene in the exact watercolor and ink style of image 3." \
   -i "references/character_face.png" \
   -i "references/character_body.png" \

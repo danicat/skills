@@ -1,34 +1,36 @@
-# Lyria 3 Pro (`lyria-3-pro-preview`) Model Card
+# Lyria 3 Pro (`lyria-3-pro-preview`) model card
 
 ## Overview
-**Lyria 3 Pro** (`lyria-3-pro-preview`) is Google's full-length preview music generation model. It is designed for full-length songs and musical compositions featuring multi-section structures (intro, verse, chorus, bridge, solo, outro), explicit timestamp controls, dynamic intensity shaping, and multilingual vocal synthesis.
+
+**Lyria 3 Pro** (`lyria-3-pro-preview`) is Google's full-length preview music generation model. It creates multi-section MP3 compositions (intro, verse, chorus, bridge, solo, outro) with explicit timestamp controls, dynamic intensity shaping, and multilingual vocal synthesis.
 
 - **Model Code**: `lyria-3-pro-preview`
 - **Release Date**: March 2026
 - **Status**: Generative AI Preview
+- **Vertex AI / Enterprise Location**: `global`
 - **Documentation**: [Google Developer Music Generation](https://ai.google.dev/gemini-api/docs/music-generation)
 
 ---
 
-## Technical Specifications
+## Technical specifications
 
 | Property | Value |
 | :--- | :--- |
 | **Input Modalities** | Text, Image (up to 10 reference images) |
-| **Output Modalities** | Audio (MP3 / WAV) and Text (Lyrics / Structure) |
+| **Output Modalities** | Audio (MP3) and Text (Lyrics / Structure) |
 | **Input Token Limit** | 131,072 tokens |
-| **Audio Output Duration** | **Up to 184 seconds** (~3 minutes, controllable via prompt) |
-| **Audio Quality** | 44.1 kHz stereo, 192 kbps bitrate |
-| **Supported MIME Types** | `audio/mp3`, `audio/wav` |
+| **Audio Output Duration** | **Up to 184 seconds** (about 3 minutes, controllable via prompt) |
+| **Audio Quality** | 44.1 kHz stereo MP3, 192 kbps bitrate |
+| **Supported MIME Types** | `audio/mp3` |
 | **Supported Languages** | English, German, Spanish, French, Hindi, Japanese, Korean, Portuguese |
 | **Structural Controls** | Timestamps, BPM, Key, Section Tags, Dynamic Intensity |
 | **Watermarking** | SynthID (Audio) + C2PA Content Credentials |
 
 ---
 
-## Advanced Composition Features
+## Advanced composition features
 
-### 1. Timestamp & Section Arrangement Control
+### 1. Timestamp and section arrangement control
 Lyria 3 Pro interprets timestamp blocks to coordinate instrument entrances, vocal delivery, and dynamic transitions:
 
 ```text
@@ -40,8 +42,8 @@ Lyria 3 Pro interprets timestamp blocks to coordinate instrument entrances, voca
 [2:05 - 2:20] Outro: Slow guitar strumming fading to silence.
 ```
 
-### 2. User-Provided Lyrics & Section Tags
-You can pass complete original lyrics structured by section:
+### 2. User-provided lyrics and section tags
+You can pass original lyrics structured by section:
 
 ```text
 Create a modern indie rock anthem at 125 BPM in A Major:
@@ -55,31 +57,31 @@ We run through the electric haze
 Counting down the golden days
 ```
 
-### 3. Multimodal Image-to-Song Generation
-Pass up to 10 images (such as concept art, character designs, or landscapes) to generate a thematic soundtrack that captures the emotional tone and mood.
+### 3. Multimodal image-to-song generation
+Pass up to 10 images (such as concept art, character designs, or landscapes) to generate a soundtrack matching the visual mood. Note that `lyria-3-pro-preview` outputs `audio/mp3`; use `lyria-3.5` when you need uncompressed WAV output.
 
 ---
 
-## CLI & SDK Examples
+## CLI and SDK examples
 
-### 1. Python Script (`uv run scripts/lyria.py`) & `gemini-api` CLI
+### 1. Python script (`uv run scripts/lyria.py`) and `gemini-api` CLI
 
 ```bash
-# Generate with uv run scripts/lyria.py (supports GEMINI_API_KEY or Vertex AI / ADC)
+# Generate using the short CLI alias (-m lyria-3-pro)
 uv run scripts/lyria.py \
   -p "An emotional cinematic folk song in E Minor at 90 BPM with fingerpicked acoustic guitar and cello." \
-  -m lyria-3-pro-preview \
+  -m lyria-3-pro \
   -f mountain_folk.mp3 \
   --lyrics-file mountain_folk_lyrics.txt
 
-# Or generate with gemini-api CLI
+# Or pass the canonical model ID to gemini-api CLI
 gemini-api music \
   -m lyria-3-pro-preview \
   -f mountain_folk_prompt.txt \
   --out mountain_folk.mp3
 ```
 
-### 2. Full Song with Timestamps & Structure (Python)
+### 2. Full song with timestamps and structure (Python)
 
 ```python
 import base64
@@ -99,7 +101,6 @@ An emotional cinematic folk song in E Minor at 90 BPM with fingerpicked acoustic
 interaction = client.interactions.create(
     model="lyria-3-pro-preview",
     input=prompt,
-    response_format={"type": "audio"},
 )
 
 if interaction.output_audio:
@@ -111,7 +112,7 @@ if interaction.output_text:
         f.write(interaction.output_text)
 ```
 
-### 3. Multimodal Concept-to-Soundtrack (Python)
+### 3. Multimodal concept-to-soundtrack (Python)
 
 ```python
 import base64

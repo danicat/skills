@@ -1,0 +1,372 @@
+title "Ground Zero (Shinobi III: Return of the Ninja Master - 56-Bar 140s Exact DSL Reproduction)"
+type song
+tempo andantino 96
+time 4/4
+
+# ==============================================================================
+# 1. Sega Mega Drive YM2612 + SN76489 Hybrid 11-Channel Instrument Palette
+#    Reproduces Morihiko Akiyama, Hirofumi Murasaki & Masayuki Nagao's iconic
+#    Track 25 ("Ground Zero") at 96 BPM (1 bar = 2.50s, 56 bars = 140.00s):
+#    - Bars 1-4   (000.0s-010.0s): Intro (FM EPiano + PSG 3+3+2 Arpeggio + Bar 4 Tom Fill)
+#    - Bars 5-12  (010.0s-030.0s): Section A - Cycle 1 (Main Theme + Sparse Syncopated Bass)
+#    - Bars 13-20 (030.0s-050.0s): Section B - Cycle 1 (Bb/C Chorus + Am + 2-Bar Gsus4->G)
+#    - Bars 21-28 (050.0s-070.0s): Section A - Cycle 2 (Main Theme + 16th Octave Bass + 16th Arp)
+#    - Bars 29-36 (070.0s-090.0s): Section B - Cycle 2 (Full Tutti Chorus + Gsus4->G Climax)
+#    - Bars 37-44 (090.0s-110.0s): Section A - Cycle 3 (Second Full Driving Verse Loop)
+#    - Bars 45-52 (110.0s-130.0s): Section B - Cycle 3 (Second Full Tutti Chorus Loop)
+#    - Bars 53-56 (130.0s-140.0s): Section A Outro (First 4 Bars of Section A with exponential fade)
+# ==============================================================================
+inst fm_lead        wave=ym2612_guitar gm=overdriven_guitar vol=0.17 adsr=0.004,0.12,0.88,0.08 vib=5.5,3.80 lpf=0.48
+inst fm_lead_echo   wave=ym2612_rhythm_guitar gm=distortion_guitar vol=0.11 pan=0.38 adsr=0.005,0.12,0.84,0.09 vib=5.5,3.50 lpf=0.45
+inst high_bell      wave=ym2612_bell gm=vibraphone vol=0.068 adsr=0.002,0.14,0.82,0.10 vib=6.0,5.20 lpf=0.72
+inst fm_epiano      wave=ym2612_epiano gm=epiano1 vol=0.14 pan=-0.25 adsr=0.003,0.18,0.76,0.10 vib=5.2,0.06 lpf=0.45
+inst fm_brass_pad   wave=ym2612_brass gm=brass_section adsr=0.035,0.18,0.86,0.16 lpf=0.42
+inst choir_pad      wave=ym2612_strings gm=string_ensemble_1 adsr=0.060,0.20,0.86,0.18 lpf=0.38
+inst psg_arp        wave=psg_arp gm=orchestral_harp vol=0.076 pan=-0.45 vib=6.2,2.40 lpf=0.48
+inst psg_arp_echo   wave=psg_square gm=clavinet pan=0.50 vib=6.2,2.40 lpf=0.44
+inst fm_bass        wave=ym2612_bass gm=electric_bass vol=0.21 adsr=0.002,0.09,0.84,0.04
+inst sub_bass       wave=sub_bass gm=slap_bass_1 vol=0.19 lpf=0.032
+inst kick           wave=kick freq=160Hz->38Hz
+
+pattern rest_4bar = R:1 | R:1 | R:1 | R:1
+pattern rest_8bar = R:1 | R:1 | R:1 | R:1 | R:1 | R:1 | R:1 | R:1
+
+# ==============================================================================
+# 2. Channel 1 & 2: FM Lead Melody & SMPS 16th-Note Stereo Echo
+# ==============================================================================
+pattern lead_sec_a =
+  E5:2 C5:8. G4:8. E5:8 |
+  D5:2 F5:8. E5:8. F5:8 |
+  C5:2 C5:8. Ab4:8. G4:8 |
+  E5:1 |
+  E5:2 C5:8. G4:8. E5:8 |
+  D5:2 F5:8. E5:8. F5:8 |
+  C5:2 Ab5:8. G5:8. F5:8 |
+  F5:2 E5:2
+
+pattern lead_sec_a_echo =
+  R:16 E5:4.~16 C5:8. G4:8. E5:8 |
+  R:16 D5:4.~16 F5:8. E5:8. F5:8 |
+  R:16 C5:4.~16 C5:8. Ab4:8. G4:8 |
+  R:16 E5:2.~8. |
+  R:16 E5:4.~16 C5:8. G4:8. E5:8 |
+  R:16 D5:4.~16 F5:8. E5:8. F5:8 |
+  R:16 C5:4.~16 Ab5:8. G5:8. F5:8 |
+  R:16 F5:4.~16 R:16 E5:4.~16
+
+pattern lead_outro =
+  (E5:2 C5:8. G4:8. E5:8)@vol=0.95->0.48 |
+  (D5:2 F5:8. E5:8. F5:8)@vol=0.38->0.12 |
+  (C5:2 C5:8. Ab4:8. G4:8)@vol=0.09->0.02 |
+  (E5:1)@vol=0.02->0.00
+
+pattern lead_outro_echo =
+  (R:16 E5:4.~16 C5:8. G4:8. E5:8)@vol=0.95->0.48 |
+  (R:16 D5:4.~16 F5:8. E5:8. F5:8)@vol=0.38->0.12 |
+  (R:16 C5:4.~16 C5:8. Ab4:8. G4:8)@vol=0.09->0.02 |
+  (R:16 E5:2.~8.)@vol=0.02->0.00
+
+# Section B Chorus (Bars 13-20, 29-36, 45-52):
+pattern lead_sec_b =
+  D4:2 D4:8. Bb3:8. F3:8 |
+  E4:2 C4:2 |
+  D4:2 Bb3:4 F3:4 |
+  E4:2 C5:2 |
+  D4:2 D4:8. Bb3:8. F3:8 |
+  E4:2 C4:2 |
+  C4:2 B3:4. D3:8 |
+  C4:2 G4:2
+
+pattern lead_sec_b_echo =
+  R:16 D4:4.~16 D4:8. Bb3:8. F3:8 |
+  R:16 E4:4.~16 R:16 C4:4.~16 |
+  R:16 D4:4.~16 Bb3:4 F3:4 |
+  R:16 E4:4.~16 R:16 C5:4.~16 |
+  R:16 D4:4.~16 D4:8. Bb3:8. F3:8 |
+  R:16 E4:4.~16 R:16 C4:4.~16 |
+  R:16 C4:4.~16 B3:4. D3:8 |
+  R:16 C4:4.~16 R:16 G4:4.~16
+
+# ==============================================================================
+# 3. Channel 3: High Bell Harmonic Sheen (wave=ym2612_bell)
+# ==============================================================================
+pattern bell_intro =
+  C6:2 C6:8. G6:8. C6:8 |
+  Bb6:2 Bb6:8. G6:8. Bb6:8 |
+  Ab6:2 Ab6:8. G6:8. F6:8 |
+  F6:4 G6:4 G6:2
+
+pattern bell_sec_a =
+  E6:2 C6:8. G6:8. E6:8 |
+  D6:2 F6:8. E6:8. F6:8 |
+  C6:2 C6:8. Ab6:8. G6:8 |
+  E6:1 |
+  E6:2 C6:8. G6:8. E6:8 |
+  D6:2 F6:8. E6:8. F6:8 |
+  C6:2 Ab6:8. G6:8. F6:8 |
+  F6:2 E6:2
+
+pattern bell_outro =
+  (E6:2 C6:8. G6:8. E6:8)@vol=0.95->0.48 |
+  (D6:2 F6:8. E6:8. F6:8)@vol=0.38->0.12 |
+  (C6:2 C6:8. Ab6:8. G6:8)@vol=0.09->0.02 |
+  (E6:1)@vol=0.02->0.00
+
+pattern bell_sec_b =
+  D6:2 D6:8. Bb6:8. F6:8 |
+  E6:2 C6:2 |
+  D6:2 Bb6:4 F6:4 |
+  E6:2 G6:2 |
+  D6:2 D6:8. Bb6:8. F6:8 |
+  E6:2 C6:2 |
+  C6:2 B6:4. D6:8 |
+  C6:2 G6:2
+
+# ==============================================================================
+# 4. Channel 4: FM Electric Piano Voicings (wave=ym2612_epiano)
+# ==============================================================================
+pattern epiano_intro =
+  [C4 E4 G4]:2 [C4 E4]:8. [G3 C4]:8. [C4 E4]:8 |
+  [Bb3 D4 G4]:2 [Bb3 D4]:8. [G3 Bb3]:8. [Bb3 D4]:8 |
+  [Ab3 C4 F4]:2 [Ab3 C4]:8. [G3 C4]:8. [F3 C4]:8 |
+  [F3 C4 F4]:4 [G3 C4 G4]:4 [C3 G3 C4 E4]:2
+
+pattern epiano_sec_a =
+  [C2 G3 C4 E4]:2 [G3 C4]:8. [G3 D4]:8. [C2 G3 E4]:8 |
+  [Bb1 F3 D4]:2 [F3 F4]:8. [G3 E4]:8. [F3 F4]:8 |
+  [Ab2 Eb3 C4]:2 [Ab2 Eb3 C4]:8. [Ab2 Eb4]:8. [G3 D4]:8 |
+  [C2 G3 C4 E4]:1 |
+  [C2 G3 C4 E4]:2 [G3 C4]:8. [G3 D4]:8. [C2 G3 E4]:8 |
+  [Bb1 F3 D4]:2 [F3 F4]:8. [G3 E4]:8. [F3 F4]:8 |
+  [Ab2 Eb3 C4]:2 [Ab2 Eb3 C4]:8. [G3 E4]:8. [F3 F4]:8 |
+  [F2 A3 F4]:2 [C2 G3 E4]:2
+
+pattern epiano_outro =
+  ([C2 G3 C4 E4]:2 [G3 C4]:8. [G3 D4]:8. [C2 G3 E4]:8)@vol=0.95->0.48 |
+  ([Bb1 F3 D4]:2 [F3 F4]:8. [G3 E4]:8. [F3 F4]:8)@vol=0.38->0.12 |
+  ([Ab2 Eb3 C4]:2 [Ab2 Eb3 C4]:8. [Ab2 Eb4]:8. [G3 D4]:8)@vol=0.09->0.02 |
+  ([C2 G3 C4 E4]:1)@vol=0.02->0.00
+
+pattern epiano_sec_b =
+  [F3 Bb3 D4 F4]:2 [F3 Bb3 D4 F4]:8. [F3 Bb3 D4]:8. [F3 Bb3 D4]:8 |
+  [G3 C4 E4 G4]:2 [G3 C4 E4 C5]:2 |
+  [F3 Bb3 D4 F4]:2 [F3 Bb3 D4]:4 [F3 Bb3 D4 F4]:4 |
+  [G3 C4 E4 G4]:2 [G3 C4 E4 C5]:2 |
+  [F3 Bb3 D4 F4]:2 [F3 Bb3 D4 F4]:8. [F3 Bb3 D4]:8. [F3 Bb3 D4]:8 |
+  [E3 A3 C4 E4]:2 [E3 A3 C4 E4]:2 |
+  [D3 G3 C4 D4]:2 [D3 G3 B3 D4]:2 |
+  [D3 G3 C4 G4]:2 [D3 G3 B3 G4]:2
+
+# ==============================================================================
+# 5. Channel 5 & 6: Warm FM Brass/Strings Pad & Choir Pad
+# ==============================================================================
+pattern pad_intro =
+  ([C3 G3 C4]:1)@vol=0.70 |
+  [G3 Bb3 D4]:1 |
+  [F3 Ab3 C4]:2 [F3 Ab3 C4]:8. [E3 G3 C4]:8. [F3 A3 C4]:8 |
+  [F3 A3 C4]:4 [G3 C4 D4]:4 [C3 G3 C4]:2
+
+pattern pad_sec_a =
+  [C2 G2 C3]:2 [C2 G2 C3]:8. [G1 D2 G2]:8. [C2 G2 C3]:8 |
+  [Bb1 F2 Bb2]:2 [F1 C2 F2]:8. [G1 C2 G2]:8. [F1 C2 F2]:8 |
+  [Ab1 Eb2 Ab2]:2. [Ab1 Eb2 Ab2]:8 [G1 D2 G2]:8 |
+  [C2 G2 C3 G3]:1 |
+  [C2 G2 C3]:2 [C2 G2 C3]:8. [G1 D2 G2]:8. [C2 G2 C3]:8 |
+  [Bb1 F2 Bb2]:2 [F1 C2 F2]:8. [G1 C2 G2]:8. [F1 C2 F2]:8 |
+  [Ab1 Eb2 Ab2]:2 [Ab1 Eb2 Ab2]:8. [G1 C2 E3]:8. [F1 A2 C3]:8 |
+  [F1 C2 F3]:2 [C2 G2 C3]:2
+
+pattern pad_outro =
+  ([C2 G2 C3]:2 [C2 G2 C3]:8. [G1 D2 G2]:8. [C2 G2 C3]:8)@vol=0.95->0.48 |
+  ([Bb1 F2 Bb2]:2 [F1 C2 F2]:8. [G1 C2 G2]:8. [F1 C2 F2]:8)@vol=0.38->0.12 |
+  ([Ab1 Eb2 Ab2]:2. [Ab1 Eb2 Ab2]:8 [G1 D2 G2]:8)@vol=0.09->0.02 |
+  ([C2 G2 C3 G3]:1)@vol=0.02->0.00
+
+pattern pad_sec_b =
+  [F3 Bb3 D4 F4]:2 [F3 Bb3 D4 F4]:2 |
+  [G3 C4 E4 G4]:1 |
+  [F3 Bb3 D4 F4]:2. [F3 Bb3 D4 F4]:4 |
+  [G3 C4 E4 G4]:1 |
+  [F3 Bb3 D4 F4]:2 [F3 Bb3 D4 F4]:2 |
+  [E3 A3 C4 E4]:1 |
+  [D3 G3 C4 D4]:2 [D3 G3 B3 D4]:2 |
+  [D3 G3 C4 G4]:2 [D3 G3 B3 G4]:2
+
+# ==============================================================================
+# 6. Channel 7 & 8: PSG / FM Arpeggio & Stereo Counter-Arpeggio
+# ==============================================================================
+pattern arp_intro =
+  C4:2 C4:8. G4:8. C5:8 |
+  Bb4:2 Bb4:8. G4:8. Bb4:8 |
+  Ab4:2 Ab4:8. G4:8. F4:8 |
+  F4:4 G4:4 G4:2
+
+pattern arp_intro_echo =
+  R:16 C4:4.~16 C4:8. G4:8. C5:8 |
+  R:16 Bb4:4.~16 Bb4:8. G4:8. Bb4:8 |
+  R:16 Ab4:4.~16 Ab4:8. G4:8. F4:8 |
+  R:16 F4:4 G4:4 G4:4.~16
+
+pattern arp_sec_a_sparse =
+  (C4:16 G4:16 E5:16 G4:16)*2 C4:8. G4:8. E5:8 |
+  (D4:16 F4:16 D5:16 F4:16)*2 F5:8. E5:8. F5:8 |
+  (C4:16 G4:16 C5:16 G4:16)*2 C4:8. Ab4:8. G4:8 |
+  (C4:16 G4:16 E5:16 G4:16)*2 C4:8 G4:8 E5:8 C4:8 |
+  (C4:16 G4:16 E5:16 G4:16)*2 C4:8. G4:8. E5:8 |
+  (D4:16 F4:16 D5:16 F4:16)*2 F5:8. E5:8. F5:8 |
+  (C4:16 G4:16 C5:16 G4:16)*2 Ab4:8. G4:8. F4:8 |
+  (F4:16 C4:16 F5:16 C4:16)*2 (E4:16 C4:16 E5:16 C4:16)*2
+
+pattern arp_sec_a_driving16 =
+  C3:16 G3:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 E5:16 G4:16 |
+  Bb2:16 F3:16 D4:16 F4:16 Bb3:16 F4:16 D5:16 F4:16 F5:16 G4:16 F4:16 G4:16 E5:16 G4:16 F5:16 G4:16 |
+  Ab2:16 Eb3:16 C4:16 G4:16 C5:16 Ab4:16 C4:16 G4:16 Ab2:16 C3:16 C4:16 G4:16 Ab4:16 G4:16 G4:16 G3:16 |
+  C3:16 G3:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 C3:16 G3:16 C4:16 G4:16 E5:16 C4:16 E5:16 G4:16 |
+  C3:16 G3:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 E5:16 G4:16 |
+  Bb2:16 F3:16 D4:16 F4:16 Bb3:16 F4:16 D5:16 F4:16 F5:16 G4:16 F4:16 G4:16 E5:16 G4:16 F5:16 G4:16 |
+  Ab2:16 Eb3:16 C4:16 G4:16 C5:16 Ab4:16 C4:16 G4:16 Ab2:16 C3:16 Ab4:16 G4:16 G4:16 G3:16 F5:16 C4:16 |
+  F3:16 A3:16 F5:16 C4:16 F3:16 A3:16 F5:16 C4:16 C3:16 G3:16 E5:16 C4:16 E5:16 G4:16 E5:16 C4:16
+
+pattern arp_outro_driving16 =
+  (C3:16 G3:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 E5:16 G4:16)@vol=0.95->0.48 |
+  (Bb2:16 F3:16 D4:16 F4:16 Bb3:16 F4:16 D5:16 F4:16 F5:16 G4:16 F4:16 G4:16 E5:16 G4:16 F5:16 G4:16)@vol=0.38->0.12 |
+  (Ab2:16 Eb3:16 C4:16 G4:16 C5:16 Ab4:16 C4:16 G4:16 Ab2:16 C3:16 C4:16 G4:16 Ab4:16 G4:16 G4:16 G3:16)@vol=0.09->0.02 |
+  (C3:16 G3:16 C4:16 G4:16 E5:16 G4:16 C4:16 G4:16 C3:16 G3:16 C4:16 G4:16 E5:16 C4:16 E5:16 G4:16)@vol=0.02->0.00
+
+pattern arp_sec_b =
+  Bb3:8 D4:8 F4:8 D4:8 F3:8 Bb3:8 D4:8 F4:8 |
+  G3:8 C4:8 E4:8 C4:8 G3:8 C4:8 E4:8 G4:8 |
+  Bb3:8 D4:8 F4:8 D4:8 Bb3:8 D4:8 F3:8 Bb3:8 |
+  G3:8 C4:8 E4:8 C4:8 G3:8 C4:8 E4:8 C5:8 |
+  Bb3:8 D4:8 F4:8 D4:8 F3:8 Bb3:8 D4:8 F4:8 |
+  A3:8 C4:8 E4:8 C4:8 A3:8 C4:8 E4:8 A4:8 |
+  G3:8 C4:8 D4:8 G4:8 G3:8 B3:8 D4:8 G4:8 |
+  G3:8 C4:8 D4:8 G4:8 G3:8 B3:8 D4:8 G4:8
+
+# ==============================================================================
+# 7. Channel 9 & 10: FM Slap/Synth Bass & Sub-Bass
+# ==============================================================================
+pattern bass_intro =
+  R:1 |
+  R:1 |
+  R:1 |
+  R:2 (F2:8 G2:8)@vol=0.75 (C2:8 G2:8)@vol=1.35
+
+pattern bass_sec_a_sparse =
+  (C1:8 C2:8)@vol=1.15 R:4 (G1:8. C2:8. G2:8)@vol=0.52->0.68->1.15 |
+  (Bb1:8 Bb2:8)@vol=1.10 R:4 (C2:8. G2:8. C2:8)@vol=1.25->1.55->1.45 |
+  (Ab1:8 Ab2:8)@vol=1.10 R:4 (Ab1:8. G1:8. G2:8)@vol=0.55->0.68->1.18 |
+  (C1:8 C2:8)@vol=1.15 R:4 (G1:8. C2:8. G2:8)@vol=0.50->0.62->0.82 |
+  (C1:8 C2:8)@vol=1.08 R:4 (G1:8. C2:8. G2:8)@vol=0.50->0.68->1.22 |
+  (Bb1:8 Bb2:8)@vol=1.05 R:4 (C2:8. G2:8. C2:8)@vol=1.28->1.55->1.45 |
+  (Ab1:8 Ab2:8)@vol=1.08 R:4 (Ab1:8. G1:8. F2:8)@vol=0.52->0.66->1.25 |
+  (F1:8 F2:8)@vol=1.02 R:4 (C2:8. G2:8. C2:8)@vol=1.35->1.48->1.32
+
+pattern bass_sec_a_driving =
+  ((C1:16 C2:16)*8)@vol=0.92->1.04->1.14 |
+  ((Bb1:16 Bb2:16)*4 (C1:16 C2:16)*4)@vol=1.02->1.08->1.18 |
+  ((Ab1:16 Ab2:16)*6 (G1:16 G2:16)*2)@vol=1.00->1.08->1.22 |
+  ((C1:16 C2:16)*8)@vol=0.96->1.02->1.18 |
+  ((C1:16 C2:16)*8)@vol=0.94->1.04->1.14 |
+  ((Bb1:16 Bb2:16)*4 (C1:16 C2:16)*4)@vol=1.02->1.08->1.18 |
+  ((Ab1:16 Ab2:16)*6 (G1:16 F2:16)*2)@vol=1.02->1.06->1.22 |
+  ((F1:16 F2:16)*4 (C1:16 C2:16)*4)@vol=1.02->1.12->1.18
+
+pattern bass_outro_driving =
+  ((C1:16 C1:16)*8)@vol=1.22->0.68 |
+  ((Bb1:16 Bb1:16)*4 (C1:16 C1:16)*4)@vol=0.46->0.15 |
+  ((Ab1:16 Ab1:16)*6 (G1:16 G1:16)*2)@vol=0.12->0.03 |
+  ((C1:16 C1:16)*8)@vol=0.03->0.005
+
+pattern bass_sec_b =
+  ((Bb1:16 Bb2:16)*4 (F2:16 C3:16)*4)@vol=0.92->1.04->1.22 |
+  ((C2:16 G2:16)*4 (G2:16 D3:16)*4)@vol=0.94->1.12->1.28 |
+  ((Bb1:16 Bb2:16)*6 (F2:16 C3:16)*2)@vol=0.98->1.02->1.20 |
+  ((C2:16 G2:16)*4 (G2:16 D3:16)*4)@vol=1.00->1.02->1.24 |
+  ((Bb1:16 Bb2:16)*4 (F2:16 C3:16)*4)@vol=0.94->1.04->1.26 |
+  ((A1:16 A2:16)*4 (E2:16 A2:16)*4)@vol=0.96->1.04->1.22 |
+  ((G1:16 G2:16)*4 (D2:16 G2:16)*4)@vol=0.96->1.10->1.24 |
+  ((G1:16 G2:16)*4 (D2:16 G2:16)*4)@vol=1.04->1.02->1.18
+
+pattern sub_intro =
+  R:1 |
+  R:1 |
+  R:1 |
+  R:2 (F2:8 G2:8)@vol=0.65 (C2:8 G2:8)@vol=1.20
+
+pattern sub_sec_a_sparse =
+  (C2:8 C2:8)@vol=1.15 R:4 (G2:8. C2:8. G2:8)@vol=0.52->0.68->1.15 |
+  (Bb2:8 Bb2:8)@vol=1.10 R:4 (C2:8. G2:8. C2:8)@vol=1.25->1.55->1.45 |
+  (Ab2:8 Ab2:8)@vol=1.10 R:4 (Ab2:8. G1:8. G2:8)@vol=0.55->0.68->1.18 |
+  (C2:8 C2:8)@vol=1.15 R:4 (G2:8. C2:8. G2:8)@vol=0.50->0.62->0.82 |
+  (C2:8 C2:8)@vol=1.08 R:4 (G2:8. C2:8. G2:8)@vol=0.50->0.68->1.22 |
+  (Bb2:8 Bb2:8)@vol=1.05 R:4 (C2:8. G2:8. C2:8)@vol=1.28->1.55->1.45 |
+  (Ab2:8 Ab2:8)@vol=1.08 R:4 (Ab2:8. G1:8. F2:8)@vol=0.52->0.66->1.25 |
+  (F2:8 F2:8)@vol=1.02 R:4 (C2:8. G2:8. C2:8)@vol=1.35->1.48->1.32
+
+pattern sub_sec_a_driving =
+  ((C1:8 C2:8 C2:8 C3:8)*2)@vol=0.92->1.04->1.14 |
+  ((Bb1:8 Bb2:8 Bb2:8 D3:8) (C1:8 C2:8 C2:8 C3:8))@vol=1.02->1.08->1.18 |
+  ((Ab1:8 Ab2:8 Ab2:8 C3:8) (Ab1:8 Ab2:8 G1:8 G2:8))@vol=1.00->1.08->1.22 |
+  ((C1:8 C2:8 C2:8 C3:8)*2)@vol=0.96->1.02->1.18 |
+  ((C1:8 C2:8 C2:8 C3:8)*2)@vol=0.94->1.04->1.14 |
+  ((Bb1:8 Bb2:8 Bb2:8 D3:8) (C1:8 C2:8 C2:8 C3:8))@vol=1.02->1.08->1.18 |
+  ((Ab1:8 Ab2:8 Ab2:8 C3:8) (Ab1:8 Ab2:8 G1:8 F2:8))@vol=1.02->1.06->1.22 |
+  ((F1:8 F2:8 F2:8 C3:8) (C1:8 C2:8 C2:8 C3:8))@vol=1.02->1.12->1.18
+
+pattern sub_outro_driving =
+  ((C1:8)*8)@vol=1.22->0.68 |
+  ((Bb1:8)*4 (C1:8)*4)@vol=0.46->0.15 |
+  ((Ab1:8)*6 (G1:8)*2)@vol=0.12->0.03 |
+  ((C1:8)*8)@vol=0.03->0.005
+
+pattern sub_sec_b =
+  ((Bb1:8 F3:8)*2 (F2:8 D3:8)*2)@vol=0.92->1.04->1.22 |
+  ((C2:8 E3:8)*2 (G2:8 G3:8)*2)@vol=0.94->1.12->1.28 |
+  ((Bb1:8 F3:8)*3 (F2:8 D3:8))@vol=0.98->1.02->1.20 |
+  ((C2:8 E3:8)*2 (G2:8 G3:8)*2)@vol=1.00->1.02->1.24 |
+  ((Bb1:8 F3:8)*2 (F2:8 D3:8)*2)@vol=0.94->1.04->1.26 |
+  ((A1:8 E3:8)*2 (E2:8 A3:8)*2)@vol=0.96->1.04->1.22 |
+  ((G1:8 D3:8)*2 (D2:8 G3:8)*2)@vol=0.96->1.10->1.24 |
+  ((G1:8 D3:8)*2 (D2:8 G3:8)*2)@vol=1.04->1.02->1.18
+
+# ==============================================================================
+# 8. Channel 11: Mega Drive DAC Kick, Snare & Toms
+# ==============================================================================
+pattern drums_intro =
+  R:1 | R:1 | R:1 |
+  R:2. tom_hi:16 tom_mid:16 tom_low:16 snare:16
+
+pattern drums_sec_a =
+  (kick:4 snare:4 kick:8 kick:8 snare:8 kick:8)*3 |
+  kick:4 snare:4 kick:8 snare:8 tom_hi:8 tom_mid:8 |
+  (kick:4 snare:4 kick:8 kick:8 snare:8 kick:8)*3 |
+  kick:4 snare:4 kick:8 snare:8 tom_hi:16 tom_mid:16 tom_low:16 snare:16
+
+pattern drums_outro =
+  (kick:4 snare:4 kick:8 kick:8 snare:8 kick:8)@vol=0.95->0.48 |
+  (kick:4 snare:4 kick:8 kick:8 snare:8 kick:8)@vol=0.38->0.12 |
+  (kick:4 snare:4 kick:8 kick:8 snare:8 kick:8)@vol=0.09->0.02 |
+  (kick:4 snare:4 kick:8 snare:8 tom_hi:8 tom_mid:8)@vol=0.02->0.00
+
+pattern drums_sec_b =
+  (kick:8. kick:16 snare:4 kick:8 kick:8 snare:8 kick:8)*3 |
+  kick:4 snare:4 kick:8 snare:8 kick:8 snare:8 |
+  (kick:8. kick:16 snare:4 kick:8 kick:8 snare:8 kick:8)*2 |
+  kick:4 snare:4 kick:4 snare:8 kick:8 |
+  kick:8 kick:8 snare:8 kick:8 tom_hi:8 tom_mid:8 tom_low:8 snare:8
+
+# ==============================================================================
+# 9. Master 11-Channel Arrangement (56 Bars = 140.00s @ 96 BPM)
+# ==============================================================================
+track ch01_fm_lead      fm_lead:      rest_4bar                       | lead_sec_a@vol=0.92@legato@lpf=0.42  | lead_sec_b@vol=1.18@legato@lpf=0.46  | lead_sec_a@vol=1.70@legato@lpf=0.32   | lead_sec_b@vol=0.96@legato@lpf=0.48  | lead_sec_a@vol=1.68@legato@lpf=0.32   | lead_sec_b@vol=0.94@legato@lpf=0.48  | lead_outro@vol=1.84@legato@lpf=0.26
+track ch02_fm_lead_echo fm_lead_echo: rest_4bar                       | lead_sec_a_echo@vol=0.68@legato@lpf=0.40 | lead_sec_b_echo@vol=0.92@legato@lpf=0.44 | lead_sec_a_echo@vol=1.30@legato@lpf=0.30 | lead_sec_b_echo@vol=0.76@legato@lpf=0.46 | lead_sec_a_echo@vol=1.28@legato@lpf=0.30 | lead_sec_b_echo@vol=0.74@legato@lpf=0.46 | lead_outro_echo@vol=1.44@legato@lpf=0.24
+track ch03_high_bell    high_bell:    bell_intro@vol=0.15@lpf=0.52    | bell_sec_a@vol=1.88@lpf=0.80         | bell_sec_b@vol=1.38@lpf=0.78         | bell_sec_a@vol=0.79@lpf=0.61          | bell_sec_b@vol=2.19@lpf=0.80         | bell_sec_a@vol=0.77@lpf=0.61          | bell_sec_b@vol=2.26@lpf=0.80         | bell_outro@vol=0.46@lpf=0.55
+track ch04_fm_epiano    fm_epiano:    epiano_intro@vol=1.51@lpf=0.24  | epiano_sec_a@vol=0.34@lpf=0.16       | epiano_sec_b@vol=1.17@lpf=0.32       | epiano_sec_a@vol=1.56@lpf=0.18        | epiano_sec_b@vol=0.67@lpf=0.28       | epiano_sec_a@vol=1.56@lpf=0.18        | epiano_sec_b@vol=0.54@lpf=0.28       | epiano_outro@vol=2.50@lpf=0.15
+track ch05_brass_pad    fm_brass_pad: pad_intro@vol=0.83@lpf=0.24     | pad_sec_a@vol=0.26@lpf=0.14          | pad_sec_b@vol=1.11@lpf=0.30          | pad_sec_a@vol=1.09@lpf=0.17           | pad_sec_b@vol=0.66@lpf=0.26          | pad_sec_a@vol=1.09@lpf=0.17           | pad_sec_b@vol=0.59@lpf=0.26          | pad_outro@vol=0.94@lpf=0.14
+track ch06_choir_pad    choir_pad:    rest_4bar                       | rest_8bar                            | pad_sec_b@vol=1.09@lpf=0.28          | pad_sec_a@vol=0.84@lpf=0.17           | pad_sec_b@vol=0.64@lpf=0.24          | pad_sec_a@vol=0.84@lpf=0.17           | pad_sec_b@vol=0.57@lpf=0.24          | pad_outro@vol=0.73@lpf=0.14
+track ch07_psg_arp      psg_arp:      arp_intro@vol=0.80@lpf=0.15     | arp_sec_a_sparse@vol=1.16@lpf=0.48   | arp_sec_b@vol=1.18@lpf=0.50          | arp_sec_a_driving16@vol=1.35@lpf=0.32 | arp_sec_b@vol=1.32@lpf=0.54          | arp_sec_a_driving16@vol=1.33@lpf=0.32 | arp_sec_b@vol=1.34@lpf=0.54          | arp_outro_driving16@vol=1.26@lpf=0.26
+track ch08_psg_arp_echo psg_arp_echo: arp_intro_echo@vol=0.60@lpf=0.15 | arp_sec_a_sparse@vol=0.88@lpf=0.48   | arp_sec_b@vol=0.92@lpf=0.50          | arp_sec_a_driving16@vol=1.01@lpf=0.32 | arp_sec_b@vol=1.04@lpf=0.54          | arp_sec_a_driving16@vol=0.99@lpf=0.32 | arp_sec_b@vol=1.06@lpf=0.54          | arp_outro_driving16@vol=0.94@lpf=0.26
+track ch09_fm_bass      fm_bass:      bass_intro@vol=0.58@lpf=0.055   | bass_sec_a_sparse@vol=1.20@lpf=0.022 | bass_sec_b@vol=1.57@lpf=0.085        | bass_sec_a_driving@vol=1.34@lpf=0.022 | bass_sec_b@vol=1.44@lpf=0.085        | bass_sec_a_driving@vol=1.35@lpf=0.022 | bass_sec_b@vol=1.44@lpf=0.085        | bass_outro_driving@vol=0.77@lpf=0.022
+track ch10_sub_bass     sub_bass:     sub_intro@vol=0.58@lpf=0.035    | sub_sec_a_sparse@vol=1.24@lpf=0.018  | sub_sec_b@vol=1.59@lpf=0.055         | sub_sec_a_driving@vol=1.38@lpf=0.018  | sub_sec_b@vol=1.46@lpf=0.055         | sub_sec_a_driving@vol=1.39@lpf=0.018  | sub_sec_b@vol=1.46@lpf=0.055         | sub_outro_driving@vol=0.81@lpf=0.018
+track ch11_drums_main   kick:         drums_intro@vol=0.65            | drums_sec_a@vol=1.10                 | drums_sec_b@vol=1.20                 | drums_sec_a@vol=1.16                  | drums_sec_b@vol=1.18                 | drums_sec_a@vol=1.16                  | drums_sec_b@vol=1.18                 | drums_outro@vol=0.80

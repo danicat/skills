@@ -1,125 +1,171 @@
 ---
 name: vibe-game-developer
 description: >
-  Master orchestrator and workflow router for building 2D games in Go with
-  Ebitengine. Coordinates the full game development lifecycle across concept
-  design (GDD creation), engine architecture, asset pipelines (pure-code
-  procedural vs. AI-generated media), animation controllers, and WebAssembly
-  deployment. Activate when building a 2D game from scratch, planning game
-  workflows, routing game asset requests, or managing end-to-end game projects.
+  Workflow router and orchestrator for building 2D games in Go with
+  Ebitengine. Coordinates game design and GDD creation (game-design), engine
+  architecture and WebAssembly builds (ebitengineer), 2D HD and pixel-art
+  sprites (sprite-design and nano-banana), procedural and AI audio and video
+  cutscenes (procedural-sfx, procedural-music, lyria, and gemini-omni), Go
+  verification (godoctor), and multi-agent scaling (swarm-coding, parallel).
 license: Apache-2.0
 metadata:
   category: game-dev
-  tags: "game-dev, ebitengine, orchestrator, workflow, architecture, 2d"
+  tags: "games, ebitengine, go, 2d, wasm"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.4.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Vibe Game Developer: Master Orchestrator & Request Router
+# Vibe game developer: 2D Go game workflow router
 
-This master skill teaches the agent how to analyze, classify, and route 2D game development requests to the specialized skills in the Game Dev Starter Kit—and how to compose them as modular, independent building blocks.
+`vibe-game-developer` is the primary router for building 2D games in Go with Ebitengine (`github.com/hajimehoshi/ebiten/v2`). Use it to classify requests, choose between pure-code procedural and generative AI asset pipelines, and compose specialized skills as modular building blocks.
 
 > [!NOTE]
-> **100% Genre-Agnostic & Modular Design Principle**:
-> Every skill in this suite is an **independent, composable building block suitable for any 2D game genre**—including **top-down RPGs, bullet-heavens, twin-stick/vertical shmups, turn-based tactics, roguelike deckbuilders, grid/physics puzzles, visual novels, rhythm games, and side-scrolling platformers**. Never assume side-scrolling physics or a single fixed asset pipeline: activate only the skills required for the user's task, and combine pure-code procedural skills (`procedural-art`, `procedural-composer`) with AI-generated media skills (`nano-banana`, `lyria`) freely in pure or hybrid pipelines.
+> **Genre-agnostic and modular design**:
+> Every skill in this suite works as an independent building block for any 2D genre, including top-down RPGs, bullet-heavens, twin-stick or vertical shmups, `2:1` isometric tactics, roguelike deckbuilders, grid or physics puzzles, visual novels, rhythm games, and side-scrolling platformers. Never assume side-scrolling gravity or a single fixed asset pipeline. Activate only the skills needed for the current task, and mix procedural DSL skills (`sprite-design`, `procedural-sfx`, `procedural-music`) with generative media skills (`nano-banana`, `lyria`, `gemini-omni`) in pure or hybrid builds.
 
----
+## Skill ecosystem and intent routing matrix
 
-## 1. Modular Skill Ecosystem & Intent Routing Matrix
+Each skill owns a distinct domain and works either standalone or as part of a full build:
 
-Each skill in the starter kit has a distinct, orthogonal responsibility and can be invoked standalone or composed into a multi-skill workflow:
-
-| User Intent / Request Type | Specialized Skill | Modular Role & Key Technical Characteristics |
+| User Intent / Task | Target Skill | Role & Core Capabilities |
 | :--- | :--- | :--- |
-| **Game Design & Socratic Interview** | **[`game-design`](../game-design/SKILL.md)** | **Game Designer**: Interactive `/grill-me` Socratic interview across all 2D genres, explicit choice between procedural (`procedural-art`/`procedural-composer`), AI (`nano-banana`/`lyria`), or hybrid asset pipelines, and authoritative `GDD.md` authoring. |
-| **Ebitengine 2D Engine Architecture** | **[`ebitengineer`](../ebitengineer/SKILL.md)** | **Engine Architect**: Genre-agnostic Ebitengine (v2) loop, virtual resolution scaling, FSM/stack scene management (pause/inventory/deck/dialogue overlays), fixed-timestep $\Delta t$, zero-allocation `Draw()` loop, Kage shaders, and WebAssembly audio/browser deployment. |
-| **Pure-Code DSP Audio Synthesis** | **[`procedural-composer`](../procedural-composer/SKILL.md)** | **DSP Sound Engineer**: Zero-asset 16-bit 44.1 kHz stereo PCM audio synthesis (`sound.go`), mandatory 4-byte frame alignment (`&^ 3`), YM2612 6-channel polyphony, FM synthesis, ADSR envelopes, DSP post-processing (`SliceLoopPCM`, LPF/HPF, bitcrushing), and WAV export (`play.go`). |
-| **Generative Studio AI Music** | **[`lyria`](../../media/lyria/SKILL.md)** | **AI Music Composer**: High-fidelity 44.1 kHz stereo soundtracks and loops via **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`) and **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`), timestamped arrangements, custom lyrics, multimodal image-to-music, and `.mp3`/`.wav` export. |
-| **Pure-Code Procedural 2D Graphics** | **[`procedural-art`](../procedural-art/SKILL.md)** | **Procedural Technical Artist**: Zero-asset Go texture generation (`art.go`), 2D `GeoM` matrix transform ordering, 32-bit RGBA color ramps, sub-frame animation easing, pre-allocated particle pools, and Kage shaders. |
-| **Generative AI Images & Sprites** | **[`nano-banana`](../../media/nano-banana/SKILL.md)** | **AI Visual Artist**: Conversational image generation and editing via **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image`, and `gemini-3-pro-image` for sprite sheets, character portraits, card art, tilesets, and multi-image style/character consistency. |
-| **2D Sprite Slicing & Animation** | **[`sprite-animation`](../sprite-animation/SKILL.md)** | **2D Animator**: Sprite sheet grid slicing (`SubImage` zero-alloc views), animation state machines (`idle`, `walk`, `attack`, `cast`, `hit`, `death`), frame timing, Aseprite (`.ase`/`.aseprite`) integration, and Ebitengine animation controllers. |
-| **Go Code Quality & Mutation Testing** | **[`godoctor`](../../coding/godoctor/SKILL.md)** | **Go Quality Gate**: High-level toolchain orchestration (`gofmt`, `goimports`, `go vet`, `golangci-lint`), compiler rollback gates (`smart_build`, `smart_edit`), TestQuery SQLite analytics, and Selene mutation testing. |
-| **Multi-Agent Swarm Coordination** | **[`swarm-coding`](../../workflows/swarm-coding/SKILL.md)** | **Swarm Coordinator**: Hierarchical divide-and-conquer multi-agent orchestration across disjoint packages (e.g., concurrent engine core, procedural/AI assets, UI/HUD, and QA). |
+| **Game design and GDD creation** | `game-design` | **Game Designer**: Runs a focused one-decision-at-a-time interview across any 2D genre, locks in visual and audio pipeline choices, and writes `GDD.md`. |
+| **Ebitengine architecture and WASM** | `ebitengineer` | **Engine Architect**: Scaffolds `internal/` packages, virtual resolution scaling, scene state machines, fixed-timestep updates, zero-allocation `Draw()` loops, Kage shaders, and `GOOS=js GOARCH=wasm` builds. |
+| **Sprites, tilesets, and animation** | `sprite-design` | **2D Technical Artist**: Normalizes raw AI grids into `.sprite`, `.png`, `.json`, and `.aseprite` at `32x32` pixel art up to `256x256+` 2D HD, or compiles `.sprite` SDF/pixel DSL files with zero-allocation `AnimationController`. |
+| **Generative art and turnaround sheets** | `nano-banana` | **AI Visual Artist**: Generates character sheets, raw `4x4` animation grids on `#00FF00` or `#FF00FF` chroma-key backgrounds, `4:1` parallax layers, portraits, and cards via `gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, `gemini-3.1-flash-image`, and `gemini-3-pro-image` using `scripts/banana.py`. |
+| **Procedural SFX (`.sfx`)** | `procedural-sfx` | **SFX Designer**: Synthesizes 4-byte aligned (`&^ 3`) 16-bit 44.1 kHz stereo PCM cues in memory from `.sfx` DSL with PolyBLEP anti-aliasing, 18 built-in presets, SVF filter sweeps, 16-bit Galois LFSR noise, and validation. |
+| **Procedural chiptune and DLS BGM (`.music`)** | `procedural-music` | **Procedural Composer**: Compiles polyphonic `.music` scores (8 to 12+ channels, verified `|` barlines, `~` cross-bar ties) into 4-byte aligned stereo PCM using pure-Go SEGA Mega Drive YM2612 + SN76489 or macOS CoreAudio (`-apple` / `gs_instruments.dls`). |
+| **Generative studio AI music** | `lyria` | **AI Music Composer**: Generates 44.1 kHz stereo soundtracks and loops via `lyria-3.5`, `lyria-3-pro-preview`, and `lyria-3-clip-preview` using `scripts/lyria.py` (`--enterprise` ADC or `GEMINI_API_KEY`), including custom lyrics and image-to-music. |
+| **AI video cutscenes and editing** | `gemini-omni` | **AI Video Director**: Generates, edits, interpolates, extends, and upscales `3s` to `15s` animated cutscenes (`360p` to `4k` at `24 FPS`) with synchronized audio via `gemini-omni-1.2-flash` using `scripts/omni.py`. |
+| **Go verification and mutation testing** | `godoctor` | **Go Quality Gate**: Runs compiler gates, linters, TestQuery (`tq`) SQL analytics, and Selene mutation testing via `godoctor call` CLI (`edit`, `build`, `test`, `docs`, `selene`, `tq`) or MCP tools (`smart_edit`, `smart_build`, `smart_test`, `read_docs`, `selene`, `test_query`). |
+| **Parallel multi-agent scaling** | `swarm-coding`, `parallel` | **Multi-Agent Coordinators**: Split large engine builds or asset batches across concurrent workers on disjoint packages or files. |
 
----
-
-## 2. How the 9 Building Blocks Compose Together
+## Architecture and workflow composition
 
 ```mermaid
 flowchart TD
-    GDD["1. game-design (/grill-me -> GDD.md)"] --> Engine["2. ebitengineer (Scene FSM, Virtual Canvas, Loop)"]
-    GDD --> VisChoice{"Visual Pipeline Choice"}
-    GDD --> AudChoice{"Audio Pipeline Choice"}
+    Design["1. game-design (GDD.md)"] --> Engine["2. ebitengineer (Scene FSM, Virtual Canvas, WASM)"]
+    Design --> VisChoice{"Visual Pipeline"}
+    Design --> AudChoice{"Audio and Video Pipeline"}
 
-    VisChoice -->|Pure-Code| ProcArt["procedural-art (Vectors, Particles, Shaders)"]
-    VisChoice -->|AI-Generated| Nano["nano-banana (gemini-nano-banana-2.1)"]
-    VisChoice -->|Hybrid| ProcArt
-    VisChoice -->|Hybrid| Nano
-    Nano --> SpriteAnim["sprite-animation (Grid Slicing & State Machines)"]
+    VisChoice -->|"Path A: 2-Step AI (2D HD or Pixel)"| Nano["nano-banana (Turnaround Sheet -> 4x4 Chroma Grid)"]
+    Nano --> SpriteNorm["sprite-design (normalize -> .sprite / .aseprite / .png + .json)"]
+    VisChoice -->|"Path B: Pure-Code DSL"| SpriteDSL["sprite-design (.sprite SDF & Pixel DSL)"]
+    Engine -->|"Particles, Text & Shaders"| EngineVFX["ebitengineer (GeoM, text/v2, Particle Pools, Kage)"]
 
-    AudChoice -->|Pure-Code| ProcComp["procedural-composer (4-Byte Aligned PCM, DSP)"]
-    AudChoice -->|AI-Generated| Lyria["lyria (lyria-3.5 / lyria-3-clip-preview)"]
-    AudChoice -->|Hybrid| ProcComp
-    AudChoice -->|Hybrid| Lyria
+    AudChoice -->|"Procedural SFX"| ProcSFX["procedural-sfx (.sfx DSL, 18 Presets)"]
+    AudChoice -->|"Procedural / DLS BGM"| ProcMus["procedural-music (.music DSL: YM2612 or Apple DLS)"]
+    AudChoice -->|"AI Studio BGM"| Lyria["lyria (lyria-3.5 / lyria-3-pro-preview / lyria-3-clip-preview)"]
+    AudChoice -->|"AI Video Cutscenes"| Omni["gemini-omni (gemini-omni-1.2-flash)"]
 
-    Engine --> QA["godoctor (Compiler & Lint Gate, TestQuery, Selene Mutation Testing)"]
-    ProcArt --> QA
-    SpriteAnim --> QA
-    ProcComp --> QA
-    Lyria --> QA
-    Swarm["swarm-coding (Optional Parallel Agent Execution)"] -.-> Engine
+    Engine --> QA["godoctor (Compiler & Lint Gate, TestQuery, Selene)"]
+    SpriteNorm --> QA
+    SpriteDSL --> QA
+    ProcSFX --> QA
+    ProcMus --> QA
+
+    QA --> LocalTest["Localhost Playtest (60 FPS WASM)"]
+    QA --> CloudDeploy["Cloud Run / Static Web Hosting (Parallel Optional)"]
+    Swarm["swarm-coding / parallel (Optional Scaling)"] -.-> Engine
+    Swarm -.-> CloudDeploy
 ```
 
----
+## Asset pipeline decision rules
 
-## 3. Decision Rules: Pure-Code Procedural vs. Generative AI vs. Hybrid Assets
+Follow the pipeline choice recorded in `GDD.md`, or help the user select the right mix before creating assets.
 
-A core responsibility of this orchestrator is honoring the `GDD.md` pipeline selection (or guiding the user when asked ad-hoc) between **pure-code procedural generation**, **2026 Gemini/Lyria AI models**, or a **hybrid pipeline**:
+### Sprites, visuals, and engine VFX
 
-### 3.1 Audio & Music Routing Rules (`procedural-composer` vs. `lyria`)
+Align on animation motion tags, camera projection (`2D side-profile`, `3/4 top-down`, `2:1 isometric`, or `front-facing ortho`), resolution (`256x256+` Native 2D HD vs. `32x32`/`64x64` pixel art), and production path first:
 
-* **Choose [`procedural-composer`](../procedural-composer/SKILL.md)** when:
-  - Synthesizing **Game Sound Effects (SFX)**: UI clicks, card draws, sword slashes, laser blasts, explosions, or status chimes.
-  - Composing 6-channel YM2612-style chiptune BGM in pure Go with zero external audio files.
-  - Applying runtime DSP post-processing (`SliceLoopPCM`, ADSR envelopes, low-pass/high-pass filtering, bitcrushing) or enforcing 4-byte stereo PCM alignment (`&^ 3`) for Ebitengine `audio.Context`.
+- **Path A: Two-step AI character sheet to sprite grid (`nano-banana` + `sprite-design` `normalize`)**:
+  - Best for expressive heroes, bosses, NPCs, creatures, and isometric units with 4 or more motion tags (`idle`, `walk`, `run`, `jump`, `fall`, `crouch`, `sleep`, `attack`, `hit`, `death`).
+  - **Step 1**: Use `nano-banana` (`uv run scripts/banana.py` with `gemini-nano-banana-2.1`) to create a turnaround sheet with `1:2` to `1:3` proportions, matching camera projection, clear limb separation, and a 4-step color swatch bar.
+  - **Step 2**: Pass that reference sheet via `-i` to `nano-banana` (`uv run scripts/banana.py`) to generate uniform `4x4` animation grids on `#00FF00` or `#FF00FF` chroma-key backgrounds with 10% to 15% cell margins. Run `sprite-design` (`go run . normalize`) to strip chroma backgrounds, trim bleed, align frames, export `.sprite`, `.png`, `.json`, `.aseprite`, and looping `.gif` previews, and wire `NewGridSpriteSheet` and `AnimationController`.
+  - **Fail fast on auth errors**: Media CLIs (`scripts/banana.py`, `scripts/lyria.py`, `scripts/omni.py`) support Vertex AI / Gemini Enterprise ADC (`GOOGLE_CLOUD_LOCATION="global"`) and `GEMINI_API_KEY`. If authentication fails, stop immediately and report the exact error instead of fabricating mock images or switching pipelines silently.
+- **Path B: Pure-code procedural `.sprite` DSL (`sprite-design`)**:
+  - Best for zero-asset builds, geometric enemies, vehicles, puzzle tokens, projectiles, pickups, props, and seamless tilesets.
+  - Author declarative `.sprite` files using Z-ordered `part` blocks, SDF and pixel primitives, 12 Retro-HD palettes, 12 four-step material ramps, and keyframed `tag`/`pose` animations. Validate with `go run . validate` and compile in memory (`CompileSpriteDSL`) or export to `.aseprite` and `.png` + `.json`.
+- **Backgrounds, portraits, and runtime VFX (`nano-banana` + `ebitengineer`)**:
+  - Use `nano-banana` for title art, seamless `4:1` parallax layers, visual novel portraits, and deckbuilder card illustrations.
+  - Use `ebitengineer` for pre-allocated particle pools, `text/v2` HUD typography, 2D `GeoM` transforms, procedural textures, and Kage screen shaders.
 
-* **Choose [`lyria`](../../media/lyria/SKILL.md)** when:
-  - Generating studio-quality **44.1 kHz stereo Background Music (BGM)** via **Lyria 3.5** (`lyria-3.5` / `lyria-3-pro-preview`) for full multi-section arrangements or **Lyria 3 Clip** (`lyria-3-clip` / `lyria-3-clip-preview`) for 30-second loops.
-  - Composing thematic soundtracks directly from concept art or screenshots (multimodal image-to-music).
+### Audio, music, and video cutscenes
 
-* **Choose a Hybrid Audio Pipeline** when:
-  - Combining `lyria` (`lyria-3.5` / `lyria-3-clip-preview`) for rich `.mp3`/`.wav` BGM beds with `procedural-composer` for instant, zero-latency procedural gameplay SFX and DSP loop slicing.
+All PCM buffers passed to Ebitengine's `audio.Context` or `audio.NewInfiniteLoop` must enforce 4-byte stereo sample frame alignment (`len(pcm) &^ 3`).
 
----
+- **Choose `procedural-sfx`** for low-latency gameplay SFX cues in `.sfx` DSL (lasers, slashes, explosions, jumps, coins, UI ticks, engine loops) using 18 built-in presets, duty-cycle or SVF sweeps, 16-bit Galois LFSR noise (`wave=psg_noise`), and `ValidateProductionSFX`.
+- **Choose `procedural-music`** for original multi-channel `.music` BGM scores (`8` to `12+` tracks, `30s` to `150s+` duration, verified `|` barlines, `~` cross-bar ties, sample-exact looping) synthesized via pure-Go SEGA YM2612 + SN76489 (`synth default`) or macOS CoreAudio (`synth apple` / `-apple` backed by `gs_instruments.dls`).
+- **Choose `lyria`** for studio AI music tracks or vocal songs via `lyria-3.5`, `lyria-3-pro-preview`, or `lyria-3-clip-preview` (`uv run scripts/lyria.py`), including image-to-music soundtracks from concept art or screenshots.
+- **Choose `gemini-omni`** for animated `3s` to `15s` intro/outro cutscenes, animated title loops, first-and-last-frame transitions, or `4k` promotional videos with synchronized audio via `gemini-omni-1.2-flash` (`uv run scripts/omni.py`).
+- **Choose a hybrid audio and cutscene pipeline** when combining `procedural-sfx` for zero-latency cooldown-gated SFX with `procedural-music` for looping stage themes, `lyria` for orchestral or vocal boss/menu tracks, and `gemini-omni` for video cutscenes.
 
-### 3.2 Graphics & Visual Routing Rules (`procedural-art` vs. `nano-banana` + `sprite-animation`)
+## End-to-end lifecycle, WebAssembly build, and deployment
 
-* **Choose [`procedural-art`](../procedural-art/SKILL.md)** when:
-  - Generating pure-code textures (`art.go`), crisp geometric entities, tactical grids, particle pools, or Kage post-processing shaders with zero external `.png` files.
-  - Implementing 2D `GeoM` matrix hierarchy transforms or sub-frame interpolation curves.
+Run phases sequentially from scratch or enter at any stage:
 
-* **Choose [`nano-banana`](../../media/nano-banana/SKILL.md) + [`sprite-animation`](../sprite-animation/SKILL.md)** when:
-  - Generating character sprite sheets, visual novel portraits, deckbuilder card illustrations, or seamless tilesets using **Nano Banana 2.1** (`gemini-nano-banana-2.1`), `gemini-3.1-flash-lite-image` (high-speed prototyping), or `gemini-3-pro-image` (complex multi-subject composition).
-  - Slicing generated sprite sheets into zero-allocation `SubImage` frames and driving state machines (`idle`, `walk`, `attack`, `cast`, `death`) via `sprite-animation`.
+1. **Game design (`game-design`)**: Run focused discovery to lock mechanics, virtual resolution, controls, and pipeline choices into `GDD.md`.
+2. **Engine scaffolding (`ebitengineer`)**: Scaffold `internal/` packages, virtual resolution scaling, scene FSM or overlay stack, fixed-timestep loop, and zero-allocation rendering.
+3. **Visual assets (`nano-banana` + `sprite-design`)**: Confirm motion tags, projection, and resolution, then execute Path A (`nano-banana` -> `normalize`) or Path B (`.sprite` DSL) and verify looping `.gif` previews.
+4. **Audio and cutscenes (`procedural-sfx`, `procedural-music`, `lyria`, `gemini-omni`)**: Synthesize `.sfx` cues, `.music` scores or `lyria` tracks, and optional `gemini-omni` cutscenes.
+5. **Parallel scaling (optional: `swarm-coding`, `parallel`)**: Fan out independent packages or asset batches across workers with disjoint file ownership.
+6. **Verification and deployment (`godoctor` + `ebitengineer`)**: Run `godoctor` build, lint, coverage, and mutation checks, compile `GOOS=js GOARCH=wasm`, test locally on `http://localhost:8080`, and optionally deploy containers to Cloud Run in parallel.
 
-* **Choose a Hybrid Visual Pipeline** when:
-  - Using `nano-banana` (`gemini-nano-banana-2.1`) + `sprite-animation` for hero/enemy sprites, portraits, or card art while using `procedural-art` for UI panels, particle bursts, projectiles, and Kage screen shaders.
+### Compile to WebAssembly and serve locally
 
----
+Build `public/game.wasm`, copy Go's `wasm_exec.js` shim from `GOROOT`, and serve locally (see `ebitengineer` `references/server_architecture.md` for complete `cmd/server/main.go` and `index.html` templates):
 
-## 4. End-to-End Game Development Lifecycle
+```bash
+mkdir -p public
+GOOS=js GOARCH=wasm go build -o public/game.wasm ./cmd/game
 
-When guiding the user through building a complete 2D game from scratch (or executing any phase independently):
+GOROOT_DIR="$(go env GOROOT)"
+if [ -f "$GOROOT_DIR/lib/wasm/wasm_exec.js" ]; then
+  cp "$GOROOT_DIR/lib/wasm/wasm_exec.js" public/wasm_exec.js
+else
+  cp "$GOROOT_DIR/misc/wasm/wasm_exec.js" public/wasm_exec.js
+fi
 
-1. **Concept & GDD (`/grill-me`)**: Activate [`game-design`](../game-design/SKILL.md) to run a genre-agnostic Socratic interview, lock in the mechanics, controls, and visual/audio pipeline choice (Procedural, AI, or Hybrid), and write `GDD.md`.
-2. **Engine Architecture**: Activate [`ebitengineer`](../ebitengineer/SKILL.md) to scaffold `internal/` packages, virtual resolution scaling, scene state machine (or overlay stack for RPGs/deckbuilders/tactics), fixed-timestep $\Delta t$, and spatial collision/grid systems.
-3. **Visual Pipeline Execution**:
-   - **Procedural**: Activate [`procedural-art`](../procedural-art/SKILL.md) for in-memory sprites, vector geometry, particle pools, and Kage shaders.
-   - **AI / Hybrid**: Activate [`nano-banana`](../../media/nano-banana/SKILL.md) (`gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, `gemini-3-pro-image`) to generate sprite sheets/art and [`sprite-animation`](../sprite-animation/SKILL.md) to slice frames and wire animation controllers.
-4. **Audio Pipeline Execution**:
-   - **Procedural**: Activate [`procedural-composer`](../procedural-composer/SKILL.md) for 4-byte aligned (`&^ 3`) 16-bit stereo SFX, DSP filters, and 6-channel BGM.
-   - **AI / Hybrid**: Activate [`lyria`](../../media/lyria/SKILL.md) (`lyria-3.5` / `lyria-3-pro-preview`, `lyria-3-clip-preview`) for 44.1 kHz stereo soundtracks and combine with [`procedural-composer`](../procedural-composer/SKILL.md) for loop slicing and SFX.
-5. **Parallel Execution (Optional)**: For multi-system builds with orthogonal workstreams, activate [`swarm-coding`](../../workflows/swarm-coding/SKILL.md) to coordinate parallel specialist subagents across disjoint file sets.
-6. **Quality Gate & Verification**: Activate [`godoctor`](../../coding/godoctor/SKILL.md) to run compiler and linter quality gates, execute unit tests with TestQuery analytics, and eliminate test blind spots via Selene mutation testing.
-7. **WebAssembly & Cloud Run Deployment**: Activate [`ebitengineer`](../ebitengineer/SKILL.md) to compile to WASM with browser audio unlock synchronization and package for deployment.
+PORT=8080 go run ./cmd/server
+```
+
+### Containerize and deploy to Google Cloud Run
+
+Use a multi-stage `Dockerfile` that compiles `public/game.wasm`, embeds static assets, and serves via a minimal Go HTTP server:
+
+```dockerfile
+FROM golang:1.27-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+RUN mkdir -p public && \
+    GOOS=js GOARCH=wasm go build -o public/game.wasm ./cmd/game && \
+    if [ -f "$(go env GOROOT)/lib/wasm/wasm_exec.js" ]; then \
+      cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" public/wasm_exec.js; \
+    else \
+      cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" public/wasm_exec.js; \
+    fi && \
+    cp index.html public/
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd/server
+
+FROM gcr.io/distroless/static-debian12
+COPY --from=builder /server /server
+EXPOSE 8080
+ENTRYPOINT ["/server"]
+```
+
+Build from source and deploy directly with Cloud Run + Artifact Registry:
+
+```bash
+SERVICE_NAME="ebiten-wasm-game"
+REGION="us-central1"
+
+gcloud run deploy "${SERVICE_NAME}" \
+  --source . \
+  --region "${REGION}" \
+  --allow-unauthenticated
+```

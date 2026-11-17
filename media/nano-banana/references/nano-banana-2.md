@@ -5,7 +5,7 @@
 
 - **Model Code**: `gemini-3.1-flash-image`
 - **CLI Aliases**: `nano-banana-2`, `gemini-3.1-flash-image`
-- **Release Date**: February 2026
+- **Release Date**: May 28, 2026 (GA; preview released February 2026)
 - **Status**: General Availability (GA)
 - **DeepMind Model Card**: [gemini-3-1-flash-image](https://deepmind.google/models/model-cards/gemini-3-1-flash-image/)
 
@@ -71,7 +71,7 @@ interaction = client.interactions.create(
     model="gemini-3.1-flash-image",
     input=[
         {"type": "text", "text": "Generate a dramatic cinematic movie poster inspired by this trailer video"},
-        {"type": "video_url", "url": "https://www.youtube.com/watch?v=EXAMPLE_VIDEO_ID"},
+        {"type": "video", "uri": "https://www.youtube.com/watch?v=EXAMPLE_VIDEO_ID", "mime_type": "video/mp4"},
     ],
     response_format={"type": "image", "aspect_ratio": "2:3", "image_size": "4K"},
 )
@@ -86,10 +86,10 @@ Control reasoning depth with `thinking_level`:
 
 ## CLI & SDK Examples
 
-### 1. `uv run skills/nano-banana/scripts/banana.py`: 4K High-Resolution Generation
+### 1. `uv run scripts/banana.py`: 4K High-Resolution Generation
 
 ```bash
-uv run skills/nano-banana/scripts/banana.py \
+uv run scripts/banana.py \
   -p "A cinematic wide-angle shot of an ancient observatory on a mountain peak under the Aurora Borealis" \
   -f "observatory_4k.png" \
   -m "nano-banana-2" \

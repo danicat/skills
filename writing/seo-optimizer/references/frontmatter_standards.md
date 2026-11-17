@@ -1,92 +1,89 @@
-# Frontmatter & Metadata Standards: Search vs. Humans
+# Frontmatter and metadata standards: search vs. humans
 
-A precise specification for structuring frontmatter metadata in technical articles, distinguishing human-facing presentation from search engine and AI ingestion, aligned with Google Search Central standards.
+Specification for structuring frontmatter metadata in technical articles, separating human preview copy from search engine and AI ingestion fields per Google Search Central guidelines.
 
 ---
 
-## 1. The Summary vs. Description Dichotomy
+## 1. Summary vs. description split
 
-A common anti-pattern in static site generators is using a single `description` or `summary` field for both search engine metadata and on-site user interface elements. This produces subpar outcomes for both:
-- Search snippets need **dense, factual keywords, concrete problem-solving language, and direct answers**.
-- UI cards need **curiosity hooks, narrative tension, and scannable editorial phrasing**.
+Reusing one string for both search snippets and on-site UI cards hurts click-throughs on one surface and keyword clarity on the other:
+- **Search snippets (`description`)** need factual keywords, problem-solving terms, and direct answers.
+- **UI cards (`summary`)** need editorial tension, concrete outcomes, and scannable hooks.
 
 ```
 +------------------------------------+------------------------------------+
 | Frontmatter: `summary`             | Frontmatter: `description`         |
 +------------------------------------+------------------------------------+
-| Audience: Human site visitors      | Audience: Search engines & LLMs    |
-| Surface: Homepage cards, feeds,    | Surface: `<meta description>`,     |
-|          related post widgets      |          OpenGraph, Schema.org     |
-| Tone: Engaging, intriguing, punchy | Tone: Factual, keyword-dense,      |
+| Audience: Human site visitors      | Audience: Search engines and LLMs  |
+| Surface: Homepage cards, feeds,    | Surface: <meta description>,       |
+|          related post widgets      |          Open Graph, Schema.org    |
+| Tone: Engaging, crisp hook         | Tone: Factual, keyword-dense,      |
 |                                    |       direct-answer summary        |
-| Length: 80–180 characters          | Length: 120–160 characters         |
+| Length: 80 to 180 characters       | Length: 120 to 160 characters      |
 +------------------------------------+------------------------------------+
 ```
 
-### Side-by-Side Examples
+### Side-by-side examples
 
-#### Example 1: Agentic Coding Post
+#### Example 1: Agentic coding post
 ```yaml
-# BAD: Reusing identical text for both
-summary: "Learn how to build MCP servers in Go with Gemini CLI."
-description: "Learn how to build MCP servers in Go with Gemini CLI."
+# BAD: Identical text in both fields
+summary: "Learn how to build MCP servers in Go."
+description: "Learn how to build MCP servers in Go."
 
-# GOOD: Distinct, optimized fields
-summary: "Turn any Go CLI into a native tool for AI agents with just 50 lines of code."
-description: "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go for Gemini CLI. Covers JSON-RPC handlers, tool discovery, and local debugging."
+# GOOD: Distinct audience-tuned fields
+summary: "Turn any Go CLI into a native tool server for AI agents in 50 lines of code."
+description: "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go. Covers JSON-RPC handlers, tool discovery, and local testing."
 ```
 
-#### Example 2: Architecture / Technical Retrospective
+#### Example 2: Engineering retrospective
 ```yaml
-# GOOD:
-summary: "What happens when you replace manual code reviews with a fleet of specialized subagents? We crunched the data."
-description: "Analysis of multi-agent code review workflows in Go and TypeScript. Evaluates PR review speed, defect detection rates, and context isolation benchmarks."
+summary: "What happens when specialized subagents replace manual PR triage? We measured the latency and defect rate."
+description: "Benchmark analysis of multi-agent code review pipelines in Go and TypeScript, covering defect detection, turnaround time, and context isolation."
 ```
 
 ---
 
-## 2. Meta Tags Note: Keywords are Ignored
+## 2. Meta keywords note
 
 > [!NOTE]
-> **Do NOT add `keywords` metadata.**
-> Official Google Search documentation confirms that `<meta name="keywords">` is **completely ignored** and has zero ranking value. Focus your metadata efforts exclusively on `<title>`, `<meta name="description">`, and structured JSON-LD.
+> **Never add `keywords` metadata.**
+> Official Google Search documentation confirms `<meta name="keywords">` is ignored completely and carries zero ranking weight. Spend that effort on `title`, `description`, and JSON-LD.
 
 ---
 
-## 3. Taxonomy & Tag Discipline
+## 3. Taxonomy and tag discipline
 
-To maximize search relevance and avoid internal tag cannibalization:
+### Single pillar category
+Assign each post to **one** primary category so topic archives stay focused (`Software Engineering`, `Cloud Architecture`, `Applied AI`, `DevOps`, `Tutorials`).
 
-### 1. Single Pillar Category
-Every article should belong to exactly **one** primary category to avoid duplicate taxonomy indexing and maintain clean topic clusters (e.g., `Software Engineering`, `Cloud Architecture`, `Artificial Intelligence`, `DevOps`, `Tutorials`).
-
-### 2. Tag Invariants
-- **Format**: Strictly lowercase, alphanumeric, single hyphens (`kebab-case`).
-- **Alphabetical Sorting**: Tags must be sorted alphabetically in the frontmatter array.
-- **No Category Duplication**: If the category is `Software Engineering`, do NOT add `software-engineering` as a tag.
-- **Unified Tag Archives**: Maintain consistent, standardized tag naming across all translated editions if publishing a multilingual site.
+### Tag invariants
+- **Format**: Strictly lowercase `kebab-case` (`[a-z0-9-]`).
+- **Alphabetical sorting**: Sort tags alphabetically in frontmatter.
+- **No category duplication**: If `categories` is `["Software Engineering"]`, do not include `software-engineering` in `tags`.
+- **Translation parity**: Keep canonical tag slugs aligned across localized versions.
 
 ```yaml
-# BAD: Unsorted, mixed casing, category duplication
+# BAD: Unsorted, mixed case, duplicates primary category
 categories: ["Software Engineering"]
 tags: ["Go", "Architecture", "software-engineering", "APIs"]
 
-# GOOD: Canonical, sorted, clean
+# GOOD: Sorted lowercase kebab-case
 categories: ["Software Engineering"]
 tags: ["apis", "architecture", "golang", "microservices"]
 ```
 
 ---
 
-## 4. Complete Frontmatter Specification
+## 4. Complete frontmatter specification
 
 ```yaml
 ---
-title: "Go Developers Guide to Gemini: Model Family and SDKs"
-summary: "Explore the Gemini model family, token pricing dynamics, and native Go SDK patterns for production backend services."
-description: "Complete guide for Go developers using Gemini API and Google GenAI SDK. Compares Gemini 2.5 Flash, Pro, and thinking models with code examples in Go."
-date: 2026-08-08T10:00:00Z
-categories: ["Applied GenAI"]
+title: "Go Developer Guide to Gemini 4: Models, Caching, and SDKs"
+summary: "Compare Gemini 4 models, implicit context caching, and typed tool schemas in Go services."
+description: "Complete Go guide to the Google GenAI SDK with Gemini 4. Covers Carbon, Argon, and Hydrogen models, structured outputs, and production error handling."
+date: 2026-10-08T10:00:00Z
+categories: ["Applied AI"]
 tags: ["gemini", "golang", "sdk"]
 series: ["Gemini for Go Developers"]
 series_order: 1
@@ -95,17 +92,17 @@ series_order: 1
 
 ---
 
-## 5. Hugo Layout Mapping
+## 5. Hugo layout mapping
 
-In your Hugo partials (e.g. `layouts/partials/head.html` and `layouts/partials/schema.html`):
+In template partials (`layouts/partials/head.html` and `layouts/partials/schema.html`):
 
 ```html
-<!-- Meta Description: Prefer .Params.description, fallback to .Summary -->
+<!-- Meta description: prefer .Params.description, fall back to .Summary -->
 <meta name="description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ end }}">
 
-<!-- OpenGraph Description -->
+<!-- Open Graph description -->
 <meta property="og:description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ end }}">
 
-<!-- Theme UI Cards (e.g., layouts/_default/summary.html) -->
+<!-- UI card summary -->
 <p class="summary-text">{{ with .Params.summary }}{{ . }}{{ else }}{{ .Summary }}{{ end }}</p>
 ```

@@ -1,0 +1,5 @@
+title "Player Damage Crunch"
+type sfx
+
+inst crunch preset=hit_damage vol=0.34
+track main crunch: 240Hz->60Hz:190ms

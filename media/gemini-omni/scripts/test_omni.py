@@ -13,11 +13,10 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.12"
 # dependencies = [
-#     "google-genai>=1.68.0",
+#     "google-genai>=3.3.0",
 #     "google-auth>=2.0.0",
-#     "pytest>=8.0.0",
 # ]
 # ///
 
@@ -27,6 +26,7 @@ import os
 import shutil
 import subprocess
 import sys
+import types
 import unittest
 from unittest import mock
 
@@ -59,6 +59,7 @@ def make_args(**overrides) -> argparse.Namespace:
         "store": None,
         "background": False,
         "extract_audio": None,
+        "enterprise": False,
         "vertexai": False,
         "project": None,
         "location": None,
@@ -87,37 +88,38 @@ class TestOmniUnit(unittest.TestCase):
             "gemini-omni-1.2-flash",
         )
 
-    def test_model_alias_resolution_omni_1_1_flash(self):
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-1.1-flash"), "gemini-omni-1.1-flash"
-        )
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-1.1"), "gemini-omni-1.1-flash"
-        )
-        self.assertEqual(omni.resolve_model("1.1"), "gemini-omni-1.1-flash")
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-1.1-flash-preview"),
-            "gemini-omni-1.1-flash-preview",
-        )
-
     def test_deprecated_and_unknown_models_fail_fast(self):
         with self.assertRaises(ValueError) as ctx:
             omni.resolve_model("gemini-omni-flash-preview")
         self.assertIn("shut down", str(ctx.exception))
 
+        for deprecated_1_1 in (
+            "gemini-omni-1.1-flash",
+            "gemini-omni-1.1-flash-preview",
+            "omni-1.1-flash",
+            "1.1",
+        ):
+            with self.assertRaises(ValueError) as ctx_1_1:
+                omni.resolve_model(deprecated_1_1)
+            msg = str(ctx_1_1.exception)
+            self.assertIn("deprecated", msg)
+            self.assertIn("gemini-omni-1.2-flash", msg)
+
         with self.assertRaises(ValueError) as ctx2:
             omni.resolve_model("non-existent-model-xyz")
         self.assertIn("Unsupported model", str(ctx2.exception))
 
-    def test_duration_validation_1_2_vs_1_1(self):
+    def test_duration_validation(self):
         # 15s is valid on gemini-omni-1.2-flash
         args_15s = make_args(duration="15s", duration_explicit=True)
         omni.validate_video_request(args_15s, "gemini-omni-1.2-flash")
 
-        # 15s fails on gemini-omni-1.1-flash (max 10s)
-        with self.assertRaises(ValueError) as ctx:
-            omni.validate_video_request(args_15s, "gemini-omni-1.1-flash")
-        self.assertIn("gemini-omni-1.2-flash", str(ctx.exception))
+        # 2s and 16s fail on gemini-omni-1.2-flash
+        for bad_dur in ("2s", "16s"):
+            args_bad = make_args(duration=bad_dur, duration_explicit=True)
+            with self.assertRaises(ValueError) as ctx:
+                omni.validate_video_request(args_bad, "gemini-omni-1.2-flash")
+            self.assertIn("out of range", str(ctx.exception))
 
         # 12s fails on --task extend (max 10s per extension turn)
         args_extend_12s = make_args(duration="12s", task="extend")
@@ -189,10 +191,6 @@ class TestOmniUnit(unittest.TestCase):
             ],
         )
 
-        # Upscale rejected on gemini-omni-1.1-flash
-        with self.assertRaises(ValueError):
-            omni.validate_video_request(args_upscale, "gemini-omni-1.1-flash")
-
         # Upscale rejected without explicit target resolution
         args_no_res = make_args(
             task="upscale",
@@ -226,35 +224,103 @@ class TestOmniUnit(unittest.TestCase):
             [],
         )
 
+    def test_detect_mime_type_and_unsupported_extensions(self):
+        self.assertEqual(omni.detect_mime_type("clip.mov"), "video/quicktime")
+        self.assertEqual(omni.detect_mime_type("photo.heic"), "image/heic")
+        self.assertEqual(omni.detect_mime_type("photo.HEIF"), "image/heif")
+        self.assertEqual(omni.detect_mime_type("clip.mpeg"), "video/mpeg")
+        self.assertEqual(omni.detect_mime_type("clip.mpg"), "video/mpg")
+        self.assertEqual(omni.detect_mime_type("clip.wmv"), "video/wmv")
+        self.assertEqual(omni.detect_mime_type("clip.3gp"), "video/3gpp")
+        self.assertEqual(omni.detect_mime_type("clip.flv"), "video/x-flv")
+        self.assertEqual(
+            omni.detect_mime_type("https://youtu.be/dQw4w9WgXcQ"), "video/mp4"
+        )
+        self.assertEqual(
+            omni.detect_mime_type("files/vid_123"), "application/octet-stream"
+        )
+
+        for bad in ("local.avi", "notes.txt", "gs://bucket/bad.avi"):
+            with self.assertRaises(ValueError) as ctx:
+                omni.detect_mime_type(bad)
+            self.assertIn("Unsupported input media format", str(ctx.exception))
+
     def test_init_client_vertex_ai_default_global_and_api_key(self):
         fake_creds = mock.Mock(quota_project_id="quota-gcp-proj")
-        args_vertex = make_args(vertexai=True, project=None, location=None)
-        with mock.patch.dict(os.environ, {}, clear=True), mock.patch(
-            "omni.google.auth.default", return_value=(fake_creds, None)
-        ), mock.patch("omni.genai.Client") as mock_client:
-            omni.init_client(args_vertex)
-            mock_client.assert_called_once_with(
-                vertexai=True,
-                project="quota-gcp-proj",
+        fake_auth = types.ModuleType("google.auth")
+        fake_auth.default = mock.Mock(return_value=(fake_creds, None))
+        fake_genai = types.ModuleType("google.genai")
+        fake_genai.Client = mock.Mock()
+        fake_google = types.ModuleType("google")
+        fake_google.auth = fake_auth
+        fake_google.genai = fake_genai
+        fake_modules = {
+            "google": fake_google,
+            "google.auth": fake_auth,
+            "google.genai": fake_genai,
+        }
+
+        for flag_kwargs in (
+            {"enterprise": True, "vertexai": False},
+            {"enterprise": False, "vertexai": True},
+        ):
+            fake_genai.Client.reset_mock()
+            args_enterprise = make_args(project=None, location=None, **flag_kwargs)
+            with mock.patch.dict(os.environ, {}, clear=True), mock.patch.dict(
+                sys.modules, fake_modules
+            ):
+                omni.init_client(args_enterprise)
+                fake_genai.Client.assert_called_once_with(
+                    enterprise=True,
+                    project="quota-gcp-proj",
+                    location="global",
+                    credentials=fake_creds,
+                )
+
+        fake_genai.Client.reset_mock()
+        args_env_enterprise = make_args(project=None, location=None)
+        with mock.patch.dict(
+            os.environ,
+            {
+                "GOOGLE_GENAI_USE_ENTERPRISE": "true",
+                "GOOGLE_CLOUD_PROJECT": "env-gcp-proj",
+            },
+            clear=True,
+        ), mock.patch.dict(sys.modules, fake_modules):
+            omni.init_client(args_env_enterprise)
+            fake_genai.Client.assert_called_once_with(
+                enterprise=True,
+                project="env-gcp-proj",
                 location="global",
                 credentials=fake_creds,
             )
 
-        args_api_key = make_args(vertexai=False, project=None, location=None)
+        fake_genai.Client.reset_mock()
+        args_api_key = make_args(enterprise=False, vertexai=False, project=None, location=None)
         with mock.patch.dict(
             os.environ,
             {"GEMINI_API_KEY": "test-gemini-key"},
             clear=True,
-        ), mock.patch("omni.genai.Client") as mock_client:
+        ), mock.patch.dict(sys.modules, fake_modules):
             omni.init_client(args_api_key)
-            mock_client.assert_called_once_with(api_key="test-gemini-key")
+            fake_genai.Client.assert_called_once_with(api_key="test-gemini-key")
 
     def test_init_client_fail_fast_missing_auth(self):
-        args_none = make_args(vertexai=False, project=None, location=None)
+        fake_auth = types.ModuleType("google.auth")
+        fake_genai = types.ModuleType("google.genai")
+        fake_google = types.ModuleType("google")
+        fake_google.auth = fake_auth
+        fake_google.genai = fake_genai
+        fake_modules = {
+            "google": fake_google,
+            "google.auth": fake_auth,
+            "google.genai": fake_genai,
+        }
+        args_none = make_args(enterprise=False, vertexai=False, project=None, location=None)
         stderr_buf = io.StringIO()
-        with mock.patch.dict(os.environ, {}, clear=True), mock.patch(
-            "sys.stderr", stderr_buf
-        ):
+        with mock.patch.dict(os.environ, {}, clear=True), mock.patch.dict(
+            sys.modules, fake_modules
+        ), mock.patch("sys.stderr", stderr_buf):
             with self.assertRaises(SystemExit) as cm:
                 omni.init_client(args_none)
             self.assertEqual(cm.exception.code, 1)
@@ -267,11 +333,20 @@ class TestOmniUnit(unittest.TestCase):
             CMD_BASE + ["--help"], capture_output=True, text=True
         )
         self.assertEqual(help_res.returncode, 0)
-        unwrapped_help = " ".join(help_res.stdout.split()).replace("- ", "-")
-        self.assertIn("gemini-omni-1.2-flash", unwrapped_help)
+        self.assertEqual(help_res.stderr, "")
+        self.assertIn("gemini-omni-1.2-flash", help_res.stdout)
         self.assertIn("--task", help_res.stdout)
         self.assertIn("--duration", help_res.stdout)
+        self.assertIn("--enterprise", help_res.stdout)
         self.assertIn("--vertexai", help_res.stdout)
+
+        bad_media_res = subprocess.run(
+            CMD_BASE + ["--prompt", "test", "-i", "bad.avi", "--dry-run"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(bad_media_res.returncode, 0)
+        self.assertIn("Unsupported", bad_media_res.stderr)
 
         for alias in (
             "gemini-omni-1.2-flash",

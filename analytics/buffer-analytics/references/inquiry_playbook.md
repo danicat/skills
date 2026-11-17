@@ -1,41 +1,54 @@
-# Buffer Analytics Inquiry & Baseline Playbook
+# Buffer analytics inquiry and baseline playbook
 
-This reference establishes the standard analytical methodologies, inquiry types, and SQL formulas used to evaluate social post performance, diagnose anomalies, and benchmark content growth.
+This reference sets out the statistical baselines, SQL formulas, and retrospective checks for evaluating post performance and diagnosing skew.
 
 ---
 
-## 1. Outlier & Distribution Analysis (Mean vs. Median)
+## 1. Outlier and distribution analysis (mean vs. median)
 
-When evaluating day-of-week, topic, or channel performance, always compare the **Median** to the **Mean** to ensure viral spikes (e.g., 40k+ impression posts) do not distort baseline expectations.
+When comparing days, topics, or channels, compare the **median** against the **mean** so single viral posts do not distort baseline expectations.
 
 ### Methodology
-- Calculate `COUNT`, `AVG` (Mean), `MEDIAN`, and `MAX` per cohort.
-- Identify skew: If `Mean > 3 * Median`, performance is driven by rare outliers rather than a repeatable baseline.
+- Calculate `COUNT`, `AVG` (mean), a window-function `MEDIAN`, and `MAX` per cohort.
+- Check skew: when `mean > 3 * median`, a few outliers drive the cohort average.
 
-### SQL / Python Template
+### SQLite window-function median query
+Because `SQLite` has no built-in `MEDIAN()` aggregate, rank rows with `ROW_NUMBER()` and average the middle one or two rows per partition:
+
 ```sql
+WITH ranked AS (
+    SELECT
+        day_of_week,
+        impressions,
+        reactions,
+        ROW_NUMBER() OVER (PARTITION BY day_of_week ORDER BY impressions) AS rn,
+        COUNT(*) OVER (PARTITION BY day_of_week) AS cnt
+    FROM v_posts_summary
+    WHERE status = 'sent' AND service = 'linkedin' AND day_of_week IS NOT NULL
+)
 SELECT
     day_of_week,
-    COUNT(*) AS post_count,
+    MAX(cnt) AS post_count,
     ROUND(AVG(impressions), 0) AS mean_impressions,
+    ROUND(AVG(CASE WHEN rn IN ((cnt + 1) / 2, (cnt + 2) / 2) THEN impressions END), 0) AS median_impressions,
     MAX(impressions) AS max_impressions,
     ROUND(AVG(reactions), 1) AS mean_reactions
-FROM v_posts_summary
-WHERE status = 'sent' AND service = 'linkedin'
-GROUP BY day_of_week;
+FROM ranked
+GROUP BY day_of_week
+ORDER BY median_impressions DESC;
 ```
 
 ---
 
-## 2. Time-Series & Growth Tracking (Quarter-over-Quarter)
+## 2. Time-series and growth tracking (month-over-month)
 
 Determine whether reach, engagement rate, and audience response are compounding over time.
 
 ### Methodology
-- Group posts by `year_month` or `quarter`.
-- Track **Posting Frequency** against **Average Reach** to detect content fatigue or audience dilution.
+- Group posts by `year_month` or quarter.
+- Track **posting frequency** against **average reach** to spot fatigue or audience dilution.
 
-### SQL Template
+### SQL template
 ```sql
 SELECT
     service,
@@ -53,34 +66,34 @@ ORDER BY service, year_month;
 
 ---
 
-## 3. Geographic Sweet-Spot Inference
+## 3. Geographic sweet-spot inference
 
-Since raw follower country geolocation is paywalled on basic tiers, infer geographic capture by mapping UTC publishing hours to global developer activity zones.
+Since raw follower country counts are often unavailable on basic API tiers, infer audience windows by mapping UTC publish hours to developer time zones.
 
-### Time Zones & Developer Activity Windows
-- **11:00 – 15:00 UTC (Transatlantic Sweet Spot):**
-  - UK / Europe: 12:00 – 16:00 (afternoon dwell time).
-  - US East Coast: 07:00 – 10:00 EDT (morning commute / start-of-day feed check).
-  - Brazil / LATAM: 08:00 – 11:00 BRT (morning startup).
-- **17:00 – 21:00 UTC (US West Coast / Evening Catchup):**
-  - US West Coast: 10:00 – 14:00 PDT.
+### Time zones and developer activity windows
+- **11:00 to 15:00 UTC (Transatlantic window):**
+  - UK / Europe: `12:00 to 16:00` local afternoon dwell time.
+  - US East Coast: `07:00 to 10:00` EDT morning feed check.
+  - Brazil / LATAM: `08:00 to 11:00` BRT morning check-in.
+- **17:00 to 21:00 UTC (US West Coast afternoon):**
+  - US West Coast: `10:00 to 14:00` PDT.
 
 ---
 
-## 4. Multi-Platform Top-Performer Trait Profiling
+## 4. Multi-platform top-performer trait profiling
 
-Extract the top 5–10 posts per platform and analyze their common structural DNA:
+Extract the top `5 to 10` posts per network and compare their structure:
 
 | Platform | Primary Ranking Metric | Winning Content Archetypes |
 | :--- | :--- | :--- |
-| **LinkedIn** | `impressions`, `reactions` | Contrast hooks (*"Six months ago X, today Y"*), Structured shifts (*First/Second/Third*), Humble discoveries (*"Neither did I!"*). |
-| **Twitter / X** | `impressions`, `reposts`, `reactions` | Unfiltered conviction essays, Personal image/photo projects, High-impact industry predictions. |
-| **Bluesky** | `reactions`, `reposts` | Architecture diagrams, Hand-drawn sketches, Deep Go philosophy quotes, Zero corporate marketing. |
+| **LinkedIn** | `impressions`, `reactions` | Contrast hooks (*"Six months ago X, today Y"*), ordered breakdowns, honest engineering lessons. |
+| **Twitter / X** | `impressions`, `reposts`, `reactions` | Short direct takeaways, real project screenshots or clips, concrete engineering predictions. |
+| **`Bluesky`** | `reactions`, `reposts` | Architecture diagrams, handwritten sketches, concise technical quotes, zero corporate marketing. |
 
 ---
 
-## 5. Behavioral & Effort Allocation Bias Detection
+## 5. Behavioral and effort allocation bias detection
 
-Detect whether performance differences across days or formats are caused by the **calendar day** or by **author effort**:
-- **Effort Bias:** Major long-form blog series and keynote decks are deliberately published on specific days (e.g. Mondays/Thursdays), giving those days an artificial performance advantage over casual mid-week check-ins.
-- **Cadence vs. Saturation:** Posting $>5$ times a week can dilute median impressions per post, whereas 1–2 high-effort posts per week maximize reach per asset.
+Separate genuine **calendar-day effects** from **author effort bias**:
+- **Effort bias**: Long-form technical posts and announcements often launch on Mondays or Thursdays, inflating averages on those days over casual mid-week posts.
+- **Cadence vs. saturation**: Publishing `> 5` posts per week can dilute median impressions per post, whereas `1 to 2` substantial posts per week protect reach per post.

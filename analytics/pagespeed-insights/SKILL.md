@@ -1,60 +1,56 @@
 ---
 name: pagespeed-insights
 description: >
-  Run, extract, and debug Google PageSpeed Insights (pagespeed.web.dev) Mobile
-  and Desktop Lighthouse reports using Chrome DevTools MCP (chrome-devtools-mcp).
-  Reads raw Lighthouse Result (LHR) JSON from window.__LIGHTHOUSE_MOBILE_JSON__
-  and window.__LIGHTHOUSE_DESKTOP_JSON__ without noisy DOM snapshots. Activate
-  when auditing a pagespeed.web.dev URL, running a live PageSpeed Insights
-  check, or fixing Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index).
+  Run and extract Google PageSpeed Insights Mobile and Desktop audits via the
+  v5 REST API (runPagespeed) or pagespeed.web.dev SSR window variables. Returns
+  CrUX Core Web Vitals (LCP, INP, CLS) and Lighthouse lab diagnostics (TBT, FCP,
+  Speed Index) without DOM snapshots. Activate when auditing a live URL or
+  pagespeed.web.dev report or fixing Core Web Vitals.
 license: Apache-2.0
 metadata:
   category: analytics
-  tags: "pagespeed-insights, lighthouse, core-web-vitals, performance, seo, accessibility"
+  tags: "pagespeed-insights, lighthouse, core-web-vitals, crux, web-performance"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Run `pagespeed.web.dev` audits
+# Run PageSpeed Insights audits
 
-Static HTTP tools (`curl`, `fetch`) fail on [PageSpeed Insights](https://pagespeed.web.dev/) while an audit runs. Full DOM snapshots (`take_snapshot`) also flood your token budget with thousands of UI nodes and hide byte-level data.
+Static page fetches (`curl` or `fetch` on HTML) fail on [PageSpeed Insights](https://pagespeed.web.dev/) while a browser run executes, and full DOM snapshots (`take_snapshot`) waste tokens while hiding byte-level diagnostics.
 
-Instead, **PageSpeed Insights writes the full Lighthouse Result (LHR) JSON trees for both Mobile and Desktop onto `window`**:
-- `window.__LIGHTHOUSE_MOBILE_JSON__`
-- `window.__LIGHTHOUSE_DESKTOP_JSON__`
-
-Drive a browser tab with `chrome-devtools-mcp` and read these two `window` objects via `evaluate_script` to get both Mobile and Desktop reports in one call. You get exact byte savings, four-phase LCP timings, network request chains, and source-mapped stack traces without clicking UI tabs or scraping DOM text.
+Use two clean JSON paths instead:
+- **Path A (CLI REST API)**: Query the PageSpeed Insights `v5` REST endpoint (`runPagespeed`) directly from the terminal for any public live URL.
+- **Path B (Browser SSR variables)**: Read `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__` in one script evaluation on `pagespeed.web.dev` report URLs.
 
 ---
 
 ## Core concepts and rules
 
-### 1. Dual report extraction from `window`
-- **Rule**: Read `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__` via `evaluate_script`. Do not take DOM snapshots or switch Mobile and Desktop tabs in the UI.
-- **Why it holds**: Server-side rendering (SSR) on `pagespeed.web.dev` writes both Mobile and Desktop Lighthouse runs into global JavaScript variables on page load, even though the DOM shows only one tab at a time.
-- **What it forbids**: Never call `take_snapshot` to read PageSpeed Insights scores or audit tables. Never waste round-trips clicking the Desktop or Mobile tab buttons to inspect the second form factor.
-- **Scope limit**: Applies to `pagespeed.web.dev` report permalinks; local Lighthouse runs use the `lighthouse_audit` tool directly.
+### 1. Pick REST API for live URLs and SSR variables for saved reports
+- **Rule**: Call the `v5` REST API (`runPagespeed`) for live URL audits in headless CLI workflows. Use SSR `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__` variables when the user shares a `pagespeed.web.dev/analysis/...` report link or when auditing inside a browser session.
+- **Why it holds**: Server-side rendering (`SSR`) on `pagespeed.web.dev` embeds both Mobile and Desktop JSON payloads onto `window` during permalink load, while the `v5` REST API returns identical Lighthouse (`LHR`) and `CrUX` JSON directly over HTTP without browser tabs.
+- **What it forbids**: Never call `take_snapshot` to scrape PageSpeed Insights scores or click UI tabs to inspect the second device form factor.
 
-### 2. Server-rendered permalink reload gate
-- **Rule**: After starting a new audit on `/analysis?url=...`, wait for the URL to change to `/analysis/<domain-slug>/<report-id>`. Then run `navigate_page` on that permalink before reading `window.__LIGHTHOUSE_*_JSON__`.
-- **Why it holds**: When an in-browser audit finishes, the single-page app (SPA) updates the address bar via `history.pushState` and renders from local state. The server only injects `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__` during a full SSR page load of the permalink URL.
-- **What it forbids**: Never read `window.__LIGHTHOUSE_*_JSON__` right after `window.location.href` changes in-place without reloading the permalink first.
+### 2. Reload the server-rendered report URL before reading variables
+- **Rule**: When starting a browser audit on `/analysis?url=...`, wait (`15 to 30 seconds`, bounded to `90 seconds` max) for the address bar to update to `/analysis/<domain-slug>/<report-id>`, then run a full navigation (`navigate_page`) to that report URL before reading `window.__LIGHTHOUSE_*_JSON__`.
+- **Why it holds**: When an interactive run finishes, the single-page app (`SPA`) updates the URL with `history.pushState` and renders from client memory. The server only writes `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__` on a fresh `SSR` document request.
+- **What it forbids**: Never poll indefinitely past `90 seconds`, and never attempt to bypass an anti-bot or `CAPTCHA` gate; stop and report upstream error banners or access blocks directly.
 
-### 3. Four-phase paint timing split
-- **Rule**: Split every LCP (`Largest Contentful Paint`) bottleneck into its four phases (`timeToFirstByte`, `resourceLoadDelay`, `resourceLoadDuration`, `elementRenderDelay`) from `lcp-breakdown-insight` before changing code.
-- **Why it holds**: The four phases are separate and add up to 100% of LCP time. Compressing an image only shrinks `resourceLoadDuration`. It does nothing when late lookup (`resourceLoadDelay`) or main-thread blocking (`elementRenderDelay`) drives LCP.
-- **What it forbids**: Never compress images or tune CDN caching to fix LCP until you confirm that `resourceLoadDuration` or `timeToFirstByte` is the largest phase.
+### 3. Separate CrUX field Core Web Vitals from lab proxies
+- **Rule**: Inspect both `CrUX` real-user 28-day `p75` field metrics (`LCP`, `INP`, and `CLS` inside `loadingExperience` and `originLoadingExperience`) and Lighthouse lab diagnostics. Split every `LCP` (`Largest Contentful Paint`) issue into its four phases (`timeToFirstByte`, `resourceLoadDelay`, `resourceLoadDuration`, `elementRenderDelay`) from `lcp-breakdown-insight` before changing code.
+- **Why it holds**: `INP` (`Interaction to Next Paint`) is a Core Web Vital measured in field `CrUX` data, whereas synthetic lab runs report `TBT` (`Total Blocking Time`) as its main-thread proxy alongside `FCP` and Speed Index (`SI`). Shrinking an image file only lowers `resourceLoadDuration`, doing nothing when late discovery (`resourceLoadDelay`) or script work (`elementRenderDelay`) drives `LCP`.
+- **What it forbids**: Never re-encode images or tune caching before confirming whether `resourceLoadDuration` or `timeToFirstByte` dominates `LCP`.
 
-### 4. Rendered box image parity
-- **Rule**: Size and crop page images to match their painted CSS box times `window.devicePixelRatio`. Set `sizes` to match real layout slot widths across breakpoints.
-- **Why it holds**: `image-delivery-insight` computes `wastedBytes` by comparing file dimensions (`naturalWidth * naturalHeight`) against the painted CSS box (`boundingRect.width * boundingRect.height * dpr^2`). Serving uncropped aspect ratios inside `object-fit: cover` boxes or leaving `sizes="100vw"` on grids forces browsers to download pixels that they clip or scale down.
-- **What it forbids**: Never rely on CSS `object-fit: cover` to crop large source images at runtime. Never use `loading="lazy"` or `decoding="async"` on the hero LCP image.
+### 4. Match image dimensions to the painted CSS box
+- **Rule**: Supply responsive `srcset` and `sizes` variants so delivered pixel dimensions match the painted CSS box (`boundingRect.width * dpr`).
+- **Why it holds**: `image-delivery-insight` flags `wastedBytes` whenever intrinsic image dimensions (`naturalWidth * naturalHeight`) overshoot the rendered CSS box. Using `object-fit: cover` is fine when paired with explicit `width` and `height` attributes and responsive image candidates close to the rendered box; leaving `sizes="100vw"` on multi-column grids forces browsers to fetch oversized files.
+- **What it forbids**: Never ship full-resolution source files relying solely on `object-fit: cover` to crop them down, and never set `loading="lazy"` or `decoding="async"` on the hero `LCP` image.
 
-### 5. Critical-path network and thread guards
-- **Rule**: Keep the pre-LCP network and main-thread window free of blocking stylesheets, sync scripts, extra `fetch`/`XHR` calls, and DOM read-after-write layout thrashing.
-- **Why it holds**: Early background requests compete with critical assets for sockets and bandwidth. Custom request headers (like `Content-Type: application/json` on simple requests) also trigger extra CORS preflight `OPTIONS` round-trips. Sync scripts and forced layout passes block the main thread from painting the LCP node even after its bytes arrive (`elementRenderDelay`).
-- **What it forbids**: Never fire non-essential tracking or extra hydration requests before `window.load` and `requestAnimationFrame`. Never read layout properties (`offsetWidth`, `getBoundingClientRect`) right after DOM writes during initial load.
+### 5. Keep pre-LCP network and main-thread work minimal
+- **Rule**: Keep the pre-`LCP` window clear of blocking stylesheets, sync scripts, non-critical `fetch` or `XHR` requests, and forced layout reads after DOM writes.
+- **Why it holds**: Background requests compete for connections and trigger extra `CORS` preflight `OPTIONS` hops when using non-simple headers like `Content-Type: application/json`, while sync scripts and layout thrashing delay painting even after bytes arrive (`elementRenderDelay`) and degrade `TBT` and `INP`.
+- **What it forbids**: Never trigger analytics hydration bursts before `window.load` and `requestAnimationFrame`, and never read `offsetWidth` or `getBoundingClientRect` right after DOM mutations during initial load.
 
 ---
 
@@ -62,62 +58,114 @@ Drive a browser tab with `chrome-devtools-mcp` and read these two `window` objec
 
 ```mermaid
 flowchart LR
-    A["1. Open or Start Audit\nnavigate_page to /analysis?url=..."] --> B["2. Poll for Permalink\nWait for /analysis/<slug>/<id>"]
-    B --> C["3. Load SSR Permalink\nnavigate_page to permalink URL"]
-    C --> D["4. Read Dual LHR JSON\nevaluate_script on __LIGHTHOUSE_*_JSON__"]
-    D --> E["5. Inspect Failing Audits\nLCP phases, Images, Layout, CLS"]
+    A["1. Live URL or saved report"] --> B["2a. Live URL: call PSI v5 API"]
+    A --> C["2b. Saved URL: load SSR report"]
+    B --> D["3. Extract CrUX field and lab JSON"]
+    C --> D
+    D --> E["4. Inspect LCP phases, INP/TBT, CLS, assets"]
 ```
 
-### Step 1: Open a report or start a fresh audit
+### Path A: Query the PageSpeed Insights v5 REST API (CLI)
 
-Load the `chrome-devtools-mcp` tools (`navigate_page`, `evaluate_script`, `new_page`, `list_pages`).
+Run `mobile` and `desktop` audits from any shell with `curl` and `jq` (set `PAGESPEED_API_KEY` for higher quota, or omit it for unauthenticated calls within standard limits):
 
-- **If the user shared a report permalink** (`https://pagespeed.web.dev/analysis/<domain-slug>/<report-id>`):
-  Open that URL with `navigate_page` and skip to **Step 3**.
-- **To start a new live audit**:
-  Open the query endpoint (which starts the audit right away):
-  ```text
-  https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fexample.com%2F
-  ```
-  Or click the `"Analyze"` button on an open PageSpeed Insights page via `evaluate_script`:
-  ```javascript
-  () => {
-    const btn = Array.from(document.querySelectorAll('button'))
-      .find((b) => b.textContent.trim() === 'Analyze');
-    if (btn) {
-      btn.click();
-      return { clicked: true, url: window.location.href };
-    }
-    return { clicked: false, url: window.location.href };
-  }
-  ```
+```bash
+set -euo pipefail
 
-### Step 2: Wait for the permalink and reload from the server
+TARGET_URL="https://example.com/"
+ENCODED_URL=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$TARGET_URL")
 
-While Google's lab runners run Lighthouse (~15–30 seconds), the URL stays at `/analysis?url=...`. Once both Mobile and Desktop runs finish, the SPA rewrites `window.location.href` to `/analysis/<domain-slug>/<report-id>`.
+for strategy in mobile desktop; do
+  API_URL="https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${ENCODED_URL}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo${PAGESPEED_API_KEY:+&key=${PAGESPEED_API_KEY}}"
 
-Once `window.location.pathname` matches `/^\/analysis\/[^/]+\/[^/]+/`, call `navigate_page` on that exact `window.location.href` so the server returns SSR HTML with `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__`.
+  echo "=== Strategy: $strategy ==="
+  curl -fsSL --max-time 90 "$API_URL" | jq '{
+    strategy: "'"$strategy"'",
+    final_url: .lighthouseResult.finalDisplayedUrl,
+    crux_overall: .loadingExperience.overall_category,
+    crux_p75: {
+      LCP_ms: .loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS.percentile,
+      INP_ms: .loadingExperience.metrics.INTERACTION_TO_NEXT_PAINT.percentile,
+      CLS: .loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile,
+      FCP_ms: .loadingExperience.metrics.FIRST_CONTENTFUL_PAINT_MS.percentile,
+      TTFB_ms: .loadingExperience.metrics.EXPERIMENTAL_TIME_TO_FIRST_BYTE.percentile
+    },
+    origin_crux_overall: .originLoadingExperience.overall_category,
+    scores: (.lighthouseResult.categories | to_entries | map({
+      key,
+      value: (if .value.score == null then null else ((.value.score * 100) | round) end)
+    }) | from_entries),
+    lab_metrics: {
+      FCP: .lighthouseResult.audits["first-contentful-paint"].displayValue,
+      LCP: .lighthouseResult.audits["largest-contentful-paint"].displayValue,
+      TBT: .lighthouseResult.audits["total-blocking-time"].displayValue,
+      CLS: .lighthouseResult.audits["cumulative-layout-shift"].displayValue,
+      SI:  .lighthouseResult.audits["speed-index"].displayValue
+    },
+    failing_audits: [
+      .lighthouseResult.audits | to_entries[]
+      | select(.value.score != null and .value.score < 1 and .value.scoreDisplayMode != "informative")
+      | {id: .key, title: .value.title, score: .value.score, displayValue: .value.displayValue}
+    ]
+  }'
+done
+```
 
-### Step 3: Extract the mobile and desktop scorecard
+### Path B: Read SSR variables from `pagespeed.web.dev`
 
-Run this `evaluate_script` function on the permalink to read Mobile and Desktop scores, Core Web Vitals (`FCP`, `LCP`, `TBT`, `CLS`, `SI`), and every failing audit in one call:
+Use browser automation tools (`navigate_page`, `evaluate_script`, `new_page`, `list_pages`) when inspecting shared `pagespeed.web.dev` report URLs:
+
+1. **Saved report URL** (`https://pagespeed.web.dev/analysis/<domain-slug>/<report-id>`): Open directly and extract data right away.
+2. **Start a live browser audit**: Open `https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fexample.com%2F`, then wait (`15 to 30 seconds`, `90 seconds` max timeout) until `window.location.pathname` matches `/^\/analysis\/[^/]+\/[^/]+/` (stopping right away if the page displays an error alert or anti-bot gate).
+3. **Reload the permalink**: Call `navigate_page` on the exact `window.location.href` permalink so the server injects `window.__LIGHTHOUSE_MOBILE_JSON__` and `window.__LIGHTHOUSE_DESKTOP_JSON__`.
+
+#### Extract CrUX field metrics and lab scorecard
+
+Run this script on the reloaded permalink (it throws an error instead of returning silent nulls when `SSR` variables are absent):
 
 ```javascript
 () => {
-  const m = window.__LIGHTHOUSE_MOBILE_JSON__?.lighthouseResult || window.__LIGHTHOUSE_MOBILE_JSON__;
-  const d = window.__LIGHTHOUSE_DESKTOP_JSON__?.lighthouseResult || window.__LIGHTHOUSE_DESKTOP_JSON__;
-
-  const extractSummary = (lhr) => {
-    if (!lhr || !lhr.categories) return null;
-    const scores = Object.fromEntries(
-      Object.entries(lhr.categories).map(([k, v]) => [k, Math.round(v.score * 100)])
+  const mRaw = window.__LIGHTHOUSE_MOBILE_JSON__;
+  const dRaw = window.__LIGHTHOUSE_DESKTOP_JSON__;
+  if (!mRaw && !dRaw) {
+    throw new Error(
+      'Missing window.__LIGHTHOUSE_*_JSON__: reload the /analysis/<slug>/<id> URL from the server first.'
     );
-    const metrics = {
-      FCP: lhr.audits['first-contentful-paint']?.displayValue,
-      LCP: lhr.audits['largest-contentful-paint']?.displayValue,
-      TBT: lhr.audits['total-blocking-time']?.displayValue,
-      CLS: lhr.audits['cumulative-layout-shift']?.displayValue,
-      SI:  lhr.audits['speed-index']?.displayValue,
+  }
+
+  const pickCrux = (exp) => {
+    if (!exp) return null;
+    const m = exp.metrics || {};
+    return {
+      overallCategory: exp.overall_category || null,
+      p75: {
+        LCP_ms: m.LARGEST_CONTENTFUL_PAINT_MS?.percentile ?? null,
+        INP_ms: m.INTERACTION_TO_NEXT_PAINT?.percentile ?? null,
+        CLS: m.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile ?? null,
+        FCP_ms: m.FIRST_CONTENTFUL_PAINT_MS?.percentile ?? null,
+        TTFB_ms: m.EXPERIMENTAL_TIME_TO_FIRST_BYTE?.percentile ?? null,
+      },
+    };
+  };
+
+  const extractSummary = (raw) => {
+    if (!raw) return null;
+    const lhr = raw.lighthouseResult || raw;
+    if (!lhr || !lhr.categories) {
+      throw new Error('Invalid LHR structure on SSR global: missing categories.');
+    }
+    const scores = Object.fromEntries(
+      Object.entries(lhr.categories).map(([k, v]) => [
+        k,
+        v.score === null || v.score === undefined ? null : Math.round(v.score * 100),
+      ])
+    );
+    const labMetrics = {
+      FCP: lhr.audits['first-contentful-paint']?.displayValue ?? null,
+      LCP: lhr.audits['largest-contentful-paint']?.displayValue ?? null,
+      TBT: lhr.audits['total-blocking-time']?.displayValue ?? null,
+      CLS: lhr.audits['cumulative-layout-shift']?.displayValue ?? null,
+      SI:  lhr.audits['speed-index']?.displayValue ?? null,
     };
     const failingAudits = Object.entries(lhr.audits)
       .filter(([, a]) => a.score !== null && a.score < 1 && a.scoreDisplayMode !== 'informative')
@@ -127,26 +175,37 @@ Run this `evaluate_script` function on the permalink to read Mobile and Desktop 
         score: a.score,
         displayValue: a.displayValue,
       }));
-    return { fetchTime: lhr.fetchTime, scores, metrics, failingAudits };
+    return {
+      fetchTime: lhr.fetchTime,
+      cruxField: pickCrux(raw.loadingExperience),
+      originCruxField: pickCrux(raw.originLoadingExperience),
+      scores,
+      labMetrics,
+      failingAudits,
+    };
   };
 
   return {
     url: window.location.href,
-    mobile: extractSummary(m),
-    desktop: extractSummary(d),
+    mobile: extractSummary(mRaw),
+    desktop: extractSummary(dRaw),
   };
 }
 ```
 
-### Step 4: Inspect failing audits
+#### Inspect failing lab audits in depth
 
-Query the failing audit keys inside `window.__LIGHTHOUSE_MOBILE_JSON__` or `window.__LIGHTHOUSE_DESKTOP_JSON__` to get exact DOM selectors, URLs, byte counts, and stack traces:
+Query failing audit keys on `window.__LIGHTHOUSE_MOBILE_JSON__` or `window.__LIGHTHOUSE_DESKTOP_JSON__` to inspect selectors, asset URLs, wasted bytes, and source stack frames:
 
 ```javascript
 () => {
-  const lhr = window.__LIGHTHOUSE_MOBILE_JSON__?.lighthouseResult || window.__LIGHTHOUSE_MOBILE_JSON__;
+  const raw = window.__LIGHTHOUSE_MOBILE_JSON__;
+  const lhr = raw?.lighthouseResult || raw;
+  if (!lhr || !lhr.audits) {
+    throw new Error('Missing window.__LIGHTHOUSE_MOBILE_JSON__: reload the SSR permalink first.');
+  }
   const pick = (id) => {
-    const a = lhr?.audits?.[id];
+    const a = lhr.audits[id];
     if (!a) return null;
     return {
       score: a.score,
@@ -157,24 +216,15 @@ Query the failing audit keys inside `window.__LIGHTHOUSE_MOBILE_JSON__` or `wind
   };
 
   return {
-    // 1. LCP Element & 4-Phase Timing Breakdown (TTFB, Load Delay, Load Duration, Render Delay)
     lcpBreakdown: pick('lcp-breakdown-insight'),
     lcpDiscovery: pick('lcp-discovery-insight'),
-    rawTimings: lhr?.audits?.['metrics']?.details?.items?.[0],
-
-    // 2. Render-Blocking Requests & Critical Network Dependency Chain
+    rawTimings: lhr.audits['metrics']?.details?.items?.[0] ?? null,
     renderBlocking: pick('render-blocking-insight'),
     networkTree: pick('network-dependency-tree-insight'),
-
-    // 3. Image Delivery (wastedBytes, rendered boundingRect vs natural dimensions)
     imageDelivery: pick('image-delivery-insight'),
-
-    // 4. Main-Thread Bottlenecks (Unused JS, Long Tasks, Forced Reflows with source locations)
     unusedJs: pick('unused-javascript'),
     longTasks: pick('long-tasks'),
     forcedReflow: pick('forced-reflow-insight'),
-
-    // 5. Layout Shifts, Accessibility, and Browser Inspector Issues
     clsCulprits: pick('cls-culprits-insight'),
     colorContrast: pick('color-contrast'),
     inspectorIssues: pick('inspector-issues'),
@@ -188,18 +238,19 @@ Query the failing audit keys inside `window.__LIGHTHOUSE_MOBILE_JSON__` or `wind
 
 | Audit ID | Signal | Fix pattern |
 | :--- | :--- | :--- |
-| `lcp-breakdown-insight` | Splits LCP into `timeToFirstByte`, `resourceLoadDelay`, `resourceLoadDuration`, and `elementRenderDelay`, and finds the LCP DOM node. | **High `resourceLoadDelay`**: Fetch the LCP asset early with `<link rel="preload" as="image" imagesrcset="..." imagesizes="..." fetchpriority="high">` in `<head>`. **High `elementRenderDelay`**: Inline critical CSS, remove `decoding="async"` on the LCP `<img>`, and defer third-party scripts until user input. |
-| `image-delivery-insight` | Lists each failing `<img>` with `totalBytes`, `wastedBytes`, `boundingRect` (painted CSS pixels), and `subItems` (`compression` vs. `file size`). | Encode in modern formats (AVIF or WebP), crop assets to match the box aspect ratio, align `sizes` with CSS layout widths across breakpoints, and tune quality. |
-| `render-blocking-insight` | Lists `<link rel="stylesheet">` or sync `<script>` tags in `<head>` that block `FCP` and `LCP`. | Inline critical first-screen CSS into `<style>`, load non-critical stylesheets in the background, and add `defer` or `type="module"` to scripts. |
-| `network-dependency-tree-insight` | Shows critical request chains and missing `preconnect` hints triggered before LCP finishes. | Defer non-essential `fetch`/`XHR` calls until after `window.load` and `requestAnimationFrame`. Avoid custom headers that trigger CORS preflight `OPTIONS` requests on simple endpoints. |
-| `forced-reflow-insight` | Reports the exact JS function, script URL, line, and column reading layout properties (`offsetWidth`, `getBoundingClientRect`) after DOM writes. | Batch all DOM geometry reads before DOM writes inside `requestAnimationFrame`, or defer third-party scripts until user input. |
-| `inspector-issues` | Lists browser DevTools warnings such as lazy-loaded images on the initial screen or missing image dimensions. | Never set `loading="lazy"` on first-screen images; always set explicit `width` and `height` values on every `<img>`. |
+| `lcp-breakdown-insight` | Splits `LCP` into `timeToFirstByte`, `resourceLoadDelay`, `resourceLoadDuration`, and `elementRenderDelay`, and identifies the `LCP` DOM node. | **High `resourceLoadDelay`**: Fetch the hero asset early via `<link rel="preload" as="image" imagesrcset="..." imagesizes="..." fetchpriority="high">` in `<head>`. **High `elementRenderDelay`**: Inline critical CSS, drop `decoding="async"` on the hero `<img>`, and defer third-party scripts. |
+| `image-delivery-insight` | Lists oversized images with `totalBytes`, `wastedBytes`, `boundingRect` vs. natural dimensions, and `subItems`. | Serve `AVIF` or `WebP` candidates, match crop aspect ratio with responsive `srcset` and `sizes`, and pair `object-fit: cover` with sized image variants. |
+| `render-blocking-insight` | Lists `<link rel="stylesheet">` or sync `<script>` tags in `<head>` blocking `FCP` and `LCP`. | Inline above-the-fold CSS inside `<style>`, defer secondary stylesheets, and add `defer` or `type="module"` to scripts. |
+| `network-dependency-tree-insight` | Shows critical request chains and missing `preconnect` hints triggered before `LCP`. | Move non-essential `fetch` or `XHR` requests after `window.load` and `requestAnimationFrame`. Avoid custom headers that trigger `CORS` preflight `OPTIONS` requests. |
+| `long-tasks` | Reports main-thread tasks above `50 ms` driving `TBT` and field `INP` delays. | Yield to the main thread (`scheduler.yield()`), split large event handlers, and strip unused JavaScript bundles (`unused-javascript`). |
+| `forced-reflow-insight` | Reports exact JS functions, URLs, and lines reading geometry after DOM mutations. | Batch layout reads before DOM writes inside `requestAnimationFrame`. |
+| `inspector-issues` | Lists DevTools issues such as lazy-loaded hero images or missing `<img>` dimensions affecting `CLS`. | Never use `loading="lazy"` on initial-viewport images; set explicit `width` and `height` attributes on every `<img>`. |
 
 ---
 
 ## Local pre-release checks
 
-Before deploying to production to re-test on `pagespeed.web.dev`, check your fixes against your local server (`http://localhost:<port>/`) with `chrome-devtools-mcp`:
+Before deploying fixes to test again on PageSpeed Insights, check changes against your local development server (`http://localhost:<port>/`):
 
-1. Run `lighthouse_audit` (`mode: "navigation"`, `device: "mobile"` and `"desktop"`) on the local tab to confirm group scores and catch regressions.
-2. Run `evaluate_script` to check that every visible `<img>` has `naturalWidth` close to `clientWidth * window.devicePixelRatio`, uses `fetchpriority="high"` without `loading="lazy"` on the LCP node, and leaves zero blocking scripts in `<head>`.
+1. Run a local `lighthouse_audit` (`mode: "navigation"`, `device: "mobile"` and `"desktop"`) to confirm score gains and catch regressions.
+2. Check via `evaluate_script` that visible `<img>` elements have `naturalWidth` close to `clientWidth * window.devicePixelRatio`, the `LCP` node uses `fetchpriority="high"` without `loading="lazy"`, and `<head>` leaves zero blocking scripts.

@@ -1,0 +1,5 @@
+title "Menu Navigation Blip"
+type sfx
+
+inst blip preset=ui_select vol=0.22
+track main blip: 920Hz->1150Hz:45ms

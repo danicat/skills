@@ -11,54 +11,87 @@ description: >
 license: Apache-2.0
 metadata:
   category: coding
-  tags: "google, open-source, licensing, compliance, standards, copyright"
+  tags: "google, oss, licensing, copyright, compliance"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.2"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Google Open Source Compliance & License Attributions
+# Google open-source compliance and licensing
 
-Audit, apply, and verify Google Open Source policy requirements, source code license headers (`addlicense`), and mandatory repository disclaimers.
+Audit, apply, and verify Google Open Source policy requirements, source code license headers with `addlicense`, and mandatory repository disclaimers.
 
----
+## Available scripts
 
-## ⚡ Quick Reference: Actions & Commands
+- **[scripts/apply-license.sh](scripts/apply-license.sh)**: Cross-platform helper that resolves `addlicense` from `$PATH`, `$GOBIN`, or `$GOPATH/bin` (installing it automatically when missing), ignores generated and vendored directories safely (`vendor/`, `node_modules/`, `.venv/`, `third_party/`, `_site/`, `*.pb.go`), and supports both apply and read-only `--check` modes.
 
-### 1. Apply License Headers via `addlicense`
+```bash
+# Inspect options and usage
+bash scripts/apply-license.sh --help
 
-Install the official Google `addlicense` tool if not already present:
+# Apply headers to a corporate Google Open Source repo
+bash scripts/apply-license.sh -c "Google LLC" .
+
+# Apply headers to a personal open-source repo
+bash scripts/apply-license.sh -c "Jane Doe" -l apache src/
+
+# Verify header coverage in CI without modifying files
+bash scripts/apply-license.sh --check -c "Google LLC" .
+```
+
+Flags:
+- `-h`, `--help`: Show usage and exit cleanly.
+- `--check`: Audit existing headers and exit non-zero if any matching file lacks one.
+- `-c`, `--holder`: Copyright holder string (defaults to `Google LLC`).
+- `-l`, `--license`: License type: `apache` (default), `bsd`, `mit`, or `mpl`.
+- `-y`, `--year`: Copyright year passed to `addlicense -y`.
+- `-s`, `--spdx-only`: Emit SPDX short-form identifiers only.
+- `-i`, `--ignore`: Add extra ignore globs (repeatable).
+- `--no-default-ignores`: Skip built-in build and vendor ignore patterns.
+
+## Choosing the right copyright holder
+
+> [!IMPORTANT]
+> Always inspect the root `LICENSE` file and existing source headers before applying or checking copyright banners:
+> - **Corporate Google Open Source repositories** (`github.com/google/*`, `googleapis/*`, `GoogleCloudPlatform/*`, or Google-owned projects): use `-c "Google LLC"`.
+> - **IARC-approved personal projects owned by a Googler**: use `-c "<Author Name>"` so you never overwrite personal copyright with `"Google LLC"`, while still adding the required non-official Google product disclaimer to `README.md`.
+
+## Applying and checking headers directly with addlicense
+
+Install `addlicense` via Go when calling the binary directly:
 
 ```bash
 go install github.com/google/addlicense@latest
 ```
 
-Apply Apache-2.0 copyright headers across all source files:
+Resolve `addlicense` across `$PATH`, `GOBIN`, and `GOPATH`:
 
 ```bash
-$(go env GOPATH)/bin/addlicense -c "Google LLC" -l apache .
+ADDLICENSE="${GOBIN:-$(go env GOBIN)}"
+ADDLICENSE="${ADDLICENSE:+${ADDLICENSE}/addlicense}"
+ADDLICENSE="${ADDLICENSE:-$(go env GOPATH)/bin/addlicense}"
+command -v addlicense >/dev/null 2>&1 && ADDLICENSE="addlicense"
+
+# Apply Apache-2.0 headers while skipping third-party trees
+"$ADDLICENSE" -c "Google LLC" -l apache \
+  -ignore "vendor/**" -ignore "node_modules/**" -ignore ".venv/**" .
+
+# Audit without editing files (CI check)
+"$ADDLICENSE" -check -c "Google LLC" -l apache \
+  -ignore "vendor/**" -ignore "node_modules/**" -ignore ".venv/**" .
 ```
 
-Verify/Check without modifying (CI gate):
+Common `addlicense` flags:
+- `-l apache`: Apache License 2.0 (standard default).
+- `-l mit` or `-l bsd`: MIT or BSD 3-Clause header format.
+- `-s=only`: Short SPDX identifier only (`// SPDX-License-Identifier: Apache-2.0`).
+- `-ignore "vendor/**"`: Exclude third-party or generated files such as `*.pb.go`.
 
-```bash
-$(go env GOPATH)/bin/addlicense -check -c "Google LLC" -l apache .
-```
+## Required README disclaimers
 
-Common license flag options:
-- `-l apache`: Apache License 2.0 (standard default for Google OSS)
-- `-l mit`: MIT License
-- `-l bsd`: BSD 3-Clause License
-- `-s=only`: Force SPDX short identifier style (`// SPDX-License-Identifier: Apache-2.0`)
-- `-ignore "vendor/**"`: Ignore specific directory globs
+Every repository published by Googlers or under Google Open Source that is not an official Google product needs the matching disclaimer at the bottom of `README.md`.
 
----
-
-### 2. Mandatory README Disclaimers
-
-Every repository published by Googlers or under Google open source that is not an official Google product MUST include the appropriate disclaimer in the root `README.md`.
-
-#### Standard Non-Official Product Disclaimer:
+### Standard non-official product disclaimer
 
 ```markdown
 ---
@@ -68,7 +101,7 @@ Every repository published by Googlers or under Google open source that is not a
 This is not an officially supported Google product.
 ```
 
-#### Experimental / Educational Project Disclaimer:
+### Experimental or educational project disclaimer
 
 ```markdown
 ---
@@ -78,26 +111,15 @@ This is not an officially supported Google product.
 This is not an officially supported Google product. It is an experimental project created for educational and development purposes.
 ```
 
----
+## Pre-release compliance checklist
 
-## 📋 Pre-Release Compliance Checklist
+1. **License header coverage**: Run `scripts/apply-license.sh --check` (or `addlicense -check`) across `.go`, `.py`, `.ts`, `.js`, `.rs`, `.c`, `.cpp`, `.sh`, and `.proto` files, confirming generated and third-party files stay excluded.
+2. **Root `LICENSE` file**: Confirm an unmodified text copy of the chosen license exists at the repository root.
+3. **Copyright holder accuracy**: Verify the header holder matches corporate (`Google LLC`) or personal ownership rules.
+4. **Non-official product disclaimer**: Confirm the `## Disclaimer` section appears at the bottom of `README.md`.
+5. **Zero internal leaks**: Verify there are no internal URLs, internal bug trackers, corporate credentials, or non-public codenames.
 
-Before publishing or tagging any public open-source repository, verify:
+## References
 
-1. **License Header Coverage**:
-   - Run `addlicense -check` across all code files (`.go`, `.py`, `.ts`, `.js`, `.rs`, `.c`, `.cpp`, `.sh`, `.proto`).
-   - Ensure generated files (e.g. `*.pb.go`) or third-party code in `vendor/` or `third_party/` are properly ignored or attributed.
-2. **Root `LICENSE` File**:
-   - Ensure an unmodified copy of the chosen license (e.g. Apache 2.0) exists at the repository root.
-3. **Non-Official Product Disclaimer**:
-   - Present at the bottom of root `README.md`.
-4. **Zero Internal Contamination**:
-   - No internal links, internal issue trackers, intranet shortcuts, corporate credentials, or non-public project codenames.
-
----
-
-## 📚 References & Scripts
-
-- [License Header Variations](references/license-headers.md): Full syntax for Apache 2.0, MIT, and BSD across languages.
-- [Disclaimer Variations](references/disclaimers.md): Specific disclaimer templates for samples, tools, and demos.
-- [Automated Helper Script](scripts/apply-license.sh): Bundled shell script to install `addlicense` and apply headers.
+- [License header formats](references/license-headers.md): Comment styles for Apache 2.0, MIT, BSD 3-Clause, and SPDX short identifiers.
+- [Disclaimer templates](references/disclaimers.md): Standard, sample-code, experimental, and maintenance notices.

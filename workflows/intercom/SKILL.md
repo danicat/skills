@@ -3,17 +3,17 @@ name: intercom
 description: >
   Cross-project and cross-session collaboration between Antigravity agents using
   the agentapi CLI and conversation_summaries.db. Finds active peer sessions
-  across workspaces, looks up target project IDs, routes messages to other
-  projects with return-address headers, and starts new sessions across
-  workspaces. Activate when collaborating between agents in different projects,
-  handing off tasks across workspaces, finding peer session IDs, or sending
-  cross-project messages with agentapi.
+  across workspaces, looks up target project IDs, and routes messages to live
+  sessions in other projects with return-address headers. Activate when
+  collaborating between agents in different projects, handing off tasks across
+  workspaces, finding peer session IDs, or sending cross-project messages with
+  agentapi.
 license: Apache-2.0
 metadata:
   category: workflows
   tags: "agentapi, cross-project, multi-agent, sessions, coordination, handoff"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.2"
+  version: "0.4.0"
   catalog: https://skills.danicat.dev
 ---
 
@@ -131,32 +131,17 @@ env -u ANTIGRAVITY_CONVERSATION_ID \
 
 ---
 
-## 4. Start a new session in another project
+## 4. Usage rules and common pitfalls
 
-Run `agentapi new-conversation` to start a new root session in another project:
-
-```bash
-env -u ANTIGRAVITY_CONVERSATION_ID \
-    -u ANTIGRAVITY_SOURCE_METADATA \
-    -u ANTIGRAVITY_TRAJECTORY_ID \
-    ANTIGRAVITY_PROJECT_ID="$TARGET_PROJECT_ID" \
-    agentapi new-conversation \
-      --title="Task from ${ANTIGRAVITY_CONVERSATION_ID} ($(basename "$PWD"))" \
-      --model=pro \
-      "$(printf '%s\n\n%s' "$HEADER" "$PROMPT")"
-```
-
----
-
-## 5. Usage rules and common pitfalls
-
-1. **No polling or listener subagents**:
+1. **Message live sessions only**:
+   - `intercom` only messages existing, active sessions (`killed = 0`). If `conversation_summaries.db` has no matching active session for the target workspace or topic, stop and tell the user so they can confirm which session ID to message. Never create an unsolicited conversation in another project on your own.
+2. **No polling or listener subagents**:
    - `agentapi send-message` delivers your note straight to the other session's inbox and wakes it up.
    - Never run polling loops, `sleep` timers, or listener subagents. Once you send a message and need a reply, stop calling tools to end your turn. Antigravity resumes your session when the other agent replies.
-2. **Never loop `agentapi` over `brain/` folders**:
+3. **Never loop `agentapi` over `brain/` folders**:
    - Don't loop through `$ANTIGRAVITY_APP_DATA_DIR/brain/*` to run `agentapi get-conversation-metadata`. Old or deleted runs fail with `trajectory not found` and waste time.
    - Query `$ANTIGRAVITY_APP_DATA_DIR/conversation_summaries.db` with `sqlite3` first, then call `agentapi` on the single target session ID.
-3. **Always include your return address**:
+4. **Always include your return address**:
    - Because `env -u ANTIGRAVITY_CONVERSATION_ID` clears your session ID from the CLI call, the other agent only knows who wrote if you put `$ANTIGRAVITY_CONVERSATION_ID`, `$ANTIGRAVITY_PROJECT_ID`, and `$PWD` in the message header.
-4. **Fail fast with clear errors**:
+5. **Fail fast with clear errors**:
    - Never ignore `agentapi` errors. Check the JSON output from `agentapi` and report any `"error"` field right away.

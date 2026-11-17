@@ -14,14 +14,13 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "google-analytics-data>=0.18.0",
 #     "google-analytics-admin>=0.22.0",
 #     "google-auth>=2.28.0",
 #     "google-auth-oauthlib>=1.2.0",
 #     "requests>=2.31.0",
-#     "tabulate>=0.9.0",
 # ]
 # ///
 """
@@ -39,32 +38,33 @@ into a local SQLite database (e.g. google_analytics.db) without data loss, suppo
 
 Usage:
   # 1. Authorize OAuth 2.0 (with analytics.edit & readonly scopes)
-  python3 scripts/google_analytics.py auth
+  uv run scripts/google_analytics.py auth
 
   # 2. Discover accessible GA4 accounts and properties
-  python3 scripts/google_analytics.py properties
+  uv run scripts/google_analytics.py properties
 
   # 3. Incremental Sync (Newest days + 3-day lookback refresh)
-  python3 scripts/google_analytics.py sync
+  uv run scripts/google_analytics.py sync
 
   # 4. Full Historical Backfill
-  python3 scripts/google_analytics.py sync --full
+  uv run scripts/google_analytics.py sync --full
 
   # 5. Add Deployment / Release Milestone (Cloud Annotation + Local SQLite)
-  python3 scripts/google_analytics.py annotate \
+  uv run scripts/google_analytics.py annotate \
     --title "v2.0 Redesign Launch" \
     --date 2026-08-18 \
     --commit abc1234 \
     --description "Site redesign and technical SEO improvements."
 
   # 6. Execute Arbitrary SQL Query
-  python3 scripts/google_analytics.py query "SELECT * FROM v_milestone_impact;"
+  uv run scripts/google_analytics.py query "SELECT * FROM v_milestone_impact;"
 
-  # 7. Run Pre-Built Reports
-  python3 scripts/google_analytics.py report overview
-  python3 scripts/google_analytics.py report top-pages
-  python3 scripts/google_analytics.py report channels
-  python3 scripts/google_analytics.py report milestone-impact
+  # 7. Run Pre-Built Reports (All Tracked Dates by default; optional --days window)
+  uv run scripts/google_analytics.py report overview
+  uv run scripts/google_analytics.py report overview --days 30
+  uv run scripts/google_analytics.py report top-pages
+  uv run scripts/google_analytics.py report channels
+  uv run scripts/google_analytics.py report milestone-impact
 """
 
 import argparse
@@ -77,12 +77,39 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-# Optional tabulate for terminal tables
-try:
-    from tabulate import tabulate
-    HAS_TABULATE = True
-except ImportError:
-    HAS_TABULATE = False
+
+def format_table(rows: List[Any], headers: List[str], style: str = "markdown") -> str:
+    """Formats query or report rows as a Markdown pipe table or ASCII grid using stdlib only."""
+    if not headers:
+        return ""
+    str_headers = [str(h) for h in headers]
+    str_rows = [["" if val is None else str(val) for val in row] for row in rows]
+    widths = [len(h) for h in str_headers]
+    for row in str_rows:
+        for i, val in enumerate(row):
+            if i < len(widths):
+                widths[i] = max(widths[i], len(val))
+
+    if style == "grid":
+        border = "+" + "+".join("-" * (w + 2) for w in widths) + "+"
+        header_sep = "+" + "+".join("=" * (w + 2) for w in widths) + "+"
+        lines = [
+            border,
+            "| " + " | ".join(str_headers[i].ljust(widths[i]) for i in range(len(widths))) + " |",
+            header_sep,
+        ]
+        for row in str_rows:
+            lines.append("| " + " | ".join((row[i] if i < len(row) else "").ljust(widths[i]) for i in range(len(widths))) + " |")
+            lines.append(border)
+        return "\n".join(lines)
+
+    lines = [
+        "| " + " | ".join(str_headers[i].ljust(widths[i]) for i in range(len(widths))) + " |",
+        "| " + " | ".join("-" * widths[i] for i in range(len(widths))) + " |",
+    ]
+    for row in str_rows:
+        lines.append("| " + " | ".join((row[i] if i < len(row) else "").ljust(widths[i]) for i in range(len(widths))) + " |")
+    return "\n".join(lines)
 
 # Google Analytics & Auth Libraries (lazy / optional for offline SQL queries)
 try:
@@ -133,11 +160,12 @@ DEFAULT_CREDENTIALS_FILE = (
     else "credentials.json"
 )
 
-SCOPES = [
+READONLY_SCOPES = [
+    "https://www.googleapis.com/auth/analytics.readonly",
+]
+WRITE_SCOPES = [
     "https://www.googleapis.com/auth/analytics.readonly",
     "https://www.googleapis.com/auth/analytics.edit",
-    "https://www.googleapis.com/auth/analytics",
-    "https://www.googleapis.com/auth/cloud-platform"
 ]
 
 
@@ -291,7 +319,7 @@ SELECT
     SUM(active_users) AS total_active_users,
     SUM(screen_page_views) AS total_page_views,
     ROUND(SUM(user_engagement_duration) / 60.0, 1) AS total_engagement_min,
-    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
 FROM daily_pages
 GROUP BY date
 ORDER BY date DESC;
@@ -306,7 +334,7 @@ SELECT
     SUM(sessions) AS total_sessions,
     ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) AS avg_dwell_sec,
     ROUND(SUM(user_engagement_duration) / 60.0, 1) AS total_dwell_min,
-    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
 FROM daily_pages
 GROUP BY page_path
 ORDER BY total_views DESC;
@@ -324,7 +352,7 @@ SELECT
     ROUND(SUM(user_engagement_duration) / MAX(SUM(sessions), 1), 1) AS avg_dwell_sec,
     CASE WHEN SUM(engaged_sessions) > 0 THEN ROUND(SUM(user_engagement_duration) / SUM(engaged_sessions), 1) ELSE 0.0 END AS engaged_dwell_sec,
     ROUND(SUM(user_engagement_duration) / 60.0, 1) AS total_dwell_min,
-    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
 FROM daily_traffic
 GROUP BY session_default_channel_group, session_source_medium
 ORDER BY total_sessions DESC;
@@ -337,7 +365,7 @@ SELECT
     SUM(active_users) AS total_users,
     SUM(screen_page_views) AS total_page_views,
     ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) AS avg_dwell_sec,
-    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
 FROM daily_pages
 WHERE country IS NOT NULL AND country != '' AND country != '(not set)'
 GROUP BY country
@@ -376,8 +404,8 @@ SELECT
     SUM(dp.screen_page_views) AS total_views,
     SUM(dp.active_users) AS total_users,
     SUM(dp.sessions) AS total_sessions,
-    ROUND(AVG(dp.user_engagement_duration), 1) AS avg_engagement_sec,
-    ROUND(AVG(dp.bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(dp.user_engagement_duration) / MAX(SUM(dp.active_users), 1), 1) AS avg_engagement_sec,
+    ROUND(SUM(dp.bounce_rate * dp.sessions) * 100.0 / MAX(SUM(dp.sessions), 1), 1) AS avg_bounce_pct
 FROM daily_pages dp
 CROSS JOIN site_milestones m
 GROUP BY m.commit_hash, cohort;
@@ -418,44 +446,73 @@ def save_credentials_to_disk(credentials, filepath: str = DEFAULT_CREDENTIALS_FI
 
 def load_credentials(
     filepath: str = DEFAULT_CREDENTIALS_FILE,
-    service_account_path: Optional[str] = None
+    service_account_path: Optional[str] = None,
+    scopes: Optional[List[str]] = None,
 ):
     """Resolves credentials from explicit OAuth JSON, service account, or ADC."""
+    if not HAS_GOOGLE_API:
+        print(
+            "Error: Google Analytics API dependencies are not installed. Run via 'uv run scripts/google_analytics.py ...'.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    target_scopes = scopes or READONLY_SCOPES
+
     # 1. Check explicit OAuth credentials JSON with refresh token
     if os.path.exists(filepath):
         try:
-            with open(filepath, "r") as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
             return google.oauth2.credentials.Credentials(**data)
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"Error: Failed to parse OAuth credentials file '{filepath}': {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     # 2. Check service account JSON
-    sa_path = service_account_path or ("service_account.json" if os.path.exists("service_account.json") else os.path.expanduser("~/.config/ga4/service_account.json"))
+    sa_path = service_account_path or (
+        "service_account.json"
+        if os.path.exists("service_account.json")
+        else os.path.expanduser("~/.config/ga4/service_account.json")
+    )
     if os.path.exists(sa_path):
         try:
             return google.oauth2.service_account.Credentials.from_service_account_file(
-                sa_path, scopes=SCOPES
+                sa_path, scopes=target_scopes
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"Error: Failed to load service account credentials from '{sa_path}': {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
-    # 3. Fall back to Google Application Default Credentials (ADC)
+    # 3. Resolve Google Application Default Credentials (ADC)
     try:
-        credentials, _ = google.auth.default(scopes=SCOPES)
+        credentials, _ = google.auth.default(scopes=target_scopes)
         return credentials
-    except Exception:
-        pass
+    except DefaultCredentialsError:
+        return None
+    except Exception as e:
+        print(f"Error: Failed to resolve Google ADC credentials: {e}", file=sys.stderr)
+        sys.exit(1)
 
-    return None
 
-
-def get_clients(credentials_file: str = DEFAULT_CREDENTIALS_FILE) -> Tuple[BetaAnalyticsDataClient, AnalyticsAdminServiceClient]:
+def get_clients(
+    credentials_file: str = DEFAULT_CREDENTIALS_FILE,
+    scopes: Optional[List[str]] = None,
+) -> Tuple[BetaAnalyticsDataClient, AnalyticsAdminServiceClient]:
     """Returns initialized Data and Admin clients."""
-    creds = load_credentials(credentials_file)
+    creds = load_credentials(credentials_file, scopes=scopes or READONLY_SCOPES)
     if not creds:
-        print("❌ Error: No valid Google Credentials found.", file=sys.stderr)
-        print("💡 Run 'python3 scripts/google_analytics.py auth' to log in via OAuth 2.0, or use ADC.", file=sys.stderr)
+        print("Error: No valid Google credentials found.", file=sys.stderr)
+        print(
+            "Run 'uv run scripts/google_analytics.py auth' to log in via OAuth 2.0, or configure ADC.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     data_client = BetaAnalyticsDataClient(credentials=creds)
@@ -467,7 +524,7 @@ def cmd_auth(
     client_secrets_file: str = DEFAULT_CLIENT_SECRETS_FILE,
     credentials_file: str = DEFAULT_CREDENTIALS_FILE,
     port: int = 8080,
-    host: str = "127.0.0.1"
+    host: str = "127.0.0.1",
 ):
     """Launches OAuth 2.0 companion flow to authenticate with analytics.edit and readonly scopes."""
     import google_auth_oauthlib.flow
@@ -475,16 +532,19 @@ def cmd_auth(
     ensure_dirs(config_file=credentials_file)
 
     if not os.path.exists(client_secrets_file):
-        print(f"❌ Client secret file not found: {client_secrets_file}", file=sys.stderr)
-        print("💡 Place your OAuth 2.0 Client Secret JSON in ~/.config/ga4/client_secret.json or ~/.config/gcloud/analytics_oauth_client.json", file=sys.stderr)
+        print(f"Error: Client secret file not found: {client_secrets_file}", file=sys.stderr)
+        print(
+            "Place your OAuth 2.0 Client Secret JSON in ~/.config/ga4/client_secret.json or ~/.config/gcloud/analytics_oauth_client.json",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    with open(client_secrets_file, "r") as f:
+    with open(client_secrets_file, "r", encoding="utf-8") as f:
         secret_data = json.load(f)
 
     if "installed" in secret_data:
         flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-            client_secrets_file, scopes=SCOPES
+            client_secrets_file, scopes=WRITE_SCOPES
         )
         try:
             creds = flow.run_local_server(port=port, prompt="consent", access_type="offline", open_browser=True)
@@ -492,11 +552,14 @@ def cmd_auth(
             print(f"Port {port} is in use, selecting an available ephemeral port...")
             creds = flow.run_local_server(port=0, prompt="consent", access_type="offline", open_browser=True)
         save_credentials_to_disk(creds, credentials_file)
-        print(f"✅ Credentials successfully authorized and saved to {credentials_file}!\n")
+        print(f"Credentials successfully authorized and saved to {credentials_file}.\n")
         return
 
-    # Web flow fallback
-    print(f"❌ Web application client secrets detected. Please use an Installed Application OAuth client ID.", file=sys.stderr)
+    print(
+        "Error: Web application client secrets detected. Please use an Installed Application OAuth client ID.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -514,42 +577,36 @@ def create_annotation(
     scope: Optional[str] = None,
     author: Optional[str] = None,
     db_path: str = DEFAULT_DB_FILE,
-    credentials_file: str = DEFAULT_CREDENTIALS_FILE
+    credentials_file: str = DEFAULT_CREDENTIALS_FILE,
 ):
     """Creates an annotation both in the GA4 Cloud Property and in the local SQLite database."""
-    conn = init_db(db_path)
-
-    parts = date_str.split("-")
-    if len(parts) != 3:
-        print(f"❌ Invalid date format '{date_str}'. Expected YYYY-MM-DD.", file=sys.stderr)
+    if not property_id:
+        print(
+            "Error: No GA4 property ID specified. Pass --property-id or set GA4_PROPERTY_ID.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
-    c_hash = commit_hash or f"milestone-{date_str}"
+    try:
+        parsed_date = datetime.date.fromisoformat(date_str)
+    except ValueError:
+        print(
+            f"Error: Invalid date format '{date_str}'. Expected YYYY-MM-DD.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    # 1. Local SQLite Milestone Record
-    conn.execute("""
-        INSERT OR REPLACE INTO site_milestones (
-            commit_hash, event_date, title, description, category, scope, author
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (
-        c_hash,
-        date_str,
-        title,
-        description,
-        category or "SEO/Architecture",
-        scope or "sitewide",
-        author or os.environ.get("USER", "")
-    ))
-    conn.commit()
-    conn.close()
-    print(f"✅ Milestone recorded locally in SQLite: '{title}' [{c_hash}] on {date_str}")
-
-    # 2. GA4 Cloud Annotation via Admin API
-    creds = load_credentials(credentials_file)
+    creds = load_credentials(credentials_file, scopes=WRITE_SCOPES)
     if not creds:
-        print("⚠️ Note: No OAuth write credentials found for GA4 Cloud API. Local milestone recorded.")
-        return
+        print(
+            "Error: No OAuth write credentials found for GA4 Cloud annotation.",
+            file=sys.stderr,
+        )
+        print(
+            "Run 'uv run scripts/google_analytics.py auth' to authorize with analytics.edit scope.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     import google.auth.transport.requests
     import requests
@@ -561,28 +618,58 @@ def create_annotation(
         url = f"https://analyticsadmin.googleapis.com/v1alpha/properties/{property_id}/reportingDataAnnotations"
         headers = {
             "Authorization": f"Bearer {creds.token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         payload = {
             "title": title[:60],
             "description": description[:150] if description else "",
             "color": color.upper(),
             "annotationDate": {
-                "year": year,
-                "month": month,
-                "day": day
-            }
+                "year": parsed_date.year,
+                "month": parsed_date.month,
+                "day": parsed_date.day,
+            },
         }
 
-        res = requests.post(url, headers=headers, json=payload)
-        if res.status_code in (200, 201):
-            ann_data = res.json()
-            ann_name = ann_data.get("name", "")
-            print(f"🎉 GA4 Cloud Reporting Annotation created successfully! Resource: {ann_name}")
-        else:
-            print(f"⚠️ GA4 API returned status {res.status_code}: {res.text}")
-    except Exception as e:
-        print(f"⚠️ Could not post annotation to GA4 Cloud API: {e}")
+        res = requests.post(url, headers=headers, json=payload, timeout=30)
+    except requests.RequestException as e:
+        print(f"Error: Could not post annotation to GA4 Cloud API: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if res.status_code not in (200, 201):
+        print(
+            f"Error: GA4 Cloud API returned status {res.status_code}: {res.text}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    ann_data = res.json()
+    ann_name = ann_data.get("name", "")
+    print(f"GA4 Cloud Reporting Annotation created successfully. Resource: {ann_name}")
+
+    conn = init_db(db_path)
+    try:
+        c_hash = commit_hash or f"milestone-{date_str}"
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO site_milestones (
+                commit_hash, event_date, title, description, category, scope, author
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                c_hash,
+                date_str,
+                title,
+                description,
+                category or "SEO/Architecture",
+                scope or "sitewide",
+                author or os.environ.get("USER", ""),
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    print(f"Milestone recorded locally in SQLite: '{title}' [{c_hash}] on {date_str}")
 
 
 # ---------------------------------------------------------------------------
@@ -591,21 +678,22 @@ def create_annotation(
 
 def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DEFAULT_DB_FILE):
     """Lists all accessible GA4 accounts and properties."""
-    print("🔍 Fetching accessible Google Analytics 4 accounts and properties...\n")
+    print("Fetching accessible Google Analytics 4 accounts and properties...\n")
     conn = init_db(db_path)
 
     try:
         accounts = admin_client.list_account_summaries()
         rows = []
         for acc in accounts:
-            acc_id = acc.account.split('/')[-1]
+            acc_id = acc.account.split("/")[-1]
             acc_name = acc.display_name
             for prop in acc.property_summaries:
-                p_id = prop.property.split('/')[-1]
+                p_id = prop.property.split("/")[-1]
                 p_name = prop.display_name
                 rows.append([p_id, p_name, acc_id, acc_name])
 
-                conn.execute("""
+                conn.execute(
+                    """
                     INSERT INTO properties (property_id, name, account_id, display_name, raw_json)
                     VALUES (?, ?, ?, ?, ?)
                     ON CONFLICT(property_id) DO UPDATE SET
@@ -613,23 +701,27 @@ def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DE
                         account_id = excluded.account_id,
                         display_name = excluded.display_name,
                         last_synced_at = datetime('now');
-                """, (p_id, prop.property, acc_id, p_name, json.dumps({
-                    "property": prop.property,
-                    "display_name": p_name,
-                    "account": acc.account,
-                    "account_display_name": acc_name
-                })))
+                    """,
+                    (
+                        p_id,
+                        prop.property,
+                        acc_id,
+                        p_name,
+                        json.dumps(
+                            {
+                                "property": prop.property,
+                                "display_name": p_name,
+                                "account": acc.account,
+                                "account_display_name": acc_name,
+                            }
+                        ),
+                    ),
+                )
         conn.commit()
-
-        if HAS_TABULATE:
-            print(tabulate(rows, headers=["Property ID", "Property Name", "Account ID", "Account Name"], tablefmt="grid"))
-        else:
-            print(f"{'Property ID':<15} | {'Property Name':<30} | {'Account ID':<15} | {'Account Name'}")
-            print("-" * 80)
-            for r in rows:
-                print(f"{r[0]:<15} | {r[1]:<30} | {r[2]:<15} | {r[3]}")
+        print(format_table(rows, ["Property ID", "Property Name", "Account ID", "Account Name"], style="grid"))
     except Exception as e:
-        print(f"❌ Failed to list properties: {e}", file=sys.stderr)
+        print(f"Error: Failed to list properties: {e}", file=sys.stderr)
+        sys.exit(1)
     finally:
         conn.close()
 
@@ -640,75 +732,110 @@ def list_properties(admin_client: AnalyticsAdminServiceClient, db_path: str = DE
 
 def sync_property_metadata(admin_client: AnalyticsAdminServiceClient, conn: sqlite3.Connection, property_id: str):
     """Syncs detailed property metadata."""
-    try:
-        p_name = f"properties/{property_id}"
-        details = admin_client.get_property(name=p_name)
-        raw = {
-            "name": details.name,
-            "display_name": details.display_name,
-            "industry_category": str(details.industry_category),
-            "time_zone": details.time_zone,
-            "currency_code": details.currency_code,
-            "service_level": str(details.service_level),
-            "create_time": details.create_time.isoformat() if details.create_time else None,
-            "update_time": details.update_time.isoformat() if details.update_time else None,
-        }
-        conn.execute("""
-            INSERT INTO properties (
-                property_id, name, account_id, display_name, industry_category,
-                time_zone, currency_code, service_level, create_time, update_time, raw_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(property_id) DO UPDATE SET
-                display_name = excluded.display_name,
-                industry_category = excluded.industry_category,
-                time_zone = excluded.time_zone,
-                currency_code = excluded.currency_code,
-                service_level = excluded.service_level,
-                create_time = excluded.create_time,
-                update_time = excluded.update_time,
-                raw_json = excluded.raw_json,
-                last_synced_at = datetime('now');
-        """, (
-            property_id, details.name, details.parent.split('/')[-1] if details.parent else None,
-            details.display_name, str(details.industry_category), details.time_zone,
-            details.currency_code, str(details.service_level),
+    p_name = f"properties/{property_id}"
+    details = admin_client.get_property(name=p_name)
+    raw = {
+        "name": details.name,
+        "display_name": details.display_name,
+        "industry_category": str(details.industry_category),
+        "time_zone": details.time_zone,
+        "currency_code": details.currency_code,
+        "service_level": str(details.service_level),
+        "create_time": details.create_time.isoformat() if details.create_time else None,
+        "update_time": details.update_time.isoformat() if details.update_time else None,
+    }
+    conn.execute(
+        """
+        INSERT INTO properties (
+            property_id, name, account_id, display_name, industry_category,
+            time_zone, currency_code, service_level, create_time, update_time, raw_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(property_id) DO UPDATE SET
+            display_name = excluded.display_name,
+            industry_category = excluded.industry_category,
+            time_zone = excluded.time_zone,
+            currency_code = excluded.currency_code,
+            service_level = excluded.service_level,
+            create_time = excluded.create_time,
+            update_time = excluded.update_time,
+            raw_json = excluded.raw_json,
+            last_synced_at = datetime('now');
+        """,
+        (
+            property_id,
+            details.name,
+            details.parent.split("/")[-1] if details.parent else None,
+            details.display_name,
+            str(details.industry_category),
+            details.time_zone,
+            details.currency_code,
+            str(details.service_level),
             details.create_time.isoformat() if details.create_time else None,
             details.update_time.isoformat() if details.update_time else None,
-            json.dumps(raw)
-        ))
-        conn.commit()
-    except Exception as e:
-        print(f"⚠️ Warning: Could not fetch detailed property metadata: {e}")
+            json.dumps(raw),
+        ),
+    )
+    conn.commit()
 
 
-def ingest_daily_pages(data_client: BetaAnalyticsDataClient, conn: sqlite3.Connection, property_id: str, start_date: str, end_date: str) -> int:
+def _run_paginated_report(
+    data_client: BetaAnalyticsDataClient,
+    request_kwargs: Dict[str, Any],
+    page_limit: int = 100000,
+) -> List[Any]:
+    """Fetches all GA4 Data API report rows across paginated offset batches."""
+    offset = 0
+    all_rows: List[Any] = []
+    while True:
+        req = RunReportRequest(**request_kwargs, limit=page_limit, offset=offset)
+        resp = data_client.run_report(req)
+        batch = list(resp.rows) if resp.rows else []
+        if not batch:
+            break
+        all_rows.extend(batch)
+        offset += len(batch)
+        row_count = getattr(resp, "row_count", 0) or 0
+        if (row_count and offset >= row_count) or len(batch) < page_limit:
+            break
+    return all_rows
+
+
+def ingest_daily_pages(
+    data_client: BetaAnalyticsDataClient,
+    conn: sqlite3.Connection,
+    property_id: str,
+    start_date: str,
+    end_date: str,
+    page_limit: int = 100000,
+) -> int:
     """Ingests daily page performance breakdowns."""
     p_name = f"properties/{property_id}"
-    req = RunReportRequest(
-        property=p_name,
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[
-            Dimension(name="date"),
-            Dimension(name="pagePath"),
-            Dimension(name="pageTitle"),
-            Dimension(name="country"),
-            Dimension(name="deviceCategory"),
-            Dimension(name="sessionSourceMedium")
-        ],
-        metrics=[
-            Metric(name="screenPageViews"),
-            Metric(name="activeUsers"),
-            Metric(name="sessions"),
-            Metric(name="userEngagementDuration"),
-            Metric(name="bounceRate")
-        ],
-        limit=100000
+    rows = _run_paginated_report(
+        data_client,
+        {
+            "property": p_name,
+            "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
+            "dimensions": [
+                Dimension(name="date"),
+                Dimension(name="pagePath"),
+                Dimension(name="pageTitle"),
+                Dimension(name="country"),
+                Dimension(name="deviceCategory"),
+                Dimension(name="sessionSourceMedium"),
+            ],
+            "metrics": [
+                Metric(name="screenPageViews"),
+                Metric(name="activeUsers"),
+                Metric(name="sessions"),
+                Metric(name="userEngagementDuration"),
+                Metric(name="bounceRate"),
+            ],
+        },
+        page_limit=page_limit,
     )
-
-    resp = data_client.run_report(req)
     count = 0
 
-    for r in resp.rows:
+    for r in rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
@@ -766,34 +893,42 @@ def ingest_daily_pages(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conne
     return count
 
 
-def ingest_daily_traffic(data_client: BetaAnalyticsDataClient, conn: sqlite3.Connection, property_id: str, start_date: str, end_date: str) -> int:
+def ingest_daily_traffic(
+    data_client: BetaAnalyticsDataClient,
+    conn: sqlite3.Connection,
+    property_id: str,
+    start_date: str,
+    end_date: str,
+    page_limit: int = 100000,
+) -> int:
     """Ingests traffic source and channel acquisition data."""
     p_name = f"properties/{property_id}"
-    req = RunReportRequest(
-        property=p_name,
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[
-            Dimension(name="date"),
-            Dimension(name="sessionSourceMedium"),
-            Dimension(name="sessionDefaultChannelGroup"),
-            Dimension(name="country"),
-            Dimension(name="deviceCategory")
-        ],
-        metrics=[
-            Metric(name="sessions"),
-            Metric(name="activeUsers"),
-            Metric(name="newUsers"),
-            Metric(name="engagedSessions"),
-            Metric(name="userEngagementDuration"),
-            Metric(name="bounceRate")
-        ],
-        limit=100000
+    rows = _run_paginated_report(
+        data_client,
+        {
+            "property": p_name,
+            "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
+            "dimensions": [
+                Dimension(name="date"),
+                Dimension(name="sessionSourceMedium"),
+                Dimension(name="sessionDefaultChannelGroup"),
+                Dimension(name="country"),
+                Dimension(name="deviceCategory"),
+            ],
+            "metrics": [
+                Metric(name="sessions"),
+                Metric(name="activeUsers"),
+                Metric(name="newUsers"),
+                Metric(name="engagedSessions"),
+                Metric(name="userEngagementDuration"),
+                Metric(name="bounceRate"),
+            ],
+        },
+        page_limit=page_limit,
     )
-
-    resp = data_client.run_report(req)
     count = 0
 
-    for r in resp.rows:
+    for r in rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
@@ -851,30 +986,38 @@ def ingest_daily_traffic(data_client: BetaAnalyticsDataClient, conn: sqlite3.Con
     return count
 
 
-def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Connection, property_id: str, start_date: str, end_date: str) -> int:
+def ingest_daily_events(
+    data_client: BetaAnalyticsDataClient,
+    conn: sqlite3.Connection,
+    property_id: str,
+    start_date: str,
+    end_date: str,
+    page_limit: int = 100000,
+) -> int:
     """Ingests daily event metrics (scroll, click, page_view, etc.)."""
     p_name = f"properties/{property_id}"
-    req = RunReportRequest(
-        property=p_name,
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[
-            Dimension(name="date"),
-            Dimension(name="eventName"),
-            Dimension(name="pagePath"),
-            Dimension(name="country"),
-            Dimension(name="deviceCategory")
-        ],
-        metrics=[
-            Metric(name="eventCount"),
-            Metric(name="totalUsers")
-        ],
-        limit=100000
+    rows = _run_paginated_report(
+        data_client,
+        {
+            "property": p_name,
+            "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
+            "dimensions": [
+                Dimension(name="date"),
+                Dimension(name="eventName"),
+                Dimension(name="pagePath"),
+                Dimension(name="country"),
+                Dimension(name="deviceCategory"),
+            ],
+            "metrics": [
+                Metric(name="eventCount"),
+                Metric(name="totalUsers"),
+            ],
+        },
+        page_limit=page_limit,
     )
-
-    resp = data_client.run_report(req)
     count = 0
 
-    for r in resp.rows:
+    for r in rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
@@ -919,35 +1062,43 @@ def ingest_daily_events(data_client: BetaAnalyticsDataClient, conn: sqlite3.Conn
     return count
 
 
-def ingest_outbound_clicks(data_client: BetaAnalyticsDataClient, conn: sqlite3.Connection, property_id: str, start_date: str, end_date: str) -> int:
+def ingest_outbound_clicks(
+    data_client: BetaAnalyticsDataClient,
+    conn: sqlite3.Connection,
+    property_id: str,
+    start_date: str,
+    end_date: str,
+    page_limit: int = 100000,
+) -> int:
     """Ingests outbound link clicks specifically."""
     p_name = f"properties/{property_id}"
-    req = RunReportRequest(
-        property=p_name,
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        dimensions=[
-            Dimension(name="date"),
-            Dimension(name="linkUrl"),
-            Dimension(name="pagePath"),
-            Dimension(name="country")
-        ],
-        metrics=[
-            Metric(name="eventCount"),
-            Metric(name="totalUsers")
-        ],
-        dimension_filter=FilterExpression(
-            filter=Filter(
-                field_name="eventName",
-                string_filter=Filter.StringFilter(value="click")
-            )
-        ),
-        limit=100000
+    rows = _run_paginated_report(
+        data_client,
+        {
+            "property": p_name,
+            "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
+            "dimensions": [
+                Dimension(name="date"),
+                Dimension(name="linkUrl"),
+                Dimension(name="pagePath"),
+                Dimension(name="country"),
+            ],
+            "metrics": [
+                Metric(name="eventCount"),
+                Metric(name="totalUsers"),
+            ],
+            "dimension_filter": FilterExpression(
+                filter=Filter(
+                    field_name="eventName",
+                    string_filter=Filter.StringFilter(value="click"),
+                )
+            ),
+        },
+        page_limit=page_limit,
     )
-
-    resp = data_client.run_report(req)
     count = 0
 
-    for r in resp.rows:
+    for r in rows:
         date_str = r.dimension_values[0].value
         if len(date_str) == 8 and "-" not in date_str:
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
@@ -1096,24 +1247,160 @@ def run_sync(
 # Pre-Packaged Analytical Reports
 # ---------------------------------------------------------------------------
 
-def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
-    """Executes pre-packaged analytical queries."""
-    conn = init_db(db_path)
-    cur = conn.cursor()
+VALID_REPORTS = (
+    "overview",
+    "top-pages",
+    "channels",
+    "geo",
+    "events",
+    "outbound",
+    "milestone-impact",
+)
 
-    reports = {
-        "overview": ("Site Overview (30-Day Aggregates)", """
+
+def build_report_query(name: str, days: Optional[int] = None) -> Tuple[str, str, Tuple[Any, ...]]:
+    """Builds the SQL query, title, and parameters for a pre-packaged GA4 report."""
+    if name not in VALID_REPORTS:
+        print(f"Error: Unknown report '{name}'. Choices: {list(VALID_REPORTS)}", file=sys.stderr)
+        sys.exit(1)
+
+    if days is not None:
+        if days < 1:
+            print("Error: --days must be a positive integer (>= 1).", file=sys.stderr)
+            sys.exit(1)
+        if name == "milestone-impact":
+            print(
+                "Error: --days cannot be combined with 'milestone-impact', which compares full pre- and post-milestone cohorts.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        window_param = f"-{days - 1} days"
+        window_reports: Dict[str, Tuple[str, str]] = {
+            "overview": (
+                f"Site Overview (Last {days} Days)",
+                """
+                SELECT
+                    MIN(date) AS first_date,
+                    MAX(date) AS last_date,
+                    COUNT(DISTINCT date) AS active_days,
+                    SUM(total_sessions) AS total_sessions,
+                    SUM(total_active_users) AS total_active_users,
+                    SUM(total_page_views) AS total_views,
+                    ROUND(AVG(total_engagement_min), 1) AS avg_daily_engagement_min,
+                    ROUND(SUM(avg_bounce_pct * total_sessions) / MAX(SUM(total_sessions), 1), 1) AS overall_bounce_pct
+                FROM v_daily_summary
+                WHERE date >= date((SELECT MAX(date) FROM v_daily_summary), ?);
+                """,
+            ),
+            "top-pages": (
+                f"Top 15 Pages by Total Views & Engagement (Last {days} Days)",
+                """
+                SELECT
+                    page_path,
+                    MAX(page_title) AS page_title,
+                    SUM(screen_page_views) AS total_views,
+                    SUM(active_users) AS total_users,
+                    ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) || 's' AS dwell,
+                    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) || '%' AS bounce
+                FROM daily_pages
+                WHERE date >= date((SELECT MAX(date) FROM daily_pages), ?)
+                GROUP BY page_path
+                ORDER BY total_views DESC
+                LIMIT 15;
+                """,
+            ),
+            "channels": (
+                f"Acquisition Channels Performance (Last {days} Days)",
+                """
+                SELECT
+                    session_default_channel_group AS channel_group,
+                    session_source_medium AS source_medium,
+                    SUM(sessions) AS total_sessions,
+                    SUM(active_users) AS total_users,
+                    ROUND((SUM(engaged_sessions) * 100.0) / MAX(SUM(sessions), 1), 1) || '%' AS eng_rate,
+                    ROUND(SUM(user_engagement_duration) / MAX(SUM(sessions), 1), 1) || 's' AS avg_dwell,
+                    CASE WHEN SUM(engaged_sessions) > 0 THEN ROUND(SUM(user_engagement_duration) / SUM(engaged_sessions), 1) ELSE 0.0 END || 's' AS engaged_dwell,
+                    ROUND(SUM(user_engagement_duration) / 60.0, 1) || 'm' AS dwell,
+                    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) || '%' AS bounce
+                FROM daily_traffic
+                WHERE date >= date((SELECT MAX(date) FROM daily_traffic), ?)
+                GROUP BY session_default_channel_group, session_source_medium
+                HAVING SUM(sessions) > 5
+                ORDER BY total_sessions DESC
+                LIMIT 15;
+                """,
+            ),
+            "geo": (
+                f"Top 10 Countries by Visitor Volume & Dwell Time (Last {days} Days)",
+                """
+                SELECT
+                    country,
+                    SUM(sessions) AS total_sessions,
+                    SUM(active_users) AS total_users,
+                    SUM(screen_page_views) AS total_page_views,
+                    ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) || 's' AS avg_dwell,
+                    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) || '%' AS bounce
+                FROM daily_pages
+                WHERE country IS NOT NULL AND country != '' AND country != '(not set)'
+                  AND date >= date((SELECT MAX(date) FROM daily_pages), ?)
+                GROUP BY country
+                ORDER BY total_sessions DESC
+                LIMIT 10;
+                """,
+            ),
+            "events": (
+                f"User Interaction Events Summary (Last {days} Days)",
+                """
+                SELECT
+                    event_name,
+                    SUM(event_count) AS total_events,
+                    SUM(total_users) AS total_users
+                FROM daily_events
+                WHERE date >= date((SELECT MAX(date) FROM daily_events), ?)
+                GROUP BY event_name
+                ORDER BY total_events DESC;
+                """,
+            ),
+            "outbound": (
+                f"Top 15 Outbound Link Click Destinations (Last {days} Days)",
+                """
+                SELECT
+                    link_url,
+                    SUM(event_count) AS total_clicks,
+                    SUM(total_users) AS total_users,
+                    COUNT(DISTINCT page_path) AS referring_pages_count
+                FROM outbound_clicks
+                WHERE link_url IS NOT NULL AND link_url != ''
+                  AND date >= date((SELECT MAX(date) FROM outbound_clicks), ?)
+                GROUP BY link_url
+                ORDER BY total_clicks DESC
+                LIMIT 15;
+                """,
+            ),
+        }
+        title, sql = window_reports[name]
+        return title, sql, (window_param,)
+
+    reports: Dict[str, Tuple[str, str]] = {
+        "overview": (
+            "Site Overview (All Tracked Dates)",
+            """
             SELECT
+                MIN(date) AS first_date,
+                MAX(date) AS last_date,
                 COUNT(DISTINCT date) AS active_days,
                 SUM(total_sessions) AS total_sessions,
                 SUM(total_active_users) AS total_active_users,
                 SUM(total_page_views) AS total_views,
                 ROUND(AVG(total_engagement_min), 1) AS avg_daily_engagement_min,
-                ROUND(AVG(avg_bounce_pct), 1) AS overall_bounce_pct
-            FROM v_daily_summary
-            LIMIT 30;
-        """),
-        "top-pages": ("Top 15 Pages by Total Views & Engagement", """
+                ROUND(SUM(avg_bounce_pct * total_sessions) / MAX(SUM(total_sessions), 1), 1) AS overall_bounce_pct
+            FROM v_daily_summary;
+            """,
+        ),
+        "top-pages": (
+            "Top 15 Pages by Total Views & Engagement",
+            """
             SELECT
                 page_path,
                 page_title,
@@ -1124,8 +1411,11 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_page_performance
             ORDER BY total_views DESC
             LIMIT 15;
-        """),
-        "channels": ("Acquisition Channels Performance", """
+            """,
+        ),
+        "channels": (
+            "Acquisition Channels Performance",
+            """
             SELECT
                 channel_group,
                 source_medium,
@@ -1140,8 +1430,11 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             WHERE total_sessions > 5
             ORDER BY total_sessions DESC
             LIMIT 15;
-        """),
-        "geo": ("Top 10 Countries by Visitor Volume & Dwell Time", """
+            """,
+        ),
+        "geo": (
+            "Top 10 Countries by Visitor Volume & Dwell Time",
+            """
             SELECT
                 country,
                 total_sessions,
@@ -1152,15 +1445,21 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_geo_breakdown
             ORDER BY total_sessions DESC
             LIMIT 10;
-        """),
-        "events": ("User Interaction Events Summary", """
+            """,
+        ),
+        "events": (
+            "User Interaction Events Summary",
+            """
             SELECT
                 event_name,
                 total_events,
                 total_users
             FROM v_events_summary;
-        """),
-        "outbound": ("Top 15 Outbound Link Click Destinations", """
+            """,
+        ),
+        "outbound": (
+            "Top 15 Outbound Link Click Destinations",
+            """
             SELECT
                 link_url,
                 total_clicks,
@@ -1169,8 +1468,11 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_outbound_links
             ORDER BY total_clicks DESC
             LIMIT 15;
-        """),
-        "milestone-impact": ("Milestone / Release Cohort Comparison", """
+            """,
+        ),
+        "milestone-impact": (
+            "Milestone / Release Cohort Comparison",
+            """
             SELECT
                 commit_hash,
                 milestone_title,
@@ -1179,32 +1481,33 @@ def run_report(name: str, db_path: str = DEFAULT_DB_FILE):
                 days_tracked,
                 total_views,
                 total_users,
+                total_sessions,
                 avg_engagement_sec || 's' AS avg_dwell,
                 avg_bounce_pct || '%' AS bounce
             FROM v_milestone_impact;
-        """)
+            """,
+        ),
     }
-
-    if name not in reports:
-        print(f"❌ Unknown report '{name}'. Choices: {list(reports.keys())}", file=sys.stderr)
-        return
-
     title, sql = reports[name]
-    print(f"\n📊 {title}\n" + "=" * len(title))
+    return title, sql, ()
 
-    cur.execute(sql)
-    cols = [desc[0] for desc in cur.description]
-    rows = cur.fetchall()
 
-    if HAS_TABULATE:
-        print(tabulate(rows, headers=cols, tablefmt="grid"))
-    else:
-        print(" | ".join(cols))
-        print("-" * (len(" | ".join(cols))))
-        for r in rows:
-            print(" | ".join(str(x) for x in r))
-    print(f"\n({len(rows)} rows)\n")
-    conn.close()
+def run_report(name: str, db_path: str = DEFAULT_DB_FILE, days: Optional[int] = None):
+    """Executes pre-packaged analytical queries."""
+    title, sql, params = build_report_query(name, days=days)
+    conn = init_db(db_path)
+    try:
+        cur = conn.cursor()
+        print(f"\n{title}\n" + "=" * len(title))
+
+        cur.execute(sql, params)
+        cols = [desc[0] for desc in cur.description]
+        rows = cur.fetchall()
+
+        print(format_table(rows, cols, style="grid"))
+        print(f"\n({len(rows)} rows)\n")
+    finally:
+        conn.close()
 
 
 def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_format: str = "markdown", output_json: bool = False, output_csv: bool = False):
@@ -1224,20 +1527,12 @@ def run_query(sql: str, db_path: str = DEFAULT_DB_FILE, output_format: str = "ma
             writer = csv.writer(sys.stdout)
             writer.writerow(cols)
             writer.writerows(rows)
-        elif output_format == "table" and HAS_TABULATE:
-            print(tabulate(rows, headers=cols, tablefmt="grid"))
-            print(f"\n({len(rows)} rows)")
         else:
-            if HAS_TABULATE:
-                print(tabulate(rows, headers=cols, tablefmt="github"))
-            else:
-                print(" | ".join(cols))
-                print("-" * (len(" | ".join(cols))))
-                for r in rows:
-                    print(" | ".join(str(x) for x in r))
+            table_style = "grid" if output_format == "table" else "markdown"
+            print(format_table(rows, cols, style=table_style))
             print(f"\n({len(rows)} rows)")
     except Exception as e:
-        print(f"❌ SQL Execution Error: {e}", file=sys.stderr)
+        print(f"Error: SQL Execution Error: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
         conn.close()
@@ -1290,7 +1585,13 @@ def main():
 
     # Subcommand: report
     report_p = subparsers.add_parser("report", parents=[base_parser], help="Run pre-built analytical reports")
-    report_p.add_argument("name", choices=["overview", "top-pages", "channels", "geo", "events", "outbound", "milestone-impact"], help="Report name")
+    report_p.add_argument("name", choices=list(VALID_REPORTS), help="Report name")
+    report_p.add_argument(
+        "--days",
+        type=int,
+        default=None,
+        help="Optional trailing day window anchored on latest ingested date (e.g. --days 30)",
+    )
 
     # Subcommand: query
     query_p = subparsers.add_parser("query", parents=[base_parser], help="Execute arbitrary SQL against the database")
@@ -1322,7 +1623,7 @@ def main():
             credentials_file=args.credentials
         )
     elif args.command == "properties":
-        _, admin_client = get_clients(args.credentials)
+        _, admin_client = get_clients(args.credentials, scopes=READONLY_SCOPES)
         list_properties(admin_client, args.db_path)
     elif args.command == "sync":
         run_sync(
@@ -1335,7 +1636,7 @@ def main():
             credentials_file=args.credentials
         )
     elif args.command == "report":
-        run_report(args.name, args.db_path)
+        run_report(args.name, args.db_path, days=args.days)
     elif args.command == "query":
         run_query(args.sql, args.db_path, args.format, args.json, args.csv)
 

@@ -1,10 +1,10 @@
-# Search Appearance & SERP Features Reference Guide
+# Search appearance and SERP features reference guide
 
 A comprehensive technical reference for controlling and optimizing how web content appears across Google Search result pages (SERPs) and Google Discover, based on official Google Search Central specifications.
 
 ---
 
-## 1. SERP Anatomy & Visual Elements Gallery
+## 1. SERP anatomy and visual elements gallery
 
 Google Search displays organic results by combining discrete visual components into unified search result entries. Understanding these elements enables precise control over user perception, click-through rates (CTR), and snippet extraction.
 
@@ -30,13 +30,13 @@ graph TD
     RICH --> BADGES[Rich Result Badges / Structured Data]
 ```
 
-### Core SERP Components
+### Core SERP components
 
 | Component | Function | Primary Signal Source | Control Mechanism |
 | :--- | :--- | :--- | :--- |
 | **Attribution Header** | Identifies source brand, domain, and category hierarchy. | Favicon file, `WebSite` structured data, `BreadcrumbList`. | `<link rel="icon">`, JSON-LD `WebSite`, JSON-LD `BreadcrumbList`. |
 | **Site Name** | Visual brand name replacing raw domain strings. | JSON-LD `WebSite`, `og:site_name`, `<title>`, `<h1>`. | JSON-LD `WebSite` markup on homepage. |
-| **Title Link** | Primary clickable heading for the search result. | `<title>` tag, on-page `<h1>`, anchor text, headings. | `<title>` tag optimization (50–60 characters). |
+| **Title link** | Primary clickable heading for the search result. | `<title>` tag, on-page `<h1>`, anchor text, headings. | `<title>` tag optimization (50 to 60 characters). |
 | **Snippet** | Text excerpt explaining page relevance to the search query. | `<meta name="description">`, on-page body text. | `<meta name="description">`, `data-nosnippet`, `max-snippet`. |
 | **Thumbnail** | Visual image preview accompanying the snippet. | OpenGraph image, structured data `image`, on-page `<img>`. | `robots: max-image-preview:large`, Schema `ImageObject`. |
 | **Byline Date** | Visible publication or last-modified timestamp. | On-page visible date, JSON-LD `datePublished` / `dateModified`. | ISO 8601 timestamps, on-page date parity. |
@@ -45,11 +45,11 @@ graph TD
 
 ---
 
-## 2. Site Names in Google Search
+## 2. Site names in Google Search
 
 Google algorithmically determines site names to present a clean, brand-first identity in search results across mobile and desktop.
 
-### WebSite Structured Data Specification
+### `WebSite` structured data specification
 
 To declare the preferred site name, place a `WebSite` JSON-LD schema on the **homepage/root URL** of the domain:
 
@@ -65,13 +65,13 @@ To declare the preferred site name, place a `WebSite` JSON-LD schema on the **ho
 </script>
 ```
 
-### Key Properties
+### Key properties
 
 - **`name`** *(Required)*: The official name of the site (e.g., `"Acme Engineering"`). Must be concise, recognizable, and consistent across the site.
 - **`alternateName`** *(Optional)*: Array of acceptable aliases, acronyms, or shorter variations (e.g., `["Acme Tech", "acme.example.com"]`).
 - **`url`** *(Required)*: The canonical root URL of the website.
 
-### Signal Hierarchy for Site Names
+### Signal hierarchy for site names
 
 Google verifies site name consistency across multiple sources in order of preference:
 
@@ -88,11 +88,11 @@ Google verifies site name consistency across multiple sources in order of prefer
 
 ---
 
-## 3. Favicons in Search Results
+## 3. Favicons in search results
 
 Google displays a favicon next to the site name and URL in mobile and desktop SERPs.
 
-### Technical Requirements
+### Technical requirements
 
 | Specification | Google Requirement |
 | :--- | :--- |
@@ -103,7 +103,7 @@ Google displays a favicon next to the site name and URL in mobile and desktop SE
 | **Crawler Access** | The favicon URL and homepage must **not** be blocked by `robots.txt` and must be accessible to `Googlebot-Image` and `Googlebot`. |
 | **Visual Policy** | Must visually represent the website brand. Inappropriate, hateful, or deceptive icons (e.g., fake verified badges) will be replaced with a default globe icon. |
 
-### Recommended HTML Implementation
+### Recommended HTML implementation
 
 ```html
 <head>
@@ -119,7 +119,7 @@ Google displays a favicon next to the site name and URL in mobile and desktop SE
 
 ---
 
-## 4. Featured Snippets (Position 0 Optimization)
+## 4. Featured snippets (Position 0 optimization)
 
 Featured Snippets are highlighted answer boxes displayed at the top of Google SERPs above traditional organic listings. They are extracted algorithmically from pages that rank on Page 1.
 
@@ -134,13 +134,13 @@ graph TD
     ANSWER --> SERP_P0[Position 0 Featured Snippet Extraction]
 ```
 
-### Direct-Answer Targeting Formulas
+### Direct-answer targeting formulas
 
-#### 1. Paragraph Snippets (Definitions & Explanations)
+#### 1. Paragraph snippets (definitions and explanations)
 - **Trigger Queries**: "What is X", "Why does X happen", "How does X work".
-- **Targeting Formula**:
+- **Targeting formula**:
   1. Place the explicit query in an `<h2>` or `<h3>` heading.
-  2. Provide the definitive, self-contained answer in the **very first sentence (40–60 words total)** directly below the heading.
+  2. Provide the definitive, self-contained answer in the **very first sentence (40 to 60 words total)** directly below the heading.
   3. Start with an assertive declarative sentence: `"[Subject] is a [category] that [core function]..."`.
   4. Follow with context, code examples, or trade-offs.
 
@@ -150,14 +150,14 @@ graph TD
 Model Context Protocol (MCP) is an open standard that enables AI models to securely connect with local and remote data sources, developer tools, and external services. By standardizing client-server JSON-RPC communication, MCP eliminates custom integration code and allows agents to discover and invoke tools dynamically.
 ```
 
-#### 2. Numbered & Bulleted List Snippets (Steps & Collections)
+#### 2. Numbered and bulleted list snippets (steps and collections)
 - **Trigger Queries**: "How to install X", "Steps to configure Y", "Best tools for Z".
 - **Targeting Formula**:
   - Use `<h2>How to [Action]</h2>`.
   - Use an ordered list (`<ol>` or Markdown `1.`, `2.`, `3.`) for sequential steps.
   - Use an unordered list (`<ul>` or Markdown `-`) for non-sequential collections.
   - Ensure each step starts with a strong imperative verb (e.g., `Install`, `Configure`, `Export`, `Verify`).
-  - Keep each list item between 8–20 words.
+  - Keep each list item between 8 to 20 words.
 
 ```markdown
 ## How to Build an MCP Server in Go
@@ -169,12 +169,12 @@ Model Context Protocol (MCP) is an open standard that enables AI models to secur
 5. **Test with Gemini CLI**: Connect the binary locally and verify tool discovery.
 ```
 
-#### 3. Table Snippets (Comparisons & Specifications)
+#### 3. Table snippets (comparisons and specifications)
 - **Trigger Queries**: "X vs Y comparison", "pricing tiers", "technical specifications".
 - **Targeting Formula**:
   - Use clean HTML `<table>` or Markdown tables with explicit column headers (`<th>`).
   - Keep rows structured with high data density.
-  - Place the most critical comparison attributes in the first 2–3 columns.
+  - Place the most critical comparison attributes in the first 2 to 3 columns.
 
 ```markdown
 ## Antigravity CLI vs Traditional Scripting
@@ -187,7 +187,7 @@ Model Context Protocol (MCP) is an open standard that enables AI models to secur
 | **Self-Correction** | Automated Rollback & Lint Gates | Manual Error Handling |
 ```
 
-### Controlling Snippet Serving
+### Controlling snippet serving
 
 Control snippet length and indexing with robots meta tags:
 
@@ -198,11 +198,11 @@ Control snippet length and indexing with robots meta tags:
 
 ---
 
-## 5. Byline & Publication Date Parity
+## 5. Byline and publication date parity
 
 Google evaluates publication and modification dates to establish content freshness, author credibility, and topical relevance.
 
-### The Date Consistency Principle
+### Date consistency principle
 
 All dates associated with an article must maintain strict parity across three surfaces:
 1. **Visible On-Page Byline**: What the human reader sees at the top or bottom of the post.
@@ -215,14 +215,14 @@ graph LR
     J <-->|Must Match| O[OpenGraph article:published_time]
 ```
 
-### Format Requirements
+### Format requirements
 
 - Use standard **ISO 8601** format with explicit timezone offsets:
   - `2026-08-18T10:00:00Z` (UTC)
   - `2026-08-18T11:00:00+01:00` (Local timezone)
 - Always include the time and timezone offset to avoid ambiguous date interpretation across regional Google indexers.
 
-### Anti-Abuse Rules: Date Modifications
+### Anti-abuse rules for date updates
 
 > [!CAUTION]
 > **Google Search Policy on Artificial Date Bumping:**
@@ -230,7 +230,7 @@ graph LR
 > - Minor typo fixes, formatting adjustments, or tag tweaks do **not** justify updating the modification date.
 > - Artificially refreshing publication dates without new content is considered deceptive freshness manipulation and can lead to algorithmic demotion or loss of date rich features.
 
-### Implementation Checklist
+### Implementation checklist
 
 - [x] Clear visible distinction between "Published on [Date]" and "Last updated on [Date]".
 - [x] `datePublished` remains unchanged throughout the lifecycle of the document.
@@ -239,7 +239,7 @@ graph LR
 
 ---
 
-## 6. Google Discover Standards
+## 6. Google Discover standards
 
 Google Discover delivers personalized content feeds to mobile users based on automated interest matching and fresh topic engagement.
 
@@ -252,7 +252,7 @@ graph TD
     DISCOVER --> TITLE[4. Non-Clickbait, Direct Title]
 ```
 
-### Technical & Quality Criteria
+### Technical and quality criteria
 
 | Criterion | Requirement | Rationale |
 | :--- | :--- | :--- |
@@ -262,7 +262,7 @@ graph TD
 | **E-E-A-T Signals** | Visible author byline, author bio page link, publisher info, and clear sources. | Demonstrates first-hand expertise and institutional accountability. |
 | **Content Freshness & Depth** | Original analysis, real benchmarks, or new engineering insights. | Discover prioritizes high Information Gain over generic aggregations. |
 
-### Configuration Example
+### Configuration example
 
 ```html
 <head>
@@ -276,16 +276,16 @@ graph TD
 
 ---
 
-## 7. Organic Sitelinks & Deep In-Page Navigation
+## 7. Organic sitelinks and deep in-page navigation
 
 Sitelinks are algorithmic sub-links that appear beneath a main search result, providing direct access to key sections or subpages.
 
-### Types of Sitelinks
+### Types of sitelinks
 
 1. **Domain-Level Sitelinks**: Multiple indented links pointing to major hub pages (e.g., `/docs`, `/blog`, `/pricing`, `/about`).
 2. **In-Page Jump Sitelinks ("Jump to" Links)**: Direct deep-links to specific headings (`#installation`, `#benchmarks`) within a single long-form guide.
 
-### Optimization Strategy for In-Page Sitelinks
+### Optimization strategy for in-page sitelinks
 
 - **Semantic Anchor IDs**: Provide clean, descriptive `id` attributes on all `<h2>` and `<h3>` headings:
   ```html
@@ -304,22 +304,22 @@ Sitelinks are algorithmic sub-links that appear beneath a main search result, pr
 
 ---
 
-## 8. Subscription & Paywalled Content (Google Flexible Sampling)
+## 8. Subscription and paywalled content (Google Flexible Sampling)
 
 Publishers providing gated or subscription content must configure paywalled structured data to allow Googlebot to crawl full articles while preventing cloaking penalties.
 
-### Flexible Sampling Architecture
+### Flexible sampling architecture
 
-- **Lead-In Model**: Provides a portion of introductory content (e.g., the first 2–3 paragraphs) before prompting for login or subscription.
+- **Lead-in model**: Provides a portion of introductory content (e.g., the first 2 to 3 paragraphs) before prompting for login or subscription.
 - **Metering Model**: Allows users to view a set number of free articles per month before paywall enforcement.
 
-### Preventing Cloaking Penalties
+### Preventing cloaking penalties
 
 > [!WARNING]
 > **Avoid Cloaking Flags:**
 > Showing full content to Googlebot while presenting a paywall to normal users is classified as **cloaking** unless properly declared using Schema.org paywalled structured data.
 
-### Schema.org Paywall JSON-LD Specification
+### Schema.org paywall JSON-LD specification
 
 Mark paywalled sections using `isAccessibleForFree` and `hasPart` targeting specific CSS class selectors:
 
@@ -349,7 +349,7 @@ Mark paywalled sections using `isAccessibleForFree` and `hasPart` targeting spec
 </script>
 ```
 
-### HTML Structure for Paywalled Content
+### HTML structure for paywalled content
 
 ```html
 <!-- Free Lead-In Section (Crawled and publicly visible) -->
@@ -365,7 +365,7 @@ Mark paywalled sections using `isAccessibleForFree` and `hasPart` targeting spec
 
 ---
 
-## 9. Comprehensive Search Appearance Audit Checklist
+## 9. Search appearance audit checklist
 
 Use this operational checklist before publishing or updating technical content:
 
@@ -375,9 +375,9 @@ Use this operational checklist before publishing or updating technical content:
 | **Site Name** | `<meta property="og:site_name">` matches `WebSite` schema `name`. | `[ ]` |
 | **Favicon** | Square icon provided in multiple of 48px (48x48, 96x96, etc.) or SVG. | `[ ]` |
 | **Favicon** | Favicon URL is stable, declared in `<head>`, and crawlable in `robots.txt`. | `[ ]` |
-| **Title Link** | Title is 50–60 characters, brand-suffixed, frontloaded with primary query. | `[ ]` |
-| **Snippets** | Meta description is 120–160 characters and answers core search intent. | `[ ]` |
-| **Featured Snippet** | Direct answer formula applied under target `H2` (40–60 word paragraph, list, or table). | `[ ]` |
+| **Title link** | Title is 50 to 60 characters, brand-suffixed, frontloaded with primary query. | `[ ]` |
+| **Snippets** | Meta description is 120 to 160 characters and answers core search intent. | `[ ]` |
+| **Featured snippet** | Direct answer formula applied under target `H2` (40 to 60 word paragraph, list, or table). | `[ ]` |
 | **Date Parity** | Visible date matches JSON-LD `datePublished` and `dateModified` (ISO 8601). | `[ ]` |
 | **Date Integrity** | `dateModified` is updated only for substantial content revisions. | `[ ]` |
 | **Discover** | Hero image is >= 1200px wide with `max-image-preview:large` enabled. | `[ ]` |

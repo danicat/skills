@@ -1,12 +1,12 @@
-# Google Search Meta Tags, Robots Directives, and Outbound Link Qualification Specification
+# Google Search meta tags, robots directives, and outbound link qualification
 
 A comprehensive technical reference for HTML `<meta>` tags, robots indexing and serving directives, HTTP `X-Robots-Tag` headers, text-level snippet exclusion (`data-nosnippet`), and outbound link qualification (`rel` attributes) based on official Google Search Central standards.
 
 ---
 
-## 1. Executive Summary & Quick Reference
+## 1. Executive summary and quick reference
 
-### The Gold Standard `<head>` Template
+### Gold-standard `<head>` template
 
 ```html
 <!DOCTYPE html>
@@ -34,7 +34,7 @@ A comprehensive technical reference for HTML `<meta>` tags, robots indexing and 
 </html>
 ```
 
-### Core Tenets of Google Robots Parsing
+### Core tenets of Google robots parsing
 
 1. **Default State**: In the absence of robots tags or headers, the default state is `index, follow` (equivalent to `all`).
 2. **Precedence & Restrictiveness**: When conflicting rules appear, the **most restrictive directive always wins** (e.g., `nosnippet` overrides `max-snippet:50`; `noindex` overrides `index`).
@@ -43,13 +43,13 @@ A comprehensive technical reference for HTML `<meta>` tags, robots indexing and 
 
 ---
 
-## 2. Supported `<meta>` Tags Reference
+## 2. Supported `<meta>` tags reference
 
 Google Search parses a limited subset of `<meta>` tags in the HTML `<head>` (and `<body>` when necessary). All unsupported tags are ignored.
 
 | Meta Tag | Canonical Syntax | Purpose & Parsing Behavior |
 | :--- | :--- | :--- |
-| **`description`** | `<meta name="description" content="...">` | Provides a concise summary of the page (typically 120–160 characters). Google may use this text as the search result snippet when it offers a more relevant preview than body text. |
+| **`description`** | `<meta name="description" content="...">` | Provides a concise summary of the page (typically 120 to 160 characters). Google may use this text as the search result snippet when it offers a more relevant preview than body text. |
 | **`robots`** | `<meta name="robots" content="...">` | Governs crawling, indexing, and snippet generation across **all** conforming search engine crawlers. |
 | **`googlebot`** | `<meta name="googlebot" content="...">` | Applies crawling, indexing, and serving rules specifically to Google's text web search crawler (`Googlebot`). Overrides general `robots` directives when more restrictive or specifically targeted. |
 | **`googlebot-news`** | `<meta name="googlebot-news" content="...">` | Controls crawling and snippet display specifically within **Google News** surfaces. |
@@ -64,7 +64,7 @@ Google Search parses a limited subset of `<meta>` tags in the HTML `<head>` (and
 
 ---
 
-## 3. Valid Indexing & Serving Directives Matrix
+## 3. Valid indexing and serving directives matrix
 
 Directives can be specified in `<meta name="robots" content="...">`, `<meta name="googlebot" content="...">`, or HTTP `X-Robots-Tag` headers. Multiple directives may be comma-separated.
 
@@ -85,9 +85,9 @@ Directives can be specified in `<meta name="robots" content="...">`, `<meta name
 
 ---
 
-## 4. Directive Precedence, Combining Rules & Conflict Resolution
+## 4. Directive precedence, combining rules, and conflict resolution
 
-### The Most Restrictive Rule Wins
+### Most restrictive rule wins
 
 When conflicting directives are present across single or multiple tags, Google resolves conflicts by applying the most restrictive instruction:
 
@@ -100,7 +100,7 @@ When conflicting directives are present across single or multiple tags, Google r
 <meta name="robots" content="noindex">
 ```
 
-### Multi-Crawler Directives & "Sum of Negative Rules"
+### Multi-crawler directives and "sum of negative rules"
 
 When combining generic `robots` tags with crawler-specific tags (`googlebot`, `googlebot-news`), Google calculates the **union of all negative directives**:
 
@@ -112,7 +112,7 @@ When combining generic `robots` tags with crawler-specific tags (`googlebot`, `g
 
 **Resolution for Googlebot**: Interpreted as `noindex, nofollow`.
 
-### Targeting Specific Crawlers vs Non-Search Crawlers
+### Specific crawlers vs. non-search crawlers
 
 Google supports two primary user-agent tokens within the HTML robots meta tag:
 1. `name="googlebot"`: Targets general web search indexing.
@@ -125,15 +125,15 @@ Google supports two primary user-agent tokens within the HTML robots meta tag:
 ```
 
 > [!WARNING]
-> **Non-Search Crawlers (e.g., `AdsBot-Google`)**:
-> General `<meta name="robots" content="noindex">` rules apply only to search engine indexers. To block advertising or quality evaluation crawlers, you must target the specific user agent:
+> **Non-search and AI crawler user-agents**:
+> General `<meta name="robots" content="noindex">` rules apply to search indexers. To control advertising bots (`AdsBot-Google`) or separate AI training crawlers (`Google-Extended`, `GPTBot`, `ClaudeBot`, `Applebot-Extended`) from live search bots (`Googlebot`, `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`), target the specific user-agent in `<meta>` tags or `robots.txt` (see [references/geo_and_ai_search.md](geo_and_ai_search.md)):
 > ```html
 > <meta name="AdsBot-Google" content="noindex">
 > ```
 
 ---
 
-## 5. The `robots.txt` Crawlability Prerequisite (The Critical Trap)
+## 5. The `robots.txt` crawlability prerequisite
 
 Robots meta tags and HTTP `X-Robots-Tag` headers are discovered **during crawl execution**.
 
@@ -158,11 +158,11 @@ Disallow: /admin/
 
 ---
 
-## 6. Text-Level Exclusion: The `data-nosnippet` Specification
+## 6. Text-level exclusion: `data-nosnippet` specification
 
 The `data-nosnippet` attribute allows granular, element-level exclusion of text fragments from search snippets and AI Overviews without suppressing the rest of the document.
 
-### Strict Element Whitelist
+### Strict element whitelist
 
 `data-nosnippet` is valid **only on three HTML elements**:
 - `<span>`
@@ -188,7 +188,7 @@ The `data-nosnippet` attribute allows granular, element-level exclusion of text 
 <custom-widget data-nosnippet>IGNORED: Wrap with div or span.</custom-widget>
 ```
 
-### Boolean Attribute Mechanics
+### Boolean attribute mechanics
 
 `data-nosnippet` is a standard HTML boolean attribute. **Any assigned value is ignored**:
 
@@ -198,7 +198,7 @@ The `data-nosnippet` attribute allows granular, element-level exclusion of text 
 <div data-nosnippet="false">Snippet STILL EXCLUDED (value is ignored)</div>
 ```
 
-### The Unclosed Tag Hazard
+### Unclosed tag hazard
 
 Because parsers treat unclosed elements as extending to the end of the container, an unclosed `<div data-nosnippet>` or `<span data-nosnippet>` will **exclude all subsequent DOM content** on the entire page from search snippets:
 
@@ -209,7 +209,7 @@ Because parsers treat unclosed elements as extending to the end of the container
 <p>This entire paragraph and all following content will accidentally be omitted from snippets!</p>
 ```
 
-### JavaScript DOM Hydration & Rendering Rules
+### JavaScript DOM hydration and rendering rules
 
 Googlebot extracts `data-nosnippet` annotations both before and after JavaScript rendering.
 1. **Never mutate existing nodes**: Do not add or remove `data-nosnippet` on existing DOM nodes via JavaScript after page load (timing differences cause unpredictable snippet generation).
@@ -218,7 +218,7 @@ Googlebot extracts `data-nosnippet` annotations both before and after JavaScript
 
 ---
 
-## 7. Interaction with Schema.org Structured Data
+## 7. Interaction with Schema.org structured data
 
 Robots meta directives govern automatic textual and media extraction by Google's algorithms. They do **not** disable explicit Schema.org structured data provided for Rich Results, with one specific exception:
 
@@ -237,11 +237,11 @@ flowchart TD
 
 ---
 
-## 8. Server-Side HTTP Headers (`X-Robots-Tag`)
+## 8. Server-side HTTP headers (`X-Robots-Tag`)
 
 The `X-Robots-Tag` HTTP response header allows applying any robots directive at the web server level. This is essential for non-HTML assets such as PDFs, raw images, audio, video, and data files (`.json`, `.xml`).
 
-### Header Syntax & User-Agent Targeting
+### Header syntax and user-agent targeting
 
 ```http
 HTTP/1.1 200 OK
@@ -258,9 +258,9 @@ X-Robots-Tag: googlebot: nofollow
 X-Robots-Tag: otherbot: noindex, nofollow
 ```
 
-### Production Web Server Configurations
+### Production web server configurations
 
-#### NGINX Server Configuration (`nginx.conf`)
+#### NGINX server configuration (`nginx.conf`)
 
 ```nginx
 # 1. Block indexing and link following on all PDF documents
@@ -284,7 +284,7 @@ location ~* ^/offers/.*\.pdf$ {
 }
 ```
 
-#### Apache Web Server Configuration (`.htaccess` / `httpd.conf`)
+#### Apache web server configuration (`.htaccess` / `httpd.conf`)
 
 ```apache
 # 1. Global PDF indexing restriction
@@ -310,7 +310,7 @@ location ~* ^/offers/.*\.pdf$ {
 
 ---
 
-## 9. Qualifying Outbound Links (`rel` Attributes on `<a>` Tags)
+## 9. Qualifying outbound links (`rel` attributes on `<a>` tags)
 
 To communicate the relationship between your page and outbound destinations, qualify anchor (`<a>`) tags using specialized `rel` attributes.
 
@@ -321,7 +321,7 @@ To communicate the relationship between your page and outbound destinations, qua
 | **`rel="nofollow"`** | Used when other values do not apply and you do not want Google to associate your site with, crawl, or pass PageRank to the destination URL. | `<a href="https://untrusted.example.com" rel="nofollow">External Reference</a>` |
 | **Compound Values** | Multiple qualifications can be combined via space-separated or comma-separated tokens. | `<a href="..." rel="ugc nofollow">Forum Comment</a>`<br>`<a href="..." rel="ugc,nofollow">Forum Comment</a>` |
 
-### Key Outbound Link Rules & Exceptions
+### Key outbound link rules and exceptions
 
 1. **The Hint Model**: Since 2019, Google treats `rel="nofollow"`, `rel="sponsored"`, and `rel="ugc"` as **hints** for crawl discovery and indexing rather than absolute directives. However, they reliably prevent link-equity (PageRank) transfer and shield sites from unnatural outbound link penalties.
 2. **Strict Element Scope Restriction**: `rel="sponsored"` and `rel="ugc"` are valid **only within `<a>` anchor elements**. They have no meaning and are ignored in `<link>` or `<meta>` tags. `nofollow` is valid in `<a>`, `<meta name="robots">`, and `X-Robots-Tag`.
@@ -330,7 +330,7 @@ To communicate the relationship between your page and outbound destinations, qua
 
 ---
 
-## 10. Deprecated, Unsupported, & Anti-Pattern Tags Reference
+## 10. Deprecated, unsupported, and anti-pattern tags
 
 The following tags and attributes are **explicitly ignored** by Google Search or represent harmful anti-patterns:
 
@@ -363,7 +363,7 @@ The following tags and attributes are **explicitly ignored** by Google Search or
 
 ---
 
-## 11. Verification & Diagnostics Checklist
+## 11. Verification and diagnostics checklist
 
 - [ ] **robots.txt Access**: Confirm target URLs are not blocked by `Disallow` rules if you intend for Google to parse `noindex` or `nosnippet`.
 - [ ] **Verification Exact Casing**: Ensure `google-site-verification` tokens retain identical uppercase/lowercase strings.

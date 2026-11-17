@@ -1,12 +1,10 @@
-# Google Open Source Disclaimer Templates
+# Google open-source disclaimer templates
 
-This guide provides the standard and specialized disclaimer notices for Google-affiliated open-source projects.
+Use these standard disclaimer sections at the bottom of root `README.md` files for Google-affiliated open-source repositories.
 
----
+## Standard non-official product disclaimer
 
-## 1. Standard Non-Official Product Disclaimer
-
-Use this disclaimer on projects that are maintained on personal GitHub accounts or Google open source orgs where the code is not an enterprise or supported Google Cloud/Developer product:
+Use this notice on personal repositories or Google Open Source repos that are not supported enterprise products:
 
 ```markdown
 ---
@@ -16,11 +14,9 @@ Use this disclaimer on projects that are maintained on personal GitHub accounts 
 This is not an officially supported Google product.
 ```
 
----
+## Experimental or educational project disclaimer
 
-## 2. Experimental / Educational Project Disclaimer
-
-Use when publishing experimental tooling, research prototypes, or educational resources:
+Use this notice when publishing research prototypes, experimental utilities, or learning materials:
 
 ```markdown
 ---
@@ -30,11 +26,9 @@ Use when publishing experimental tooling, research prototypes, or educational re
 This is not an officially supported Google product. It is an experimental project created for educational and development purposes.
 ```
 
----
+## Sample and demonstration code disclaimer
 
-## 3. Sample Code / Demonstration Disclaimer
-
-Use on sample repositories, codelabs, or quickstarts:
+Use this notice on quickstarts, codelabs, and API sample repositories:
 
 ```markdown
 ---
@@ -44,16 +38,14 @@ Use on sample repositories, codelabs, or quickstarts:
 This is not an officially supported Google product. This repository contains sample and demonstration code intended to illustrate API usage patterns.
 ```
 
----
+## Optional maintenance status notice
 
-## 4. Maintenance Status Notice (Optional Companion)
-
-If the project is maintained on a best-effort basis without dedicated SLA:
+Add a support notice when maintaining a project on a best-effort basis without a formal SLA:
 
 ```markdown
 ---
 
-## Support & Maintenance
+## Support and Maintenance
 
 This project is maintained on a best-effort basis. Issues and pull requests are welcomed, but response times may vary.
 ```

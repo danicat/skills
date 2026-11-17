@@ -1,0 +1,5 @@
+title "Bouncy Spring Pad Jump"
+type sfx
+
+inst spring preset=jump_spring vol=0.30
+track main spring: 110Hz->550Hz:220ms

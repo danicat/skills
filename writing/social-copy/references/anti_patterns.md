@@ -1,83 +1,83 @@
-# Social Copy Anti-Patterns & Slop Checklist
+# Social copy anti-patterns and slop checklist
 
-Exhaustive checklist of writing patterns, platform missteps, and synthetic AI tells that destroy credibility, suppress algorithmic distribution, and trigger audience fatigue.
+Checklist of writing patterns, platform missteps, and synthetic AI tells that hurt credibility, reduce distribution, and cause reader fatigue.
 
 ---
 
-## 1. Synthetic AI Tells & Editorial Judgment
+## 1. Synthetic AI tells and editorial judgment
 
 > [!IMPORTANT]
-> **Why "Banned Lists" Fail in Social Copy:**
-> Treating anti-patterns as a rigid "banned word/phrase list" is a trap in both directions: it makes you think anything *not* on the list is automatically valid (encouraging synthetic copywriter formulas that dodge specific words while still sounding fake), and it makes you think patterns on the list are *always* wrong regardless of context. Use the patterns below as **diagnostic signals for editorial judgment**, not a mechanical blacklist.
+> **Why "banned lists" fail in social copy:**
+> Treating anti-patterns as a rigid banned-word list fails in both directions: anything omitted from the list slips through while sounding synthetic, and valid openings (such as a real milestone) get blocked regardless of context. Treat the items below as **diagnostic signals**, not a mechanical blacklist.
 
-### Common Synthetic AI Tells & Empty Modifiers
+### Common synthetic AI tells and empty modifiers
 Watch out for generic filler phrases that substitute hype for substance:
 - *"In today's fast-paced digital world / landscape..."*
 - *"Delve into / Let's dive deep into..."*
 - *"A testament to..."*
 - *"Game-changer / Revolutionary / Paradigm shift"*
 - *"Unleash the power of / Unlock seamless potential..."*
-- *"Crucial / Paramount / Vital" (when used as empty adverbs)*
+- *"Crucial / Paramount / Vital"* (when used as empty modifiers)
 - *"Navigating the complexities of..."*
 - *"Buckle up 🧵 / Mind-blowing 🤯"*
 
-### Structural & Workflow Anti-Patterns
-- **The Self-Referential Preamble Trap (Failing the Cold-Stranger & Line-1 Deletion Tests):** Because feeds truncate after ~140 characters on mobile (~210 on desktop), spending the first lines on **author-centric housekeeping** (*"I've been heads down working on new content so you haven't heard from me..."*, *"I'm usually very grounded in my posts, but..."*) or **chronological throat-clearing** (*"In Part 3 of my series, I showed..."*) fails the reader-utility filter before `...see more`. Always run the **Line-1 Deletion Test**: if deleting your opening sentence lets Sentence 2 state the technical problem, metric, or tension more directly, delete Sentence 1.
-- **Inventing Synthetic Copywriter Strawmen:** Never invent dramatic problems or claims that are not in the author's actual article or code just to manufacture a "punchy" hook. Ground every claim in the author's real perspective and work.
-- **Simultaneous Multi-Channel Draft Generation Before Core Copy Approval:** Never generate all platform derivatives (`linkedin.md`, `twitter.md`, `bluesky.md`, etc.) at the same time. Drafting all channels simultaneously wastes tokens and review cycles if the core hook, angle, or narrative framing needs adjustment. Always draft and iterate on **one single primary channel first** (e.g., `linkedin.md`) until the user explicitly approves the copy, and only then adapt the approved text to secondary channels one by one.
-- **Negative Parallelism:** Avoid repetitive *"It's not just about X, it's about Y"* structures. State what it is directly.
-- **Em-Dash Overdose:** Avoid multiple em-dashes (`—`) per post. Use concise sentences or colons.
-- **Rule of Threes Addiction:** Avoid forcing ideas into artificial triplets when two or four points are more accurate.
+### Structural and workflow anti-patterns
+- **The self-referential preamble trap (failing the Cold-Stranger and Line-1 Deletion tests):** Feeds truncate after ~140 characters on mobile (~210 on desktop). Spending those opening words on author housekeeping (*"I've been heads down working on new content so you haven't heard from me..."*) or chronological recaps (*"In Part 3 of my series, I showed..."*) wastes the fold. Run the **Line-1 Deletion test**: if deleting Sentence 1 lets Sentence 2 open with the technical problem, metric, or tension, cut Sentence 1.
+- **Inventing synthetic copywriter strawmen:** Never invent dramatic problems or claims missing from the author's real code or article just to create a punchy hook.
+- **Simultaneous multi-channel draft generation before core approval:** Never generate `linkedin.md`, `twitter.md`, `bluesky.md`, and other files all at once. Draft and iterate on **one primary channel first** (for example, `linkedin.md`) until the user approves it, then adapt secondary channels one by one.
+- **Negative parallelism:** Avoid repetitive *"It's not just about X, it's about Y"* structures. State what it is directly.
+- **Mid-sentence em dashes:** Never use mid-sentence em dashes, en dashes, or spaced double hyphens. Split clauses with periods, commas, or colons.
+- **Rule-of-threes addiction:** Avoid forcing ideas into artificial triplets when two or four points match reality better.
 
 ---
 
-## 2. Platform-Specific Anti-Patterns
+## 2. Platform-specific anti-patterns
 
-### LinkedIn Anti-Patterns
-- **Wasted Above-the-Fold Hooks (`...see more` Failure):** Opening a LinkedIn post with chronological recaps (*"In my previous post..."*, *"Today I published..."*) or self-referential status updates (*"I've been quiet this week because..."*) burns the entire 140-character mobile preview window without giving peer engineers a technical reason to expand the post.
-- **Formulaic AI Textbook Summaries:** Writing a post that reads like a sterile, bulleted AI textbook overview rather than a grounded senior engineer sharing real architectural trade-offs and production lessons.
-- **Intra-Day Multi-Posting (Negative Marginal Daily Reach):** Because LinkedIn's feed scores posts over an 18–48 hour horizon with creator-diversity caps, publishing 2+ posts within 24 hours throttles both posts so severely that two same-day posts generate **fewer total daily impressions than a single post**.
-- **End-of-Week Wind-Down Drops:** Publishing heavy architectural deep-dives during Friday afternoon wind-down windows in your target audience's primary timezone suffers steep reach and dwell loss compared to mid-week or Sunday evening windows.
-- **Naked Text-Only Posts or Bare Link Previews:** Publishing without an attached native visual asset (diagram, code card, UI screenshot, or carousel) forfeits `2x–3x` higher discussion depth and allows in-body URLs to collapse the post into a low-dwell OpenGraph link preview.
-- **"Broetry" & Fake Epiphanies:** Dramatic single-line staccato sentences linking mundane chores to system architecture (*"I watched my espresso drip this morning and realized Kafka partitions work the same way..."*).
-- **Unicode Bold / Italic Glyphs:** Formatting text with `𝗕𝗼𝗹𝗱` glyphs breaks screen readers (accessibility failure), destroys search indexing, and inflates character counts.
-- **Generic Hashtag Stuffing:** Using 5+ hashtags (`#tech #ai #software #coding #innovation`) flags posts as spam.
-- **"Link in First Comment 👇" Evasions:** Withholding the primary article or repository URL from the post body and telling readers to hunt in the comments. Direct in-body URLs paired with native visuals outperform first-comment links—while LinkedIn's default `Most Relevant` comment sorting buries unpinned first-comment links as soon as discussion starts and drops them entirely on reshares.
+### LinkedIn anti-patterns
+- **Wasted above-the-fold hooks (`...see more` failure):** Opening with chronological recaps (*"In my previous post..."*, *"Today I published..."*) or scheduling updates burns the 140-character mobile preview without giving peers a technical reason to expand.
+- **Formulaic AI textbook summaries:** Writing a sterile, bulleted overview instead of sharing real design trade-offs and production lessons.
+- **Intra-day multi-posting:** Because LinkedIn scores posts over an `18` to `48` hour horizon with creator-diversity caps, publishing two posts within `24` hours throttles both so severely that two same-day posts yield fewer daily impressions than one.
+- **End-of-week wind-down drops:** Publishing heavy deep dives on Friday afternoons loses dwell time compared to mid-week or Sunday evening windows.
+- **Naked text-only posts or bare link previews:** Publishing without a native visual asset (diagram, code card, UI screenshot, or carousel) loses `2x` to `3x` discussion depth and lets in-body URLs collapse the post into a compact OpenGraph link card.
+- **"Broetry" and fake epiphanies:** Dramatic single-line sentences forcing mundane daily chores into software analogies (*"I watched my espresso drip this morning and realized Kafka partitions work the same way..."*).
+- **Unicode bold or italic glyphs:** Formatting copy with mathematical Unicode fonts (`𝗕𝗼𝗹𝗱`) breaks screen readers, ruins search indexing, and inflates character counts.
+- **Generic hashtag stuffing:** Using `5+` hashtags (`#tech #ai #software #coding #innovation`) triggers spam signals.
+- **"Link in first comment 👇" evasions:** Hiding the main URL from the post body. Direct in-body URLs paired with native visuals outperform first-comment links, while LinkedIn's `Most Relevant` comment sorting buries unpinned comments once discussion starts and drops them on reshares.
 
-### Twitter / X Anti-Patterns
-- **Intra-Day Rapid Burst Posting:** Publishing multiple standalone tweets in a few minutes/hours without a 2–3 hour spacing buffer saturates follower feeds and kills early engagement velocity. Bundle related thoughts into a Thread instead.
-- **Hashtag Clutter:** Using multiple hashtags on X is obsolete and dampens reach under current semantic NLP indexing. Keep to 0 hashtags.
-- **Vague Curiosity Gaps:** *"10 tips senior engineers don't want you to know"* or *"I changed one line and you won't believe what happened"*.
-- **Code Walls Without Visuals:** Pasting unformatted monospaced text walls without syntax highlighting or Ray.so cards.
+### X (Twitter) anti-patterns
+- **Intra-day rapid burst posting:** Posting multiple standalone tweets minutes apart saturates feeds without a `2` to `3` hour spacing buffer. Group connected points into a thread instead.
+- **Hashtag clutter:** Hashtags add visual noise under semantic feed ranking. Keep hashtags at `0`.
+- **Vague curiosity gaps:** *"10 tips senior engineers don't want you to know"* or *"I changed one line and you won't believe what happened"*.
+- **Unreadable code walls:** Pasting unformatted raw code without clean visuals or syntax highlighting.
 
-### Bluesky Anti-Patterns
-- **Algorithmic Evasions:** Writing *"Link in bio"* or *"Link in first comment"*. Bluesky does not penalize external links; putting links in comments signals platform illiteracy.
-- **Missing Image Alt Text:** Omitting `[ALT]` descriptions on code screenshots or architecture diagrams violates platform accessibility norms and triggers automated mutes.
-- **Engagement Farming:** *"Thoughts? Agree? Retweet if you code in Go!"* triggers swift community blocking.
+### Bluesky anti-patterns
+- **Algorithmic evasions:** Writing *"Link in bio"* or *"Link in first comment"*. Bluesky does not penalize external links; hiding links signals platform unfamiliarity.
+- **Missing image alt text:** Skipping `[ALT]` descriptions on code screenshots or diagrams breaks accessibility norms and triggers mutes.
+- **Engagement farming:** *"Thoughts? Agree? Repost if you code in Go!"* drives blocks and mutes.
 
-### Instagram Anti-Patterns
-- **Square (1:1) Carousels When 4:5 is Available:** Using 1:1 sacrifices 35% of vertical viewport real estate on mobile.
-- **Unreadable Mobile Code:** Displaying code snippets smaller than 24pt equivalent that force users to pinch-to-zoom.
-- **Naked "Link in Bio" Drops:** Forcing 4 friction clicks without using comment-to-DM automation.
+### Instagram anti-patterns
+- **Square (`1:1`) carousels when `4:5` fits:** Using `1:1` wastes `35%` of vertical viewport height on mobile.
+- **Unreadable mobile code:** Rendering code smaller than `24pt` equivalent forces readers to pinch-to-zoom.
+- **Naked "Link in Bio" drops:** Sending readers through multiple clicks without a focused landing link or DM trigger.
 
-### Reddit Anti-Patterns
-- **Clickbait & Marketing Speak:** Titles like *"Why AI will replace devs"* or *"Check out my revolutionary tool"*.
-- **Paywalled / Gated Destinations:** Linking to Medium paywalls or forced email capture forms.
-- **Violating the 9:1 Ratio:** Submitting self-promotional links without active organic participation in comments and peer threads.
-- **URL Shorteners:** `bit.ly`, `t.co`, and UTM-cluttered links are instantly auto-removed by AutoModerator sitewide.
+### Reddit anti-patterns
+- **Clickbait and marketing hype:** Titles like *"Why AI will replace devs"* or *"Check out my revolutionary tool"*.
+- **Paywalled or gated links:** Submitting paywalled articles or forced email gates.
+- **Violating the `9:1` ratio:** Dropping self-promotional links without genuine participation in community threads.
+- **URL shorteners:** `bit.ly`, `t.co`, and heavy UTM parameters trigger instant AutoModerator removal.
 
-### Threads Anti-Patterns
-- **Hashtag Overuse:** Only the **first** `#tag` is indexed as a Topic Tag; extra hashtags add visual clutter and do not index.
-- **Engagement Bait Bans:** *"Comment LINK"* triggers Meta's engagement-bait downranking filters.
-- **Uncontextualized Link Dumps:** Dropping a bare link with zero standalone explanation.
+### Threads anti-patterns
+- **Hashtag overuse:** Only the **first** `#tag` indexes as a topic tag; extra tags add noise without discovery value.
+- **Engagement bait:** *"Comment LINK"* triggers Meta's engagement-bait downranking filters.
+- **Uncontextualized link drops:** Posting a bare URL with no standalone explanation.
 
 ---
 
-## 3. Claim Validation & Fact-Checking
+## 3. Claim validation and fact-checking
 
-Before publishing any social copy, verify:
-- [ ] Are latency, memory, or cost metrics reproducible from actual benchmarks or post-mortems?
-- [ ] Are version numbers, language syntax, and command-line flags accurate for the current stable releases?
-- [ ] Are architecture trade-offs explicitly acknowledged (what is sacrificed in memory, CPU, or complexity)?
-- [ ] Is there zero reliance on unsubstantiated hyperbole?
-- [ ] **Mandatory Media Item**: Does the post include at least one media item (diagram, screenshot, video, or graphic card)? Naked text-only posts are strictly prohibited.
+Before presenting or scheduling social copy, verify:
+- [ ] Latency, memory, and cost figures match reproducible benchmarks or post-mortems.
+- [ ] Version numbers, language syntax, and CLI flags match current stable releases.
+- [ ] Architecture trade-offs name what was sacrificed (memory, CPU, or complexity).
+- [ ] Zero unverified hype appears.
+- [ ] **At least one native media item** (diagram, screenshot, video, or code card) is attached in frontmatter. Naked text-only posts are prohibited.

@@ -1,86 +1,89 @@
 ---
 name: inverted-pyramid
 description: >
-  Structural guide and editorial model for organizing technical articles,
-  developer documentation, and READMEs. Applies the Inverted Pyramid model to
-  place high-value summaries and actionable quickstarts first, cascading down to
-  usage workflows, architectural details, and compliance. Activate when
-  structuring technical articles, writing or refactoring README files,
-  organizing documentation hierarchy, or making technical guides scannable.
+  Structural guide for organizing technical articles, developer documentation,
+  and README files with the inverted pyramid model. Places summaries and
+  runnable quickstarts first, followed by usage workflows, architecture, and
+  compliance. Activate when structuring technical posts, writing or refactoring
+  README files, or designing scannable documentation hierarchies.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "documentation, writing, structure, editorial, blog, style-guide"
+  tags: "readme, documentation, technical-writing, information-architecture"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Inverted Pyramid Documentation Model
+# Inverted pyramid documentation model
 
-Editorial guidelines and structural standards for authoring technical articles, README files, API references, and developer documentation using the **Inverted Pyramid** model—ensuring readers extract immediate, actionable value above the fold while details cascade progressively downward.
+Organize technical articles, `README.md` files, API references, and developer guides by reader utility rather than author chronology. Put runnable value above the fold so readers get answers fast, then layer deeper details below.
 
 ---
 
-## 1. Core Philosophy: Information Cascading
+## 1. Core model: information cascading
 
-The **Inverted Pyramid** model organizes content by reader utility rather than author chronology:
+Structure every document from highest immediate utility at the top to deep reference details at the bottom:
 
 ```mermaid
 graph TD
-    A["[High Value] Summary & Prescribed Core Actions"] --> B["[Medium Value] Usage, Workflows & Setup"]
-    B --> C["[Detail Value] Development, Testing & Architecture"]
-    C --> D["[Low Value] Internal Implementation & Compliance"]
+    A["1. High value: summary and runnable quickstart"] --> B["2. Medium value: usage recipes and CLI flags"]
+    B --> C["3. Detail value: local development, testing, and architecture"]
+    C --> D["4. Reference value: internals, limits, and license"]
 ```
 
-### The 3 Reader Archetypes
-Every technical document must cater to three distinct reading depths:
-1. **The Scanner (5–10 seconds)**: Reads the headline, grabs the installation/execution command, and starts working immediately.
-2. **The Operator (2–5 minutes)**: Reads usage tables, CLI flags, workflow checklists, and common recipes.
-3. **The Contributor / Architect (10+ minutes)**: Explores internal architecture, build pipelines, design decisions, and compliance boundaries.
+### Three reader depths
+
+Every technical document serves three distinct reading budgets:
+
+1. **Scanner (`5s` to `10s`)**: Reads the one-line summary, copies the install and run commands, and tests the tool right away.
+2. **Operator (`2m` to `5m`)**: Scans usage tables, CLI flags, configuration keys, and common task recipes.
+3. **Contributor or architect (`10m+`)**: Studies module boundaries, local test commands, design trade-offs, and license terms.
 
 ---
 
-## 2. Standard Document Structures
+## 2. Standard document hierarchies
 
-### A. README & Project Documentation Hierarchy
+### A. README and project documentation
 
-User-facing project documentation **must** follow this strict structural sequence:
+Follow this sequence for user-facing repository documentation:
 
-1. **Title & High-Impact Summary**:
-   - Short, active one-sentence hook explaining what the project is, what problem it solves, and why it exists.
-2. **Prescribed Actions (Immediate Quickstart)**:
-   - Copy-paste installation command (`npx ...`, `go install ...`, `pip install ...`, `cargo install ...`).
-   - Single highest-value initial command to verify setup or produce output.
-3. **Usage Guides & Workflows**:
-   - Common CLI flags, arguments, configuration options, and copy-pasteable recipes.
-   - Output examples and expected terminal responses.
-4. **Developer & Contributor Instructions**:
-   - How to clone, build locally, execute test suites, run linters, and verify builds.
-5. **Technical Architecture & Internals**:
-   - Subsystem designs, data schemas, module boundaries, and trade-off rationales.
-6. **Legal & Compliance**:
-   - License identifier, copyright, contributing links, and security policies.
-
----
-
-### B. Technical Article & Blog Post Hierarchy
-
-1. **Above the Fold (Lead Block - First 150 words)**:
-   - State the core thesis, metric improvement, or direct answer immediately.
-   - Do not open with generic throat-clearing (*"In today's fast-paced world of technology..."*).
-2. **The Visual / Working Example**:
-   - Provide a working code snippet or architectural diagram within the first two scrolls.
-3. **Step-by-Step Breakdown & Nuance**:
-   - Implementation steps, edge cases, configuration details, and benchmarking data.
-4. **Actionable Takeaways & Next Steps**:
-   - Concrete next actions, repository links, and references.
+1. **Title and one-sentence summary**:
+   - State what the project is, what problem it solves, and who uses it in a single active sentence.
+2. **Immediate quickstart**:
+   - Provide a copy-paste install command (`uv tool install ...`, `uv add ...`, `npx ...`, `go install ...`, or `cargo install ...`).
+   - Show the single highest-value command that verifies setup and produces real output.
+3. **Usage workflows and configuration**:
+   - Present CLI flags, environment variables, and configuration keys in compact Markdown tables.
+   - Show copy-paste recipes paired with expected terminal output.
+4. **Development and testing**:
+   - Show how to clone, build locally, run tests, and run linters.
+5. **Architecture and internals**:
+   - Explain subsystem boundaries, data schemas, and design trade-offs.
+6. **License and compliance**:
+   - List the SPDX license identifier, copyright notice, contributing guide, and security policy.
 
 ---
 
-## 3. Structural Rules & Editorial Principles
+### B. Technical articles and blog posts
 
-- **Lead with Action**: Never bury installation commands behind paragraphs of architectural theory. Let the user run the tool first.
-- **Sentence-Case Headings**: Keep headings clear, concise, and sentence-cased, leading with high-value nouns or active verbs.
-- **Table Density**: Use tables for CLI flags, tool comparisons, and option summaries rather than loose bullet lists.
-- **Copy-Paste Code Blocks**: Every command block must be complete and ready to execute without editing placeholders unless explicitly highlighted.
+1. **Outcome lead (first `150` words)**:
+   - Open with the core result, benchmark change, or direct answer.
+   - Skip throat-clearing preambles about how fast modern software changes.
+2. **Working example above the second scroll**:
+   - Show a runnable code snippet, terminal session, or system diagram before diving into theory.
+3. **Implementation breakdown and trade-offs**:
+   - Walk through the key steps, failure modes, configuration choices, and measured benchmarks.
+4. **Concrete next steps**:
+   - Close with runnable follow-up commands, repository links, and primary references.
+
+---
+
+## 3. Editorial and structural rules
+
+- **Zero silent edits on existing drafts**: When auditing or refactoring an existing `README.md` or article, propose a numbered list of structural moves and wait for user approval before rewriting user prose on disk, unless the user explicitly asks to rewrite the file directly.
+- **Preserve author voice**: Reorder sections without stripping the author's tone, contractions, or natural idioms into stiff corporate phrasing.
+- **Lead with runnable action**: Never bury install or quickstart commands behind architectural history. Let the reader run the tool first.
+- **Sentence-case headings**: Write concise sentence-case headings that lead with concrete nouns or active verbs.
+- **Tables over loose lists**: Use Markdown tables for CLI flags, configuration keys, and option comparisons.
+- **Clean punctuation without em dashes**: Break clauses with periods, commas, or colons. Never use mid-sentence em dashes, en dashes, or spaced double hyphens.

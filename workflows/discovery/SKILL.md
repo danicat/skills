@@ -10,9 +10,9 @@ description: >
 license: Apache-2.0
 metadata:
   category: workflows
-  tags: "discovery, exploration, divergence, problem-space, evidence, research"
+  tags: "exploration, divergence, problem-space, evidence, research"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.1"
+  version: "0.1.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -24,7 +24,7 @@ When given a goal, agents often lock onto the literal words of a prompt and rush
 
 ---
 
-## 🔒 Core rules
+## Core rules
 
 1. **Diverge before narrowing**:
    Don't jump into building, running code, or picking a single winner during discovery. Expand the search space first so you see the full board before narrowing down.
@@ -37,7 +37,7 @@ When given a goal, agents often lock onto the literal words of a prompt and rush
 
 ---
 
-## ⚖️ Proof hierarchy and scoring
+## Proof hierarchy and scoring
 
 Don't treat all sources as equal. Frame, tag, and count every found item using this 6-tier hierarchy:
 
@@ -46,7 +46,7 @@ Don't treat all sources as equal. Frame, tag, and count every found item using t
   └── [T2] Canonical Specs, Official Records & Primary Data
         └── [T3] Peer-Reviewed Studies, Benchmarks & Domain Experts
               └── [T4] Curated Community Consensus & Field Reports
-                    └── [T5] Anecdotal Signals & Social Media (unverified — cross-check first)
+                    └── [T5] Anecdotal Signals & Social Media (unverified: cross-check first)
                           └── [T6] Unbacked Hype, Rumors, or Stale Claims (flag or discard)
 ```
 
@@ -67,9 +67,9 @@ Don't treat all sources as equal. Frame, tag, and count every found item using t
 
 ---
 
-## 🔭 The 5 discovery angles
+## The 5 discovery angles
 
-Sweep the problem space across five outward-looking angles. You can inspect these one by one or fan them out across parallel research subagents:
+Sweep the problem space across five outward-looking angles. You can inspect these one by one or fan them out across parallel read-only subagents:
 
 | Angle | Core question | What it uncovers |
 | :--- | :--- | :--- |
@@ -81,7 +81,7 @@ Sweep the problem space across five outward-looking angles. You can inspect thes
 
 ---
 
-## 🗺️ Workflow steps
+## Workflow steps
 
 - [ ] **Step 1: Unpack the first framing**
   List the stated goal next to the hidden assumptions and limits baked into the request.
@@ -96,7 +96,7 @@ Sweep the problem space across five outward-looking angles. You can inspect thes
 
 ---
 
-## ✅ Quality checks
+## Quality checks
 
 Before sharing the discovery report, verify all three rules:
 
@@ -106,7 +106,7 @@ Before sharing the discovery report, verify all three rules:
 
 ---
 
-## 📄 Output template
+## Output template
 
 ```markdown
 ## 1. Initial framing vs. uncovered reality
@@ -116,23 +116,23 @@ Before sharing the discovery report, verify all three rules:
 ## 2. Quantified proof summary
 | Tier band | Count | Share of findings | Confidence note |
 | :--- | :--- | :--- | :--- |
-| **`[T1]`–`[T2]` Primary & canonical** | <N> | <X%> | Directly verified facts |
-| **`[T3]`–`[T4]` Expert & community** | <M> | <Y%> | Cross-checked domain signal |
-| **`[T5]`–`[T6]` Unverified / noise** | <K> | <Z%> | Leads requiring testing or filtered out |
+| **`[T1]` to `[T2]` Primary and canonical** | <N> | <X%> | Directly verified facts |
+| **`[T3]` to `[T4]` Expert and community** | <M> | <Y%> | Cross-checked domain signal |
+| **`[T5]` to `[T6]` Unverified or noise** | <K> | <Z%> | Leads requiring testing or filtered out |
 
 ## 3. Expanded discovery map
 
-### Baseline state & verified facts
-- **`[T1]` [Element or behavior]**: <Observed fact> — Source: <file:line or URL>
+### Baseline state and verified facts
+- **`[T1]` [Element or behavior]**: <Observed fact> (Source: <file:line or URL>)
 
 ### Surfaced blind spots, outliers, and forgotten gems
-- **`[T2]` [Outlier or blind spot 1]**: <Why the first framing missed it and why it matters> — Source: <file:line or URL>
-- **`[T3]` [Outlier or blind spot 2]**: <Adjacent link, niche opportunity, or overlooked gem> — Source: <file:line or URL>
+- **`[T2]` [Outlier or blind spot 1]**: <Why the first framing missed it and why it matters> (Source: <file:line or URL>)
+- **`[T3]` [Outlier or blind spot 2]**: <Adjacent link, niche opportunity, or overlooked gem> (Source: <file:line or URL>)
 
 ## 4. Reframed problem statement
 - <How the problem or search space looks now that the full board is visible>
 
 ## 5. Open questions for convergence
 - **Questions for the user**: <Preference, scope, or strategy choices>
-- **Questions for follow-up testing**: <Specific `[T4]`–`[T5]` leads to test or sample next>
+- **Questions for follow-up testing**: <Specific `[T4]` to `[T5]` leads to test or sample next>
 ```

@@ -22,9 +22,9 @@
  * Validates:
  * 1. YAML frontmatter syntax and structure.
  * 2. Required top-level fields: name, description, license.
- * 3. Required metadata fields: category, tags, author, version, homepage, canonical, repository.
+ * 3. Required metadata fields: category, tags, author, version, and catalog (or repository).
  * 4. SemVer formatting for version (X.Y.Z).
- * 5. URL consistency across homepage, canonical, and repository.
+ * 5. URL consistency for metadata.catalog.
  * 6. Name-to-directory alignment and kebab-case naming rules.
  * 7. Zero Contamination check (no private/internal leaks or local absolute paths).
  */
@@ -73,6 +73,7 @@ function parseFrontmatter(content) {
 
   const lines = rawYaml.split('\n');
   let currentKey = null;
+  let lastTopKey = null;
   let inMetadata = false;
   const metadataObj = {};
 
@@ -84,6 +85,7 @@ function parseFrontmatter(content) {
     if (line.startsWith('metadata:')) {
       inMetadata = true;
       currentKey = null;
+      lastTopKey = 'metadata';
       continue;
     }
 
@@ -110,6 +112,7 @@ function parseFrontmatter(content) {
 
         if (val === '>' || val === '|') {
           currentKey = key;
+          lastTopKey = key;
           data[key] = '';
           continue;
         }
@@ -119,8 +122,11 @@ function parseFrontmatter(content) {
         }
         data[key] = val;
         currentKey = null;
+        lastTopKey = key;
       } else if (currentKey) {
         data[currentKey] = (data[currentKey] ? data[currentKey] + ' ' : '') + trimmed;
+      } else if (lastTopKey && (line.startsWith(' ') || line.startsWith('\t'))) {
+        data[lastTopKey] = { _invalidNestedYaml: true };
       }
     }
   }
@@ -183,6 +189,14 @@ function validateSkillFile(filePath, isGateway = false) {
     errors.push("Missing required field: 'license'");
   }
 
+  if (Object.prototype.hasOwnProperty.call(data, 'compatibility')) {
+    if (typeof data.compatibility !== 'string' || data.compatibility.trim().length === 0) {
+      errors.push("Field 'compatibility' must be a non-empty string per the Agent Skills specification (nested YAML mappings or lists are not allowed)");
+    } else if (data.compatibility.length > 500) {
+      errors.push("Field 'compatibility' exceeds 500 characters");
+    }
+  }
+
   // 2. Metadata Block Checks
   if (!data.metadata || typeof data.metadata !== 'object') {
     errors.push("Missing required 'metadata:' mapping block in frontmatter");
@@ -221,8 +235,12 @@ function validateSkillFile(filePath, isGateway = false) {
   }
 
   // Provenance Coordinates: Master Catalog Pointer (or standalone repository)
+  if (meta.canonical) {
+    errors.push("Deprecated metadata field 'canonical': use 'metadata.catalog' instead");
+  }
+
   if (isGateway) {
-    if (!meta.catalog && !meta.canonical) {
+    if (!meta.catalog) {
       errors.push("Missing required metadata field: 'catalog'");
     }
   } else {

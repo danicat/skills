@@ -13,15 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+
 """
 Test Suite for buffer-analytics
 Validates:
 1. SQLite schema DDL, indexes, and analytical view definitions (v_posts_summary).
 2. Data insertion and relationship consistency.
 3. Every SQL query used as an example in SKILL.md, references/queries.md, and references/inquiry_playbook.md.
-4. Pre-packaged reports in scripts/buffer_analytics.py.
+4. Pre-packaged reports in scripts/buffer_analytics.py (including channels).
 5. Dynamic extraction and execution of all SQL code blocks in markdown documentation.
-6. CLI argument parsing and help interface.
+6. Backfill edge cases (has_link detection, end_date filter, multi-asset IDs, stalled cursors).
+7. CLI argument parsing and help interface.
 """
 
 import os
@@ -29,7 +35,9 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 # Locate directory roots
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -259,7 +267,7 @@ class TestBufferAnalyticsQueries(unittest.TestCase):
             """
             SELECT
                 service,
-                CASE WHEN has_link = 1 THEN 'Link in Body' ELSE 'No Link / First Comment' END AS placement,
+                CASE WHEN has_link = 1 THEN 'In-body URL' ELSE 'No in-body URL' END AS placement,
                 COUNT(*) AS posts,
                 ROUND(AVG(impressions), 0) AS avg_impressions,
                 ROUND(AVG(reactions), 1) AS avg_reactions
@@ -326,7 +334,7 @@ class TestBufferAnalyticsQueries(unittest.TestCase):
             """
             SELECT
                 service,
-                CASE WHEN has_link = 1 THEN 'Link in Body' ELSE 'No Link / Link in Comment' END AS link_placement,
+                CASE WHEN has_link = 1 THEN 'In-body URL' ELSE 'No in-body URL' END AS link_placement,
                 COUNT(*) AS post_count,
                 ROUND(AVG(impressions), 0) AS avg_impressions,
                 ROUND(AVG(reactions), 1) AS avg_reactions,
@@ -397,6 +405,7 @@ class TestBufferAnalyticsQueries(unittest.TestCase):
                 self.assertGreater(len(rows), 0, f"Recipe #{idx} returned empty result.")
 
     def test_prepackaged_cli_reports(self):
+        self.assertIn("channels", buffer_analytics.REPORTS)
         for name, sql in buffer_analytics.REPORTS.items():
             with self.subTest(report_name=name):
                 cursor = self.conn.execute(sql)
@@ -432,6 +441,97 @@ class TestBufferAnalyticsQueries(unittest.TestCase):
         self.assertGreaterEqual(total_executed, 10, "Expected at least 10 markdown SQL blocks to be tested.")
 
 
+class TestBufferBackfillLogic(unittest.TestCase):
+    """Tests has_link computation, end_date filtering, asset indexing, and cursor guards."""
+
+    def setUp(self):
+        self.conn = sqlite3.connect(":memory:")
+        self.conn.row_factory = sqlite3.Row
+        self.conn.executescript(buffer_analytics.SCHEMA_DDL)
+        self.conn.execute(
+            "INSERT INTO channels (id, organization_id, name, service, raw_json, synced_at) "
+            "VALUES ('ch_1', 'org_1', 'Test Channel', 'linkedin', '{}', '2026-08-20T00:00:00Z')"
+        )
+        self.conn.commit()
+
+    def tearDown(self):
+        self.conn.close()
+
+    def test_backfill_has_link_end_date_and_multi_assets(self):
+        mock_page = {
+            "items": [
+                {
+                    "id": "p_text_only",
+                    "channelId": "ch_1",
+                    "channelService": "linkedin",
+                    "status": "sent",
+                    "text": "Pure commentary post without any link.",
+                    "externalLink": "https://www.linkedin.com/feed/update/urn:li:activity:1",
+                    "sentAt": "2026-08-10T10:00:00Z",
+                    "assets": [{"type": "image", "source": "https://cdn.example.com/1.png"}, {"type": "image", "source": "https://cdn.example.com/2.png"}],
+                    "metrics": [],
+                },
+                {
+                    "id": "p_in_body",
+                    "channelId": "ch_1",
+                    "channelService": "linkedin",
+                    "status": "sent",
+                    "text": "Read the benchmark here: https://example.com/bench",
+                    "externalLink": "https://www.linkedin.com/feed/update/urn:li:activity:2",
+                    "sentAt": "2026-08-12T10:00:00Z",
+                    "assets": [],
+                    "metrics": [],
+                },
+                {
+                    "id": "p_after_end",
+                    "channelId": "ch_1",
+                    "channelService": "linkedin",
+                    "status": "sent",
+                    "text": "Too new post.",
+                    "sentAt": "2026-08-20T10:00:00Z",
+                    "assets": [],
+                    "metrics": [],
+                },
+            ],
+            "pageInfo": {"hasNextPage": False, "endCursor": None},
+        }
+        with patch.object(buffer_analytics, "run_buffer_cli", return_value=mock_page):
+            res = buffer_analytics.backfill_posts(
+                conn=self.conn,
+                org_id="org_1",
+                end_date="2026-08-15T00:00:00Z",
+                full_sync=True,
+            )
+
+        self.assertEqual(res["posts_inserted"], 2)
+        rows = {r["id"]: dict(r) for r in self.conn.execute("SELECT id, has_link, has_media FROM posts").fetchall()}
+        self.assertEqual(rows["p_text_only"]["has_link"], 0)
+        self.assertEqual(rows["p_text_only"]["has_media"], 1)
+        self.assertEqual(rows["p_in_body"]["has_link"], 1)
+        self.assertNotIn("p_after_end", rows)
+
+        assets = self.conn.execute("SELECT id FROM post_assets WHERE post_id = 'p_text_only' ORDER BY id").fetchall()
+        self.assertEqual(len(assets), 2)
+
+    def test_backfill_stalled_cursor_fails_fast(self):
+        stalled_page = {
+            "items": [
+                {
+                    "id": "p_1",
+                    "channelId": "ch_1",
+                    "channelService": "linkedin",
+                    "status": "sent",
+                    "text": "Post",
+                    "sentAt": "2026-08-10T10:00:00Z",
+                }
+            ],
+            "pageInfo": {"hasNextPage": True, "endCursor": "cursor_same"},
+        }
+        with patch.object(buffer_analytics, "run_buffer_cli", return_value=stalled_page):
+            with self.assertRaises(RuntimeError):
+                buffer_analytics.backfill_posts(conn=self.conn, org_id="org_1", full_sync=True)
+
+
 class TestBufferAnalyticsCLI(unittest.TestCase):
     """Tests CLI entry points and argument parsing."""
 
@@ -441,10 +541,31 @@ class TestBufferAnalyticsCLI(unittest.TestCase):
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0)
         self.assertIn("Buffer Analytics CLI", result.stdout)
+        self.assertIn("channels", result.stdout)
         self.assertIn("sync", result.stdout)
         self.assertIn("report", result.stdout)
         self.assertIn("query", result.stdout)
         self.assertIn("schema", result.stdout)
+
+    def test_cli_report_channels_executes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "test.db")
+            conn = buffer_analytics.get_db_connection(db_path)
+            conn.execute(
+                "INSERT INTO channels (id, organization_id, name, service, timezone, is_disconnected, raw_json, synced_at) "
+                "VALUES ('ch_1', 'org_1', 'Main Channel', 'linkedin', 'UTC', 0, '{}', '2026-08-20T00:00:00Z')"
+            )
+            conn.commit()
+            conn.close()
+
+            script_path = os.path.join(SCRIPT_DIR, "buffer_analytics.py")
+            result = subprocess.run(
+                [sys.executable, script_path, "report", "channels", "--db", db_path],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn("Main Channel", result.stdout)
 
 
 if __name__ == "__main__":

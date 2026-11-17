@@ -13,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+
 """
 Test Suite for skill-analytics (scripts/analyze.py).
 
@@ -20,11 +25,15 @@ Validates:
 1. SQLite schema DDL, tables, indexes, and analytical views (`v_skill_roi`,
    `v_trigger_attribution`, `v_daily_invocations`, `v_subcommand_summary`,
    `v_search_gaps`).
-2. User notation parser (`::skill`, `//skill`, `:?query`, C++/CSS false-positive filtering).
-3. Planner tool_call extractor (`direct_skill_view`, `skill_resource_view`, `cli_invocation`,
-   continuation pages `-p 2`, subpaths, `learn --load`, and `run`).
-4. Every SQL query block in `SKILL.md` and `references/queries.md`.
-5. Pre-packaged CLI reports (`overview`, `roi`, `triggers`, `velocity`, `gaps`).
+2. User notation parser (`::skill`, `::skill(params...)`, `//skill`, `:?query`,
+   C++/CSS false-positive filtering).
+3. Planner tool_call extractor (`read_file`, `view_file`, `direct_skill_view`,
+   `skill_resource_view`, continuation chunk guards, `cli_invocation`,
+   `.go` companion scripts, and `telemetry`).
+4. Tier classification for global vs. workspace `.agents/skills/` paths.
+5. Gemini 4 implicit cache-adjusted prompt-tax calculations in `v_skill_roi`.
+6. Every SQL query block in `SKILL.md` and `references/queries.md`.
+7. Pre-packaged CLI reports (`overview`, `roi`, `triggers`, `velocity`, `gaps`).
 """
 
 import io
@@ -172,8 +181,95 @@ class TestSkillAnalyticsParsersAndQueries(unittest.TestCase):
             for r in self.conn.execute("SELECT * FROM v_skill_roi").fetchall()
         }
         self.assertEqual(rows["unused-shelfware"]["roi_recommendation"], "SHELFWARE_CANDIDATE")
+        self.assertEqual(rows["unused-shelfware"]["cumulative_prompt_tax_tokens"], 200)
+        self.assertEqual(rows["unused-shelfware"]["cache_adjusted_tax_tokens"], 430)
         self.assertEqual(rows["buffer-analytics"]["resource_reads"], 1)
         self.assertEqual(rows["buffer-analytics"]["script_runs"], 1)
+
+    def test_read_file_and_go_script_extraction(self):
+        known = {"ebitengineer", "sprite-design", "design-docs"}
+        tool_calls = [
+            {
+                "name": "read_file",
+                "args": {"Path": "/Users/alice/.gemini/config/plugins/agy-game-studio/skills/ebitengineer/SKILL.md"},
+            },
+            {
+                "name": "default_api:read_file",
+                "args": {
+                    "Path": "/Users/alice/.gemini/config/plugins/agy-game-studio/skills/ebitengineer/SKILL.md",
+                    "StartLine": 201,
+                    "EndLine": 400,
+                },
+            },
+            {
+                "name": "read_file",
+                "args": {"Path": "/repo/skills/game-dev/ebitengineer/references/shaders_and_text_v2.md"},
+            },
+            {
+                "name": "run_command",
+                "args": {"CommandLine": "go run game-dev/sprite-design/scripts/aseprite.go inspect hero.aseprite"},
+            },
+        ]
+        events = analyze.extract_planner_invocations(
+            conv_id="c-read",
+            step_index=4,
+            step_created_at="2026-11-17T07:00:00Z",
+            step_type="PLANNER_RESPONSE",
+            tool_calls=tool_calls,
+            known_skills=known,
+            explicit_skills_in_conv=set(),
+        )
+        skill_views = [e for e in events if e["invocation_kind"] == "direct_skill_view"]
+        self.assertEqual(len(skill_views), 2)
+        self.assertEqual(skill_views[0]["subcommand"], "read_file")
+        self.assertEqual(skill_views[0]["page_number"], 1)
+        self.assertEqual(skill_views[1]["page_number"], 2)
+
+        res_views = [e for e in events if e["invocation_kind"] == "skill_resource_view"]
+        self.assertEqual(len(res_views), 1)
+        self.assertEqual(res_views[0]["target_skill"], "ebitengineer")
+        self.assertEqual(res_views[0]["subpath_or_script"], "references/shaders_and_text_v2.md")
+
+        go_runs = [e for e in events if e["subcommand"] == "script_exec"]
+        self.assertEqual(len(go_runs), 1)
+        self.assertEqual(go_runs[0]["target_skill"], "sprite-design")
+        self.assertEqual(go_runs[0]["subpath_or_script"], "aseprite.go")
+
+    def test_workspace_vs_global_tier_classification(self):
+        self.assertEqual(
+            analyze.classify_skill_path_tier("/Users/alice/.agents/skills/foo/SKILL.md"),
+            ("global", 0),
+        )
+        self.assertEqual(
+            analyze.classify_skill_path_tier("/Users/alice/projects/app/.agents/skills/foo/SKILL.md"),
+            ("workspace", 0),
+        )
+
+    def test_nested_user_notation_and_telemetry(self):
+        known = {"parallel", "discovery"}
+        events, explicit = analyze.extract_user_notations(
+            conv_id="c-nested",
+            step_index=1,
+            step_created_at="2026-11-17T07:05:00Z",
+            step_type="USER_INPUT",
+            raw_content="Please run ::parallel(10, ::discovery) now.",
+            known_skills=known,
+        )
+        self.assertEqual(explicit, {"parallel", "discovery"})
+        self.assertEqual({e["target_skill"] for e in events}, {"parallel", "discovery"})
+
+        cli_ev = analyze.parse_kungfu_cli_segment(
+            seg="kungfu telemetry status",
+            conv_id="c-nested",
+            step_index=2,
+            step_created_at="2026-11-17T07:05:05Z",
+            step_type="PLANNER_RESPONSE",
+            known_skills=known,
+            explicit_skills_in_conv=explicit,
+        )
+        self.assertIsNotNone(cli_ev)
+        self.assertEqual(cli_ev["subcommand"], "telemetry")
+        self.assertEqual(cli_ev["subpath_or_script"], "status")
 
     def test_all_reports_execute(self):
         for rpt in ("overview", "roi", "triggers", "velocity", "gaps"):

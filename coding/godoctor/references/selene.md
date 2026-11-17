@@ -1,114 +1,110 @@
-# Selene Mutation Testing Guide
+# Selene mutation testing guide
 
-[Selene](https://github.com/danicat/selene) evaluates Go unit test suites by introducing syntactic defects into the Abstract Syntax Tree (AST) and verifying whether existing tests catch them.
+[Selene](https://github.com/danicat/selene) (`v0.4.0`) evaluates Go unit test suites by injecting AST syntax defects and verifying whether existing tests fail cleanly.
 
-## Key Features & Safeguards
+## Key features and safeguards
 
-- **Zero-Fallback & Binary Discovery**: Selene executes directly from `$PATH` or as configured in `.godoctor.yaml`. Dynamic `go run` compilation fallbacks are banned to eliminate startup latency.
-- **Targeted Fast Mode**: Integrates with TestQuery (`testquery.db`) to run only the tests that cover mutated lines using precise `-run` patterns.
-- **In-Memory Compilation**: Uses Go's `-overlay` flag to build mutated code without altering files on disk.
-- **Safety Exclusions**: Automatically ignores dangerous operations (`os.RemoveAll`, `exec.Command`, `syscall.*`) and their conditional guards.
-- **Worker Pool**: Runs mutations across parallel workers (`-workers N`) with process-level timeout isolation.
-- **Test Scoring**: Identifies tests that killed mutants vs tests that ran but never caught a bug (zero-kill tests).
+- **Zero-fallback binary execution**: Selene runs directly from `$PATH` or `.godoctor.yaml`. Dynamic `go run` fallbacks are banned to eliminate startup delays.
+- **Targeted mode with TestQuery**: Reads `.godoctor/testquery.db` to run only tests covering each mutated line using `-run` filters.
+- **In-memory compilation**: Uses Go's `-overlay` flag to compile mutated packages without writing defects to source files on disk.
+- **Safety exclusions**: Skips mutations inside destructive system calls (`os.RemoveAll`, `exec.Command`, `syscall.*`) and their guards.
+- **Worker pool and timebox**: Runs parallel workers (`-workers N`) with per-test (`-timeout`, default `10s`) and total suite (`-timebox`) limits.
+- **Zero-kill detection**: Flags tests that execute without catching any mutant.
 
----
-
-## Mutant Status Reference
+## Mutant status reference
 
 | Status | Meaning | Action |
 | :--- | :--- | :--- |
-| `KILLED` | A test caught the mutation and failed. | None. Test suite behaves as expected. |
-| `SURVIVED` | All tests passed despite modified code. | Add assertions for the mutated logic, return value, or boundary. |
-| `UNCOVERED` | No test executed across the mutated line. | Add unit test coverage for this branch. |
-| `TIMEOUT` | Mutation caused an infinite loop or hang. | Treated as killed. |
-| `EXCLUDED` | Mutation was skipped for safety reasons. | None. Skipped automatically. |
+| `KILLED` | At least one test caught the mutation and failed. | None. Assertions caught the defect. |
+| `SURVIVED` | All covering tests passed despite the mutated AST. | Add assertions covering that logic, return value, or boundary. |
+| `UNCOVERED` | No test executed across the mutated line. | Add unit tests reaching this branch. |
+| `TIMEOUT` | Mutation triggered an infinite loop or exceeded `-timeout`. | Treated as killed. |
+| `EXCLUDED` | Mutation skipped by safety rules. | None. |
 
----
-
-## Installation & Environment Verification
+## Installation and environment verification
 
 Verify installed tools using GoDoctor:
+
 ```bash
 godoctor check
+selene -version
 ```
 
-Install or upgrade Selene via Go toolchain:
+Install or upgrade Selene via Go:
+
 ```bash
 go install github.com/danicat/selene/cmd/selene@latest
 ```
 
-Or via the prebuilt binary installation script:
-```bash
-curl -fsSL https://raw.githubusercontent.com/danicat/selene/main/install.sh | bash
-```
-
----
-
 ## Configuration via `.godoctor.yaml`
 
-Configure Selene execution parameters in your repository's `.godoctor.yaml`:
+Configure Selene parameters using `godoctor v0.34.0` keys (`binary_name` and `testquery_compat`):
 
 ```yaml
 tools:
   selene:
-    command: "selene"
+    binary_name: "selene"
     recommended_version: "latest"
     pkg: "github.com/danicat/selene/cmd/selene@latest"
+    packages: "./..."
     timeout: "3m"
-    workers: 0                    # 0 defaults to runtime.GOMAXPROCS workers
-    testquery_compat: true        # Enable TestQuery SQLite DB integration
+    workers: 0                    # 0 defaults to runtime.GOMAXPROCS
+    testquery_compat: true
     db_path: ".godoctor/testquery.db"
     disabled: false
 
 features:
-  mutation_testing: true
   testquery_compat: true
 ```
 
----
-
 ## Running Selene
 
-### 1. Via GoDoctor CLI (Recommended)
+### 1. Via GoDoctor CLI (recommended)
+
 ```bash
-# Direct mutation test run on repository
+# Run mutation testing directly
 godoctor call selene '{"dir": "/absolute/path/to/project"}'
 
-# Run complete test suite with Selene mutation testing enabled
+# Run tests, coverage indexing, and mutation testing together
 godoctor call test '{"dir": "/absolute/path/to/project", "level": "complete"}'
 ```
 
-### 2. Standalone Targeted Run with TestQuery
-Generate coverage data first, then run Selene against the database:
+### 2. Standalone targeted run with TestQuery
+
+Build coverage data first, then run Selene against `.godoctor/testquery.db` or `testquery.db` using single-dash Go flags:
+
 ```bash
-tq build ./...
-selene --db testquery.db -workers 8 -v ./...
+tq build --output testquery.db ./...
+selene -db testquery.db -workers 8 -v ./...
 ```
 
-### 3. Untargeted Run
+### 3. Timeboxed and JSON CI runs
+
 ```bash
+# Limit total wall-clock budget for large suites
+selene -db testquery.db -timebox 5m ./...
+
+# JSON output for CI pipelines
+selene -db testquery.db -json ./...
+
+# Untargeted run without a database
 selene -workers 8 ./...
 ```
 
-### 4. JSON Output for CI Pipelines
-```bash
-selene --db testquery.db -json ./...
-```
+## Querying results in `testquery.db`
 
----
+Selene (`v0.4.0`) writes mutant records to `selene` (lowercase statuses `'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`), kill edges to `selene_kills`, and per-test summaries to `selene_tests`, plus four helper views:
 
-## Querying Results in `testquery.db`
+### 1. Surviving mutants (assertion gaps)
 
-Selene records mutation evaluations and test effectiveness metrics in `testquery.db`. The primary table is `selene` (with status values stored in lowercase: `'killed'`, `'survived'`, `'uncovered'`, `'timeout'`, `'excluded'`), along with several predefined views:
-
-### 1. Surviving Mutants (Assertion Gaps)
 ```sql
-SELECT id, mutator, file, line, col
+SELECT id, mutator, package, function_name, file, line, col
 FROM selene_survived
 ORDER BY file, line;
 ```
 
-### 2. Breakdown by Mutator
+### 2. Breakdown by mutator
+
 ```sql
 SELECT mutator,
        COUNT(*) AS total,
@@ -121,24 +117,28 @@ GROUP BY mutator
 ORDER BY total DESC;
 ```
 
-### 3. Zero-Kill Tests (Tests That Caught Zero Mutants)
+### 3. Zero-kill tests
+
 ```sql
 SELECT test_name, package
 FROM selene_zero_kill_tests;
 ```
 
-### 4. Safety-Excluded Mutations
+### 4. Safety-excluded mutations
+
 ```sql
-SELECT id, mutator, file, line, col, reason
+SELECT id, mutator, package, function_name, file, line, col, reason
 FROM selene_excluded;
 ```
 
-### 5. Mutation Testing Summary Metrics
+### 5. Mutation summary metrics
+
 ```sql
 SELECT * FROM selene_summary;
 ```
 
-### 6. Top 10 Most Effective Tests
+### 6. Top 10 most effective tests
+
 ```sql
 SELECT test_name, package, mutations_killed, killed_mutant_ids
 FROM selene_tests
@@ -147,27 +147,25 @@ ORDER BY mutations_killed DESC
 LIMIT 10;
 ```
 
----
+## Zero-kill test remediation
 
-## Zero-Kill Test Remediation
-
-A **Zero-Kill Test** is a test that executed during mutation testing but never failed when any AST mutation was applied. Common causes and remediation tactics:
+A **zero-kill test** ran during mutation testing without failing on any mutant:
 
 | Root Cause | Pattern | Remediation |
 | :--- | :--- | :--- |
-| **Shallow Assertions** | Test only checks `err == nil` or exit code 0. | Add semantic assertions checking stdout, stderr, or parsed JSON payload fields. |
-| **Redundant Subtest** | Trivial subtest superseded by a broader parent test case. | Consolidate duplicate table-driven test entries or assert on unique boundary conditions. |
-| **Tautological Check** | Constructor / getter tests with no logic branches. | Combine with behavior tests or eliminate redundant unit tests. |
-| **Empty Input Handlers** | Tests passing empty string / slice that early-returns. | Keep if guarding public API invariants; otherwise combine with table tests. |
+| **Shallow assertions** | Checks only `err == nil` or exit status `0`. | Assert stdout, stderr, return fields, or parsed payloads. |
+| **Redundant subtest** | Covered already by a broader case. | Consolidate duplicate table entries or test distinct boundaries. |
+| **Tautological check** | Trivial constructor or getter with zero logic branches. | Merge into behavior tests or drop redundant cases. |
+| **Empty input guard** | Early-return smoke case. | Keep only when guarding a public invariant. |
 
----
+## Fixing surviving mutants
 
-## Fixing Surviving Mutants
+When mutants survive, strengthen boundary, payload, and branch checks:
 
-When mutants survive, the test suite usually lacks specific boundary, error, or return value assertions:
+### 1. Boundary mutations (such as `>=` mutated to `>`)
 
-### 1. Boundary Mutations (e.g. `>=` changed to `>`)
-Add test cases for values right at the boundary:
+Cover values below, at, and above every threshold:
+
 ```go
 tests := []struct {
     name     string
@@ -175,13 +173,15 @@ tests := []struct {
     expected bool
 }{
     {name: "below threshold", val: 17, expected: false},
-    {name: "at threshold",    val: 18, expected: true},
+    {name: "at threshold", val: 18, expected: true},
     {name: "above threshold", val: 19, expected: true},
 }
 ```
 
-### 2. Return Value Mutations (e.g. `return token, nil` changed to `return "", nil`)
-Tests that only check `err == nil` miss payload bugs. Assert return values directly:
+### 2. Return value mutations (such as `return token, nil` mutated to `return "", nil`)
+
+Assert non-empty payloads and concrete fields rather than `err == nil` alone:
+
 ```go
 res, err := GenerateToken("user123")
 if err != nil {
@@ -192,15 +192,14 @@ if res == "" {
 }
 ```
 
-### 3. Inverted Conditionals (e.g. `if ok` changed to `if !ok`)
-Ensure test suites cover both `true` and `false` execution branches.
+### 3. Inverted conditionals (`if ok` vs `if !ok`)
 
----
+Exercise both `true` and `false` branches for every conditional check.
 
-## Notes & Best Practices
+## Notes and best practices
 
-- **Select the Right Level**: Use `level: "fast"` during iterative coding. Reserve `level: "complete"` or standalone `selene` runs for quality audits and release validation.
-- **Resource Management**: Selene spawns parallel worker processes (`-workers N`). Do not launch background test/build tasks concurrently with complete mutation runs to prevent CPU starvation and SQLite database lock contention.
-- **Baseline Tests Must Pass**: If existing tests are failing, fix them before running mutation tests.
-- **Refresh Coverage for Targeted Mode**: Always run `tq build` or `godoctor call test` before running targeted Selene tests so the coverage index matches the latest code.
-- **Absolute Paths**: When using `godoctor call selene`, always supply an absolute path for `dir`.
+- **Pick the right test tier**: Use `level: "fast"` for rapid edits and reserve `level: "complete"` or standalone `selene` runs for release audits.
+- **Avoid concurrent test runs**: Selene runs `-workers N` child compilers; avoid parallel `go test` or `tq build` processes during mutation runs.
+- **Green baseline first**: Fix failing unit tests before running mutation analysis.
+- **Refresh coverage first**: Run `tq build` or `godoctor call test` before targeted `selene -db` runs so coverage indexes reflect current lines.
+- **Absolute paths in GoDoctor**: Always pass an absolute `dir` path to `godoctor call selene`.

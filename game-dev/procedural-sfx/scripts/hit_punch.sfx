@@ -1,0 +1,7 @@
+title "Melee Impact Punch"
+type sfx
+
+inst snap wave=noise noise_filter=0.60 vol=0.35 adsr=0.002,0.03,0.00,0.02
+inst thud preset=hit_punch vol=0.38
+track slap snap: snap:50ms R:110ms
+track body thud: 180Hz->42Hz:160ms

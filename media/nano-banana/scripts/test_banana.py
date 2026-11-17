@@ -12,13 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "google-genai>=3.3.0",
+#     "pillow>=10.0.0",
+#     "google-auth>=2.0.0",
+# ]
+# ///
+
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 
-SCRIPT_PATH = os.path.join(os.path.dirname(__file__), "banana.py")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_PATH = os.path.join(SCRIPT_DIR, "banana.py")
 CMD_BASE = ["uv", "run", SCRIPT_PATH] if shutil.which("uv") else [sys.executable, SCRIPT_PATH]
+
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
+from banana import detect_mime_type, save_output_image
 
 
 def run_cli(*args: str, env: dict | None = None) -> subprocess.CompletedProcess:
@@ -35,36 +51,54 @@ def test_banana_help():
     assert "--search" in result.stdout
     assert "--image-search" in result.stdout
     assert "--api" in result.stdout
+    assert "--enterprise" in result.stdout
     assert "--vertexai" in result.stdout
     assert "--project" in result.stdout
     assert "--location" in result.stdout
+    assert "global" in result.stdout
     assert "nano-banana-2.1" in result.stdout
     assert "nano-banana-2-1" in result.stdout
     assert "medium" in result.stdout
 
 
 def test_nano_banana_2_1_capabilities():
-    # Test nano-banana-2.1 (and alias nano-banana-2-1) mapping to gemini-nano-banana-2.1
-    # across 512px, 2K, 4K resolutions, 1:4 and 8:1 aspect ratios, --image-search, and --thinking-level medium
+    # nano-banana-2.1 supports 1K, 2K, 4K across extended ratios, --image-search,
+    # --thinking-level medium, and both interactions and models APIs.
     for alias in ("nano-banana-2.1", "nano-banana-2-1"):
-        for res, ratio in (("512px", "1:4"), ("2K", "8:1"), ("4K", "16:9")):
+        for res, ratio, api in (
+            ("1K", "1:4", "interactions"),
+            ("2K", "8:1", "models"),
+            ("4K", "16:9", "models"),
+        ):
             result = run_cli(
                 "-p", "test prompt",
                 "-f", "out.png",
                 "-m", alias,
                 "-r", res,
                 "-a", ratio,
+                "--api", api,
                 "--image-search",
                 "--thinking-level", "medium",
                 "--dry-run",
             )
-            assert result.returncode == 0, f"Unexpected failure for {alias} {res} {ratio}: {result.stderr}"
+            assert result.returncode == 0, f"Unexpected failure for {alias} {res} {ratio} ({api}): {result.stderr}"
             assert f"Model: gemini-nano-banana-2.1 ({alias})" in result.stdout
             assert f"Resolution: {res} | Aspect Ratio: {ratio}" in result.stdout
 
 
+def test_512px_resolution_rules():
+    # 512px / 512 is exclusive to nano-banana-2 (gemini-3.1-flash-image), not nano-banana-2.1
+    for res in ("512px", "512"):
+        accepted = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2", "-r", res, "--api", "models", "--dry-run")
+        assert accepted.returncode == 0, f"Expected nano-banana-2 to accept {res}: {accepted.stderr}"
+
+        rejected = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2.1", "-r", res, "--dry-run")
+        assert rejected.returncode != 0
+        assert "only supported by 'nano-banana-2'" in rejected.stderr
+
+
 def test_capability_validation_guards():
-    # 1. Nano Banana 2 Lite rejecting 2K and 4K resolutions and 512px
+    # 1. Nano Banana 2 Lite rejecting 2K, 4K, and 512px resolutions
     for invalid_res in ("2K", "4K", "512px"):
         res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana-2-lite", "-r", invalid_res, "--dry-run")
         assert res.returncode != 0
@@ -96,11 +130,20 @@ def test_capability_validation_guards():
     assert "Google Image Search Grounding (--image-search) is only supported by" in res.stderr
 
 
-def test_deprecated_nano_banana_v1_removed():
-    # Legacy 'nano-banana' (gemini-2.5-flash-image) must be rejected immediately
-    res = run_cli("-p", "test", "-f", "out.png", "-m", "nano-banana", "--dry-run")
-    assert res.returncode != 0
-    assert "invalid choice: 'nano-banana'" in res.stderr
+def test_deprecated_and_shutdown_models_rejected():
+    # Legacy Nano Banana v1 must be rejected with clear migration guidance
+    for legacy in ("nano-banana", "gemini-2.5-flash-image"):
+        res = run_cli("-p", "test", "-f", "out.png", "-m", legacy, "--dry-run")
+        assert res.returncode != 0
+        assert "Legacy or retired model" in res.stderr
+        assert "nano-banana-2.1" in res.stderr
+
+    # Shut-down Imagen models must fail fast with August 17, 2026 shutdown notice
+    for imagen in ("imagen-4.0-generate-001", "imagen-4.0-ultra-generate-001"):
+        res = run_cli("-p", "test", "-f", "out.png", "-m", imagen, "--dry-run")
+        assert res.returncode != 0
+        assert "August 17, 2026" in res.stderr
+        assert "nano-banana-2.1" in res.stderr
 
 
 def test_fail_fast_missing_credentials():
@@ -112,18 +155,35 @@ def test_fail_fast_missing_credentials():
             "GOOGLE_CLOUD_PROJECT",
             "GCP_PROJECT",
             "GOOGLE_GENAI_USE_VERTEXAI",
+            "GOOGLE_GENAI_USE_ENTERPRISE",
         )
     }
     res = run_cli("-p", "test", "-f", "out.png", env=clean_env)
     assert res.returncode != 0
-    assert "Error: GEMINI_API_KEY environment variable is not set and Vertex AI is not configured." in res.stderr
+    assert "GEMINI_API_KEY environment variable is not set" in res.stderr
+    assert "global" in res.stderr
+    assert "us-central1" not in res.stderr
     assert "CRITICAL FOR AGENTS: Fail fast." in res.stderr
+
+
+def test_save_output_and_mime_detection():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        nested_out = os.path.join(tmpdir, "nested", "sprites", "sheet.png")
+        save_output_image(nested_out, b"PNG_BYTES")
+        assert os.path.isfile(nested_out)
+        with open(nested_out, "rb") as f:
+            assert f.read() == b"PNG_BYTES"
+
+    assert detect_mime_type("hero.WEBP") == "image/webp"
+    assert detect_mime_type("photo.heic") == "image/heic"
 
 
 if __name__ == "__main__":
     test_banana_help()
     test_nano_banana_2_1_capabilities()
+    test_512px_resolution_rules()
     test_capability_validation_guards()
-    test_deprecated_nano_banana_v1_removed()
+    test_deprecated_and_shutdown_models_rejected()
     test_fail_fast_missing_credentials()
+    test_save_output_and_mime_detection()
     print("All banana CLI tests passed successfully!")

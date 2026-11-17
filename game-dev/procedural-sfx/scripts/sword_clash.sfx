@@ -1,0 +1,7 @@
+title "Steel Sword Clash"
+type sfx
+
+inst spark wave=noise noise_filter=0.92 vol=0.30 adsr=0.001,0.025,0.00,0.03 hpf=2200
+inst blade preset=sword_clash vol=0.32 mod_index=6.0->0.8
+track clink spark: spark:55ms R:195ms
+track ring  blade: 560Hz->210Hz:250ms

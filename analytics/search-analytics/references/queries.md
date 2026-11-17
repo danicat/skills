@@ -1,11 +1,11 @@
-# Search Analytics SQL Query Cookbook
+# Search analytics SQL query cookbook
 
 Execute these queries using `uv run scripts/search_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
 
 ---
 
-## 1. High-Opportunity Optimization Targets (High Impressions, Low CTR)
-Identifies search queries where your content ranks on page 1 (positions 1–10) but receives a below-average click-through rate, making them prime candidates for meta title and description optimization:
+## 1. High-opportunity targets (high impressions, low CTR)
+Identifies search queries where your content ranks on page 1 (positions 1 to 10) but receives a below-average click-through rate, making them prime candidates for meta title and description optimization:
 
 ```sql
 SELECT
@@ -14,7 +14,7 @@ SELECT
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-    ROUND(AVG(position), 1) AS avg_rank
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_rank
 FROM search_performance
 WHERE position <= 10
 GROUP BY query, page
@@ -25,7 +25,7 @@ LIMIT 20;
 
 ---
 
-## 2. Keyword Cannibalization Detection
+## 2. Keyword cannibalization detection
 Finds queries where multiple different landing pages compete against each other for search impressions:
 
 ```sql
@@ -45,7 +45,7 @@ LIMIT 15;
 
 ---
 
-## 3. Position-to-CTR Decay Curve
+## 3. Position-to-CTR decay curve
 Calculates the actual click-through rate distribution across Google Search ranking positions (Rank 1 through 10):
 
 ```sql
@@ -62,7 +62,7 @@ ORDER BY rank_bucket ASC;
 
 ---
 
-## 4. Mobile vs Desktop Traffic Split
+## 4. Mobile vs. desktop traffic split
 Compares search performance across device classes:
 
 ```sql
@@ -72,7 +72,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS clicks,
     ROUND(SUM(impressions), 0) AS impressions,
     ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-    ROUND(AVG(position), 1) AS avg_rank
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_rank
 FROM search_performance
 WHERE device != ''
 GROUP BY device
@@ -81,7 +81,7 @@ ORDER BY clicks DESC;
 
 ---
 
-## 5. Day-of-the-Week Traffic Trends
+## 5. Day-of-the-week traffic trends
 Evaluates whether search queries peak on weekdays or weekends:
 
 ```sql
@@ -90,7 +90,7 @@ SELECT
     COUNT(DISTINCT date) AS day_count,
     ROUND(AVG(total_clicks), 1) AS avg_clicks_per_day,
     ROUND(AVG(total_impressions), 0) AS avg_impressions_per_day,
-    ROUND(AVG(avg_ctr_pct), 2) AS avg_ctr_pct
+    ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS avg_ctr_pct
 FROM v_daily_summary
 GROUP BY day_of_week
 ORDER BY avg_clicks_per_day DESC;
@@ -98,25 +98,25 @@ ORDER BY avg_clicks_per_day DESC;
 
 ---
 
-## 6. Month-over-Month Growth Trajectory
-Tracks total organic search impressions, clicks, and average ranking by month:
+## 6. Month-over-month growth trajectory
+Tracks total unfiltered organic search impressions, clicks, and impression-weighted ranking by month:
 
 ```sql
 SELECT
-    strftime('%Y-%m', date) AS year_month,
+    year_month,
     COUNT(DISTINCT date) AS days_in_month,
-    ROUND(SUM(clicks), 0) AS total_clicks,
-    ROUND(SUM(impressions), 0) AS total_impressions,
-    ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS monthly_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_rank
-FROM search_performance
+    ROUND(SUM(total_clicks), 0) AS total_clicks,
+    ROUND(SUM(total_impressions), 0) AS total_impressions,
+    ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS monthly_ctr_pct,
+    ROUND(SUM(avg_position * total_impressions) * 1.0 / MAX(SUM(total_impressions), 1), 1) AS avg_rank
+FROM v_daily_summary
 GROUP BY year_month
 ORDER BY year_month DESC;
 ```
 
 ---
 
-## 7. Non-Branded Search Performance
+## 7. Non-branded search performance
 Filters out navigational and branded keywords to isolate pure organic search traffic:
 
 ```sql
@@ -126,7 +126,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
 FROM search_performance
 WHERE query != ''
   AND LOWER(query) NOT LIKE '%brand_name%'

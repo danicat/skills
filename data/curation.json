@@ -9,17 +9,6 @@
     "securityNote": "Snyk flags a Medium static alert for local Ebitengine/WASM build commands; Gen Trust Hub and Socket pass with 0 alerts.",
     "editorialNote": "Battle-tested architecture for zero-allocation 60 TPS Ebitengine v2 games and WebAssembly audio sync."
   },
-  "latest-version": {
-    "auditOverride": true,
-    "securityNote": "Snyk flags a Medium static alert because scripts/latest.js queries public package registries (npm, PyPI, Go proxy) over HTTPS; Socket and Gen Trust Hub confirm 0 supply-chain risks.",
-    "editorialNote": "Eliminates hallucinated package versions by querying live upstream registries before editing dependency files."
-  },
-  "pyhd": {
-    "auditOverride": true,
-    "ignoredCommits": ["32475be"],
-    "securityNote": "Snyk flags a Medium static alert because companion scripts run local uv and pytest commands; Gen Trust Hub and Socket pass cleanly.",
-    "editorialNote": "Originally planted in Feb 2026; unmaintained since initial creation aside from repo-wide metadata/template sweeps."
-  },
   "google-oss": {
     "auditOverride": true,
     "securityNote": "Clean across Gen Trust Hub and Socket; documents local addlicense header automation.",

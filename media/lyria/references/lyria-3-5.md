@@ -1,24 +1,26 @@
-# Lyria 3.5 (`lyria-3.5`) Model Card
+# Lyria 3.5 (`lyria-3.5`) model card
 
 ## Overview
+
 **Lyria 3.5** (`lyria-3.5`) is Google's flagship music generation model. It produces **44.1 kHz stereo audio**, full songs with structural arrangements (intro, verses, chorus, bridge, solo, outro), expressive vocal synthesis, and dynamic intensity shaping from text prompts or visual reference images.
 
 - **Model Code**: `lyria-3.5`
 - **Release Date**: Mid-2026
 - **Status**: Generally Available (GA)
+- **Vertex AI / Enterprise Location**: `global`
 - **Documentation**: [Google Developer Music Generation](https://ai.google.dev/gemini-api/docs/music-generation)
 
 ---
 
-## Technical Specifications
+## Technical specifications
 
 | Property | Value |
 | :--- | :--- |
 | **Input Modalities** | Text, Image (up to 10 reference images) |
 | **Output Modalities** | Audio (MP3 / WAV) and Text (Lyrics / Structure) |
 | **Input Token Limit** | 131,072 tokens |
-| **Audio Output Duration** | **Controllable multi-minute songs** (up to ~3 minutes) |
-| **Audio Quality** | 44.1 kHz stereo, 192 kbps bitrate |
+| **Audio Output Duration** | **Controllable multi-minute songs** (up to about 3 minutes) |
+| **Audio Quality** | 44.1 kHz stereo, 192 kbps MP3 or uncompressed WAV |
 | **Supported MIME Types** | `audio/mp3`, `audio/wav` |
 | **Supported Languages** | English, German, Spanish, French, Hindi, Japanese, Korean, Portuguese |
 | **Structural Controls** | Timestamps, BPM, Key, Section Tags, Dynamic Intensity |
@@ -26,9 +28,9 @@
 
 ---
 
-## Key Features & Capabilities
+## Key features and capabilities
 
-### 1. Structural Arrangement & Timestamp Control
+### 1. Structural arrangement and timestamp control
 Lyria 3.5 interprets structured prompt timelines to guide instrument entrances, transitions, vocal delivery, and dynamic swells:
 
 ```text
@@ -40,7 +42,7 @@ Lyria 3.5 interprets structured prompt timelines to guide instrument entrances, 
 [2:05 - 2:20] Outro: Slow guitar strumming gently fading to silence.
 ```
 
-### 2. User-Defined Lyrics & Section Tags
+### 2. User-defined lyrics and section tags
 Provide full song lyrics structured by section:
 
 ```text
@@ -55,33 +57,33 @@ We ignite the neon spark tonight
 Chasing dreams until the morning light
 ```
 
-### 3. Multimodal Image-to-Music Guidance
+### 3. Multimodal image-to-music guidance
 Supply up to 10 reference images (concept art, title screens, photos, storyboards) to direct the emotional palette, genre mood, and aesthetic tone of the composition.
 
-### 4. Clean Instrumental Backing Tracks
-Add `"Instrumental only, no vocals"` to synthesize background beds, game soundtracks, or podcast scoring without vocal bleed.
+### 4. Clean instrumental backing tracks
+Add `"Instrumental only, no vocals"` to synthesize background beds or ambient soundscapes without vocal bleed.
 
 ---
 
-## CLI & SDK Examples
+## CLI and SDK examples
 
-### 1. Python Script (`uv run scripts/lyria.py`) & `gemini-api` CLI
+### 1. Python script (`uv run scripts/lyria.py`) and `gemini-api` CLI
 
 ```bash
-# Generate with uv run scripts/lyria.py (supports GEMINI_API_KEY or Vertex AI / ADC)
+# Generate with uv run scripts/lyria.py (supports GEMINI_API_KEY or Gemini Enterprise / Vertex AI ADC)
 uv run scripts/lyria.py \
   -p "An atmospheric lo-fi jazz track at 85 BPM in E Minor. Instrumental only, no vocals." \
   -f lofi_track.mp3 \
   -m lyria-3.5 \
   --lyrics-file lofi_track_structure.txt
 
-# Or explicitly pass Vertex AI / Gemini Enterprise flags (ADC via gcloud auth application-default login)
+# Generate uncompressed WAV via Gemini Enterprise / Vertex AI (global location)
 uv run scripts/lyria.py \
-  --vertexai \
+  --enterprise \
   --project "${GOOGLE_CLOUD_PROJECT}" \
-  --location "${GOOGLE_CLOUD_LOCATION:-us-central1}" \
+  --location "${GOOGLE_CLOUD_LOCATION:-global}" \
   -p "An atmospheric lo-fi jazz track at 85 BPM in E Minor. Instrumental only, no vocals." \
-  -f lofi_track.mp3 \
+  -f lofi_track.wav \
   -m lyria-3.5
 
 # Or generate with gemini-api CLI from a prompt file
@@ -91,7 +93,7 @@ gemini-api music \
   --out lofi_track.mp3
 ```
 
-### 2. Full Song with Timestamps & Lyrics (Python Interactions API)
+### 2. Full song in WAV format with timestamps (Python Interactions API)
 
 ```python
 import base64
@@ -112,11 +114,11 @@ Instrumental only, no vocals.
 interaction = client.interactions.create(
     model="lyria-3.5",
     input=prompt,
-    response_format={"type": "audio"},
+    response_format={"type": "audio", "mime_type": "audio/wav"},
 )
 
 if interaction.output_audio:
-    with open("lofi_track.mp3", "wb") as f:
+    with open("lofi_track.wav", "wb") as f:
         f.write(base64.b64decode(interaction.output_audio.data))
 
 if interaction.output_text:
@@ -124,7 +126,7 @@ if interaction.output_text:
         f.write(interaction.output_text)
 ```
 
-### 3. Multimodal Concept-to-Soundtrack (Python)
+### 3. Multimodal concept-to-soundtrack (Python)
 
 ```python
 import base64

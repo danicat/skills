@@ -1,100 +1,99 @@
-# Threads (by Meta) Technical Copy Playbook
+# Threads (by Meta) technical copy playbook
 
-Comprehensive guide for writing builder, developer, and technical posts on **Threads**.
-
----
-
-## 1. Algorithm Dynamics & Ranking Factors
-
-Meta's Threads prioritizes **conversational depth, authentic builder vulnerability, and multi-turn discussions** over sterile marketing broadcasts.
-
-### Key Ranking Signals
-- **Replies & Multi-turn Discussions (Top Weight):** Receiving 10–25 meaningful replies within the first hour pushes content into the wider "For You" discovery feeds across Threads and Instagram.
-- **Outbound Replies:** Leaving high-signal technical replies on others' posts trains the algorithm on your topical authority.
-- **Dwell Time:** Maximized via multi-card carousels (Ray.so code cards, architecture diagrams) and clean micro-essays.
-- **The Link Myth:** Outbound links are **not** algorithmically suppressed on Threads. However, posts providing standalone native value convert 5x better than lone link drops.
+Guide for writing builder, developer, and technical posts on **Threads**.
 
 ---
 
-## 2. Platform Ergonomics & Specifications
+## 1. Algorithm dynamics and ranking factors
 
-| Feature | Specification | Best Practice for Tech Content |
+Threads prioritizes **conversational depth, candid builder lessons, and multi-turn replies** over corporate announcements.
+
+### Key ranking signals
+- **Replies and multi-turn threads (top weight):** Reaching `10` to `25` substantive replies in the first hour pushes posts into broader discovery feeds across Threads and Instagram.
+- **Outbound replies:** Leaving thoughtful technical comments on peers' posts builds topical distribution.
+- **Dwell time:** Boosted by multi-card carousels (code cards, architecture diagrams) and tight micro-essays.
+- **Outbound links:** External URLs are not penalized when paired with standalone native value inside the post body.
+
+---
+
+## 2. Platform ergonomics and specifications
+
+| Feature | Specification | Best practice |
 | :--- | :--- | :--- |
-| **Standard Post Limit** | **500 characters** | Keep core insight to 280–420 chars for rapid mobile scannability. |
-| **Rich Text Attachments** | Up to **10,000 characters** with markdown-like styling | Use for full code walkthroughs or incident post-mortems. |
-| **Carousel Media** | Up to **20 images/videos** | 1:1 or 4:5 aspect ratio dark-mode code cards (Ray.so) or architecture flows. |
-| **Topic Tags** | **Strict 1-Tag Rule** (Only the first `#tag` is indexed) | Use natural language tags with spaces (e.g. `#software engineering`, `#system design`). |
+| **Standard post cap** | **500 characters** | Keep insights around `280` to `420` chars for fast mobile scanning. |
+| **Rich text attachments** | Up to **10,000 characters** | Use for complete code walkthroughs or incident retros. |
+| **Carousel media** | Up to **20 images or videos** | Pair `1:1` or `4:5` dark-mode code cards with architecture diagrams. |
+| **Topic tags** | **Strict 1-tag rule** (only the first `#tag` indexes) | Use natural keywords with spaces (`#software engineering`, `#system design`). |
 
 ---
 
-## 3. High-Converting Copy Templates
+## 3. High-converting copy templates
 
-### Template A: The Micro-Tutorial / Code Optimization
+### Template A: Micro-tutorial or optimization
 ```text
-Most developers handle [problem] with [common approach].
+Most teams handle [problem] with [common pattern].
 
-Here is why that causes [issue, e.g., memory bloat / connection exhaustion] at scale:
+Here is why that breaks at [scale, such as memory bloat or lock exhaustion]:
 
-• [Point 1: Technical bottleneck]
+• [Point 1: Bottleneck]
 • [Point 2: Edge case risk]
 
-A cleaner approach:
-[Attach 1:1 Ray.so/Carbon Code Image]
+Cleaner fix:
+[Attach 1:1 dark-mode code image]
 
-This reduced our [metric] by [X%].
+Cut [metric] by [X%].
 
-How is your team handling this in production?
+How are you handling this in production?
 
 #software engineering
 ```
 
-### Template B: The Production Post-Mortem / Bug Retro
+### Template B: Incident post-mortem or bug retro
 ```text
-We had an incident that knocked out [service/feature] for 45 minutes today.
+An unnoticed config bug knocked out [service] for 45 minutes today.
 
-Here is the exact root cause and how we fixed it:
+Root cause and fix:
 
-1. What happened: [Brief failure context]
-2. The trigger: [Specific code/query flaw]
-3. The mitigation: [Immediate hotfix]
-4. The long-term fix: [Architectural adjustment]
+1. Impact: [Brief failure scope]
+2. Trigger: [Specific query or flag bug]
+3. Mitigation: [Immediate hotfix]
+4. Permanent fix: [Architectural guardrail]
 
-Full retro notes + post-mortem doc in the link below: [URL]
+Full post-mortem notes: [URL]
 
-What’s the most subtle bug you’ve had to debug recently?
+What's the sneakiest bug you've chased this month?
 
 #devops
 ```
 
-### Template C: The Open Source Feature Release
+### Template C: Open-source release
 ```text
-Shipping v2.4 of [Project Name] 🚀
+Shipped v2.4 of [Project Name] 🚀
 
-We completely rewrote the [component] engine.
+We rewrote the [component] engine from scratch.
 
-What's new:
-⚡ 3x faster [action/metric]
+What changed:
+⚡ 3x faster [action]
 🛠️ Zero-config support for [Framework/DB]
-📦 40% smaller bundle size
+📦 40% smaller bundle
 
-Demo screencast attached below.
+Demo clip attached below.
 
-GitHub repo + documentation: [Link]
+Source and release notes: [Link]
 
 #open source
 ```
 
 ---
 
-## 4. Threads Do's & Don'ts
+## 4. Threads do's and don'ts
 
 ### ❌ Don'ts
-- **No Engagement Bait:** Phrases like *"Comment LINK to get the repo"* or *"Like if you agree"* trigger algorithmic downranking filters.
-- **No Hashtag Stuffing:** Never use multiple hashtags (`#golang #dev #coding`). Only the first tag is indexed.
-- **No Uncontextualized URL Drops:** Lone links with "Check out my new post" get near-zero distribution.
+- **No engagement bait:** Phrases like *"Comment LINK to get the repo"* trigger Meta downranking filters.
+- **No hashtag stuffing:** Only the first `#tag` indexes as a topic tag.
+- **No bare URL drops:** Standalone links without technical explanation get minimal reach.
 
 ### ✅ Do's
-- Deliver 100% standalone value natively in the 500-char post.
-- Use exactly **1 natural-language Topic Tag** at the bottom.
-- End posts with concrete, experience-based technical questions.
-- Engage and reply to comments within the first 30–60 minutes.
+- Deliver complete standalone value inside the `500`-character body.
+- End with `1` natural-language topic tag.
+- Close with concrete engineering questions and reply actively within the first `30` to `60` minutes.

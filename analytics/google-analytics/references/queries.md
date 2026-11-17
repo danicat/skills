@@ -1,10 +1,10 @@
-# Google Analytics 4 SQL Query Cookbook
+# Google Analytics 4 SQL query cookbook
 
 Execute these queries using `uv run scripts/google_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
 
 ---
 
-## 1. Top Articles by Reading Depth & Active Dwell Time
+## 1. Top articles by reading depth and active dwell time
 
 ```sql
 SELECT
@@ -22,7 +22,7 @@ LIMIT 15;
 
 ---
 
-## 2. Path & Subdirectory Performance Comparison (e.g. `/docs/`, `/blog/`, `/tutorials/`)
+## 2. Path and subdirectory performance comparison
 
 ```sql
 SELECT
@@ -38,7 +38,7 @@ SELECT
     SUM(total_users) AS unique_readers,
     ROUND(SUM(total_dwell_min), 1) AS total_dwell_minutes,
     ROUND(SUM(total_dwell_min) * 60.0 / MAX(SUM(total_users), 1), 1) AS avg_dwell_per_user_sec,
-    ROUND(AVG(avg_bounce_pct), 1) AS avg_bounce_pct
+    ROUND(SUM(avg_bounce_pct * total_sessions) / MAX(SUM(total_sessions), 1), 1) AS avg_bounce_pct
 FROM v_page_performance
 GROUP BY content_category
 ORDER BY total_page_views DESC;
@@ -46,7 +46,7 @@ ORDER BY total_page_views DESC;
 
 ---
 
-## 3. Geographic Audience Distribution (Top Countries by Engagement)
+## 3. Geographic audience distribution
 
 ```sql
 SELECT
@@ -55,7 +55,7 @@ SELECT
     SUM(active_users) AS total_users,
     SUM(screen_page_views) AS total_page_views,
     ROUND(SUM(user_engagement_duration) / MAX(SUM(active_users), 1), 1) AS avg_dwell_sec,
-    ROUND(AVG(bounce_rate) * 100, 1) AS avg_bounce_pct
+    ROUND(SUM(bounce_rate * sessions) * 100.0 / MAX(SUM(sessions), 1), 1) AS avg_bounce_pct
 FROM daily_pages
 WHERE country IS NOT NULL AND country != '' AND country != '(not set)'
 GROUP BY country
@@ -65,7 +65,7 @@ LIMIT 10;
 
 ---
 
-## 4. Top Traffic Channels & Conversion Engagement Rate
+## 4. Top traffic channels and conversion engagement rate
 
 ```sql
 SELECT
@@ -74,9 +74,9 @@ SELECT
     SUM(total_sessions) AS sessions,
     SUM(total_users) AS users,
     SUM(total_new_users) AS new_users,
-    ROUND(AVG(engagement_rate_pct), 1) || '%' AS avg_engagement_rate,
-    ROUND(AVG(avg_dwell_sec), 1) || 's' AS avg_dwell,
-    ROUND(AVG(engaged_dwell_sec), 1) || 's' AS engaged_dwell,
+    ROUND(SUM(total_engaged_sessions) * 100.0 / MAX(SUM(total_sessions), 1), 1) || '%' AS avg_engagement_rate,
+    ROUND(SUM(total_dwell_min) * 60.0 / MAX(SUM(total_sessions), 1), 1) || 's' AS avg_dwell,
+    CASE WHEN SUM(total_engaged_sessions) > 0 THEN ROUND(SUM(total_dwell_min) * 60.0 / SUM(total_engaged_sessions), 1) ELSE 0.0 END || 's' AS engaged_dwell,
     ROUND(SUM(total_dwell_min), 1) AS total_dwell_min
 FROM v_channel_performance
 GROUP BY channel_group, source_medium
@@ -86,7 +86,7 @@ ORDER BY sessions DESC;
 
 ---
 
-## 5. Day-of-the-Week Traffic Trends
+## 5. Day-of-the-week traffic trends
 
 ```sql
 SELECT
@@ -111,7 +111,7 @@ ORDER BY avg_sessions DESC;
 
 ---
 
-## 6. Month-over-Month Growth Trajectory
+## 6. Month-over-month growth trajectory
 
 ```sql
 SELECT
@@ -127,7 +127,7 @@ ORDER BY month DESC;
 
 ---
 
-## 7. Outbound Exit Clicks to Developer & External Resources
+## 7. Outbound exit clicks to external resources
 
 ```sql
 SELECT
@@ -142,7 +142,7 @@ LIMIT 15;
 
 ---
 
-## 8. Discovery Channel Split: Organic Search vs. Generative AI vs. Social Referrals
+## 8. Discovery channel split: organic search vs. generative AI vs. social referrals
 
 GA4's built-in `session_default_channel_group` groups LLM assistants (`chatgpt.com`, `perplexity.ai`, `claude.ai`, `gemini.google.com`, `copilot.microsoft.com`) under generic `Referral` or `Organic Search`. This query splits discovery traffic into explicit buckets and compares raw session dwell against engaged session dwell:
 
@@ -191,7 +191,7 @@ ORDER BY sessions DESC;
 
 ---
 
-## 9. Unengaged `Direct` Traffic & Automated Scraper Outlier Detection
+## 9. Unengaged `Direct` traffic and scraper outlier check
 
 Headless crawlers, link previewers, and cloud monitors typically omit the HTTP `Referer` header (landing in `Direct`) and exit without firing a second interaction event (`<2s` dwell and `<10%` engagement rate). Run this diagnostic before computing site-wide averages to identify synthetic `Direct` spikes by country and month:
 
@@ -217,7 +217,7 @@ ORDER BY direct_sessions DESC;
 
 ---
 
-## 10. Custom & Enhanced Telemetry Event Inventory
+## 10. Custom and enhanced telemetry event inventory
 
 GA4 stores both automatic lifecycle events and custom instrumentation in `daily_events`. Run this inventory query to discover all enhanced and custom interaction events (such as `scroll`, `click`, `code_copy`, `scroll_25`, `scroll_50`, `scroll_75`, or `form_submit`) alongside the number of distinct pages where each event fired:
 
@@ -237,7 +237,7 @@ ORDER BY total_events DESC;
 
 ---
 
-## 11. Page-Level Reading Funnel (Dwell Time + Scroll Depth + Outbound Clicks)
+## 11. Page-level reading funnel (dwell time, scroll depth, and outbound clicks)
 
 Because GA4 calculates `user_engagement_duration` as the time elapsed between `session_start` and the final engagement event, single-page sessions that exit without a second event record `0s` duration. Joining `daily_pages` with `daily_events` (`scroll` and custom events) and `outbound_clicks` provides a complete reading funnel per page:
 

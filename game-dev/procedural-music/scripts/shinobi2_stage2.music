@@ -1,0 +1,234 @@
+title "The Super Shinobi II / Shinobi III - Stage 2 Horse (Idaten - Morihiko Akiyama - 98-Bar VGM Hardware Register Reproduction)"
+type song
+tempo allegro 150
+time 4/4
+
+inst fm_lead        wave=ym2612_guitar gm=overdriven_guitar
+inst fm_lead_echo   wave=ym2612_rhythm_guitar gm=distortion_guitar
+inst high_bell      wave=ym2612_bell gm=vibraphone
+inst fm_epiano      wave=ym2612_epiano gm=epiano1
+inst fm_brass_pad   wave=ym2612_brass gm=brass_section
+inst choir_pad      wave=ym2612_strings gm=string_ensemble_1
+inst psg_arp        wave=psg_arp gm=orchestral_harp
+inst psg_arp_echo   wave=psg_square gm=clavinet
+inst fm_bass        wave=ym2612_bass gm=electric_bass
+inst sub_bass       wave=sub_bass gm=slap_bass_1
+inst kick           wave=kick vol=0.19 pan=0.00
+
+pattern lead_main =
+  (F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 C5:8
+  Ab5:16 C5:8 G5:16 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8
+  Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5 Bb4 C#4 F4:4.~16 C5:8. Bb4 Ab4:8 G4:8.
+  Ab4 Bb4:8 Eb4:2 C4:16 F4:4.~16 C5:8. Bb4 Ab4:8 G4:8. Ab4 Bb4:8 Eb5:2 G4:16 F5:4.~16 C6:8. Bb5
+  Ab5:8 G5:8. Ab5 Bb5:8 Eb5:2 G4:16 F5:4.~16 C6:8. Bb5 Ab5:8 Eb5:4. R:2~8 C#6:2~8. Eb6:4~16
+  G5:2.~16 F5:16 Ab5 C6 F5 G5:8 F5 C#6:16 Ab5 G5:2~16 Ab5:8. G5 Ab5:8 Bb5:4 G5 F5:2~8. Bb5:4~16
+  G5:2 Ab5:8. G5 Ab5:8 F5:8. C#5 F5:8 Ab5:8. G5 Ab5:8 Bb5:2 Eb6 (F5:8 Bb5 C6)*5 F5 (Eb6:8 Ab5
+  Bb5)*5 Eb6 G4:1 Eb4 C#4 R:16 Ab4:4.~16 G4:8 Ab4:4 Bb4:8 Ab4:2~16 C4:8. Eb4:8 F4 Bb4:8. C5
+  Eb5:8 F5:8. Bb5 C6:8 F#5:2~8 F5:8 Eb6 C6 F5 Eb6:16 C6 Bb5:8 Ab5:4 F5:8 Ab5 Bb5 G4:2~16 Ab5:8.
+  G5:8 Eb5 Bb4:8. C5 Eb5:8 F5:8. Bb5 C6:8 C#6:2~8 F5:16 Eb6:8. F5:8 Bb5:1 (R:16 Ab4:2.~8. R:16
+  G4:4.~16 C4:8. Eb4 G4:8)*3 R:16 Ab4:2.~8. R:16 G4:4.~16 C5:8. Eb5 G5:8)*2 F5:16 C5:8 G5:16
+  C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 C5:8 Ab5:16 C5:8 G5:16
+  C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16 Eb4:8
+  Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5 Bb4
+pattern lead_fade =
+  (C#4:16 F4:4.~16 C5:8. Bb4 Ab4:8 G4:8. Ab4 Bb4:8 Eb4:2 C4:16 F4:4.~16 C5:8. Bb4 Ab4:8 G4:8.
+  Ab4 Bb4:8 Eb5:2 G4:16 F5:4.~16 C6:8. Bb5 Ab5:8 G5:8. Ab5 Bb5:8 Eb5:2)@vol=1.000->0.005
+
+pattern echo_main =
+  R:16 (F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 (Ab5:16 C5:8)*2 Bb5:16 (C5:8
+  Ab5:16)*2 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16
+  Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4 B4 (Ab5:16 Bb4)*2 D4 F4:4.~16 C5:8. Bb4 Ab4:16 G4:8. Ab4 G4:16
+  Bb4:8 Eb4:2 C4:16 F4:4.~16 C5:8. Bb4 Ab4:16 A4 G4:8 Ab4:8. G4:16 Bb4:8 Eb5:2 G4:16 F5:4.~16
+  C6:8. Bb5 Ab5:16 G5:8. Ab5 G5:16 Bb5:8 Eb5:2 G4:16 F5:4.~16 C6:8. Bb5 Ab5:8 Eb5:4. R:2~8
+  C#6:2~8. Eb6:4~16 G5:2.~16 F5:16 Ab5 C#6 F5 G5:8 F5 C#6:16 A5 G5:2 Ab5:8. A5:16 G5:8 Ab5:8.
+  Bb5:4 G5 F5:2~8. Bb5:4~16 G5:4.~16 Ab5:8. A5:16 G5:8 Ab5:8. F5 C#5 F5:8 Ab5 A5:16 G5:8 Ab5:8.
+  Bb5:2 Eb6 (F5:8 Bb5 C6)*5 F5:16 F#5 (Eb6:8 Ab5 Bb5)*5 Eb6 G4:1 Eb4 C#4 R:16 Ab4:4. A4:16 G4
+  Ab4:4~16 Bb4:8 Ab4:2 A4:16 C4:8. Eb4:8 F4 Bb4:8. C5 Eb5:8 F5:8. Bb5 C6:16 C#6 F#5:2~16 G5:16
+  F5 F#5 Eb6:8 C6 F5 Eb6:16 C6 Bb5:8 Ab5:4 F5:8 Ab5 Bb5 G4:2 Ab4:16 Ab5:8 A5:16 G5:8 Eb5 Bb4:8.
+  C5 Eb5:8 F5:8. Bb5 C6:16 C#6:2~8. F5:16 Eb6:8. F5:8 Bb5:1 R:16 Ab4:2.~8. R:16 G4:4.~16 C4:8.
+  Eb4 G4:8 R:16 Ab4:2.~8. R:16 G4:4.~16 C4:8 C#4:16 Eb4:8. G4:8 R:16 Ab4:2.~8. R:16 G4:4.~16
+  C4:8. Eb4 G4:8 R:16 Ab4:2.~8. R:16 G4:4.~16 C5:8 C#5:16 Eb5:8. G5:8)*2 F5:16 C5:8 G5:16 C5:8
+  Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 (Ab5:16 C5:8)*2 Bb5:16 (C5:8 Ab5:16)*2 C5 Ab5 C5 F5 C5:8
+  G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4
+  B4 Ab5 Bb4 Ab5
+pattern echo_fade =
+  (Bb4:16 D4 F4:4.~16 C5:8. Bb4 Ab4:16 G4:8. Ab4 G4:16 Bb4:8 Eb4:2 C4:16 F4:4.~16 C5:8. Bb4
+  Ab4:16 A4 G4:8 Ab4:8. G4:16 Bb4:8 Eb5:2 G4:16 F5:4.~16 C6:8. Bb5 Ab5:16 G5:8. Ab5 G5:16 Bb5:8
+  Eb5:4.~16)@vol=1.000->0.005
+
+pattern bell_main =
+  (F6:16 C6:8 G6:16 C6:8 Ab6:16 C6:8 G6:16 C6:8 F6:16 (C6:16 G6)*2 C6:8 Ab6:16 C6:8 Bb6:16 C6:8
+  Ab6:16 C6:8 G6:16 C6 Ab6 C6 F6 C6:8 G6:16 C6:8 Ab6:16 C6:8 G6:16 C6:8 F6:16 C6 G6 C6 Eb6 C6:8
+  Ab6:16 Eb5:8 Bb6:16 Eb5:8 Eb6:16 Bb5:8 G6:16 Bb5 Ab6 Bb5 C#5 F5:4.~16 C6:8. Bb5 Ab5:8 G5:8.
+  Ab5 Bb5:8 Eb5:2 C5:16 F5:4.~16 C6:8. Bb5 Ab5:8 G5:8. Ab5 Bb5:8 Eb6:2 G5:16 F6:4.~16 C7:8. Bb6
+  Ab6:8 G6:8. Ab6 Bb6:8 Eb6:2 G5:16 F6:4.~16 C7:8. Bb6 Ab6:8 Eb6:4. R:2~8 C#6:2~8. Eb6:4~16
+  G6:2.~16 F6:16 Ab6 C7 F6 G6:8 F6 C#6:16 Ab6 G6:2~16 Ab6:8. G6 Ab6:8 Bb6:4 G6 F6:2~8. Bb6:4~16
+  G6:2 Ab6:8. G6 Ab6:8 F6:8. C#6 F6:8 Ab6:8. G6 Ab6:8 Bb6:2 Eb6 (F6:8 Bb6 C7)*5 F6 (Eb6:8 Ab6
+  Bb6)*5 Eb6 G5:1 Eb5 C#5 R:16 Ab5:4.~16 G5:8 Ab5:4 Bb5:8 Ab5:2~16 C5:8. Eb5:8 F5 Bb5:8. C6
+  Eb6:8 F6:8. Bb6 C7:8 F#6:2~8 F6:8 Eb6 C7 F6 Eb6:16 C7 Bb6:8 Ab6:4 F6:8 Ab6 Bb6 G5:2~16 Ab6:8.
+  G6:8 Eb6 Bb5:8. C6 Eb6:8 F6:8. Bb6 C7:8 C#6:2~8 F6:16 Eb6:8. F6:8 Bb6:1 (R:16 Ab5:2.~8. R:16
+  G5:4.~16 C5:8. Eb5 G5:8)*3 R:16 Ab5:2.~8. R:16 G5:4.~16 C6:8. Eb6 G6:8)*2 F6:16 C6:8 G6:16
+  C6:8 Ab6:16 C6:8 G6:16 C6:8 F6:16 (C6:16 G6)*2 C6:8 Ab6:16 C6:8 Bb6:16 C6:8 Ab6:16 C6:8 G6:16
+  C6 Ab6 C6 F6 C6:8 G6:16 C6:8 Ab6:16 C6:8 G6:16 C6:8 F6:16 C6 G6 C6 Eb6 C6:8 Ab6:16 Eb5:8
+  Bb6:16 Eb5:8 Eb6:16 Bb5:8 G6:16 Bb5 Ab6 Bb5
+pattern bell_fade =
+  (C#5:16 F5:4.~16 C6:8. Bb5 Ab5:8 G5:8. Ab5 Bb5:8 Eb5:2 C5:16 F5:4.~16 C6:8. Bb5 Ab5:8 G5:8.
+  Ab5 Bb5:8 Eb6:2 G5:16 F6:4.~16 C7:8. Bb6 Ab6:8 G6:8. Ab6 Bb6:8 Eb6:2)@vol=1.000->0.005
+
+pattern epiano_main =
+  ((C4:1 Eb4)*2 Bb3:2. F4:4 Eb4:1 Bb3:2. F4:4 G4:8. Ab4 G4:4. F4:8 Eb4 Bb3:2. F4:4 Eb4:1 Bb3:2.
+  F4:2~8 R:2~8. C#4:1 Eb4:2.~8 D4:16 Eb4 C#4:2~16 Bb3:4. R:16 C4:4.~16 Ab3:8 G3:16 Bb3:8. C4:8
+  R:16 C#4:2.~8. R:16 Eb4:2.~8. R:16 C#4:2~16 Bb3:16 B3:8 Bb3:8. R:16 Bb3:2~8 Ab3:8. Bb3:8 F4:1
+  Eb4 C#4:2~16 C4:16 C#4:4. Eb4:1~1 C4:1 Bb3 R:16 C#4:2~16 Eb4:4 F4:1~8 Eb4:1 C#4:2~16 C4:16
+  C#4:4 C4:8 Eb4:1~1 C4:1 Bb3 R:16 C#4:2~16 Eb4:4 F4:8 R:16 F4:2.~8. R:16 Eb4:4.~16 Bb3:8. C4
+  Eb4:8 R:16 F4:2.~8. R:16 Eb4:4.~16 Bb3:8. C#4 Eb4:8 R:16 F4:2.~8. R:16 Eb4:4.~16 Bb3:8. C4
+  Eb4:8 R:16 F4:2.~8. R:16 Eb4:4.~16 Bb4:8. C#4 Eb4:8)*2 (C4:1 Eb4)*2
+pattern epiano_fade =
+  (Bb3:2. F4:4 Eb4:1 Bb3:2. F4:4 G4:8. Ab4 G4:4. F4:8 Eb4 Bb3:2. F4:4 Eb4:1)@vol=1.000->0.005
+
+pattern brass_main =
+  ((C4:1 Eb4)*2 F4:2. Bb4:4 G4:8. Ab4 G4 Ab4:16 G4:4 Ab4:16 G4 F4:2. Bb4:4 Eb5:2. C#5:8 C5 F4:2.
+  Bb4:4 G4:8. Ab4 G4 Ab4:16 G4:4 Ab4:16 G4 F4:2. Bb4:4 Eb5:4. R:2~8. F3:1~1 F4:2~16 C#4:4. R:16
+  Eb4:4.~16 Bb3:8. C#4 Eb4:8 (R:16 F3:2.~8.)*2 R:16 F4:2~16 C#4:4. R:16 Eb4:2~8 C#4:8. Eb4:8
+  Ab4:8. G4:16 Ab4:4~16 G4:16 Ab4:4 G4:16 Ab4 G4:8. Ab4:16 G4:4~16 Ab4:16 G4:4 Ab4:16 G4 F#4:1
+  Ab4 G4 Eb4 C#4 R:16 Ab4:4.~16 G4:8 Ab4:4 Bb4:8 Ab4:2~16 A4:16 Ab4:4 A4:16 Ab4 G4:8. Ab4:16
+  G4:4~16 Ab4:16 G4:4 Ab4:16 G4 F#4:2~8 G4:8 F#4:4 Ab4:1 G4:2~16 Ab4:8. G4:4 Eb4:1 C#4 R:16
+  Ab4:4.~16 G4:8 Ab4:4 Bb4:8 (R:16 Ab4:2.~8. R:16 G4:4.~16 C4:8. Eb4 G4:8)*2 R:16 Ab3:2.~8. R:16
+  G3:4.~16 C3:8. Eb3 G3:8 R:16 Ab3:2.~8. R:16 G3:4.~16 C4:8. Eb4 G4:8)*2 (C4:1 Eb4)*2
+pattern brass_fade =
+  (F4:2. Bb4:4 G4:8. Ab4 G4 Ab4:16 G4:4 Ab4:16 G4 F4:2. Bb4:4 Eb5:2. C#5:8 C5 F4:2. Bb4:4 G4:8.
+  Ab4 G4 Ab4:16 G4:4 Ab4:16 G4)@vol=1.000->0.005
+
+pattern choir_main =
+  (F3:1 A3:16 Ab3:2~8. A3:16 Ab3:8. F3:1 Ab3:2. A3:16 Ab3:8. C#4:16 F4:4.~16 C4:8. Bb3 Ab4:8
+  G4:8. Ab4 Bb3:8 Eb4:2 C4:16 (F4:4.~16 C4:8. Bb3 Ab4:8 G4:8. Ab4 Bb3:8 Eb4:2 G4:16)*2 F4:4.~16
+  C4:8. Bb3 Ab4:8 Eb4:4. R:2~8 C#4:2~8. Eb4:4~16 G4:2.~16 F4:16 Ab4 C4 F4 G4:8 F4 C#4:16 Ab4 A3
+  G4:2 Ab4:8. G4 Ab4:8 Bb3:4 G4 F4:2~8. Bb3:4~16 G4:2 Ab4:8. G4 Ab4:8 F4:8. C#4 F4:8 Ab4:8. G4
+  Ab4:8 Bb3:2 Eb4:2~16 F4:2.~8. Eb4:1 C#4:2~16 C4:16 C#4:4. Eb4:1~1 C4:1 Bb3 R:16 C#4:2~16 Eb4:4
+  F4:2~8. C4:8. Eb4:8 F4 Bb3:8. C4 Eb4:8 F4:8. Bb3 C4:8 F#4:2~8 F4:8 Eb4 C4 F4 Eb4:16 C4 Bb3:8
+  Ab4:4 F4:8 Ab4 Bb3 Eb4:2~16 Ab4:8. G4:8 Eb4 Bb3:8. C4 Eb4:8 F4:8. Bb3 C4:8 C#4:2~8 F4:16
+  Eb4:8. F4:8 Bb3:4 (C#4:16 Bb3)*3 (Eb4:16 Bb3)*2 F4 Bb3 (R:16 F4:2.~8. R:16 Eb4:4.~16 Bb3:8. C4
+  Eb4:8 R:16 F4:2.~8. R:16 Eb4:4.~16 Bb3:8. C#4 Eb4:8)*2)*2 F3:1 A3:16 Ab3:2~8. A3:16 Ab3:8.
+  F3:1 Ab3:2. A3:16 Ab3:8.
+pattern choir_fade =
+  (C#4:16 F4:4.~16 C4:8. Bb3 Ab4:8 G4:8. Ab4 Bb3:8 Eb4:2 C4:16 F4:4.~16 C4:8. Bb3 Ab4:8 G4:8.
+  Ab4 Bb3:8 Eb4:2 G4:16 F4:4.~16 C4:8. Bb3 Ab4:8 G4:8. Ab4 Bb3:8 Eb4:2)@vol=1.000->0.005
+
+pattern arp_main =
+  (F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 C5:8
+  Ab5:16 C5:8 G5:16 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 (C5:16 Eb5
+  C5:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5 Bb4 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8
+  G5:16 C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 C5:8 Ab5:16 C5:8 G5:16 C5 Ab5 C5 F5 C5:8
+  G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5)*2 C5 Eb5:4~16 F5:16 C3:2~8 C#3:16 C#5:2.
+  Eb5:4~16 G5:2. Ab5:16 F5 Ab5 C#5 F5 G5:8 F5 C#5:16 A5:8 G5:4. Ab5:8. A5:8 G5:16 Ab5:4 Bb5 G5
+  F5:2~8. Bb5:4~16 G5:4. Ab5:8. A5:8 G5:16 Ab5:4 F5:8. C#5 F5:8 Ab5:16 A5:8 G5:16 Ab5:4 Bb5:2
+  Eb5:4. F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16
+  C5:8 Ab5:16 C5:8 G5:16 C5 Ab5 C5 F#5 C#5:8 Eb5:16 C#5:4~16 C6:16 C#5:4 Eb5:16 C#5 Eb5 Ab4:8
+  Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 (Bb4:8 Ab5:16)*2 F5 C5:8 G5:16 C5:8 A5:16 C5:8 G5:16 C5:8
+  F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 (C5:8 Ab5:16)*2 (Eb5:16 Bb5)*2 (C#5:8 Ab5:16 C#5:8
+  Bb5:16)*2 C#5 Ab5 C#5 Eb5 Ab4:8 (Ab5:16 Eb4:8)*2 Eb5:16 Bb4:8 Ab5:16 Eb4:8 Eb5:16 F5 (C5:8
+  Ab5:16)*2 C5:8 G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 C5:8 Ab5:16 C5:8 G5:16 C5
+  Ab5 C5 F#5 C#5:8 Eb5:16 C#5:4~16 C6:16 C#5:4 Eb5:16 C5 Eb5 Ab4:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8
+  Eb5:16 (Bb4:8 Ab5:16)*2 F5 C5:8 G5:16 C5:8 A5:16 C5:8 Ab5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8
+  Ab5:16 C5:8 Bb5:16 (C5:8 Ab5:16)*2 (Eb5:16 Bb5)*2 (C#5:8 Ab5:16 C#5:8 Bb5:16)*2 C#5 Ab5 C#5
+  Eb5 Ab4:8 (Ab5:16 Eb4:8)*2 Eb5:16 Bb4:8 Ab5:16 Eb4:8 Eb5:16 C3 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8.
+  C5 Eb5:8 C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8. C#5 Eb5:8 C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8.
+  C5 Eb5:8 C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb5:8. C#5 Eb5:8)*2 F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8
+  G5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 C5:8 Ab5:16 C5:8 G5:16 C5 Ab5 C5 F5 C5:8
+  G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16
+  Bb4:8 G5:16 Bb4 Ab5 Bb4
+pattern arp_fade =
+  (F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 C5:8
+  Ab5:16 C5:8 G5:16 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 Eb5 C5:8
+  Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5 Bb4 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16
+  C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 C5:8 Ab5:16 C5:8 G5:16 C5 Ab5
+  C5)@vol=1.000->0.005
+
+pattern arpe_main =
+  R:16 (F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 (Ab5:16 C5:8)*2 Bb5:16 (C5:8
+  Ab5:16)*2 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16
+  Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4 B4 (Ab5:16 Bb4)*2 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8
+  F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 (C5:8 G5:16)*2 C5 G5 C5 F5 C5:8 G5:16 C5:8 Ab5:16
+  C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 Eb5 C5:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5
+  Bb4 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 (C5:8
+  G5:16)*2 C5 G5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C#5 Eb5:4~16 F5:16
+  C3:2~16 C#3:8 C#5:2. Eb5:4~16 G5:2~8. Ab5:8 F5:16 A5 C#5 F5 G5:8 F5 C#5:16 A5 Bb5 G5:4~16
+  Ab5:8. A5 Ab5:4 G5:16 Bb5:4 G5 F5:2~8. Bb5:4~16 G5 Ab5:8. A5 Ab5:4~16 F5:8. C#5 F5:8 A5 Bb5:16
+  Ab5:4~16 Bb5:2 Eb5:4. F5:16 (C5:8 Ab5:16)*3 C5:8 F5:16 C5 Ab5 C5 (G5:16 C5:8)*2 Bb5:16 (C5:8
+  G5:16)*2 C5 A5 C#5 F#5 C#5:8 Eb5:16 C#5:4 C5:16 C#6 C#5:4 Eb5:16 C#5 Eb5 Ab4:8 Ab5:16 Eb4:8
+  Bb5:16 Eb4:8 Eb5:16 Bb4:8 Ab5:16 Bb4:8 A5:16 F5 C5:8 G5:16 C5:8 A5:16 C5:8 G5:16 C5:8 F5:16
+  (C5:16 G5)*2 C5:8 Ab5:16 C5:8 Bb5:16 (C5:8 Ab5:16)*2 (Eb5:16 Bb5)*2 (C#5:8 Ab5:16 C#5:8
+  Bb5:16)*2 C#5 Ab5 C#5 Eb5 Ab4:8 (Ab5:16 Eb4:8)*2 Eb5:16 Bb4:8 Ab5:16 Eb4:8 Eb5:16 F5 (C5:8
+  Ab5:16)*3 C5:8 F5:16 C5 Ab5 C5 G5 C5:8 A5:16 C5:8 Bb5:16 C5:8 A5:16 C5:8 G5:16 C5 A5 C#5 F#5
+  C#5:8 Eb5:16 C#5:4 C5:16 C#6 C#5:8. (C5:16 Eb5)*2 Ab4:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8
+  Ab5:16 Bb4:8 G5:16 F5 C5:8 G5:16 C5:8 A5:16 C5:8 Ab5:16 C5:8 F5:16 (C5:16 G5)*2 C5:8 Ab5:16
+  C5:8 Bb5:16 (C5:8 Ab5:16)*2 (Eb5:16 Bb5)*2 (C#5:8 Ab5:16 C#5:8 Bb5:16)*2 C#5 Ab5 C#5 Eb5 Ab4:8
+  (Ab5:16 Eb4:8)*2 Eb5:16 Bb4:8 Ab5:16 Eb4:8 Eb5:16 C3 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8. C5 Eb5:8
+  C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8. C#5 Eb5:8 C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb4:8. C5 Eb5:8
+  C3:16 F5:2.~8. C3:16 Eb5:4.~16 Bb5:8. C#5 Eb5:8)*2 F5:16 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16
+  C5:8 F5:16 C5 G5 C5 (Ab5:16 C5:8)*2 Bb5:16 (C5:8 Ab5:16)*2 C5 Ab5 C5 F5 C5:8 G5:16 C5:8 Ab5:16
+  C5:8 G5:16 C5:8 F5:16 C5 G5 C5 Eb5 C5:8 Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4 B4 Ab5 Bb4 Ab5
+pattern arpe_fade =
+  (Bb4:16 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16
+  (C5:8 G5:16)*2 C5 G5 C5 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16 C5:8 F5:16 C5 Ab5 C5 Eb5 C5:8
+  Ab5:16 Eb4:8 Bb5:16 Eb4:8 Eb5:16 Bb4:8 G5:16 Bb4 Ab5 Bb4 F5 C5:8 G5:16 C5:8 Ab5:16 C5:8 G5:16
+  C5:8 F5:16 C5 Ab5 C5 G5 C5:8 Ab5:16 C5:8 Bb5:16 (C5:8 G5:16)*2 C5 G5)@vol=1.000->0.005
+
+pattern bass_main =
+  (F2:1 A2:16 Ab2:2~8. A2:16 Ab2:8. F2:1 Ab2:2. A2:16 Ab2:8. Bb2 (R:16 Bb2:4 R:16 Bb2:2~8)*2
+  R:16 Bb2:4 R:16 Bb2:4.~16 Eb2:8. R:16 Eb2:4~16 R:16 C#2:8. Eb2 Bb2 (R:16 Bb2:4 R:16 Bb2:2~8)*2
+  R:16 Bb2:4 R:16 Bb2:4.~16 C#2:8. Eb2:8 R:2~8 Bb2:4 R:16 Bb2:8 R:8. Bb2:8 R Bb2 Eb3:4 R:16
+  Eb3:8 R:8. C#3:8 R Eb3 D3:16 C#3:8. R:16 C#3:8 R:8. C#3:8 R C#3 Eb3:4 R Eb3:8 R:16 C#3:4 Eb3:8
+  Bb2:8. R:16 Bb2:8 R:8. Bb2:8 R Bb2 Eb3:4 R:16 Eb3:8 R:8. Eb3:8 R Eb3 C#3:4 R:16 C#3:8 R:8.
+  C#3:8 R C#3 Eb3:4 R:16 Eb3:4 Bb2:8. C#3 Eb3:8 F2:8. R:16 F2:4 R:16 F2:2~8 R:16 F2:4 R:16
+  F2:4.~16 Eb2:8. R:16 Eb2:4 R:16 Eb2:2~8 R:16 Eb2:4 R:16 Eb2:4.~16 F2:8. R:16 F2:4 R:16 F2:2~8
+  R:16 F2:4 R:16 F2:4.~16 C#2:8. R:16 C#2:4 R:16 C#2:2~8 R:16 C#2:4 R:16 Eb2:4 F2:4. R:16 F2:4
+  R:16 F2:2~8 R:16 F2:4 R:16 F2:4.~16 Eb2:8. R:16 Eb2:4 R:16 Eb2:2~8 R:16 Eb2:4 R:16 Eb2:4.~16
+  F2:8. R:16 F2:4 R:16 F2:2~8 R:16 F2:4 R:16 F2:4.~16 C#2:8. R:16 C#2:4 R:16 C#2:2~8 R:16 C#2:4
+  R:16 Eb2:4 F2:8. Bb2 (R:16 Bb2:4.~16)*2 R:16 Bb2:4~16 R:16 Bb2:2~16 R:16 Bb2:4.~16 R:16 Bb2:4
+  Eb2:8. R:16 Eb2:4~16 R:16 D2 C#2:8. Eb2:16 Bb2:4 (R:16 Bb2:4.~16)*2 R:16 Bb2:4~16 R:16
+  Bb2:2~16 R:16 Bb2:4.~16 R:16 Bb2:4 Eb2:8. R:16 Eb2:4~16 R:16 D2 C#2:8. Eb2:16 C3)*2 F2:1 A2:16
+  Ab2:2~8. A2:16 Ab2:8. F2:1 Ab2:2. A2:16 Ab2:8.
+pattern bass_fade =
+  (Bb2:8. (R:16 Bb2:4 R:16 Bb2:2~8)*2 R:16 Bb2:4 R:16 Bb2:4.~16 Eb2:8. R:16 Eb2:4~16 R:16 C#2:8.
+  Eb2 Bb2 R:16 Bb2:4 R:16 Bb2:2~8 R:16 Bb2:4 R:16 Bb2:4.~16)@vol=1.000->0.005
+
+pattern sub_main =
+  (F1:1 A1:16 Ab1:2~8. A1:16 Ab1:8. F1:1 Ab1:2. A1:16 Ab1:8. Bb1 (R:16 Bb1:4 R:16 Bb1:2~8)*2
+  R:16 Bb1:4 R:16 Bb1:4.~16 Eb1:8. R:16 Eb1:4~16 R:16 C#1:8. Eb1 Bb1 (R:16 Bb1:4 R:16 Bb1:2~8)*2
+  R:16 Bb1:4 R:16 Bb1:4.~16 C#1:8. Eb1:8 R:2~8 Bb1:4 R:16 Bb1:8 R:8. Bb1:8 R Bb1 Eb2:4 R:16
+  Eb2:8 R:8. C#2:8 R Eb2 D2:16 C#2:8. R:16 C#2:8 R:8. C#2:8 R C#2 Eb2:4 R Eb2:8 R:16 C#2:4 Eb2:8
+  Bb1:8. R:16 Bb1:8 R:8. Bb1:8 R Bb1 Eb2:4 R:16 Eb2:8 R:8. Eb2:8 R Eb2 C#2:4 R:16 C#2:8 R:8.
+  C#2:8 R C#2 Eb2:4 R:16 Eb2:4 Bb1:8. C#2 Eb2:8 F1:8. R:16 F1:4 R:16 F1:2~8 R:16 F1:4 R:16
+  F1:4.~16 Eb1:8. R:16 Eb1:4 R:16 Eb1:2~8 R:16 Eb1:4 R:16 Eb1:4.~16 F1:8. R:16 F1:4 R:16 F1:2~8
+  R:16 F1:4 R:16 F1:4.~16 C#1:8. R:16 C#1:4 R:16 C#1:2~8 R:16 C#1:4 R:16 Eb1:4 F1:4. R:16 F1:4
+  R:16 F1:2~8 R:16 F1:4 R:16 F1:4.~16 Eb1:8. R:16 Eb1:4 R:16 Eb1:2~8 R:16 Eb1:4 R:16 Eb1:4.~16
+  F1:8. R:16 F1:4 R:16 F1:2~8 R:16 F1:4 R:16 F1:4.~16 C#1:8. R:16 C#1:4 R:16 C#1:2~8 R:16 C#1:4
+  R:16 Eb1:4 F1:8. Bb1 (R:16 Bb1:4.~16)*2 R:16 Bb1:4~16 R:16 Bb1:2~16 R:16 Bb1:4.~16 R:16 Bb1:4
+  Eb1:8. R:16 Eb1:4~16 R:16 D1 C#1:8. Eb1:16 Bb1:4 (R:16 Bb1:4.~16)*2 R:16 Bb1:4~16 R:16
+  Bb1:2~16 R:16 Bb1:4.~16 R:16 Bb1:4 Eb1:8. R:16 Eb1:4~16 R:16 D1 C#1:8. Eb1:16 C2)*2 F1:1 A1:16
+  Ab1:2~8. A1:16 Ab1:8. F1:1 Ab1:2. A1:16 Ab1:8.
+
+pattern drum_main =
+  R:8*4 tom_mid*13 (R:8*3 tom_mid*12 (kick:8 R snare kick*2 R snare R)*3 kick R snare kick*3
+  (snare:8 R kick R snare kick*2 R)*3 snare R kick R snare kick*3 snare tom_low kick R snare
+  kick*2 R snare R kick R snare kick*3 (snare:8 R kick R snare kick*2 R)*3 snare R kick R snare
+  kick*3 snare R kick R snare kick*2 R snare R kick R snare kick*3 snare tom_low (kick:8 R snare
+  kick*2 R snare R)*7 (kick:8 R snare kick*3 (snare:8 R kick R snare kick*2 R)*3 snare R)*3 kick
+  R snare kick*3 snare tom_low (kick:8 R snare kick*2 R snare R)*3 kick R snare kick*3 snare
+  tom_low R*4 tom_mid*12 R)*2 R*3 tom_mid*12
+pattern drum_fade =
+  ((kick:8 R snare kick*2 R snare R)*3 kick R snare kick*3 (snare:8 R kick R snare kick*2 R)*2
+  snare R)@vol=1.000->0.005
+
+track ch01_fm_lead      fm_lead: lead_main | lead_fade
+track ch02_fm_lead_echo fm_lead_echo: echo_main | echo_fade
+track ch03_high_bell    high_bell: bell_main | bell_fade
+track ch04_fm_epiano    fm_epiano: epiano_main | epiano_fade
+track ch05_brass_pad    fm_brass_pad: brass_main | brass_fade
+track ch06_choir_pad    choir_pad: choir_main | choir_fade
+track ch07_psg_arp      psg_arp: arp_main | arp_fade
+track ch08_psg_arp_echo psg_arp_echo: arpe_main | arpe_fade
+track ch09_fm_bass      fm_bass: bass_main | bass_fade
+track ch10_sub_bass     sub_bass: sub_main | bass_fade@-12
+track ch11_drums_main   kick: drum_main | drum_fade

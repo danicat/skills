@@ -1,0 +1,382 @@
+title "Horizons Beyond the Blade - End Credits Theme (13-Channel, 90s Slow-Progression Violin Edition)"
+type song
+tempo andantino 96
+time 4/4
+
+# ==============================================================================
+# 1. Modern Hybrid & Orchestral 13-Channel Palette (1:1 Instrument-to-Channel)
+#    Uses band-limited harmonic synthesis (violin, voice, strings, harp, epiano,
+#    flute, bell) with delayed vibrato bloom and zero static noise on melodies.
+# ==============================================================================
+inst celtic_voice wave=voice    vol=0.10 pan=-0.12 adsr=0.050,0.10,0.85,0.15 vib=5.0,3.2
+inst solo_violin  wave=violin   vol=0.11 pan=0.15  adsr=0.065,0.12,0.88,0.16 lpf=0.65 vib=5.5,3.5
+inst kosho_lead   wave=sawtooth vol=0.06 pan=-0.22 adsr=0.030,0.08,0.75,0.12 lpf=0.42 vib=5.2,3.0
+inst flute        wave=flute    vol=0.06 pan=0.28  adsr=0.045,0.08,0.78,0.12 vib=4.6,2.5
+inst bells        wave=bell     vol=0.04 pan=-0.35 adsr=0.003,0.20,0.18,0.10 fm=3.0,1.2
+inst epiano       wave=epiano   vol=0.07 pan=-0.25 adsr=0.008,0.22,0.45,0.14 fm=2.0,1.4
+inst strings      wave=strings  vol=0.06 pan=0.00  adsr=0.220,0.25,0.88,0.30 lpf=0.45
+inst choir        wave=voice    vol=0.05 pan=0.32  adsr=0.250,0.25,0.85,0.30 vib=4.2,2.2
+inst harp_left    wave=harp     vol=0.07 pan=-0.45 adsr=0.004,0.10,0.28,0.06
+inst harp_right   wave=harp     vol=0.05 pan=0.45  adsr=0.004,0.08,0.22,0.06
+inst fretless     wave=fm       vol=0.09 pan=0.00  adsr=0.018,0.10,0.68,0.08 fm=1.0,1.0 lpf=0.42
+inst sub_bass     wave=sine     vol=0.10 pan=0.00  adsr=0.025,0.12,0.82,0.10
+inst drums        wave=kick     vol=0.11 pan=0.00  adsr=0.002,0.06,0.10,0.03 freq=125Hz->36Hz noise=0.08,0.18
+
+# Shared 8-bar and 4-bar rest blocks
+pattern rest_8bar = R:1 | R:1 | R:1 | R:1 | R:1 | R:1 | R:1 | R:1
+pattern rest_4bar = R:1 | R:1 | R:1 | R:1
+
+# ==============================================================================
+# 2. Progressive Momentum Architecture (36 Bars = 90.00s @ 96 BPM, 2-Bar Chords)
+#    Builds organically across 4 dimensions: rhythmic subdivision (:2 -> :4 -> :8 -> :16),
+#    channel density (3 -> 5 -> 7 -> 9 -> 12 channels), filter warmth, and gain envelopes:
+#    - Phase 1 (Bars 1-4,   00s-10s): Stillness in the Mist  (3 ch,  :2/:1 notes, @pp->p)
+#    - Phase 2 (Bars 5-8,   10s-20s): First Light Awakening  (5 ch,  :4 notes,    @p->mp)
+#    - Phase 3 (Bars 9-12,  20s-30s): Solo Violin Song       (7 ch,  :8 notes,    @mp)
+#    - Phase 4 (Bars 13-16, 30s-40s): Rising Wind & Pulse    (9 ch,  :16 notes,   @mp->mf)
+#    - Phase 5 (Bars 17-24, 40s-60s): Best Is Yet to Come    (12 ch, Chorus Duet, @mf->f)
+#    - Phase 6 (Bars 25-32, 60s-80s): Shinobi Sunset Climax  (12 ch, Full Tutti,  @f->ff)
+#    - Phase 7 (Bars 33-36, 80s-90s): Dawn Over Quiet World  (Coda decelerating,  @fade_out)
+# ==============================================================================
+
+# ==============================================================================
+# 3. Channel 1: Celtic Vocal Lead (wave=voice)
+# ==============================================================================
+# Phase 1 (Bars 1-4): Distant, breathy half-note/whole-note sigh over Am (2b) -> Em (2b)
+pattern vocal_m1a =
+  R:2 A4:2 | E5:1 |
+  R:2 B4:2 | G4:2. R:4
+
+# Phase 2 (Bars 5-8): Unhurried half/quarter phrase in Bar 1; sustains in Bar 2 while Violin answers
+pattern vocal_m1b =
+  F4:2 A4:4 C5:4 | C5:1 |
+  G4:2 B4:4 D5:4 | D5:2. R:4
+
+# Phase 3 & 4 (Bars 9-16): Steps back for Solo Violin in Bars 9-14; joins in Bars 15-16 to lift into Chorus
+pattern vocal_m2b =
+  R:1 | R:1 |
+  G4:2 B4:2 | E5:2. R:4
+
+# Phase 5 (Bars 17-24): Soaring Main Chorus over 2-bar chords (F -> G -> Em -> Am)
+pattern vocal_m3 =
+  C6:4. D6:16 C6:16 A5:4 C6:4 | F6:2 C6:2 |
+  D6:4. E6:16 D6:16 B5:4 D6:4 | G6:2 D6:2 |
+  B5:4. A5:8 G5:4 B5:4 | E6:2 B5:2 |
+  C6:4. D6:8 E6:2 | A5:2. R:4
+
+# Phase 6 (Bars 25-32): Relative Major Climax over 2-bar chords (C -> G -> Am -> F/G)
+pattern vocal_m4 =
+  E6:4. G6:16 E6:16 D6:4 C6:4 | G5:2 C6:2 |
+  D6:4. E6:16 D6:16 B5:4 G5:4 | B5:2 D6:2 |
+  C6:4. D6:8 E6:4 C6:4 | E6:2 A5:2 |
+  C6:4. D6:8 C6:2 | B5:2 G5:2
+
+# Phase 7 (Bars 33-36): Gentle farewell resolution
+pattern vocal_coda =
+  C6:4. D6:8 C6:2 |
+  B5:4. A5:8 G5:2 |
+  G5:4. A5:8 B5:2 |
+  A5:1
+
+# ==============================================================================
+# 4. Channel 2: Concert Solo Violin (wave=violin)
+# ==============================================================================
+# Phase 2 (Bars 5-8): Enters softly in Bar 6 & Bar 8 answering the Vocal Lead
+pattern violin_m1b =
+  R:1 | A4:2 F4:4 A4:4 |
+  R:1 | B4:2 G4:2
+
+# Phase 3 (Bars 9-12): SOLO VIOLIN SPOTLIGHT (Part A) - Calm half & quarter notes over Am -> G
+pattern violin_m2a =
+  A4:2 C5:4 E5:4 | E5:2 C5:4 A4:4 |
+  B4:2 G4:4 B4:4 | D5:2 B4:2
+
+# Phase 4 (Bars 13-16): SOLO VIOLIN SPOTLIGHT (Part B) - Flowing 8th-note motion over F -> Em
+pattern violin_m2b =
+  C5:4. D5:8 F5:4 D5:8 C5:8 | C5:2 A4:2 |
+  B4:4. A4:8 G4:4 B4:4 | G4:2. R:4
+
+# Phase 5 (Bars 17-24): Lockstep diatonic 3rds & 6ths below the Vocal Lead
+pattern violin_m3 =
+  A5:4. F5:8 F5:4 A5:4 | C6:2 A5:2 |
+  B5:4. G5:8 G5:4 B5:4 | D6:2 B5:2 |
+  G5:4. E5:8 E5:4 G5:4 | B5:2 G5:2 |
+  A5:4. B5:8 C6:2 | E5:2. R:4
+
+# Phase 6 (Bars 25-32): Lockstep 3rds/6ths in Bar 1 + lyrical violin answer in Bar 2
+pattern violin_m4 =
+  C6:4. E6:16 C6:16 G5:4 E5:4 | E5:4 G5:4 C6:4 G5:4 |
+  B5:4. G5:8 G5:4 D5:4 | G5:4 B5:4 D6:4 B5:4 |
+  A5:4. B5:8 C6:4 A5:4 | C6:4 D6:4 A5:4 E5:4 |
+  A5:4. F5:8 A5:2 | G5:2 D5:2
+
+# Phase 7 (Bars 33-36): Peaceful farewell duet in 3rds resolving to E5
+pattern violin_coda =
+  A5:4. F5:8 A5:2 |
+  G5:4. D5:8 B4:2 |
+  E5:4. D5:8 G5:2 |
+  E5:1
+
+# ==============================================================================
+# 5. Channel 3: Warm Analog Synth Pedals (Yuzo Koshiro Style)
+# ==============================================================================
+pattern kosho_m2b =
+  A4:1 | F4:1 |
+  G4:1 | E4:1
+
+pattern kosho_m3 =
+  F5:1 | A5:1 |
+  G5:1 | B5:1 |
+  E5:1 | G5:1 |
+  E5:1 | C5:1
+
+pattern kosho_m4 =
+  G5:1 | E5:1 |
+  G5:1 | D5:1 |
+  E5:1 | C5:1 |
+  F5:1 | D5:1
+
+pattern kosho_coda =
+  F5:1 | D5:1 | B4:1 | C5:1
+
+# ==============================================================================
+# 6. Channel 4 & 5: Woodwind Flute (Phases 3-4) & Crystalline Chime Bells (Phases 5-7)
+# ==============================================================================
+pattern flute_m2a =
+  E5:1 | C5:2 E5:2 |
+  D5:1 | B4:2 D5:2
+
+pattern flute_m2b =
+  C5:2 A4:2 | C5:1 |
+  G4:2 E4:2 | B4:1
+
+pattern bells_m3 =
+  A5:2 C6:2 | F6:1 |
+  B5:2 D6:2 | G6:1 |
+  G5:2 B5:2 | E6:1 |
+  A5:2 C6:2 | E6:1
+
+pattern bells_m4 =
+  G5:2 C6:2 | E6:1 |
+  G5:2 B5:2 | D6:1 |
+  A5:2 C6:2 | E6:1 |
+  A5:2 C6:2 | D6:1
+
+pattern bells_coda =
+  C6:2 A5:2 |
+  B5:2 G5:2 |
+  G5:2 E5:2 |
+  E6:1
+
+# ==============================================================================
+# 7. Channel 5: Warm Electric Piano Comping (wave=epiano)
+#    Silent in Phase 1; whole notes in Phase 2; mixed whole/half in Phase 3; half notes in Phases 4-6
+# ==============================================================================
+pattern epiano_m1b =
+  [F3 A3 C4]:1 | [C3 F3 A3]:1 |
+  [G3 B3 D4]:1 | [D3 G3 B3]:1
+
+pattern epiano_m2a =
+  [A3 C4 E4]:1 | [A3 C4 E4]:2 [E3 A3 C4]:2 |
+  [G3 B3 D4]:1 | [G3 B3 D4]:2 [D3 G3 B3]:2
+
+pattern epiano_m2b =
+  [F3 A3 C4]:2 [C3 F3 A3]:2 | [F3 A3 C4]:2 [C3 F3 A3]:2 |
+  [E3 G3 B3]:2 [D3 G3 B3]:2 | [E3 G3 B3]:2 [D3 G3 B3]:2
+
+pattern epiano_m3 =
+  [F3 A3 C4]:2 [C3 F3 A3]:2 | [F3 A3 C4]:2 [C3 F3 A3]:2 |
+  [G3 B3 D4]:2 [D3 G3 B3]:2 | [G3 B3 D4]:2 [D3 G3 B3]:2 |
+  [E3 G3 B3 D4]:2 [E3 G3 B3]:2 | [E3 G3 B3 D4]:2 [E3 G3 B3]:2 |
+  [A3 C4 E4]:2 [E3 A3 C4]:2 | [A3 C4 E4]:2 [E3 A3 C4]:2
+
+pattern epiano_m4 =
+  [C3 E3 G3]:2 [G3 C4 E4]:2 | [C3 E3 G3]:2 [G3 C4 E4]:2 |
+  [G3 B3 D4]:2 [D3 G3 B3]:2 | [G3 B3 D4]:2 [D3 G3 B3]:2 |
+  [A3 C4 E4]:2 [E3 A3 C4]:2 | [A3 C4 E4]:2 [E3 A3 C4]:2 |
+  [F3 A3 C4]:2 [C3 F3 A3]:2 | [G3 B3 D4]:2 [D3 G3 B3]:2
+
+pattern epiano_coda =
+  [F3 A3 C4]:1 |
+  [G3 B3 D4]:1 |
+  [E3 G3 B3 D4]:1 |
+  [A3 C4 E4]:1
+
+# ==============================================================================
+# 8. Channel 6: Orchestral String Ensemble Chords (wave=strings)
+# ==============================================================================
+pattern strings_m1a =
+  [A2 E3 A3 C4]:1 | [A2 E3 A3 C4]:1 |
+  [E2 B2 E3 G3]:1 | [E2 B2 E3 G3]:1
+
+pattern strings_m1b =
+  [F2 C3 F3 A3]:1 | [F2 C3 F3 A3]:1 |
+  [G2 D3 G3 B3]:1 | [G2 D3 G3 B3]:1
+
+pattern strings_m2a =
+  [A2 E3 A3 C4]:1 | [A2 E3 A3 C4]:1 |
+  [G2 D3 G3 B3]:1 | [G2 D3 G3 B3]:1
+
+pattern strings_m2b =
+  [F2 C3 F3 A3]:1 | [F2 C3 F3 A3]:1 |
+  [E2 B2 E3 G3]:1 | [E2 B2 E3 G3]:1
+
+pattern strings_m3 =
+  [F2 C3 F3 A3]:1 | [F2 C3 F3 A3]:1 |
+  [G2 D3 G3 B3]:1 | [G2 D3 G3 B3]:1 |
+  [E2 B2 E3 G3]:1 | [E2 B2 E3 G3]:1 |
+  [A2 E3 A3 C4]:1 | [A2 E3 A3 C4]:1
+
+pattern strings_m4 =
+  [C3 G3 C4 E4]:1 | [C3 G3 C4 E4]:1 |
+  [G2 D3 G3 B3]:1 | [G2 D3 G3 B3]:1 |
+  [A2 E3 A3 C4]:1 | [A2 E3 A3 C4]:1 |
+  [F2 C3 F3 A3]:1 | [G2 D3 G3 B3]:1
+
+pattern strings_coda =
+  [F2 C3 F3 A3]:1 |
+  [G2 D3 G3 B3]:1 |
+  [E2 B2 E3 G3]:1 |
+  [A2 E3 A3 C4]:1
+
+# ==============================================================================
+# 9. Channel 7: Celestial Choir Pad (wave=voice)
+# ==============================================================================
+pattern choir_m3 =
+  A5:1 | C6:1 |
+  B5:1 | D6:1 |
+  G5:1 | B5:1 |
+  A5:1 | E5:1
+
+pattern choir_m4 =
+  C6:1 | E6:1 |
+  B5:1 | D6:1 |
+  A5:1 | C6:1 |
+  A5:1 | B5:1
+
+pattern choir_coda =
+  A5:1 | G5:1 | E5:1 | A5:1
+
+# ==============================================================================
+# 10. Channel 8: Acoustic Celtic Harp Arpeggios Left (wave=harp)
+#     Progressively accelerates subdivision from :2 -> :4 -> :8 (@slow=2) -> :16
+# ==============================================================================
+pattern harp_am = (A3:16 E4:16 A4:16 B4:16 C5:16 B4:16 A4:16 E4:16)*2
+pattern harp_em = (E3:16 B3:16 E4:16 G4:16 B4:16 G4:16 E4:16 B3:16)*2
+pattern harp_f  = (F3:16 C4:16 F4:16 G4:16 A4:16 G4:16 F4:16 C4:16)*2
+pattern harp_g  = (G3:16 D4:16 G4:16 A4:16 B4:16 A4:16 G4:16 D4:16)*2
+pattern harp_c  = (C4:16 G4:16 C5:16 D5:16 E5:16 D5:16 C5:16 G4:16)*2
+
+# Phase 1 (Bars 1-4): Sparse half-note plucks (2 notes per bar)
+pattern harp_m1a =
+  A3:2 E4:2 | A4:2 E4:2 |
+  E3:2 B3:2 | G4:2 B3:2
+
+# Phase 2 (Bars 5-8): Gentle quarter-note arpeggios (4 notes per bar)
+pattern harp_m1b =
+  F3:4 C4:4 F4:4 A4:4 | C5:4 A4:4 F4:4 C4:4 |
+  G3:4 D4:4 G4:4 B4:4 | D5:4 B4:4 G4:4 D4:4
+
+# Phase 3 (Bars 9-12): Flowing 8th-note triad arpeggios (8 notes per bar)
+pattern harp_m2a =
+  (A3:8 E4:8 A4:8 C5:8 E5:8 C5:8 A4:8 E4:8)*2 |
+  (G3:8 D4:8 G4:8 B4:8 D5:8 B4:8 G4:8 D4:8)*2
+
+# Phase 4 (Bars 13-16): Full 16th-note arpeggios awaken (16 notes per bar)
+pattern harp_m2b = harp_f * 2 | harp_em * 2
+
+# Phase 5 & 6 (Bars 17-32): Continuous 16th-note harp waves
+pattern harp_m3 = harp_f * 2 | harp_g * 2 | harp_em * 2 | harp_am * 2
+pattern harp_m4 = harp_c * 2 | harp_g * 2 | harp_am * 2 | harp_f | harp_g
+
+# Phase 7 (Bars 33-36): Decelerating Coda (:8 -> :4 -> :4 -> :2)
+pattern harp_coda =
+  F3:8 C4:8 F4:8 G4:8 A4:8 G4:8 F4:8 C4:8 |
+  G3:4 D4:4 G4:4 B4:4 |
+  E3:4 B3:4 E4:4 G4:4 |
+  A3:2 E4:2
+
+# ==============================================================================
+# 11. Channel 9: Interlocking Crystal Harp Right (wave=harp)
+# ==============================================================================
+pattern pluck_am = (E5:16 C5:16 B4:16 A4:16 E4:16 A4:16 B4:16 C5:16)*2
+pattern pluck_em = (B4:16 G4:16 E4:16 B3:16 E4:16 G4:16 B4:16 E5:16)*2
+pattern pluck_f  = (C5:16 A4:16 G4:16 F4:16 C4:16 F4:16 G4:16 A4:16)*2
+pattern pluck_g  = (D5:16 B4:16 A4:16 G4:16 D4:16 G4:16 A4:16 B4:16)*2
+pattern pluck_c  = (G5:16 E5:16 D5:16 C5:16 G4:16 C5:16 D5:16 E5:16)*2
+
+# Phase 4 (Bars 13-16): Enters softly at half speed (8th-note staccato triad droplets)
+pattern pluck_m2b =
+  (C5:8 A4:8 F4:8 C4:8 F4:8 A4:8 C5:8 F5:8)*2 |
+  (B4:8 G4:8 E4:8 B3:8 E4:8 G4:8 B4:8 E5:8)*2
+
+# Phase 5 & 6 (Bars 17-32): Full 16th-note interlocking crystal harp
+pattern pluck_m3 = pluck_f * 2 | pluck_g * 2 | pluck_em * 2 | pluck_am * 2
+pattern pluck_m4 = pluck_c * 2 | pluck_g * 2 | pluck_am * 2 | pluck_f | pluck_g
+
+# ==============================================================================
+# 12. Channel 10 & 11: Melodic Fretless FM Bass & Concert Sub-Bass
+# ==============================================================================
+# Phase 3 (Bars 9-12): Fretless enters with calm whole & half notes
+pattern fretless_m2a =
+  A1:1 | A1:2 E2:2 |
+  G1:1 | G1:2 D2:2
+
+# Phase 4 (Bars 13-16): Fretless awakens with dotted-quarter & 8th-note pulse
+pattern fretless_m2b =
+  F1:4. C2:8 F2:2 | F1:2 C2:2 |
+  E1:4. B1:8 E2:2 | E1:2 B1:2
+
+pattern fretless_m3 =
+  F1:4 C2:8 F2:8 F1:2 | F1:4 C2:8 F2:8 C2:2 |
+  G1:4 D2:8 G2:8 G1:2 | G1:4 D2:8 G2:8 D2:2 |
+  E1:4 B1:8 E2:8 E1:2 | E1:4 B1:8 E2:8 B1:2 |
+  A1:4 E2:8 A2:8 A1:2 | A1:4 E2:8 A2:8 E2:2
+
+pattern fretless_m4 =
+  C2:4 G2:8 C3:8 C2:2 | C2:4 G2:8 C3:8 G2:2 |
+  G1:4 D2:8 G2:8 G1:2 | G1:4 D2:8 G2:8 D2:2 |
+  A1:4 E2:8 A2:8 A1:2 | A1:4 E2:8 A2:8 E2:2 |
+  F1:4 C2:8 F2:8 F1:2 | G1:4 D2:8 G2:8 D2:2
+
+pattern sub_m1b  = F1:1 | F1:1 | G1:1 | G1:1
+pattern sub_m2   = A0:1 | A0:1 | G0:1 | G0:1 | F0:1 | F0:1 | E0:1 | E0:1
+pattern sub_m3   = F0:1 | F0:1 | G0:1 | G0:1 | E0:1 | E0:1 | A0:1 | A0:1
+pattern sub_m4   = C1:1 | C1:1 | G0:1 | G0:1 | A0:1 | A0:1 | F0:1 | G0:1
+pattern sub_coda = F0:1 | G0:1 | E0:1 | A0:1
+
+# ==============================================================================
+# 13. Channel 12: Unhurried Ballad Percussion (Silent for the first 30 seconds!)
+# ==============================================================================
+# Phase 4 (Bars 13-16, 30s-40s): Soft heartbeat kick & brushed hi-hat + Bar 16 tom fill
+pattern drums_m2b =
+  (kick:4 hat:8 hat:8 kick:8 hat:8 hat:4)*3 |
+  kick:4 hat:8 snare:8 kick:8 snare:8 tom:8 tom:8
+
+# Phase 5 & 6 (Bars 17-32, 40s-80s): Noble 96 BPM ballad groove
+pattern drum_anthem_8bar =
+  crash:8 hat:8 snare:4 hat:8 kick:8 snare:4 |
+  (kick:8 hat:8 snare:4 hat:8 kick:8 snare:4)*6 |
+  kick:8 hat:8 snare:4 kick:8 snare:8 tom:8 tom:8
+
+# Phase 7 (Bars 33-36, 80s-90s): Soft final cymbal swell & silence
+pattern drums_coda =
+  crash:2 R:2 | R:1 | R:1 | R:1
+
+# ==============================================================================
+# 14. Master 13-Channel Arrangement (36 Bars / 144 Beats / 90.00s @ 96 BPM)
+#     1:1 mapping between declared instruments and mixer channels.
+# ==============================================================================
+track ch01_vocal_lead      celtic_voice: vocal_m1a@pp->p@legato         | vocal_m1b@p->mp@legato         | rest_4bar               | vocal_m2b@mp->mf@legato         | vocal_m3@mf->f@legato   | vocal_m4@f->ff@legato  | vocal_coda@diminuendo
+track ch02_solo_violin     solo_violin:  rest_4bar                      | violin_m1b@fade_in@legato      | violin_m2a@mp@legato    | violin_m2b@mp->mf@legato        | violin_m3@mf->f@legato  | violin_m4@f->ff@legato | violin_coda@fade_out
+track ch03_koshiro_synth   kosho_lead:   rest_8bar                                                       | rest_4bar               | kosho_m2b@fade_in               | kosho_m3@mp->f          | kosho_m4@f@tenuto      | kosho_coda@fade_out
+track ch04_flute           flute:        rest_8bar                                                       | flute_m2a@fade_in       | flute_m2b@mp->mf@legato         | rest_8bar               | rest_8bar              | rest_4bar
+track ch05_bells           bells:        rest_8bar                                                       | rest_8bar                                                 | bells_m3@mf->f          | bells_m4@f->ff         | bells_coda@fade_out
+track ch06_fm_epiano       epiano:       rest_4bar                      | epiano_m1b@fade_in             | epiano_m2a@mp           | epiano_m2b@mp->mf               | epiano_m3@mf->f         | epiano_m4@f            | epiano_coda@fade_out
+track ch07_warm_strings    strings:      strings_m1a@fade_in@lpf=0.22   | strings_m1b@p->mp@lpf=0.32     | strings_m2a@mp@lpf=0.40 | strings_m2b@mp->mf              | strings_m3@crescendo    | strings_m4@ff          | strings_coda@fade_out@lpf=0.30
+track ch08_celestial_choir choir:        rest_8bar                                                       | rest_8bar                                                 | choir_m3@fade_in        | choir_m4@swell         | choir_coda@fade_out
+track ch09_celtic_harp     harp_left:    harp_m1a@pp->p                 | harp_m1b@p->mp                 | harp_m2a@mp             | harp_m2b@mp->mf                 | harp_m3@mf->f           | harp_m4@f->ff          | harp_coda@fade_out
+track ch10_crystal_arp     harp_right:   rest_8bar                                                       | rest_4bar               | pluck_m2b@staccato@fade_in      | pluck_m3@staccato@cresc | pluck_m4@staccato@f    | rest_4bar
+track ch11_fretless_bass   fretless:     rest_8bar                                                       | fretless_m2a@fade_in    | fretless_m2b@mp->mf             | fretless_m3@mf->f       | fretless_m4@f->ff      | rest_4bar
+track ch12_sub_warmth      sub_bass:     rest_4bar                      | sub_m1b@fade_in                | sub_m2@mp->mf                                             | sub_m3@mf->f            | sub_m4@f->ff           | sub_coda@fade_out
+track ch13_drums           drums:        rest_8bar                                                       | rest_4bar               | drums_m2b@fade_in               | drum_anthem_8bar@mf->f  | drum_anthem_8bar@f->ff | drums_coda@fade_out

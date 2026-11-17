@@ -1,0 +1,5 @@
+title "Arcade Platformer Jump"
+type sfx
+
+inst hop preset=jump_arcade duty=0.50->0.25 vol=0.28
+track main hop: 160Hz->620Hz:170ms

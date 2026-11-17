@@ -1,0 +1,7 @@
+title "Deep Cinematic Explosion"
+type sfx
+
+inst transient wave=noise noise_filter=0.90 vol=0.32 adsr=0.001,0.04,0.00,0.04 hpf=800
+inst rumble    preset=explosion_deep vol=0.40 adsr=0.005,0.25,0.25,0.55
+track punch transient: transient:80ms R:720ms
+track boom  rumble:    120Hz->20Hz:800ms

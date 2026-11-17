@@ -1,12 +1,10 @@
-# License Header Specifications & Formats
+# License header formats
 
-This guide documents the exact format and variations of license headers applied by `addlicense`.
+This reference documents license headers applied by `addlicense`. Replace `Google LLC` with `<Author Name>` when stamping personal open-source projects via `-c "<Author Name>"`.
 
----
+## Apache License 2.0
 
-## 1. Apache License 2.0 (Google Standard)
-
-### Go / C / C++ / Java / Rust / TypeScript / JavaScript:
+### Go, C, C++, Java, Rust, TypeScript, and JavaScript
 
 ```go
 // Copyright 2026 Google LLC
@@ -24,7 +22,7 @@ This guide documents the exact format and variations of license headers applied 
 // limitations under the License.
 ```
 
-### Python / Shell / YAML / Makefile / Dockerfile:
+### Python, Shell, YAML, Makefile, and Dockerfile
 
 ```python
 # Copyright 2026 Google LLC
@@ -42,7 +40,7 @@ This guide documents the exact format and variations of license headers applied 
 # limitations under the License.
 ```
 
-### HTML / XML / Markdown:
+### HTML, XML, and Markdown
 
 ```html
 <!--
@@ -62,9 +60,7 @@ limitations under the License.
 -->
 ```
 
----
-
-## 2. MIT License Header
+## MIT license header
 
 ```text
 Copyright 2026 Google LLC
@@ -74,9 +70,7 @@ license that can be found in the LICENSE file or at
 https://opensource.org/licenses/MIT.
 ```
 
----
-
-## 3. BSD 3-Clause Header
+## BSD 3-clause header
 
 ```text
 Copyright 2026 Google LLC
@@ -86,11 +80,9 @@ license that can be found in the LICENSE file or at
 https://developers.google.com/open-source/licenses/bsd
 ```
 
----
+## SPDX short-form identifiers
 
-## 4. SPDX Short-Form Identifiers
-
-When using `-s=only` flag in `addlicense`:
+When running `addlicense` with `-s=only` (or `apply-license.sh -s`):
 
 ```go
 // Copyright 2026 Google LLC

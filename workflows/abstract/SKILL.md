@@ -11,9 +11,9 @@ description: >
 license: Apache-2.0
 metadata:
   category: workflows
-  tags: "abstraction, philosophy, epistemology, induction, principles, synthesis"
+  tags: "philosophy, epistemology, induction, principles, synthesis"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.0"
+  version: "0.1.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -27,7 +27,7 @@ In philosophy, **abstraction** means drawing general knowledge out of raw facts 
 
 ---
 
-## 🏛️ The 4 pillars of abstraction
+## The 4 pillars of abstraction
 
 | Lens | Thinker | How it works in practice |
 | :--- | :--- | :--- |
@@ -38,7 +38,7 @@ In philosophy, **abstraction** means drawing general knowledge out of raw facts 
 
 ---
 
-## 📋 Distillation workflow
+## Distillation workflow
 
 - [ ] **Step 1: Anchor in concrete facts**
   List the specific facts, examples, incidents, quotes, or findings in front of you. Keep them tied to real proof before you interpret them.
@@ -53,7 +53,7 @@ In philosophy, **abstraction** means drawing general knowledge out of raw facts 
 
 ---
 
-## ✅ Quality gates
+## Quality gates
 
 Before sharing abstracted ideas, test every rule against four checks:
 
@@ -64,7 +64,7 @@ Before sharing abstracted ideas, test every rule against four checks:
 
 ---
 
-## 📄 Output template
+## Output template
 
 ```markdown
 ## 1. Concrete fact base
@@ -80,9 +80,9 @@ Before sharing abstracted ideas, test every rule against four checks:
 ## 3. Abstracted concepts and rules
 
 ### 1. <Crisp concept name>
-- **General rule**: <1–2 sentences stating the portable principle or law>
+- **General rule**: <1 to 2 sentences stating the portable principle or law>
 - **Causal law (why it holds)**: <The mechanism that drives this outcome>
 - **What it forbids (Popper flip test)**: <The plausible habit or choice this rule rules out>
-- **Grounded in**: <Facts 1..N>
+- **Grounded in**: <Facts 1 to N>
 - **Scope limit**: <Where this rule stops holding true>
 ```

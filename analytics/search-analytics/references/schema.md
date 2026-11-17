@@ -1,10 +1,10 @@
-# Google Search Console SQLite Schema Reference
+# Google Search Console schema reference
 
 The Search Analytics database is created and maintained automatically by `scripts/search_analytics.py`. Database tables, indexes, and analytical views are provisioned during sync operations.
 
 ---
 
-## 1. Relational Tables
+## 1. Relational tables
 
 ### `daily_site_performance`
 Stores unfiltered property-level daily totals (`dimensions: ['date']`) without anonymized query filtering. Matches 100% of property clicks and impressions in the Search Console web interface and Achievement badges.
@@ -118,7 +118,7 @@ Audit log recording every backfill and incremental sync operation.
 
 ---
 
-## 2. Analytical SQL Views
+## 2. Analytical SQL views
 
 ### `v_search_performance`
 Granular performance with computed calendar dimensions (`year_month`, `day_of_week`, `ctr_pct`, `avg_position`).
@@ -137,12 +137,12 @@ Granular performance with computed calendar dimensions (`year_month`, `day_of_we
 | `clicks` | `REAL` | Total clicks |
 | `impressions` | `REAL` | Total impressions |
 | `ctr_pct` | `REAL` | Click-through rate percentage (`clicks / impressions * 100`) |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Ranking position |
 
 ---
 
 ### `v_daily_summary`
-Daily aggregated search totals across all queries and landing pages.
+Daily aggregated search totals per site from unfiltered `daily_site_performance` (with `search_performance` fallback).
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
@@ -155,12 +155,12 @@ Daily aggregated search totals across all queries and landing pages.
 | `total_clicks` | `REAL` | Sum of clicks for the day |
 | `total_impressions`| `REAL` | Sum of impressions for the day |
 | `avg_ctr_pct` | `REAL` | Overall click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Impression-weighted ranking position |
 
 ---
 
 ### `v_top_queries`
-Search queries aggregated by active days, total clicks, impressions, CTR, and average position.
+Search queries aggregated by active days, total clicks, impressions, CTR, and impression-weighted position.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
@@ -170,12 +170,12 @@ Search queries aggregated by active days, total clicks, impressions, CTR, and av
 | `total_clicks` | `REAL` | Total clicks received |
 | `total_impressions`| `REAL` | Total impressions displayed |
 | `avg_ctr_pct` | `REAL` | Average click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Impression-weighted ranking position |
 
 ---
 
 ### `v_top_pages`
-Landing pages aggregated by distinct ranking queries, clicks, impressions, CTR, and average position.
+Landing pages aggregated by distinct ranking queries, clicks, impressions, CTR, and impression-weighted position.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
@@ -186,7 +186,7 @@ Landing pages aggregated by distinct ranking queries, clicks, impressions, CTR, 
 | `total_clicks` | `REAL` | Total clicks received |
 | `total_impressions`| `REAL` | Total impressions displayed |
 | `avg_ctr_pct` | `REAL` | Average click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Impression-weighted ranking position |
 
 ---
 
@@ -200,7 +200,7 @@ Geographic search performance aggregated by country code.
 | `total_clicks` | `REAL` | Total clicks from country |
 | `total_impressions`| `REAL` | Total impressions in country |
 | `avg_ctr_pct` | `REAL` | Average click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Impression-weighted ranking position |
 
 ---
 
@@ -214,12 +214,12 @@ Device performance breakdown (`DESKTOP`, `MOBILE`, `TABLET`).
 | `total_clicks` | `REAL` | Total clicks from device |
 | `total_impressions`| `REAL` | Total impressions on device |
 | `avg_ctr_pct` | `REAL` | Average click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `avg_position` | `REAL` | Impression-weighted ranking position |
 
 ---
 
 ### `v_milestone_impact`
-Pre vs post milestone comparison of organic search traffic.
+Before and after milestone comparison of organic search traffic built from unfiltered `v_daily_summary` property totals.
 
 | Column | Type | Description |
 | :--- | :--- | :--- |
@@ -228,7 +228,7 @@ Pre vs post milestone comparison of organic search traffic.
 | `milestone_date` | `DATE` | Event date (`YYYY-MM-DD`) |
 | `cohort` | `TEXT` | `Pre-Milestone` or `Post-Milestone` |
 | `days_tracked` | `INTEGER` | Number of days in cohort |
-| `total_clicks` | `REAL` | Total clicks in cohort |
-| `total_impressions`| `REAL` | Total impressions in cohort |
-| `avg_ctr_pct` | `REAL` | Average click-through rate percentage |
-| `avg_position` | `REAL` | Average ranking position |
+| `total_impressions`| `REAL` | Total unfiltered impressions in cohort |
+| `total_clicks` | `REAL` | Total unfiltered clicks in cohort |
+| `ctr_pct` | `REAL` | Cohort click-through rate percentage |
+| `avg_position` | `REAL` | Impression-weighted ranking position |

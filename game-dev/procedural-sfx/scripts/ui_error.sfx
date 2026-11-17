@@ -1,0 +1,5 @@
+title "Menu Error Buzz"
+type sfx
+
+inst buzz preset=ui_error vol=0.26
+track main buzz: 160Hz->110Hz:120ms R:50ms 160Hz->110Hz:140ms

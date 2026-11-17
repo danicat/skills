@@ -228,7 +228,7 @@ func (tm *Tilemap) CalculateAutotileMask(layer LayerType, x, y int, terrainID in
 ```
 
 ### 3.2 16-Value Autotile Mapping Table
-Map calculated mask values (`0–15`) to tileset column/row offsets:
+Map calculated mask values (`0..15`) to tileset column/row offsets:
 
 | Mask Value | Neighbors Present | Autotile Tile Type |
 | :--- | :--- | :--- |

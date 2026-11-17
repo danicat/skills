@@ -1,0 +1,5 @@
+title "Menu Confirm Ding"
+type sfx
+
+inst ding preset=ui_confirm duty=0.50 vol=0.22
+track main ding: G5:65ms C6:180ms

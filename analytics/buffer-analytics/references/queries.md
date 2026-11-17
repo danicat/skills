@@ -1,10 +1,10 @@
-# Buffer Analytics SQL Recipes & Query Cookbooks
+# Buffer analytics SQL recipes and query cookbook
 
-Execute any of these queries using `uv run scripts/buffer_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
+Execute any of these queries with `uv run scripts/buffer_analytics.py query "<SQL>" --db <path_to_db> --format markdown`.
 
 ---
 
-## 1. Top Performing Posts by Reach & Impressions
+## 1. Top performing posts by reach and impressions
 
 ```sql
 SELECT
@@ -23,7 +23,7 @@ LIMIT 15;
 
 ---
 
-## 2. Best Days of the Week to Post (by Social Network)
+## 2. Best days of the week to post (by social network)
 
 ```sql
 SELECT
@@ -42,7 +42,7 @@ ORDER BY service, avg_impressions DESC;
 
 ---
 
-## 3. Best Hours of the Day (UTC)
+## 3. Best hours of the day (UTC)
 
 ```sql
 SELECT
@@ -61,14 +61,14 @@ ORDER BY avg_impressions DESC;
 
 ---
 
-## 4. Impact of External Links on Organic Distribution
+## 4. Posts with in-body URLs vs. no body links
 
-Compare posts with links in the body vs. posts without links (e.g. first comment strategy):
+Compare posts containing URLs in body text or link attachments (`has_link = 1`) against text/media posts without body URLs:
 
 ```sql
 SELECT
     service,
-    CASE WHEN has_link = 1 THEN 'Link in Body' ELSE 'No Link / Link in Comment' END AS link_placement,
+    CASE WHEN has_link = 1 THEN 'In-body URL' ELSE 'No in-body URL' END AS link_placement,
     COUNT(*) AS post_count,
     ROUND(AVG(impressions), 0) AS avg_impressions,
     ROUND(AVG(reactions), 1) AS avg_reactions,
@@ -81,7 +81,7 @@ GROUP BY service, has_link;
 
 ---
 
-## 5. Post Length vs Performance (Short vs Medium vs Long-Form)
+## 5. Post length vs. performance (short vs. medium vs. long-form)
 
 ```sql
 SELECT
@@ -104,7 +104,7 @@ ORDER BY service, avg_impressions DESC;
 
 ---
 
-## 6. Topic Cohort Performance
+## 6. Topic cohort performance
 
 Analyze engagement across specific topic keywords or hashtag clusters:
 
@@ -128,7 +128,7 @@ ORDER BY avg_impressions DESC;
 
 ---
 
-## 7. Monthly Performance & Growth Trajectory
+## 7. Monthly performance and growth trajectory
 
 ```sql
 SELECT

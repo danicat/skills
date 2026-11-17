@@ -4,11 +4,11 @@ An authoritative reference and implementation standard for optimizing websites f
 
 ---
 
-## 1. Executive summary: Foundational SEO in the generative AI era
+## 1. Executive summary: foundational SEO in the generative AI era
 
-Generative AI experiences on Google Search are **direct extensions of core Google Search ranking, indexing, and quality systems**—not independent search engines with distinct algorithmic ranking levers.
+Generative AI experiences on Google Search are **direct extensions of core Google Search ranking, indexing, and quality systems**, not separate search engines with secret ranking levers.
 
-Optimizing for generative AI search is synonymous with optimizing for the overall search experience (**foundational SEO**). Sites succeed in generative AI features not through superficial "GEO/AEO hacks," but by providing crawlable, non-commodity, people-first content that search ranking systems can confidently retrieve, evaluate, and ground into user-facing answers.
+Optimizing for generative AI search is synonymous with optimizing for the overall search experience (**foundational SEO**). Sites succeed in generative AI features not through superficial "GEO/AEO hacks," but by providing crawlable, non-commodity, people-first content that search ranking systems can retrieve, evaluate, and ground into user-facing answers.
 
 ```mermaid
 graph TD
@@ -27,10 +27,10 @@ Generative AI features in Search rely on two foundational AI techniques powered 
 
 ### Retrieval-augmented generation (RAG / Grounding)
 - **Mechanism**: Rather than relying on static parametric model knowledge or unvetted third-party scraping, Google's generative features use **Retrieval-Augmented Generation (RAG)** grounded directly in the live Google Search index.
-- **Verification & Citations**: Core Search ranking algorithms retrieve relevant, fresh, authoritative web pages. The generative model evaluates specific passages from these retrieved pages to synthesize an accurate response and displays prominent, clickable links to the supporting source URLs.
+- **Verification & citations**: Core Search ranking algorithms retrieve relevant, fresh, authoritative web pages. The generative model evaluates specific passages from these retrieved pages to synthesize an accurate response and displays clickable links to the supporting source URLs.
 
 ### Query fan-out
-- **Mechanism**: When processing complex or multi-faceted queries, the generative model executes **query fan-out**—generating a concurrent set of related sub-queries to fetch diverse results across multiple aspects of the topic simultaneously.
+- **Mechanism**: When processing complex or multi-faceted queries, the generative model executes **query fan-out**, generating a concurrent set of related sub-queries to fetch diverse results across multiple aspects of the topic simultaneously.
 - **Example**: For the query *"how to fix a lawn that's full of weeds"*, the model's fan-out sub-queries might include:
   - *"best herbicides for lawns"*
   - *"remove weeds without chemicals"*
@@ -38,11 +38,11 @@ Generative AI features in Search rely on two foundational AI techniques powered 
 
 > [!IMPORTANT]
 > **The reality of "AEO" and "GEO"**:
-> "Answer Engine Optimization" (AEO) and "Generative Engine Optimization" (GEO) are industry marketing terms. From Google Search's perspective, optimizing for generative AI search is simply optimizing for the search experience—foundational SEO. Be cautious when evaluating third-party tools or agencies claiming proprietary access or secret ranking levers for Google's AI systems.
+> "Answer Engine Optimization" (AEO) and "Generative Engine Optimization" (GEO) are industry marketing terms. From Google Search's perspective, optimizing for generative AI search is foundational SEO. Be cautious when evaluating third-party tools or agencies claiming proprietary access or secret ranking levers for Google's AI systems.
 
 ---
 
-## 3. Content strategy: Creating non-commodity, people-first content
+## 3. Content strategy: creating non-commodity, people-first content
 
 Content originality and utility influence long-term visibility in generative AI search more than any technical shortcut.
 
@@ -76,7 +76,7 @@ When making any editorial or architectural decision, apply Google's core princip
 
 ---
 
-## 4. Search Quality Evaluator Guidelines (QRG) & AI spam policies
+## 4. Search Quality Evaluator Guidelines (QRG) and AI spam policies
 
 Google's [Search Quality Evaluator Guidelines (QRG)](https://static.googleusercontent.com/media/guidelines.raterhub.com/en//searchqualityevaluatorguidelines.pdf) instruct human raters on assessing search result quality.
 
@@ -114,7 +114,7 @@ graph TD
 
 ---
 
-## 5. Technical requirements & indexing eligibility
+## 5. Technical requirements and indexing eligibility
 
 To appear in Google Search generative AI features (AI Overviews and AI Mode), a page must satisfy foundational technical criteria:
 
@@ -146,7 +146,7 @@ graph LR
 
 ---
 
-## 6. Autonomous browser agents & emerging agentic protocols
+## 6. Autonomous browser agents and emerging agentic protocols
 
 As AI transitions from informational synthesis to autonomous task execution (e.g., booking reservations, comparing product specifications, completing transactions), websites must prepare for agentic navigation:
 
@@ -164,31 +164,23 @@ graph TD
 
 ---
 
-## 7. E-commerce, Merchant Center & business profiles
+## 7. AI-generated media metadata (IPTC DigitalSourceType)
 
-Generative AI responses frequently integrate structured business listings, local inventory, and transactional widgets.
+When publishing AI-generated illustrations, header artwork, or custom diagrams in technical posts, embed standard IPTC `DigitalSourceType` image metadata for provenance transparency across Google Images and visual search:
 
-### Google Merchant Center AI rules
-For e-commerce merchants using generative AI in product feeds:
-
-1. **IPTC image metadata**:
-   - AI-generated product images **must** include standard IPTC `DigitalSourceType` metadata set to:
-     ```
-     https://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia
-     ```
-   - This ensures transparent origin tracking across Google Search and Google Shopping surfaces.
-2. **AI-generated product text**:
-   - Product attributes (such as `title` and `description`) generated by AI must be specified separately and labeled as AI-generated in feed attributes.
-3. **Structured product feeds**:
-   - Maintain accurate [Merchant Center product feeds](https://support.google.com/merchants/answer/11586438) with real-time stock, pricing, and variant availability.
-
-### Google Business Profiles & Business Agent
-- **Business Profile verification**: Keep business hours, address, phone, and service categories up to date on [Google Business Profile](https://business.google.com/).
-- **Business Agent**: Consider enabling [Business Agent](https://support.google.com/brandprofile/answer/16410382), a conversational experience on Google Search allowing customers to chat directly with your brand within the Search interface.
+1. **Purely AI-generated visuals**:
+   ```
+   https://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia
+   ```
+2. **Human-authored diagrams edited with generative AI**:
+   ```
+   https://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia
+   ```
+3. **Standard image SEO pairing**: Combine accurate IPTC provenance tags with descriptive `alt` text (`30` to `100` characters) and high-resolution landscape assets (`>= 1200px` wide) when targeting Google Discover.
 
 ---
 
-## 8. Snippet controls & generative AI extraction directives
+## 8. Snippet controls and generative AI extraction directives
 
 Site owners maintain granular control over how Google Search uses their text and media in snippets and generative AI features:
 
@@ -199,7 +191,7 @@ Site owners maintain granular control over how Google Search uses their text and
 | `max-image-preview:[large\|standard\|none]` | Page-level `<meta>` or HTTP Header | Controls preview image thumbnail dimensions in Search and AI features (`large` recommended). |
 | `data-nosnippet` | HTML element attribute | Excludes specific HTML sections (`<div data-nosnippet>`, `<span>`, `<section>`) from search snippets and AI synthesis. |
 
-### Example implementation:
+### Example implementation
 ```html
 <!-- Page-level robots meta tag -->
 <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -229,7 +221,7 @@ Site owners maintain granular control over how Google Search uses their text and
 
 ---
 
-## 10. Performance measurement & Search Console reporting
+## 10. Performance measurement and Search Console reporting
 
 ### Search Console Generative AI performance report
 To track how searchers discover your content through AI Overviews and AI Mode:

@@ -320,8 +320,9 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # ----------------------------------------------------
     # 4. Heading Hierarchy & Structure
     # ----------------------------------------------------
-    # Ignore code blocks when searching for headings
-    cleaned_body = re.sub(r"```[\s\S]*?```", "", body)
+    # Strip fenced code blocks and inline code spans before inspecting prose/HTML
+    cleaned_body = re.sub(r"(?:```|~~~)[\s\S]*?(?:```|~~~)", "", body)
+    prose_body = re.sub(r"`[^`\n]+`", "", cleaned_body)
     heading_pattern = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
     headings = heading_pattern.findall(cleaned_body)
 
@@ -347,7 +348,7 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # 5. Image Alt Text & Accessibility
     # ----------------------------------------------------
     img_pattern = re.compile(r"!\[(.*?)\]\((.*?)\)")
-    images = img_pattern.findall(body)
+    images = img_pattern.findall(cleaned_body)
 
     for alt, src in images:
         alt_clean = alt.strip().lower()
@@ -369,8 +370,8 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # Lead paragraph check (first 200 words or 400 Japanese chars)
     lead_sample = body[:600]
     has_bold_definition = bool(re.search(r"\*\*[^\n*]{5,60}\*\*", lead_sample))
-    has_code_snippet = "```" in body
-    has_markdown_table = bool(re.search(r"\|.*\|.*\n\|[-:\s|]+\|", body))
+    has_code_snippet = "```" in body or "~~~" in body
+    has_markdown_table = bool(re.search(r"\|.*\|.*\n\|[-:\s|]+\|", cleaned_body))
 
     geo_score = 0
     if has_bold_definition:
@@ -397,7 +398,7 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # ----------------------------------------------------
     # 7. AI Slop & Cliché Detection
     # ----------------------------------------------------
-    body_lower = body.lower()
+    body_lower = prose_body.lower()
     slop_matches = []
     for term in SLOP_TERMS:
         if re.search(r"\b" + re.escape(term) + r"\b", body_lower):
@@ -413,7 +414,7 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # 8. Link & Anchor Text Quality
     # ----------------------------------------------------
     link_pattern = re.compile(r"\[(.*?)\]\((.*?)\)")
-    links = link_pattern.findall(body)
+    links = link_pattern.findall(cleaned_body)
 
     for anchor, url in links:
         if anchor.startswith("!"):
@@ -426,13 +427,13 @@ def audit_article(file_path: str, valid_categories: Optional[set] = None) -> Aud
     # ----------------------------------------------------
     # 9. HTML Directives, Meta Tags & data-nosnippet Checks
     # ----------------------------------------------------
-    # Check for meta-refresh anti-pattern in raw HTML snippets
-    if re.search(r'<meta\s+[^>]*http-equiv=["\']refresh["\']', body, re.IGNORECASE):
+    # Check for meta-refresh anti-pattern in raw HTML outside code blocks
+    if re.search(r'<meta\s+[^>]*http-equiv=["\']refresh["\']', prose_body, re.IGNORECASE):
         findings.append(AuditFinding("HTML", "ERROR", "Found '<meta http-equiv=\"refresh\">'. Violates WCAG accessibility and SEO standards. Use server-side 301/308 redirects.", fix_suggestion="Replace meta-refresh with HTTP 301 redirect."))
         penalties += 15
 
     # Check for invalid data-nosnippet tags (only valid on span, div, section)
-    nosnippet_tags = re.findall(r'<([a-zA-Z0-9]+)\s+[^>]*data-nosnippet', body, re.IGNORECASE)
+    nosnippet_tags = re.findall(r'<([a-zA-Z0-9]+)\s+[^>]*data-nosnippet', prose_body, re.IGNORECASE)
     valid_nosnippet_tags = {"span", "div", "section"}
     for tag in nosnippet_tags:
         if tag.lower() not in valid_nosnippet_tags:
@@ -480,15 +481,15 @@ def format_markdown_report(report: AuditReport) -> str:
     len_val = report.metrics.get(f"content_length_{len_label}", 0)
 
     lines = [
-        f"# SEO & GEO Audit Report: `{os.path.basename(report.file_path)}`",
+        f"# SEO and GEO audit report: `{os.path.basename(report.file_path)}`",
         "",
         f"**Status:** {status_emoji}  ",
-        f"**Overall Score:** `{report.score}/100`  ",
-        f"**Content Length:** {len_val} {len_label} | **GEO Readiness:** `{report.metrics.get('geo_readiness_score', 0)}/100`",
+        f"**Overall score:** `{report.score}/100`  ",
+        f"**Content length:** {len_val} {len_label} | **GEO readiness:** `{report.metrics.get('geo_readiness_score', 0)}/100`",
         "",
         "---",
         "",
-        "## Key Findings & Recommendations",
+        "## Key findings and recommendations",
         "",
         "| Category | Severity | Message | Recommendation |",
         "| :--- | :--- | :--- | :--- |",
@@ -502,15 +503,20 @@ def format_markdown_report(report: AuditReport) -> str:
     lines.extend([
         "",
         "---",
-        "## Metadata Metrics",
+        "## Metadata metrics",
         "",
-        f"- **Title Length:** {report.metrics.get('title_length', 0)} characters (Target: 40–60)",
-        f"- **Description Length:** {report.metrics.get('description_length', 0)} characters (Target: 120–160)",
-        f"- **Summary Length:** {report.metrics.get('summary_length', 0)} characters (Target: 80–180)",
+        f"- **Title length:** {report.metrics.get('title_length', 0)} characters (Target: 40 to 60)",
+        f"- **Description length:** {report.metrics.get('description_length', 0)} characters (Target: 120 to 160)",
+        f"- **Summary length:** {report.metrics.get('summary_length', 0)} characters (Target: 80 to 180)",
         f"- **Headings:** {report.metrics.get('heading_count', 0)} | **Images:** {report.metrics.get('image_count', 0)} | **Links:** {report.metrics.get('link_count', 0)}",
     ])
 
     return "\n".join(lines)
+
+
+def report_has_issues(report: AuditReport) -> bool:
+    """Returns True if the report contains any ERROR or WARNING findings."""
+    return any(f.severity in ("ERROR", "WARNING") for f in report.findings)
 
 
 def main():
@@ -542,11 +548,15 @@ def main():
         reports.append(audit_article(str(f), valid_categories=valid_cats))
 
     if args.json:
-        out = [asdict(r) for r in reports]
-        print(json.dumps(out, indent=2))
+        visible = [r for r in reports if report_has_issues(r)] if args.quiet else reports
+        print(json.dumps([asdict(r) for r in visible], indent=2))
+        if any(not r.passed for r in reports):
+            sys.exit(1)
         return
 
     for r in reports:
+        if args.quiet and not report_has_issues(r):
+            continue
         print(format_markdown_report(r))
         print("\n" + "=" * 60 + "\n")
 

@@ -2,169 +2,123 @@
 name: seo-optimizer
 description: >
   Technical SEO and Generative Engine Optimization (GEO) guide for developer
-  docs and engineering blogs. Optimizes content for search engines and AI answer
-  engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from
-  search description metadata, verifies JSON-LD structured data (TechArticle),
-  and maintains llms.txt. Activate when auditing technical SEO, optimizing
-  articles for AI answer engines (GEO), generating llms.txt, or structuring
-  search metadata.
+  docs and engineering blogs. Splits human summary hooks from search description
+  metadata, validates TechArticle JSON-LD, configures AI crawler robots.txt
+  rules, and generates llms.txt indexes. Activate when auditing technical SEO,
+  tuning pages for AI search grounding, or structuring frontmatter metadata.
 license: Apache-2.0
 metadata:
   category: writing
-  tags: "seo, geo, optimization, search-engines, blog, website, metadata"
+  tags: "seo, geo, metadata, json-ld, llms-txt, search"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.1.3"
+  version: "0.2.0"
   catalog: https://skills.danicat.dev
 ---
 
-# SEO & Generative Engine Optimizer (GEO)
+# SEO and generative engine optimizer
 
-Procedures, technical standards, and validation workflows for optimizing technical publications, developer documentation, and engineering blogs for traditional search ranking and AI-driven generative search engines, rooted directly in official Google Search Central guidelines.
-
----
-
-## Skill Architecture & Progressive Disclosure
-
-To minimize context overhead, `SKILL.md` defines core workflows, operational checklists, and decision trees. Load detailed reference modules and execute audit scripts on demand:
-
-- **Official Google Search GenAI Standards**: Read [references/google_search_genai_guidelines.md](references/google_search_genai_guidelines.md) for Google's official stance on AI Overviews, RAG grounding, query fan-out, non-commodity content, and mythbusting.
-- **Meta Tags & Robots Specifications**: Read [references/meta_tags_and_robots_spec.md](references/meta_tags_and_robots_spec.md) for supported vs. unsupported meta tags, indexing directives (`nosnippet`, `max-snippet`, `max-image-preview:large`), and `data-nosnippet`.
-- **Multilingual & International SEO**: Read [references/multilingual_international_seo.md](references/multilingual_international_seo.md) for `hreflang` rules, bidirectional parity, URL architecture, and avoiding IP auto-redirect pitfalls.
-- **AI Search & GEO Standards**: Read [references/geo_and_ai_search.md](references/geo_and_ai_search.md) when optimizing for multi-engine AI discovery (Google AI Overviews, ChatGPT Search, Perplexity, Claude) and `llms.txt`.
-- **Technical SEO Checklist**: Read [references/technical_seo_checklist.md](references/technical_seo_checklist.md) when auditing titles, descriptions, headings, outbound link qualifications (`rel="sponsored"`, `rel="ugc"`, `rel="nofollow"`), and image accessibility.
-- **Frontmatter & Taxonomy**: Read [references/frontmatter_standards.md](references/frontmatter_standards.md) when splitting human-facing `summary` from search-facing `description`, or formatting tag taxonomy.
-- **Schema.org Structured Data**: Read [references/schema_markup_guide.md](references/schema_markup_guide.md) when generating or validating JSON-LD (`TechArticle`, `BreadcrumbList`, `HowTo`).
-- **Site Migrations & Status Codes**: Read [references/site_migrations_and_status_codes.md](references/site_migrations_and_status_codes.md) for HTTP status codes, domain migrations, Change of Address workflows, crawl budget, and crawlable link architecture.
-- **Search Appearance & SERP Features**: Read [references/search_appearance_and_serp_features.md](references/search_appearance_and_serp_features.md) for SERP visual elements, site names, favicon technical requirements, featured snippets (Position 0 direct answers), byline date parity, Google Discover standards, organic sitelinks, and paywalled content (Flexible Sampling).
-- **Evergreen Content Refreshes**: Read [references/content_refresh_guide.md](references/content_refresh_guide.md) when updating decaying legacy articles, retitling posts, or resolving search query cannibalization.
+Optimize developer documentation, static sites, and engineering blogs for classic web search and AI grounding engines (`Google AI Overviews`, `ChatGPT Search`, `Perplexity`, `Claude`), anchored in Google Search Central specifications.
 
 ---
 
-## Core SEO & GEO Philosophy
+## 1. Reference routing and operating modes
 
-Modern technical discoverability operates across two complementary surfaces:
+Load only the reference guides needed for the active task:
+
+- **Google Search GenAI rules**: Read [references/google_search_genai_guidelines.md](references/google_search_genai_guidelines.md) for `AI Overviews`, RAG grounding, query fan-out, non-commodity content, and `IPTC` AI image metadata.
+- **Meta tags and `robots` directives**: Read [references/meta_tags_and_robots_spec.md](references/meta_tags_and_robots_spec.md) for supported `<meta>` tags, `nosnippet`, `max-snippet`, `max-image-preview:large`, `data-nosnippet`, and `X-Robots-Tag` headers.
+- **AI search, crawlers, and `llms.txt`**: Read [references/geo_and_ai_search.md](references/geo_and_ai_search.md) for the AI crawler `robots.txt` matrix (`Google-Extended`, `OAI-SearchBot`, `GPTBot`, `ClaudeBot`, `PerplexityBot`), direct-answer blocks, `/llms.txt`, and `/llms-full.txt`.
+- **Multilingual and `hreflang` SEO**: Read [references/multilingual_international_seo.md](references/multilingual_international_seo.md) for reciprocal `hreflang` clusters, ISO locale codes, and avoiding IP auto-redirects.
+- **Technical SEO checklist**: Read [references/technical_seo_checklist.md](references/technical_seo_checklist.md) for `<head>` hygiene, heading order, link `rel` attributes (`sponsored`, `ugc`, `nofollow`), and Core Web Vitals.
+- **Frontmatter and taxonomy**: Read [references/frontmatter_standards.md](references/frontmatter_standards.md) for splitting `summary` from `description` and formatting `kebab-case` tags.
+- **Schema.org JSON-LD**: Read [references/schema_markup_guide.md](references/schema_markup_guide.md) for `TechArticle`, `SoftwareApplication`, `WebSite`, `ProfilePage`, and `BreadcrumbList` graphs.
+- **Migrations and HTTP status codes**: Read [references/site_migrations_and_status_codes.md](references/site_migrations_and_status_codes.md) for `301` vs. `410` handling, soft-`404` fixes, domain moves, and crawl budget.
+- **SERP features and Discover**: Read [references/search_appearance_and_serp_features.md](references/search_appearance_and_serp_features.md) for site names, `48px` site icons, featured snippets, date parity, and Google Discover hero images.
+- **Evergreen content refreshes**: Read [references/content_refresh_guide.md](references/content_refresh_guide.md) for diagnosing impression decay with weighted Search Console SQL and fixing query cannibalization.
+
+### Operating rule: zero silent edits
+
+When auditing an existing Markdown post, frontmatter block, or HTML template, never overwrite files on disk silently. Run `uv run scripts/audit_seo.py`, present the findings and proposed metadata or structural edits (using [assets/seo_audit_template.md](assets/seo_audit_template.md) when helpful), and wait for explicit user approval before modifying files.
+
+---
+
+## 2. Core SEO and GEO principles
 
 ```mermaid
-graph LR
-    A[Technical Article / Doc] --> B[Traditional Search Engine]
-    A --> C[Generative AI Search Engine]
-    B --> D[Keyword Matching, SERP CTR, Meta Snippets]
-    C --> E[Entity Extraction, Direct Answer Synthesis, Citations]
-    D --> F[Direct Web Traffic]
+flowchart LR
+    A["Technical article or doc"] --> B["Classic search index"]
+    A --> C["AI grounding and agents"]
+    B --> D["SERP title, meta snippet, rich results"]
+    C --> E["Passage grounding, citations, llms.txt"]
+    D --> F["Qualified developer traffic"]
     E --> F
-    E --> G[Grounding & LLM Mindshare]
 ```
 
-### 1. Substance Over Commodity Fluff
-Search engines and generative AI models prioritize **non-commodity content with high Information Gain**—unique architectural diagrams, original code examples, verified benchmark data, and authoritative personal experience. Commodity summaries are filtered out.
-
-### 2. The Inverted Pyramid & Value-First Answering
-Every technical post must answer the primary search intent **above the fold (within the first 2 paragraphs)** before detailing implementation specifics, historical context, or configuration options.
-
-### 3. Dual-Purpose Metadata Split
-Never reuse the same text string for human preview cards and search engine indexing:
-- **`summary` (For Humans)**: A provocative, curiosity-inducing editorial hook displayed on homepage feeds, category lists, and related-article cards (80–180 characters).
-- **`description` (For Search & LLM Engines)**: A factual, high-density, keyword-grounded direct answer used in `<meta name="description">`, OpenGraph tags, and Schema.org `description` (120–160 characters). Note that `<meta name="keywords">` is unsupported and ignored.
+1. **Information gain over commodity summaries**: Search rankings and AI citations reward original benchmarks, real post-mortems, runnable code, and architecture diagrams. Generic summaries get filtered out.
+2. **Inverted pyramid lead**: Answer the core technical query inside the first `150` words before walking through background or edge cases.
+3. **Dual metadata split (`summary` vs. `description`)**:
+   - **`summary` (for human readers, `80` to `180` chars)**: Editorial hook shown on homepage feeds, category pages, and article cards.
+   - **`description` (for search and AI snippets, `120` to `160` chars)**: Factual, keyword-grounded direct answer rendered in `<meta name="description">`, Open Graph tags, and JSON-LD `description`. Never duplicate `summary` verbatim, and skip `<meta name="keywords">` (ignored by Google).
 
 ---
 
-## 5-Stage SEO & GEO Optimization Workflow
+## 3. Five-stage optimization workflow
 
-Follow this procedure when auditing or authoring content:
+### Stage 1: Search intent and query grounding
+Identify whether the target query is **informational** (concept explanation), **procedural** (step-by-step build), or **diagnostic** (error fix), and verify the page answers that exact query directly.
 
-```mermaid
-graph TD
-    S1[Stage 1: Intent & Query Grounding] --> S2[Stage 2: Frontmatter & Metadata Split]
-    S2 --> S3[Stage 3: GEO & Inverted Pyramid Structure]
-    S3 --> S4[Stage 4: Technical SEO & Schema Verification]
-    S4 --> S5[Stage 5: Deterministic Audit & Validation Loop]
-```
-
-### Stage 1: Intent & Query Grounding
-1. Identify the **Primary Target Intent**:
-   - *Informational*: Developer wants to understand a concept (e.g., "how do antigravity subagents work").
-   - *Procedural/Tutorial*: Developer wants step-by-step instructions (e.g., "build mcp server in go").
-   - *Diagnostic/Troubleshooting*: Developer has a specific error or configuration challenge.
-2. Formulate the **Core Search Query** and ensure the article provides an unambiguous, definitive answer.
-
-### Stage 2: Frontmatter & Metadata Split
-Verify and craft distinct metadata fields:
+### Stage 2: Frontmatter and taxonomy split
+Craft distinct `title`, `summary`, and `description` fields with clean taxonomy:
 ```yaml
 ---
-title: "Building an MCP Server with Gemini CLI and Go"
-summary: "Turn any Go CLI into a native tool for AI agents with just 50 lines of code."
-description: "Step-by-step tutorial on building a Model Context Protocol (MCP) server in Go for Gemini CLI. Covers JSON-RPC handlers, tool discovery, and local debugging."
+title: "Building an MCP Server in Go with Gemini 4"
+summary: "Turn any Go CLI into a typed tool server for AI agents in 50 lines of code."
+description: "Step-by-step guide to building a Model Context Protocol (MCP) server in Go. Covers JSON-RPC handlers, schema validation, and stdio transport."
 categories: ["Software Engineering"]
 tags: ["apis", "golang", "mcp", "tutorial"]
 ---
 ```
-- Title: 40–60 characters. Clear, high-signal, active phrasing.
-- Description: 120–160 characters. Concise, keyword-rich, direct.
-- Tags: Alphabetically sorted, lowercase kebab-case, no category duplication.
+- **Title**: `40` to `60` characters, front-loading the primary technical entity.
+- **Tags**: Sorted alphabetically, lowercase `kebab-case`, with one primary category and zero category duplication.
 
-### Stage 3: GEO & Inverted Pyramid Structure
-1. **The Lead Block**: Place the definitive takeaway, core metric, or architectural summary in the opening 150 words.
-2. **Scannable Headings**: Use action-oriented `H2` and `H3` headings. Frame complex sections around real developer questions.
-3. **Data & Fact Density**: Use tables for comparisons, bold key technical terms on first introduction, and provide copy-pasteable fenced code blocks with language identifiers.
-4. **Quotability**: Write clear 1–2 sentence definitions that LLMs can extract verbatim as citations.
+### Stage 3: Quotable structure
+- Place a `1` to `2` sentence direct-answer definition immediately below primary `H2` question headings.
+- Use Markdown tables for feature or benchmark comparisons and fenced code blocks with language identifiers.
+- Break sentences cleanly without mid-sentence em dashes or en dashes.
 
-### Stage 4: Technical SEO & Schema Verification
-1. **Single H1**: Exactly one `H1` tag per document (typically supplied by template frontmatter title).
-2. **Heading Depth**: Never skip levels (e.g., `H2` directly to `H4`).
-3. **Image Accessibility**: Every image must have descriptive `alt` text explaining the diagram or architecture (never generic names like `image.png` or empty `alt=""`).
-4. **Outbound Link Qualification**: Use `rel="sponsored"`, `rel="ugc"`, or `rel="nofollow"` where appropriate.
-5. **Internal Cross-Linking**: Include 2–4 contextual internal links to related articles using descriptive anchor text (never "click here" or "this post").
-6. **JSON-LD Schema**: Ensure the template emits valid `TechArticle` or `Article` structured data.
+### Stage 4: Technical HTML, links, and JSON-LD
+- Render a single `H1` per page (usually via template title) and nest `H2` -> `H3` -> `H4` sequentially without skipping levels.
+- Write `30` to `100` character descriptive `alt` text on every diagram and screenshot.
+- Add `2` to `4` internal links with descriptive anchor text (never *"click here"* or *"link"*), and qualify paid or user-submitted outbound links with `rel="sponsored"` or `rel="ugc"`.
+- Emit valid `TechArticle` and `BreadcrumbList` JSON-LD matching visible page dates and authorship.
 
-### Stage 5: Deterministic Audit & Validation Loop
-Execute the bundled audit tools and iterate until all issues are resolved:
-
-1. **Run Bundled SEO Audit Script**:
-   ```bash
-   python3 scripts/audit_seo.py <path-to-markdown-file>
-   ```
-   For machine-readable JSON output:
-   ```bash
-   python3 scripts/audit_seo.py <path-to-markdown-file> --json
-   ```
-
-2. **Check `llms.txt` Synchronization**:
-   When adding or restructuring articles, verify that the site's `/llms.txt` index is updated:
-   ```bash
-   python3 scripts/generate_llmstxt.py --content-dir content/posts --output static/llms.txt
-   ```
+### Stage 5: Automated validation
+Run the bundled scripts below and resolve every reported `ERROR` or `WARNING` before release.
 
 ---
 
-## Validation Rules & Gotchas
+## 4. Validation rules and pitfalls
 
 > [!WARNING]
-> **Common SEO & GEO Gotchas:**
-> 1. **Duplicate Summary/Description**: Using identical strings for `summary` and `description` triggers a warning. `summary` is for human conversion; `description` is for search snippet extraction.
-> 2. **Generic Alt Text**: Alt text like `screenshot` or `diagram` provides zero semantic value to image search and multi-modal AI crawlers. Use descriptive explanations like `Architecture diagram showing Antigravity CLI communication with SQLite memory bank`.
-> 3. **Skipping Heading Levels**: Going from `## Heading` directly to `#### Sub-heading` breaks document outline parsing in search crawlers.
-> 4. **Vague Anchor Text**: Never link with `[link]({{< ref "..." >}})` or `[here]({{< ref "..." >}})`. Always use the localized target article title or descriptive topic name.
-> 5. **Unqualified Outbound Links**: Commercial/affiliate links should be qualified with `rel="sponsored"`, user comments with `rel="ugc"`.
-> 6. **Keywords Meta Tag**: Do not add `<meta name="keywords">`; Google ignores it.
+> **High-frequency SEO and GEO pitfalls:**
+> 1. **Blocking `Googlebot` vs. `Google-Extended`**: Disallowing a page in `robots.txt` hides `noindex` tags from `Googlebot`, while blocking `Google-Extended` opts out of Gemini training without blocking Google Search or `AI Overviews` (use `nosnippet` or `data-nosnippet` on `<span>`, `<div>`, or `<section>` to restrict snippet extraction).
+> 2. **Identical `summary` and `description`**: Reusing one string hurts either feed click-throughs or search snippet density.
+> 3. **Generic `alt` or anchor text**: Labels like `diagram`, `screenshot`, or `[here](...)` lose image search relevance and passage meaning.
+> 4. **Artificial `lastmod` bumps**: Updating `dateModified` or sitemap `<lastmod>` without substantive content edits causes Google to ignore freshness signals.
 
 ---
 
-## Resources & Tooling Map
+## Available scripts
 
-- **Scripts**:
-  - `scripts/audit_seo.py`: Automated CLI for technical SEO, metadata split, and GEO readiness auditing.
-  - `scripts/generate_llmstxt.py`: Generator for standard `llmstxt.org` index files.
-- **References**:
-  - `references/google_search_genai_guidelines.md`: Official Google Search Central AI search guidelines.
-  - `references/meta_tags_and_robots_spec.md`: Google supported meta tags, robots directives, and HTTP headers.
-  - `references/multilingual_international_seo.md`: Multilingual and international SEO with `hreflang`.
-  - `references/geo_and_ai_search.md`: AI search engines, citation factors, and information gain.
-  - `references/technical_seo_checklist.md`: Core meta tags, headings, link qualification, and accessibility.
-  - `references/frontmatter_standards.md`: Taxonomy, tagging, and summary/description specification.
-  - `references/schema_markup_guide.md`: Schema.org JSON-LD templates and property rules.
-  - `references/site_migrations_and_status_codes.md`: HTTP status codes, full site migrations, crawl budget, and crawlable links.
-  - `references/search_appearance_and_serp_features.md`: SERP anatomy, site names, favicons, featured snippets, Discover standards, and paywalls.
-  - `references/content_refresh_guide.md`: Evergreen updates and search query decay mitigation.
-- **Assets**:
-  - `assets/seo_audit_template.md`: Standard audit report format.
-  - `assets/llms_txt_template.txt`: Standard `llms.txt` template.
+Run companion tools with `uv run` (zero external Python dependencies required):
+
+- **`scripts/audit_seo.py`**: Audits a Markdown file or directory for title/description/summary lengths, taxonomy sorting, heading hierarchy, image `alt` text, link anchors, slop terms, and `data-nosnippet` HTML rules (ignoring fenced code blocks).
+  ```bash
+  uv run scripts/audit_seo.py content/posts/my-article/index.md
+  uv run scripts/audit_seo.py content/posts --json --quiet
+  ```
+- **`scripts/generate_llmstxt.py`**: Generates a spec-compliant `/llms.txt` index (and optional `/llms-full.txt` bundle) from page-bundle (`**/index.md`) and flat (`**/*.md`) posts, using [assets/llms_txt_template.txt](assets/llms_txt_template.txt) conventions.
+  ```bash
+  uv run scripts/generate_llmstxt.py --content-dir content/posts --base-url https://example.com --output static/llms.txt
+  uv run scripts/generate_llmstxt.py --content-dir content/docs --url-prefix docs --base-url https://example.com --output static/llms.txt --llms-full static/llms-full.txt
+  ```

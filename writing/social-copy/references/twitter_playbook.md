@@ -1,85 +1,89 @@
-# Twitter / X Technical Copy Playbook
+# X (Twitter) technical copy playbook
 
-Comprehensive guide for writing high-performing developer, engineering, and open-source posts and threads on X (formerly Twitter).
-
----
-
-## 1. Algorithm Mechanics & Engagement Multipliers
-
-X's ranking engine utilizes transformer embeddings and graph clusters that reward high-signal intellectual engagement, dwell time, and permanent reference value.
-
-### Algorithmic Weight Multipliers
-- **Dwell Time & Reading Seconds:** Core ranking factor in the For You algorithm. Long-form posts that keep users reading directly multiply feed reach.
-- **Bookmarks (~10x–13x over Likes):** The most critical signal for evergreen technical posts. Bookmarks signal "permanent reference utility."
-- **Reposts / Retweets (~20x):** Primary viral amplifier pushing content into secondary timelines.
-- **Quote Tweets (~15x):** Strong signal of thoughtful discussion and debate.
-- **Replies (~13.5x):** Active conversations with back-and-forth interactions trigger massive distribution boosts.
-- **Expand Post Clicks (`Show more`):** Strong implicit positive signal indicating the hook successfully converted into active reading.
-- **Likes (1x):** Baseline low-effort signal.
-
-### The Rise of Native Long-Form Posts, Visual Product Drops & X Articles
-- **Long-Form (800–2,500 characters):** The highest-performing format on X for technical breakdowns, engineering changelogs, and case studies. It captures maximum dwell time, generates high bookmark ratios, and eliminates thread drop-off.
-- **No Link Penalty for Native Posts:** Platform leadership confirmed that posts containing outbound URLs are not algorithmically penalized if accompanied by substantive native text and commentary (avoiding "lazy linking").
-- **Visual Demos & Screenshots Drive Discussion and Clicks:** Attaching native visual proof (UI screenshots, architecture diagrams, terminal recordings, or live product demo clips) significantly increases feed reach, multiples reply depth (`3x+` over text-only posts), and accelerates outbound link click-throughs on launch announcements.
-
-### Hashtag Consensus (0-Hashtags Rule)
-- **Hashtags are essentially obsolete for organic reach on X.** The algorithm indexes text via semantic NLP and embeddings.
-- Using 3+ hashtags triggers spam dampeners and looks amateurish. Use **0 hashtags** (or max 1 if participating in a recognized live event/conference).
-
-### Publishing Cadence, Stream Velocity & Builder Windows
-- **Early Engagement Velocity:** X operates on a short `1–3 hour` decay horizon and heavily weights engagement signals (likes, reposts, bookmarks, and replies) that occur in the first 15–30 minutes after publishing.
-- **The 2-to-3 Hour Spacing Rule & Multi-Post Launch Velocity:** Unlike long-horizon feeds (LinkedIn) that penalize multiple posts on the same day, X rewards multi-post launch days when standalone broadcasts are separated by at least **2 to 3 hours**. Properly spaced launch sequences compound daily reach and outbound traffic, whereas rapid unthreaded clustering (multiple standalone tweets in minutes) splits early velocity.
-- **Developer Exploration & Weekend Builder Windows:** Hands-on open-source demos, shipping logs, and high-leverage productivity showcases perform strongly during both mid-week windows and **weekend builder windows**, when corporate feed noise drops and developers actively explore new tools and repos.
-- **Threads vs. Clustered Standalone Posts:** When publishing multiple related thoughts in the same sitting (under 2 hours apart), package them as a connected **Thread** so all interaction signals aggregate into the parent post rather than competing against each other.
+Guide for writing high-signal engineering posts, release logs, and technical threads on X (formerly Twitter).
 
 ---
 
-## 2. Formatting & Post Ergonomics
+## 1. Algorithm mechanics and account tier rules
 
-### The Above-the-Fold Law (< 240–280 Characters)
-- The timeline preview truncates copy at approx. **240–280 characters** (or 3–4 lines) with a `Show more` button.
-- Deliver the core hook, metric, and tension before the truncation point.
+X ranks posts using semantic embeddings and engagement velocity that weight deep reading, bookmarks, and active replies over passive likes.
 
-### Format Types & Constraints
-- **Long-Form Post (Recommended, 800–2,500 characters):** Complete standalone engineering breakdown with clean section headers, bulleted changelogs, and direct links.
-- **Micro-Thread (3–5 tweets):** High retention, low drop-off. Best for step-by-step visual tutorials.
-- **Single Tweet (180–260 characters):** Best for punchy releases, hot takes, quick tips, and single benchmark charts.
+### Algorithmic weight signals
+- **Dwell time and reading seconds:** Core distribution driver for long-form breakdowns and threads.
+- **Bookmarks (~`10x` to `13x` over Likes):** Strongest indicator of reference value for tutorials and benchmarks.
+- **Reposts (~`20x`) and Quote Posts (~`15x`):** Primary reach multipliers into secondary timelines.
+- **Replies (~`13.5x`):** Active back-and-forth technical threads accelerate feed distribution.
+- **`Show more` clicks:** Strong positive signal that the opening lines converted scrollers into readers.
+- **Likes (`1x`):** Baseline low-weight engagement signal.
+
+### X Premium long-form vs. standard `280`-character posts
+- **Verify account tier and API queue limits first:**
+  - **X Premium accounts (native composer or long-form enabled):** Long-form posts (`800` to `2,500` chars recommended, `25,000`-character platform ceiling) maximize dwell time and bookmarks without thread drop-off.
+  - **Standard accounts and standard single-post API queues:** Enforces a strict **280-character limit** per post (`280` chars max; `t.co` URLs count as `23` chars). Never draft a `1,200`-char monologue for a `280`-char queue; split multi-part breakdowns into a `3` to `5` post micro-thread or tighten into an `180` to `260` char single post.
+- **Native links and visual proof:** Outbound URLs perform best when paired with real commentary plus visual proof (UI screenshots, architecture diagrams, terminal captures, or demo clips), which boosts reach, multiplies reply depth (`3x+` over text-only posts), and increases outbound click-throughs.
+
+### Hashtags rule (`0` hashtags)
+- Hashtags are obsolete for discovery on X because semantic retrieval indexes post body text directly. Use **0 hashtags** (or at most `1` official event tag during a live conference).
+
+### Stream velocity and spacing
+- **Short `1` to `3` hour decay horizon:** Early interactions in the first `15` to `30` minutes heavily influence reach.
+- **Spacing rule (`2` to `3` hours):** Unlike LinkedIn, X rewards multi-post launch days when standalone broadcasts are spaced `2` to `3` hours apart. Posting multiple standalone tweets back-to-back splits early velocity; bundle closely related points into a thread instead.
+- **Weekend builder windows:** Developer demos, OSS releases, and field notes perform strongly on weekends when corporate PR noise drops.
 
 ---
 
-## 3. High-Converting Hook Archetypes
+## 2. Formatting and above-the-fold constraints
 
-1. **The Benchmark / Metric Hook:**
-   > *"How we dropped our Docker build times from 14 minutes to 38 seconds by changing one multi-stage cache flag:"*
-2. **The Production Post-Mortem Hook:**
-   > *"We accidentally leaked $14,000 in OpenAI API credits overnight.*
-   >
-   > *Here is the 1-line async retry bug that caused an infinite execution loop (and how to prevent it):"*
-3. **The Architectural Philosophy Hook:**
-   > *"Stop fighting the harness: As models get smarter, they get better at escaping sandboxes and bypassing rigid hooks.*
-   >
-   > *Here is the 'educative' tooling paradigm we switched to:"*
+### Visible fold window (`< 240` to `280` characters)
+Feeds truncate copy around **240 to 280 characters** (`3` to `4` lines) behind `Show more`. Place the concrete problem, benchmark delta, and hook above the fold.
+
+### Format options and budgets
+- **Long-form post (`800` to `2,500` chars, X Premium):** Best for self-contained incident retros, release changelogs, and architecture breakdowns.
+- **Micro-thread (`3` to `5` posts, `<= 280` chars each):** Works on all accounts and API queues; ideal for step-by-step visuals and multi-chart benchmarks.
+- **Single post (`180` to `260` chars, `<= 280` chars):** Ideal for crisp releases, hot fixes, and single benchmark screenshots.
 
 ---
 
-## 4. Plug-and-Play Templates
+## 3. High-converting hook patterns
 
-### Template A: Technical Case Study & Release (Long-Form Post)
+1. **Benchmark delta hook:**
+   > *"How we cut Docker build times from 14 minutes to 38 seconds with one multi-stage cache flag:"*
+2. **Production post-mortem hook:**
+   > *"We burned $14,000 in API credits overnight. Here is the 1-line async retry bug behind the infinite loop (and how we capped it):"*
+3. **Engineering trade-off hook:**
+   > *"Stop fighting the agent harness: as models get stronger, rigid hooks fail in surprising ways. Here is the constraint model we moved to:"*
+
+---
+
+## 4. Templates
+
+### Template A: Technical case study or release (X Premium long-form)
 ```text
-[Hook < 240 chars: Tension / Discovery / Sensation]
+[Hook under 240 chars: metric, failure mode, or decision]
 
-THE CHANGELOG:
-• [Project 1]: [Key upgrade & 1-line impact]
-• [Project 2]: [Key upgrade & 1-line impact]
-• [Project 3]: [Key upgrade & 1-line impact]
+WHAT CHANGED:
+• [Module 1]: [Upgrade and measured effect]
+• [Module 2]: [Upgrade and measured effect]
+• [Module 3]: [Upgrade and measured effect]
 
-THE ARCHITECTURAL LESSON: [Core Realization]
-[2-3 paragraphs explaining the failure mode, the insight, and why traditional methods broke]
+WHY PREVIOUS DESIGN FAILED:
+[2 to 3 crisp paragraphs explaining root cause and constraints]
 
-THE SOLUTION:
-1. [Principle 1]
-2. [Principle 2]
-3. [Principle 3]
+FIX:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
 
-[Direct Links to repos/posts]
+Repo and benchmark logs: [URL]
+```
+
+### Template B: Micro-thread (all X accounts, <= 280 chars per post)
+```text
+1/ [Hook < 240 chars + key metric + attached visual]
+
+2/ [Root cause or constraint < 280 chars]
+
+3/ [Fix + benchmark table or code image < 280 chars]
+
+4/ [Trade-offs + direct URL to repo or post < 280 chars]
 ```

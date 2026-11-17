@@ -15,7 +15,7 @@
 
 | Property | Value |
 | :--- | :--- |
-| **Input Modalities** | Text, Image / PDF |
+| **Input Modalities** | Text, Image, Video (YouTube URLs, MP4s), PDF |
 | **Output Modalities** | Image and Text (Interleaved) |
 | **Input Token Limit** | 65,536 tokens |
 | **Output Token Limit** | 4,096 tokens |
@@ -68,10 +68,10 @@ Nano Banana 2 Lite generates images within a 1K bounding box across 14 discrete 
 
 ## CLI & SDK Examples
 
-### 1. `uv run skills/nano-banana/scripts/banana.py`: Fast 1K Generation
+### 1. `uv run scripts/banana.py`: Fast 1K Generation
 
 ```bash
-uv run skills/nano-banana/scripts/banana.py \
+uv run scripts/banana.py \
   -p "A vibrant sticker of a cute robot drinking bubble tea, white background" \
   -f "robot_sticker.png" \
   -m "nano-banana-2-lite" \

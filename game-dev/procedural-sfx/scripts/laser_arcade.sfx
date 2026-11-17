@@ -1,0 +1,5 @@
+title "Arcade Pulse Laser"
+type sfx
+
+inst laser preset=arcade_laser duty=0.50->0.125 vol=0.32
+track main laser: 950Hz->110Hz:140ms

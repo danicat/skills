@@ -1,0 +1,393 @@
+title "Crimson Vanguard - Build-Up, Climax & Resolution (12-Channel)"
+type song
+tempo vivace 160
+time 4/4
+
+# ==============================================================================
+# 1. Dual-YM2612 12-Channel Battle Instrument Palette
+# ==============================================================================
+inst lead_fm   wave=fm       vol=0.10 pan=-0.15 adsr=0.005,0.05,0.72,0.04 fm=2.0,2.8 vib=6.0,5.5
+inst lead_saw  wave=sawtooth vol=0.07 pan=0.18  adsr=0.008,0.05,0.68,0.04 vib=5.8,4.5
+inst counter   wave=square   vol=0.07 pan=0.30  adsr=0.010,0.06,0.60,0.04 duty=0.25  vib=5.0,3.5
+inst brass     wave=fm       vol=0.06 pan=-0.28 adsr=0.012,0.08,0.65,0.05 fm=1.0,2.2
+inst pad       wave=sawtooth vol=0.05 pan=0.00  adsr=0.100,0.15,0.85,0.15 lpf=0.35
+inst choir     wave=triangle vol=0.05 pan=0.35  adsr=0.120,0.15,0.80,0.15 vib=4.5,3.0
+inst arp_tri   wave=triangle vol=0.06 pan=-0.48 adsr=0.005,0.03,0.40,0.02
+inst arp_pulse wave=square   vol=0.04 pan=0.48  adsr=0.005,0.03,0.35,0.02 duty=0.125
+inst bell      wave=fm       vol=0.05 pan=-0.35 adsr=0.002,0.10,0.15,0.05 fm=3.5,1.8
+inst bass_sq   wave=square   vol=0.09 pan=0.00  adsr=0.005,0.04,0.55,0.02 duty=0.50
+inst sub_sine  wave=sine     vol=0.10 pan=0.00  adsr=0.005,0.06,0.75,0.03
+inst drums     wave=kick     vol=0.13 pan=0.00  adsr=0.002,0.05,0.10,0.02 freq=145Hz->36Hz noise=0.12,0.30
+
+# Shared 4-bar silence block (16 beats) for dynamic channel staging
+pattern rest_4bar = R:1 | R:1 | R:1 | R:1
+
+# ==============================================================================
+# 2. Channel 1: Primary 2-Operator FM Lead (Act I -> Act II -> Act III)
+# ==============================================================================
+# Act I (Build-Up Phase 2, Bars 5-8): Low-register brooding theme statement
+pattern lead_buildup_2 =
+  E4:4. G4:8 B4:4 A4:8 G4:8 |
+  E4:4. G4:8 C5:4 B4:8 A4:8 |
+  A4:4. C5:8 E5:4 D5:8 C5:8 |
+  B4:2 F#4:4 B4:4
+
+# Act I (Build-Up Phase 3, Bars 9-12): Ascending pitch-glide riser (Am -> Bm -> C -> B7)
+pattern lead_buildup_3 =
+  A4:8 C5:8 E5:8 A5:8 E5:4 C5:4 |
+  B4:8 D5:8 F#5:8 B5:8 F#5:4 D5:4 |
+  C5:8 E5:8 G5:8 C6:8 G5:8 A5:8 B5:8 C6:8 |
+  B5:8 D#6:8 F#6:8 D#6:8 B5:16 C6:16 B5:16 A5:16 F#5:4
+
+# Act II (Climax Phase 4, Bars 13-16): Full Tutti Crimson Assault (Em -> C -> Am -> B7)
+pattern lead_climax_1 =
+  E5:8 R:16 E5:16 G5:8 B5:8 A5:8 G5:8 F#5:8 G5:8 |
+  E5:4. G5:8 C6:8 B5:8 A5:8 G5:8 |
+  A5:8 E5:8 C5:8 E5:8 A5:8 B5:8 C6:8 A5:8 |
+  B5:4. A5:8 G5:8 F#5:8 D#5:8 B4:8
+
+# Act II (Climax Phase 5, Bars 17-20): Heroic Counter-Offensive Bridge (G -> D -> Am -> B7)
+pattern lead_climax_2 =
+  B5:4 D6:8 B5:8 G5:8 A5:8 B5:8 D6:8 |
+  A5:4 F#6:8 D6:8 A5:8 B5:8 C#6:8 D6:8 |
+  C6:4 E6:8 C6:8 A5:8 B5:8 C6:8 E6:8 |
+  B5:8 C6:8 B5:8 A5:8 G5:8 F#5:8 D#5:8 B4:8
+
+# Act II (Climax Phase 6, Bars 21-24): Apex Overdrive & Diminished Fury (Em -> Dm7 -> C#dim7 -> B7)
+pattern lead_climax_3 =
+  E6:8 B5:8 G5:8 B5:8 E6:16 F#6:16 G6:8 F#6:8 E6:8 |
+  D6:8 A5:8 F5:8 A5:8 D6:16 E6:16 F6:8 E6:8 D6:8 |
+  C#6:8 G5:8 E5:8 G5:8 A#5:8 C#6:8 E6:8 G6:8 |
+  F#6:4 D#6:8 B5:8 G6:16 F#6:16 E6:16 D#6:16 B5:4
+
+# Act III (Resolution Phase 7, Bars 25-28): Sweeping Lyrical Catharsis (Cmaj7 -> D6 -> Gmaj7 -> Em7)
+pattern lead_res_1 =
+  E6:2. D6:8 C6:8 |
+  A5:2. B5:8 A5:8 |
+  B5:4. D6:8 G6:2 |
+  F#6:4. E6:8 B5:2
+
+# Act III (Resolution Phase 8, Bars 29-32): Aftermath & Seamless Loop Cadence (Am7 -> Fmaj7 -> B7 -> Em)
+pattern lead_res_2 =
+  C6:2. B5:8 A5:8 |
+  A5:2. G5:8 F5:8 |
+  F#5:2 D#5:2 |
+  E5:1
+
+# ==============================================================================
+# 3. Channel 2: Twin-Lead Sawtooth Harmony
+# ==============================================================================
+pattern harm_buildup_3 =
+  E4:8 A4:8 C5:8 E5:8 C5:4 A4:4 |
+  F#4:8 B4:8 D5:8 F#5:8 D5:4 B4:4 |
+  G4:8 C5:8 E5:8 G5:8 E5:8 F#5:8 G5:8 A5:8 |
+  F#5:8 B5:8 D#6:8 B5:8 F#5:16 G5:16 F#5:16 E5:16 D#5:4
+
+pattern harm_climax_1 =
+  B4:8 R:16 B4:16 E5:8 G5:8 F#5:8 E5:8 D#5:8 E5:8 |
+  C5:4. E5:8 G5:8 F#5:8 E5:8 D5:8 |
+  C5:8 A4:8 E4:8 A4:8 C5:8 D5:8 E5:8 C5:8 |
+  F#5:4. E5:8 D#5:8 C5:8 B4:8 F#4:8
+
+pattern harm_climax_2 =
+  G5:4 B5:8 G5:8 D5:8 F#5:8 G5:8 B5:8 |
+  F#5:4 D6:8 A5:8 F#5:8 G5:8 A5:8 B5:8 |
+  A5:4 C6:8 A5:8 E5:8 G5:8 A5:8 C6:8 |
+  F#5:8 A5:8 G5:8 F#5:8 E5:8 D#5:8 B4:8 F#4:8
+
+pattern harm_climax_3 =
+  B5:8 G5:8 E5:8 G5:8 B5:16 D6:16 E6:8 D6:8 B5:8 |
+  A5:8 F5:8 D5:8 F5:8 A5:16 C6:16 D6:8 C6:8 A5:8 |
+  G5:8 E5:8 C#5:8 E5:8 G5:8 A#5:8 C#6:8 E6:8 |
+  D#6:4 B5:8 F#5:8 E6:16 D#6:16 C6:16 B5:16 F#5:4
+
+pattern harm_res_1 =
+  C6:2. G5:8 E5:8 |
+  F#5:2. G5:8 F#5:8 |
+  G5:4. B5:8 D6:2 |
+  D6:4. B5:8 G5:2
+
+# ==============================================================================
+# 4. Channel 3: 25% Pulse Counter-Melody
+# ==============================================================================
+pattern counter_buildup_2 =
+  B3:8 R:8 E4:8 G4:8 F#4:8 E4:8 D#4:8 E4:8 |
+  C4:4. E4:8 G4:8 F#4:8 E4:8 D4:8 |
+  C4:8 A3:8 E3:8 A3:8 C4:8 D4:8 E4:8 C4:8 |
+  D#4:2 B3:2
+
+pattern counter_buildup_3 =
+  C5:8 A4:8 E4:8 A4:8 C5:8 B4:8 A4:8 E4:8 |
+  D5:8 B4:8 F#4:8 B4:8 D5:8 C#5:8 B4:8 F#4:8 |
+  E5:8 C5:8 G4:8 C5:8 E5:8 D5:8 E5:8 G5:8 |
+  F#5:4 D#5:4 B4:4 F#4:4
+
+pattern counter_climax_1 =
+  B4:8 R:8 E5:8 G5:8 F#5:8 E5:8 D#5:8 E5:8 |
+  C5:4. E5:8 G5:8 F#5:8 E5:8 D5:8 |
+  C5:8 A4:8 E4:8 A4:8 C5:8 D5:8 E5:8 C5:8 |
+  D#5:4. C5:8 B4:8 A4:8 F#4:8 D#4:8
+
+pattern counter_climax_2 =
+  G4:8 B4:8 D5:8 G5:8 F#5:8 G5:8 D5:8 B4:8 |
+  F#4:8 A4:8 D5:8 F#5:8 E5:8 F#5:8 D5:8 A4:8 |
+  A4:8 C5:8 E5:8 A5:8 G5:8 A5:8 E5:8 C5:8 |
+  F#5:8 G5:8 F#5:8 E5:8 D#5:8 C5:8 B4:8 F#4:8
+
+pattern counter_climax_3 =
+  B4:8 G4:8 E4:8 G4:8 B4:8 D5:8 E5:8 B4:8 |
+  A4:8 F4:8 D4:8 F4:8 A4:8 C5:8 D5:8 A4:8 |
+  G4:8 E4:8 C#4:8 E4:8 G4:8 A#4:8 C#5:8 E5:8 |
+  D#5:4 B4:8 F#4:8 A4:8 G4:8 F#4:4
+
+pattern counter_res_2 =
+  E5:4 C5:4 A4:2 |
+  C5:4 A4:4 F4:2 |
+  B4:2 F#4:2 |
+  G4:2 E4:2
+
+# ==============================================================================
+# 5. Channel 4: Syncopated FM Brass Stabs
+# ==============================================================================
+pattern brass_em = [E4 G4 B4]:8 R:8 [E4 G4 B4]:8 [E4 G4 B4]:4 R:8 [E4 G4 B4]:4
+pattern brass_c  = [C4 E4 G4]:8 R:8 [C4 E4 G4]:8 [C4 E4 G4]:4 R:8 [C4 E4 G4]:4
+pattern brass_g  = [G4 B4 D5]:8 R:8 [G4 B4 D5]:8 [G4 B4 D5]:4 R:8 [G4 B4 D5]:4
+pattern brass_b7 = [B3 D#4 F#4]:8 R:8 [B3 D#4 F#4]:8 [B3 D#4 F#4]:4 R:8 [B3 D#4 F#4]:4
+
+pattern brass_riser =
+  [A3 C4 E4]:4 R:4 [A3 C4 E4]:4 R:4 |
+  [B3 D4 F#4]:4 R:4 [B3 D4 F#4]:4 R:4 |
+  [C4 E4 G4]:8 R:8 [C4 E4 G4]:8 R:8 [C4 E4 G4]:8 R:8 [C4 E4 G4]:8 R:8 |
+  [B3 D#4 F#4]:8 [B3 D#4 F#4]:8 [B3 D#4 F#4]:8 [B3 D#4 F#4]:8 [B3 D#4 F#4 B4]:2
+
+pattern brass_climax_1 =
+  brass_em | brass_c | brass_em@-7 | brass_b7
+
+pattern brass_climax_2 =
+  brass_g | [D4 F#4 A4]:8 R:8 [D4 F#4 A4]:8 [D4 F#4 A4]:4 R:8 [D4 F#4 A4]:4 | brass_em@-7 | brass_b7
+
+pattern brass_climax_3 =
+  brass_em | [D4 F4 A4]:8 R:8 [D4 F4 A4]:8 [D4 F4 A4]:4 R:8 [D4 F4 A4]:4 | [C#4 E4 G4]:8 R:8 [C#4 E4 G4]:8 [C#4 E4 G4]:4 R:8 [C#4 E4 G4]:4 | brass_b7
+
+# ==============================================================================
+# 6. Channel 5: Low-Pass Sawtooth Harmony Pad Chords (Continuous Foundation)
+# ==============================================================================
+pattern pad_buildup_1 =
+  [E2 B2 E3]:1 | [C2 G2 C3]:1 | [A2 E3 A3]:1 | [B2 F#3 B3]:1
+
+pattern pad_buildup_2 =
+  [E3 G3 B3]:1 | [C3 E3 G3]:1 | [A2 C3 E3]:1 | [B2 D#3 F#3 A3]:1
+
+pattern pad_riser =
+  [A2 C3 E3]:1 | [B2 D3 F#3]:1 | [C3 E3 G3]:1 | [B2 D#3 F#3 A3]:1
+
+pattern pad_climax_1 =
+  [E3 G3 B3]:1 | [C3 E3 G3]:1 | [A2 C3 E3]:1 | [B2 D#3 F#3 A3]:1
+
+pattern pad_climax_2 =
+  [G3 B3 D4]:1 | [D3 F#3 A3]:1 | [A2 C3 E3]:1 | [B2 D#3 F#3 A3]:1
+
+pattern pad_climax_3 =
+  [E3 G3 B3]:1 | [D3 F3 A3 C4]:1 | [C#3 E3 G3 A#3]:1 | [B2 D#3 F#3 A3]:1
+
+pattern pad_res_1 =
+  [C3 E3 G3]:1 | [D3 F#3 A3]:1 | [G2 B2 D3]:1 | [E3 G3 B3]:1
+
+pattern pad_res_2 =
+  [A2 C3 E3]:1 | [F2 A2 C3]:1 | [B2 D#3 F#3 A3]:1 | [E2 B2 E3 G3]:1
+
+# ==============================================================================
+# 7. Channel 6: High Shimmer Choir Strings
+# ==============================================================================
+pattern choir_riser =
+  A5:1 | B5:1 | C6:1 | D#6:2 F#6:2
+
+pattern choir_climax_1 =
+  B5:2 G5:2 | G5:2 E5:2 | E5:2 A5:2 | F#5:2 D#5:2
+
+pattern choir_climax_2 =
+  D6:2 B5:2 | A5:2 F#5:2 | E5:2 A5:2 | F#5:2 B5:2
+
+pattern choir_climax_3 =
+  B5:2 E6:2 | A5:2 D6:2 | G5:2 C#6:2 | F#5:2 B5:2
+
+pattern choir_res_1 =
+  G5:2 E5:2 | F#5:2 A5:2 | G5:2 D6:2 | B5:2 G5:2
+
+pattern choir_res_2 =
+  E5:1 | F5:1 | F#5:2 D#5:2 | E5:1
+
+# ==============================================================================
+# 8. Channel 7: Left 16th-Note Triangle Arpeggiator
+# ==============================================================================
+pattern arp_em = (E4:16 G4:16 B4:16 E5:16 E5:16 B4:16 G4:16 E4:16)*2
+pattern arp_c  = (C4:16 E4:16 G4:16 C5:16 C5:16 G4:16 E4:16 C4:16)*2
+pattern arp_g  = (G4:16 B4:16 D5:16 G5:16 G5:16 D5:16 B4:16 G4:16)*2
+pattern arp_b7 = (B3:16 D#4:16 F#4:16 B4:16 B4:16 F#4:16 D#4:16 B3:16)*2
+
+pattern arp_buildup_1 =
+  arp_em | arp_c | arp_em@-7 | arp_b7
+
+pattern arp_riser =
+  arp_em@-7 | (B3:16 D4:16 F#4:16 B4:16 B4:16 F#4:16 D4:16 B3:16)*2 | arp_c | arp_b7
+
+pattern arp_climax_2 =
+  arp_g | (D4:16 F#4:16 A4:16 D5:16 D5:16 A4:16 F#4:16 D4:16)*2 | arp_em@-7 | arp_b7
+
+pattern arp_climax_3 =
+  arp_em | (D4:16 F4:16 A4:16 D5:16 D5:16 A4:16 F4:16 D4:16)*2 | (C#4:16 E4:16 G4:16 A#4:16 A#4:16 G4:16 E4:16 C#4:16)*2 | arp_b7
+
+pattern arp_res_1 =
+  arp_c | (D4:16 F#4:16 A4:16 D5:16 D5:16 A4:16 F#4:16 D4:16)*2 | arp_g | arp_em
+
+pattern arp_res_2 =
+  arp_em@-7 | (F4:16 A4:16 C5:16 F5:16 F5:16 C5:16 A4:16 F4:16)*2 | arp_b7 | (E4:8 B4:8 G4:8 E4:8)*2
+
+# ==============================================================================
+# 9. Channel 8: Right Interlocking 12.5% Pulse Arpeggiator
+# ==============================================================================
+pattern arp_inv_em = (E5:16 B4:16 G4:16 E4:16 G4:16 B4:16 E5:16 G5:16)*2
+pattern arp_inv_c  = (C5:16 G4:16 E4:16 C4:16 E4:16 G4:16 C5:16 E5:16)*2
+pattern arp_inv_g  = (G5:16 D5:16 B4:16 G4:16 B4:16 D5:16 G5:16 B5:16)*2
+pattern arp_inv_b7 = (B4:16 F#4:16 D#4:16 B3:16 D#4:16 F#4:16 B4:16 D#5:16)*2
+
+pattern arp_inv_a =
+  arp_inv_em | arp_inv_c | arp_inv_em@-7 | arp_inv_b7
+
+pattern arp_inv_riser =
+  arp_inv_em@-7 | (B4:16 F#4:16 D4:16 B3:16 D4:16 F#4:16 B4:16 D5:16)*2 | arp_inv_c | arp_inv_b7
+
+pattern arp_inv_climax_2 =
+  arp_inv_g | (D5:16 A4:16 F#4:16 D4:16 F#4:16 A4:16 D5:16 F#5:16)*2 | arp_inv_em@-7 | arp_inv_b7
+
+pattern arp_inv_climax_3 =
+  arp_inv_em | (D5:16 A4:16 F4:16 D4:16 F4:16 A4:16 D5:16 F5:16)*2 | (A#4:16 G4:16 E4:16 C#4:16 E4:16 G4:16 A#4:16 C#5:16)*2 | arp_inv_b7
+
+pattern arp_inv_res_1 =
+  arp_inv_c | (D5:16 A4:16 F#4:16 D4:16 F#4:16 A4:16 D5:16 F#5:16)*2 | arp_inv_g | arp_inv_em
+
+# ==============================================================================
+# 10. Channel 9: Metallic FM Battle Chimes (Climax & Catharsis Only)
+# ==============================================================================
+pattern bell_em = E5:8 B4:8 G5:8 B4:8 E5:8 B4:8 G5:8 E5:8
+pattern bell_c  = C5:8 G4:8 E5:8 G4:8 C5:8 G4:8 E5:8 C5:8
+pattern bell_g  = G5:8 D5:8 B5:8 D5:8 G5:8 D5:8 B5:8 G5:8
+pattern bell_b7 = B4:8 F#4:8 D#5:8 F#4:8 B4:8 F#4:8 D#5:8 F#5:8
+
+pattern bells_climax_1 =
+  bell_em | bell_c | bell_em@-7 | bell_b7
+
+pattern bells_climax_2 =
+  bell_g | D5:8 A4:8 F#5:8 A4:8 D5:8 A4:8 F#5:8 D5:8 | bell_em@-7 | bell_b7
+
+pattern bells_climax_3 =
+  bell_em | D5:8 A4:8 F5:8 A4:8 D5:8 A4:8 F5:8 D5:8 | C#5:8 G4:8 E5:8 G4:8 C#5:8 G4:8 E5:8 G5:8 | bell_b7
+
+pattern bells_res_1 =
+  G5:4 E5:4 C6:2 | F#5:4 D5:4 A5:2 | D5:4 G5:4 B5:2 | E5:4 G5:4 B5:2
+
+# ==============================================================================
+# 11. Channel 10: Driving 16th-Note Square Octave Gallop Bass
+# ==============================================================================
+pattern bass_em = (E1:16 E2:16)*8
+
+pattern bass_a =
+  bass_em | bass_em@-4 | bass_em@-7 | (B0:16 B1:16)*6 B1:8 C2:8
+
+pattern bass_riser =
+  bass_em@-7 | bass_em@-5 | bass_em@-4 | (B0:16 B1:16)*4 B1:8 C2:8 C#2:8 D#2:8
+
+pattern bass_climax_2 =
+  bass_em@+3 | bass_em@-2 | bass_em@-7 | (B0:16 B1:16)*6 F#1:8 D#1:8
+
+pattern bass_climax_3 =
+  bass_em | bass_em@-2 | bass_em@-3 | (B0:16 B1:16)*4 B1:8 A1:8 G1:8 F#1:8
+
+# ==============================================================================
+# 12. Channel 11: Deep Sine Sub-Bass Anchor
+# ==============================================================================
+pattern sub_em = E1:4. E1:8 E2:4 E1:4
+pattern sub_b7 = B0:4. B0:8 B1:4 B0:4
+
+pattern sub_buildup_1 =
+  E1:2 R:2 | C1:2 R:2 | A0:2 R:2 | B0:2 R:2
+
+pattern sub_a =
+  sub_em | sub_em@-4 | sub_em@-7 | sub_b7
+
+pattern sub_riser =
+  A0:4. A0:8 A1:4 A0:4 | B0:4. B0:8 B1:4 B0:4 | C1:4. C1:8 C2:4 C1:4 | B0:4 B0:4 F#1:4 B0:4
+
+pattern sub_climax_2 =
+  sub_em@+3 | sub_em@-2 | sub_em@-7 | sub_b7
+
+pattern sub_climax_3 =
+  sub_em | sub_em@-2 | sub_em@-3 | B0:4 F#1:4 D#1:4 B0:4
+
+pattern sub_res_1 =
+  C1:1 | D1:1 | G0:1 | E1:1
+
+pattern sub_res_2 =
+  A0:1 | F0:1 | B0:1 | E1:2 R:2
+
+# ==============================================================================
+# 13. Channel 12: Dynamic 3-Act Percussion Architecture
+# ==============================================================================
+# Act I Phase 1: Shadow Heartbeat Pulse (Kick + Hat only, no snare)
+pattern drums_intro_pulse =
+  (kick:8 hat:8 hat:8 hat:8 kick:8 hat:8 hat:8 hat:8)*4
+
+# Act I Phase 2: Gathering Storm Groove
+pattern drum_bar_crash =
+  crash:16 hat:32 R:32 kick:16 hat:16 snare:16 hat:32 hat:32 kick:16 hat:16
+  kick:16 hat:32 R:32 kick:16 hat:16 snare:16 hat:32 hat:32 kick:16 hat:16 |
+
+pattern drum_bar =
+  (kick:16 hat:32 R:32 kick:16 hat:16 snare:16 hat:32 hat:32 kick:16 hat:16)*2
+
+pattern drum_fill =
+  kick:16 hat:16 snare:16 hat:16 kick:16 snare:16 tom:16 tom:16 (snare:32)*8 (tom:16)*4
+
+pattern drums_buildup_groove =
+  drum_bar * 3 | drum_fill
+
+# Act I Phase 3: Pre-Climax Snare + Tom Riser (Bars 9-12)
+pattern drums_riser_4bar =
+  drum_bar * 2 |
+  (kick:8 snare:8)*4 |
+  (snare:16)*8 (snare:32)*8 (tom:16)*4
+
+# Act II (Climax Phases 4-6): Full Double-Time Battle Percussion
+pattern drums_climax_4bar =
+  drum_bar_crash | drum_bar * 2 | drum_fill
+
+# Act III Phase 7: Half-Time Catharsis Groove
+pattern drums_catharsis =
+  crash:4 hat:4 snare:4 hat:4 |
+  (kick:4 hat:4 snare:4 hat:4)*3
+
+# Act III Phase 8: Aftermath Fade-Out Pulse (Loops cleanly back to Bar 1)
+pattern drums_outro_pulse =
+  kick:4 hat:4 snare:4 hat:4 |
+  kick:4 hat:4 R:4 hat:4 |
+  kick:4 hat:4 R:2 |
+  kick:2 R:2
+
+# ==============================================================================
+# 14. Master 12-Channel 3-Act Arrangement (32 Bars / 128 Beats / 48.00s @ 160 BPM)
+#     Act I:   Phases 1-3 (Bars 1-12,  0.0s - 18.0s)  -> THE BUILD-UP
+#     Act II:  Phases 4-6 (Bars 13-24, 18.0s - 36.0s) -> THE CLIMAX
+#     Act III: Phases 7-8 (Bars 25-32, 36.0s - 48.0s) -> THE RESOLUTION
+# ==============================================================================
+track ch01_fm_lead       lead_fm:   rest_4bar | lead_buildup_2@mp->mf | lead_buildup_3@crescendo | lead_climax_1@f | lead_climax_2@f->ff | lead_climax_3@ff | lead_res_1@mf@legato | lead_res_2@diminuendo
+track ch02_harmony_lead  lead_saw:  rest_4bar | rest_4bar | harm_buildup_3@fade_in | harm_climax_1@f | harm_climax_2@f->ff | harm_climax_3@ff | harm_res_1@diminuendo | rest_4bar
+track ch03_counter_pulse counter:   rest_4bar | counter_buildup_2@mp | counter_buildup_3@crescendo | counter_climax_1@f | counter_climax_2@f | counter_climax_3@ff | rest_4bar | counter_res_2@fade_out
+track ch04_fm_brass      brass:     rest_4bar | rest_4bar | brass_riser@crescendo@marcato | brass_climax_1@marcato@f | brass_climax_2@marcato@f | brass_climax_3@marcato@ff | rest_4bar | rest_4bar
+track ch05_warm_pad      pad:       pad_buildup_1@fade_in | pad_buildup_2@mp->mf | pad_riser@crescendo | pad_climax_1@f | pad_climax_2@f | pad_climax_3@ff | pad_res_1@mf | pad_res_2@fade_out
+track ch06_high_choir    choir:     rest_4bar | rest_4bar | choir_riser@fade_in | choir_climax_1@mf | choir_climax_2@f | choir_climax_3@ff | choir_res_1@mf | choir_res_2@fade_out
+track ch07_arp_left      arp_tri:   arp_buildup_1@fade_in | arp_buildup_1@mp | arp_riser@crescendo | arp_buildup_1@f | arp_climax_2@f | arp_climax_3@ff | arp_res_1@mf | arp_res_2@fade_out
+track ch08_arp_right     arp_pulse: rest_4bar | arp_inv_a@staccato@mp | arp_inv_riser@staccato@crescendo | arp_inv_a@staccato@f | arp_inv_climax_2@staccato@f | arp_inv_climax_3@staccato@ff | arp_inv_res_1@staccato@diminuendo | rest_4bar
+track ch09_fm_bells      bell:      rest_4bar | rest_4bar | rest_4bar | bells_climax_1@mf | bells_climax_2@f | bells_climax_3@ff | bells_res_1@fade_out | rest_4bar
+track ch10_slap_bass     bass_sq:   rest_4bar | bass_a@mp->mf | bass_riser@crescendo | bass_a@f | bass_climax_2@f | bass_climax_3@ff | rest_4bar | rest_4bar
+track ch11_sub_bass      sub_sine:  sub_buildup_1@fade_in | sub_a@mp->mf | sub_riser@crescendo | sub_a@f | sub_climax_2@f | sub_climax_3@ff | sub_res_1@mf | sub_res_2@fade_out
+track ch12_drums         drums:     drums_intro_pulse@fade_in | drums_buildup_groove@mp->mf | drums_riser_4bar@crescendo | drums_climax_4bar@f * 2 | drums_climax_4bar@ff | drums_catharsis@mf | drums_outro_pulse@fade_out

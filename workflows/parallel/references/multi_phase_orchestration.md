@@ -1,31 +1,32 @@
-# Multi-Phase Parallel Orchestration Guide
+# Multi-phase parallel orchestration guide
 
-This reference guide details how to plan, execute, and monitor **multi-phase parallel budgets** specified in a single prompt (e.g., *"use /parallel 5 for planning and /parallel 10 for implementation"*).
+This guide explains how to plan, run, and monitor **multi-phase parallel budgets** specified in a single request (such as `"plan with DOP 4 and implement with DOP 10"` or `"explore with parallel(auto), then implement with DOP 8"`).
 
 ---
 
-## 1. Multi-Phase Syntax & Concept
+## 1. Multi-phase syntax and concept
 
-Users often demand different degrees of parallelism across consecutive stages of a pipeline. Early stages (ideation, planning, scoping) benefit from focused convergence with smaller budgets, while later stages (writing, implementation, data processing) scale up to high concurrency.
+Complex pipelines often need different concurrency levels across stages. Early stages (scoping, planning, architecture) benefit from compact convergence with smaller or `auto` budgets, while execution stages (drafting, module builds, data processing) scale up to wider concurrency.
 
-### Common Multi-Phase Invocations:
-```
+### Common multi-phase examples
+
+```text
 # Two-phase engineering pipeline
-/parallel 4 for architecture and /parallel 10 for implementation
+Plan architecture with DOP 4, then run implementation with DOP 10
 
 # Three-phase publishing pipeline
-Phase 1: /parallel 3 (research); Phase 2: /parallel 6 (drafting); Phase 3: /parallel 2 (editing)
+Phase 1: research (DOP = 3); Phase 2: drafting (DOP = 6); Phase 3: review (DOP = 2)
 
-# Natural expression
-Plan with DOP 3, then run execution with DOP 8
+# Hybrid auto-to-fixed pipeline
+Explore options with parallel(auto), then implement modules with DOP 8
 ```
 
-```
+```text
 +-------------------------------------------------------------------------+
 |                  MULTI-PHASE BARRIER SYNCHRONIZATION                    |
 |                                                                         |
-|  [PHASE 1: Planning]   Budget: 5 Workers                                |
-|  Coordinator dispatches W1..W5 ===> YIELDS MAIN SESSION IMMEDIATELY    |
+|  [PHASE 1: Planning]   Budget: 5 Workers (or auto)                      |
+|  Coordinator dispatches W1..W5 ===> ENDS TURN IMMEDIATELY               |
 |  W1..W5 complete ===> Reactive wakeup of Coordinator                    |
 |                                                                         |
 |                       === PHASE 1 REDUCE BARRIER ===                    |
@@ -33,7 +34,7 @@ Plan with DOP 3, then run execution with DOP 8
 |                       (Optional Human Gate / Review)                    |
 |                                                                         |
 |  [PHASE 2: Execution]  Budget: 10 Workers                               |
-|  Coordinator dispatches W1..W10 ===> YIELDS MAIN SESSION IMMEDIATELY   |
+|  Coordinator dispatches W1..W10 ===> ENDS TURN IMMEDIATELY              |
 |  W1..W10 complete ===> Reactive wakeup of Coordinator                   |
 |                                                                         |
 |                       === FINAL REDUCE & DELIVERY ===                   |
@@ -42,93 +43,92 @@ Plan with DOP 3, then run execution with DOP 8
 
 ---
 
-## 2. The Non-Blocking Phase State Machine
+## 2. The non-blocking phase state machine
 
-To honor the **Hard Constraint** that the main session remains unblocked >= 99% of the time, the Coordinator must never run synchronous waiting loops across phases.
+To keep the main session unblocked for user input, the Coordinator never enters synchronous wait loops between phases.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Phase1_Parse: Parse Multi-Phase Prompt
+    [*] --> Phase1_Parse: Parse Multi-Phase Request
     Phase1_Parse --> Phase1_Dispatch: Partition Phase 1 Tasks
-    Phase1_Dispatch --> MainSession_Idle: Spawn W1..W_k & End Turn
+    Phase1_Dispatch --> MainSession_Idle: Dispatch Workers and End Turn
 
-    MainSession_Idle --> Phase1_Reduce: All Phase 1 Workers Finish (Wakeup)
-    MainSession_Idle --> User_Steering: User Interruption / Command
+    MainSession_Idle --> Phase1_Reduce: Phase 1 Workers Finish (Wakeup)
+    MainSession_Idle --> User_Steering: User Message
 
-    User_Steering --> MainSession_Idle: Process & Reply to User
+    User_Steering --> MainSession_Idle: Handle Steering and End Turn
 
-    Phase1_Reduce --> Phase2_Gate: Synthesize Phase 1 Deliverables
+    Phase1_Reduce --> Phase2_Gate: Write Consolidated Phase 1 Artifact
     Phase2_Gate --> Phase2_Dispatch: Partition Phase 2 Tasks
-    Phase2_Dispatch --> MainSession_Idle2: Spawn W1..W_m & End Turn
+    Phase2_Dispatch --> MainSession_Idle2: Dispatch Workers and End Turn
 
-    MainSession_Idle2 --> Final_Reduce: All Phase 2 Workers Finish (Wakeup)
-    MainSession_Idle2 --> User_Steering: User Interruption / Command
+    MainSession_Idle2 --> Final_Reduce: Phase 2 Workers Finish (Wakeup)
+    MainSession_Idle2 --> User_Steering: User Message
 
-    Final_Reduce --> [*]: Present Complete Results
+    Final_Reduce --> [*]: Deliver Verified Output
 ```
 
-### Protocol Rules:
-1. **Fire-and-Yield per Phase**: At every dispatch boundary, the Coordinator spawns the phase's subagents and **stops calling tools immediately**.
-2. **Barrier Synchronization**: Phase `K + 1` cannot begin until all Phase `K` tasks reach completion and their deliverables are synthesized.
-3. **No Busy-Wait Polling**: The Coordinator sleeps passively between dispatches; the messaging system reactively resumes execution when workers report back.
-4. **Steering In-Flight**: If the user sends a message while Phase 1 is running, the Coordinator responds immediately, steering or killing workers as requested without disrupting phase tracking.
+### Protocol rules
+1. **Fire-and-yield per phase:** At every dispatch boundary, launch that phase's workers and **end your turn immediately**.
+2. **Barrier synchronization:** Phase `K + 1` starts only after all Phase `K` tasks complete and their deliverables are synthesized.
+3. **No busy-wait polling:** Wait passively between dispatches; let the runtime wake the Coordinator when workers finish.
+4. **Steering in flight:** If the user sends a message during Phase 1, respond immediately, redirecting or cancelling active workers without losing phase state.
 
 ---
 
-## 3. State Handoff Between Phases ("Document-First")
+## 3. State handoff between phases ("Document-First")
 
-Never pass raw conversation transcripts or unbounded tool histories from Phase `K` into Phase `K + 1`.
+Never forward raw conversation transcripts or unbounded tool logs from Phase `K` into Phase `K + 1`.
 
-### The Document-First Handoff Pattern:
-1. **Consolidated Artifact**: When Phase 1 completes, the Coordinator writes a clean, consolidated specification document into the workspace (e.g., `specs/implementation_plan.md` or `briefs/master_research_brief.md`).
-2. **Fresh Worker Contexts**: Phase 2 workers are spawned as fresh, disposable subagents. Their instructions point to the consolidated document path.
-3. **Benefits**:
-   - Zero context bloat (Phase 2 workers do not carry Phase 1 reasoning traces or dead-ends).
-   - Traceability (Phase 1 decisions are recorded as persistent workspace artifacts).
-   - Determinism (Phase 2 workers all reference the exact same authoritative contract).
+### The document-first handoff pattern
+1. **Consolidated artifact:** When Phase 1 completes, write a crisp specification or brief to disk (such as `specs/implementation_plan.md` or `briefs/master_research_brief.md`).
+2. **Fresh worker contexts:** Launch Phase 2 workers as fresh, disposable subagents pointing directly to that artifact path.
+3. **Benefits:**
+   - **Zero context bloat:** Phase 2 workers avoid carrying Phase 1 dead ends and raw search logs.
+   - **Traceability:** Phase 1 decisions live in a persistent artifact.
+   - **Consistency:** Every Phase 2 worker builds against the exact same written contract.
 
 ---
 
-## 4. Multi-Phase Pipeline Patterns
+## 4. Multi-phase pipeline patterns
 
-### Pattern A: Plan -> Build -> Verify (3-Tier Pipeline)
-- **Phase 1: Planning (`DOP = 3`)**:
-  - Worker 1: Architecture spec & data models.
-  - Worker 2: API routes & endpoints.
-  - Worker 3: Test matrix & edge case specifications.
-  - *Barrier*: Coordinator merges into `docs/spec.md`.
-- **Phase 2: Implementation (`DOP = 8`)**:
-  - Workers 1 to 6: Implement 6 decoupled modules in parallel against `docs/spec.md`.
-  - Workers 7 to 8: Author test suites for the modules.
-  - *Barrier*: Coordinator runs integration verification.
-- **Phase 3: Verification & Hardening (`DOP = 2`)**:
-  - Worker 1: Security & vulnerability sweep.
-  - Worker 2: Performance & load profiling.
-  - *Final Reduce*: Deliver verified, production-ready system to user.
+### Pattern A: Plan -> Build -> Verify (3-tier pipeline)
+- **Phase 1: Planning (`DOP = 3` or `auto`):**
+  - Worker 1: Architecture spec and data models.
+  - Worker 2: API routes and contracts.
+  - Worker 3: Test matrix and edge cases.
+  - *Barrier:* Coordinator merges into `docs/spec.md`.
+- **Phase 2: Implementation (`DOP = 8`):**
+  - Workers 1 to 6: Implement 6 decoupled modules against `docs/spec.md`.
+  - Workers 7 to 8: Write package and integration tests.
+  - *Barrier:* Coordinator runs integration verification.
+- **Phase 3: Verification and Hardening (`DOP = 2`):**
+  - Worker 1: Security and vulnerability sweep.
+  - Worker 2: Performance and load check.
+  - *Final Reduce:* Deliver verified system to user.
 
-### Pattern B: Research -> Draft -> Review (Content Pipeline)
-- **Phase 1: Research (`DOP = 4`)**:
-  - Explore 4 distinct topic angles; output 4 research summaries.
-  - *Barrier*: Coordinator generates unified chapter outline.
-- **Phase 2: Drafting (`DOP = 6`)**:
-  - Draft 6 chapters simultaneously in staging directory.
-  - *Barrier*: Coordinator compiles complete draft.
-- **Phase 3: Review (`DOP = 3`)**:
+### Pattern B: Research -> Draft -> Review (content pipeline)
+- **Phase 1: Research (`DOP = 4` or `auto`):**
+  - Explore independent angles and save 4 research memos.
+  - *Barrier:* Coordinator produces a unified editorial outline.
+- **Phase 2: Drafting (`DOP = 6`):**
+  - Draft 6 sections concurrently in `staging/`.
+  - *Barrier:* Coordinator compiles the full draft.
+- **Phase 3: Review (`DOP = 3`):**
   - Worker 1: Fact-check and citation audit.
-  - Worker 2: Voice, tone, and readability review.
-  - Worker 3: SEO optimization and metadata.
-  - *Final Reduce*: Polish and present publication-ready manuscript.
+  - Worker 2: Voice, tone, and readability check.
+  - Worker 3: SEO and metadata review.
+  - *Final Reduce:* Polish and deliver final manuscript.
 
 ---
 
-## 5. Handling Mid-Flight User Adjustments
+## 5. Handling mid-flight user adjustments
 
-Because the Coordinator remains unblocked, users may steer multi-phase pipelines dynamically:
+Because the Coordinator stays unblocked, users can adjust multi-phase pipelines at any point:
 
-1. **Phase Cancellation**: User says *"Stop planning, let's proceed with approach X immediately."*
-   - Coordinator calls `manage_subagents(Action="kill", ConversationIds=[...])` to terminate active Phase 1 workers.
-   - Coordinator synthesizes what was learned so far and immediately dispatches Phase 2.
-2. **Budget Reallocation**: User says *"Increase implementation budget from 10 to 16."*
-   - Coordinator logs the updated budget for Phase 2 without affecting currently running Phase 1 tasks.
-3. **Injecting New Requirements**: User provides an additional constraint during Phase 1.
-   - Coordinator incorporates the constraint directly into the Phase 1 synthesis document, ensuring Phase 2 automatically inherits it.
+1. **Phase cancellation:** User says *"Stop planning, proceed with approach X now."*
+   - Coordinator cancels active Phase 1 workers, synthesizes findings collected so far, and immediately dispatches Phase 2.
+2. **Budget reallocation:** User says *"Raise implementation budget from 10 to 16."* or *"Switch Phase 2 to auto."*
+   - Coordinator updates the Phase 2 budget without disrupting active Phase 1 workers.
+3. **Constraint injection:** User adds a requirement mid-run.
+   - Coordinator merges the constraint into the Phase 1 synthesis artifact so Phase 2 inherits it cleanly.

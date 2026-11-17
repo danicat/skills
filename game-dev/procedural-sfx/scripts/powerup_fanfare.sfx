@@ -1,0 +1,5 @@
+title "Level Up Powerup Fanfare"
+type sfx
+
+inst horn preset=powerup_fanfare duty=0.50 vol=0.25
+track lead horn: C5:90ms E5:90ms G5:90ms C6:320ms

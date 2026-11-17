@@ -1,0 +1,34 @@
+title "Slime Familiar"
+type sprite
+size 32x32
+palette forest
+outline #0D1712
+light -0.5,-0.7
+
+part shadow ramp=obsidian z=-5 pivot=16,28
+  box 16,28 8,1.5 r=1.0 step=0
+
+part body ramp=slime z=0 pivot=16,27 dither=bayer2
+  circle 16,20 r=8.5
+  box 16,24 9.0,4.0 r=2.5 op=smin k=2.5
+
+part core ramp=gold z=2 pivot=16,21
+  circle 16,21 r=3.0
+
+part eyes ramp=obsidian z=5 pivot=16,19
+  pixel 13,18 w=2 h=3 step=0
+  pixel 18,18 w=2 h=3 step=0
+  pixel 13,18 w=1 h=1 step=3 ramp=bone
+  pixel 18,18 w=1 h=1 step=3 ramp=bone
+
+tag idle frames=4 duration=150ms loop=loop
+  pose body squash=sin(0.10)
+  pose core dy=sin(1.0)
+  pose eyes dy=sin(1.0)
+
+tag jump frames=4 duration=95ms loop=once
+  pose body f=0..0 squash=-0.18
+  pose body f=1..2 dy=0->-7 squash=0.20->0.05 ease=out_quad
+  pose body f=3..3 dy=-8 squash=-0.06
+  pose core f=1..3 dy=0->-8 ease=out_quad
+  pose eyes f=1..3 dy=0->-8 ease=out_quad

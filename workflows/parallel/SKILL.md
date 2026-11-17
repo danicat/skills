@@ -2,31 +2,28 @@
 name: parallel
 description: >
   General-purpose task parallelization and agent scaling engine.
-  Orchestrates concurrent subagents for ANY task (research, analysis,
-  writing, coding, planning, evaluation) across arbitrary parallel budgets.
-  Enforces immediate main session unblocking, flat orthogonal task
-  partitioning, and agent racing / tournament comparisons. Activate
-  whenever the user invokes /parallel, requests parallel execution,
-  specifies a DOP/budget, or wants concurrent agent swarms.
+  Orchestrates concurrent subagents for research, analysis, writing,
+  coding, planning, and evaluation across numeric budgets (DOP) or
+  automatic sizing (auto). Enforces non-blocking coordination, disjoint
+  task partitioning, and agent racing or tournament selection. Activate
+  when the user requests parallel execution, specifies a concurrency
+  budget, or asks for concurrent subagents.
 license: Apache-2.0
-compatibility:
-  agents:
-    - Antigravity
 metadata:
   category: workflows
-  tags: "parallel, concurrency, subagents, scaling, orchestration, racing, dop"
+  tags: "concurrency, subagents, scaling, orchestration, racing"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.2.1"
+  version: "0.3.0"
   catalog: https://skills.danicat.dev
 ---
 
-# Parallel: Task Concurrency & Agent Scaling Engine
+# Parallel: task concurrency and agent scaling engine
 
-`parallel` is a domain-agnostic task parallelization and agent scaling engine for Antigravity. It partitions complex objectives across concurrent subagents according to an explicit **Degree of Parallelism (DOP)** budget, guaranteeing complete context isolation, rapid execution, and maximum throughput.
+`parallel` is a domain-agnostic task parallelization and subagent scaling engine. It partitions complex work across concurrent subagents using an explicit **Degree of Parallelism (`DOP`)** budget or automatic sizing (`parallel(auto)`), ensuring clean context isolation and high throughput.
 
-Unlike domain-specific multi-agent frameworks, `parallel` scales **ANY** task: in-depth research, long-form writing, technical analysis, strategic planning, full-stack coding, multi-perspective reviews, ETL data processing, UI design, or model evaluation.
+Unlike domain-specific multi-agent workflows, `parallel` scales any task: research, long-form writing, technical analysis, strategic planning, full-stack coding, multi-angle reviews, ETL data processing, UI design, or model evaluation.
 
-```
+```text
 +-------------------------------------------------------------------------+
 |                         PARALLEL TOPOLOGY                               |
 |                                                                         |
@@ -47,81 +44,74 @@ Unlike domain-specific multi-agent frameworks, `parallel` scales **ANY** task: i
 
 ---
 
-## ⚡ Core Principles & Operational Rules
+## Core principles and operational rules
 
-### 1. Autonomous Activation Triggers & Syntax
-Activate this skill immediately whenever the user requests parallel subagent execution or specifies a concurrency budget:
-- `/parallel <DOP>` (e.g., `/parallel 5`, `/parallel 12`)
-- `/parallel dop: <number>` (e.g., `/parallel dop: 8`)
-- `/parallel budget <number>` (e.g., `/parallel budget 4`)
-- **Multi-phase budgets** (e.g., `"use /parallel 5 for planning and /parallel 10 for implementation"`, `"phase 1: /parallel 3; phase 2: /parallel 6"`)
-- **Natural language triggers** (e.g., *"parallelize this research across 6 agents"*, *"run this task in parallel with a budget of 4"*, *"swarm this audit with DOP 8"*)
+### 1. Degree of parallelism (DOP) and auto sizing
+- **Numeric budget (`DOP = N`):** Defines the maximum number of **active, concurrent subagents** running at the same time. When an explicit numeric budget is set, use the full allocated budget whenever enough independent slices exist.
+- **Automatic sizing (`parallel(auto)` / keyword `auto`):** When the user specifies `parallel(auto)`, `DOP = auto`, or the `auto` keyword, decide the optimal `DOP` for the task by balancing three factors:
+  1. **Task orthogonality:** Count natural, non-overlapping work slices (such as independent modules, research facets, data shards, or chapters). Never invent artificial splits across tightly coupled files just to inflate worker count.
+  2. **Context isolation:** Assign separate workers where isolated context windows prevent noisy search logs, large inputs, or competing hypotheses from polluting one session.
+  3. **Resource consumption:** Coalesce trivial micro-tasks and cap concurrency when subagent startup and synthesis overhead would outweigh parallel speedup.
+- **Omission default:** If the user requests parallel execution without specifying a number or `auto`, size concurrency using `auto` (typically **3 to 5** workers for standard tasks, or **8 to 10** for broad codebase sweeps).
+- **Minimum subagent rule:** Delegate to at least **1 subagent** (even when `DOP = 1` or `auto` resolves to `1`) so the Coordinator remains unblocked.
+- **Active vs. completed capacity:** Completed or cancelled workers immediately release their concurrency slot back to the budget pool.
 
-### 2. Degree of Parallelism (DOP) & Budget Rules
-- **Definition**: The **DOP** or **subagent budget** defines the maximum number of **active, concurrent subagents** executing simultaneously.
-- **Budget Utilization**: It is strongly recommended (though not mandatory) to utilize the **full allocated budget** to maximize concurrency and accelerate completion.
-- **Minimum Subagent Rule**: At minimum, the task must use at least **1 subagent**. Even with `DOP = 1`, work is delegated to a subagent so the coordinator upholds the non-blocking mandate.
-- **Omission Default**: If the user asks for parallel execution without specifying a number, default to a sensible budget of **5** (or **10** for extensive codebase initiatives).
-- **Active vs. Completed Capacity**: Completed or terminated workers release their concurrency slot immediately back to the budget pool.
+### 2. Hard constraint: immediate main session unblocking
+The root Coordinator operates strictly as a **non-blocking Coordinator**:
+- **Fire-and-yield:** Define the task slices, dispatch 1 or more subagents concurrently, and **end your turn immediately**.
+- **Permanent responsiveness:** Never enter polling loops, `sleep` calls, or synchronous waits. Stay unblocked so you can respond to status inquiries, scope changes, or cancellation requests at any time.
+- **Delegation over execution:** Manage partitioning, dispatch, and reconciliation. Never run heavy execution, long-running scripts, or bulk drafting directly in the Coordinator.
 
-### 3. Hard Constraint: Immediate Main Session Unblocking
-The ROOT agent activating `/parallel` operates strictly as a **non-blocking Coordinator**:
-- **Fire-and-Yield**: The Coordinator defines the task slices, invokes 1+ subagents via `invoke_subagent`, and **immediately stops calling tools to end its turn**.
-- **Permanent Responsiveness**: The Coordinator MUST NEVER enter polling loops, sleep cycles, or synchronous wait states. It remains unblocked >= 99% of the time, ready to receive user steering commands, scope revisions, or status inquiries.
-- **Non-Execution**: The Coordinator manages org structure, task allocation, and reconciliation. It NEVER performs direct heavy execution, long-running bash scripts, or code generation itself.
-
-### 4. Topology: Flat by Default
+### 3. Topology: flat by default
 - The default architecture is **Flat** (`Coordinator -> N Independent Workers`).
-- Flat topologies eliminate bureaucratic overhead, minimize communication hops, and maximize parallelism for arbitrary tasks.
-- Hierarchical sub-leads are reserved only for massive budgets (`DOP >= 20`) with multiple deeply nested technical subsystems.
+- Flat topologies avoid coordination bureaucracy, reduce communication hops, and maximize concurrency for independent tasks.
+- Reserve hierarchical sub-leads for large budgets (`DOP >= 20`) spanning deeply nested subsystems.
 
-### 5. Orthogonal & Independent Work Units
-Unless explicitly racing, tasks must be sliced along **orthogonal, disjoint boundaries**:
+### 4. Orthogonal and independent work units
+Unless explicitly racing, slice tasks along **orthogonal, disjoint boundaries**:
 - Each worker owns an exclusive file, topic facet, test module, or data chunk.
-- **Single Writer Principle**: Only one subagent is granted write authority to any single file or resource.
-- **Staging Pattern (Two-Tier Protocol)**: When outputs must combine into a single document or module, workers output to isolated staging files (`staging/chunk_*.md`), which the Coordinator reconciles during the Reduce step. Workers never dump full raw payload text across chat messages; chat is reserved strictly for status, output paths, and deal-breakers checklists (< 2,000 characters).
+- **Single Writer principle:** Only one subagent has write authority for any given file or resource.
+- **Staging pattern (Two-Tier protocol):** When outputs must merge into one shared document or module, workers write full outputs to isolated staging files (`staging/chunk_*.md`) and return only a short status summary (`< 2,000` characters covering status, output path, and key blockers or deal-breakers) for the Coordinator's Reduce step.
 
-### 6. The Key Exception: Agent Racing & Tournaments
-The singular exception to orthogonal partitioning is **Agent Racing**:
-- When exploring high-ambiguity architecture, solving hard algorithmic puzzles, hunting zero-day bugs, or seeking creative diversity, run identical or perturbed variations of the same prompt across `N` parallel subagents.
-- Evaluate candidates side-by-side using Best-of-N selection, automated test harnesses, or hybrid synthesis (merging the best elements from each runner).
+### 5. The key exception: agent racing and tournaments
+The one exception to orthogonal partitioning is **Agent Racing**:
+- When exploring high-ambiguity architecture, solving hard algorithmic puzzles, hunting elusive bugs, or seeking creative variety, run identical or perturbed variations of the same prompt across `N` parallel subagents.
+- Evaluate candidates side by side using Best-of-N selection, automated test suites, or hybrid synthesis.
 
-### 7. Modern Subagent Standards & Model Selection
-- **Model Selection**: ALWAYS set `Model: 'inherit'` in all subagent definitions and `invoke_subagent` calls. This ensures seamless inheritance of model capabilities and reasoning effort settings without configuration drift.
-- **Customizations & MCP**: Subagents inherit workspace rules, tools, and MCP servers (`inheritCustomizations: true`, `inheritMcp: true`).
-- **Disposable Workers**: Subagents are task-scoped and disposable. Spawning fresh workers with clean context windows avoids prompt pollution, tool bloat, and cognitive drift.
+### 6. Subagent isolation and model inheritance
+- **Model and capability inheritance:** By default, workers inherit the parent session's model, workspace rules, tools, and configured integrations unless the user asks for a specific tier or effort level.
+- **Disposable workers:** Subagents are task-scoped and disposable. Spawn fresh workers with clean context windows for each slice to avoid prompt pollution and cognitive drift.
 
-### 8. Strict Vertical Messaging (No Sibling Crosstalk)
-- **Allowed**: `Coordinator <-> Worker` parent-child communication.
-- **Forbidden**: `Worker <-> Worker` sibling communication. Workers execute independently and must not attempt lateral messaging.
-- **User Escalation**: Workers do not possess `ask_question`. If a worker encounters an ambiguous requirement, it messages the Coordinator; the Coordinator consults the user via `ask_question` and relays the answer.
+### 7. Strict vertical communication (no sibling crosstalk)
+- **Allowed:** `Coordinator <-> Worker` parent-child communication.
+- **Forbidden:** `Worker <-> Worker` sibling communication. Workers operate independently and never exchange lateral messages.
+- **User escalation:** Workers never prompt the user directly. If a worker hits an ambiguous requirement, it reports up to the Coordinator; the Coordinator clarifies with the user and relays the decision back.
 
 ---
 
-## 🎯 Universal Domain Decomposition Matrix
+## Universal domain decomposition matrix
 
-`/parallel` scales across any operational domain:
+Parallel execution scales across any operational domain:
 
 ```mermaid
 flowchart TD
-    User["User Request with /parallel <DOP>"] --> Coord["Coordinator: Evaluate Budget & Partition"]
+    User["Parallel Request (DOP = N or auto)"] --> Coord["Coordinator: Size Budget and Partition"]
 
     Coord --> Decision{"Task Strategy"}
 
-    Decision -->|"Orthogonal Decomposition\n(Default: Divide & Conquer)"| Slices["Partition into N Disjoint Tasks\n• Research Facets\n• Chapter Outlines\n• Decoupled Packages\n• Data Shards"]
+    Decision -->|"Orthogonal Decomposition (Default)"| Slices["Partition into N Disjoint Slices"]
+    Decision -->|"Racing and Tournaments (Exception)"| Race["Dispatch N Competing Candidates"]
 
-    Decision -->|"Racing & Tournaments\n(Exception: Same Problem)"| Race["Dispatch N Competing Candidates\n• Algorithmic Variations\n• Creative Angles\n• Adversarial Red/Blue\n• Best-of-N Tournaments"]
-
-    Slices --> Exec["Dispatch N Workers via invoke_subagent"]
+    Slices --> Exec["Dispatch N Subagents Concurrently"]
     Race --> Exec
 
-    Exec --> Yield["STOP TOOL CALLS (End Turn Immediately)\nMain Session Unblocked for Steering"]
+    Exec --> Yield["End Turn Immediately (Main Session Unblocked)"]
     Yield --> Event{"Reactive Wakeup"}
 
-    Event -->|"User Message"| UserSteer["Process Steering / In-Flight Command"]
+    Event -->|"User Message"| UserSteer["Handle Steering or Status Check"]
     UserSteer --> Yield
 
-    Event -->|"Workers Complete"| Reduce["Reduce & Reconcile\n• Ingest Outputs\n• Purge Staging / Stubs\n• Validate & Deliver"]
+    Event -->|"Workers Complete"| Reduce["Reduce: Reconcile, Verify, and Deliver"]
 ```
 
 | Domain | Partitioning Dimension | Worker Assignment | Deliverable | Reduce Action |
@@ -136,24 +126,23 @@ flowchart TD
 
 ---
 
-## 📡 Non-Blocking Coordinator Protocol
+## Non-blocking coordinator protocol
 
-The Coordinator guarantees user interactivity during intensive background processing:
+The Coordinator preserves user responsiveness during intensive background work:
 
-```
+```text
 +--------------------------------------------------------------------------+
 |                     COORDINATOR LIFECYCLE PROTOCOL                       |
 |                                                                          |
-|  1. Parse DOP & Mode (Single or Multi-Phase)                             |
+|  1. Resolve DOP (Numeric N or auto) & Mode (Single or Multi-Phase)       |
 |  2. Define Disjoint Scopes & Output Contracts                            |
-|  3. Call invoke_subagent(Subagents=[...])                                |
+|  3. Dispatch Parallel Subagents Concurrently                             |
 |  4. Brief User: "Dispatched N parallel workers. Standing by..."          |
-|  5. HALT TOOL CALLS (Turn ends immediately)                              |
+|  5. END TURN IMMEDIATELY (Main session remains interactive)              |
 |                                                                          |
-|     ... Main session remains fully interactive ...                       |
-|     - User asks status: Coordinator runs manage_subagents (list)         |
-|     - User steers: Coordinator sends message or kills workers            |
-|     - Workers finish: Messaging system reactively wakes Coordinator      |
+|     - User asks status: Coordinator inspects active workers              |
+|     - User steers: Coordinator redirects or cancels workers              |
+|     - Workers finish: Runtime wakes Coordinator with results             |
 |                                                                          |
 |  6. Execute Reduce & Deliver Verified Synthesis to User                  |
 +--------------------------------------------------------------------------+
@@ -161,14 +150,14 @@ The Coordinator guarantees user interactivity during intensive background proces
 
 ---
 
-## 🔀 Multi-Phase Parallel Orchestration
+## Multi-phase parallel orchestration
 
-When users supply multi-phase parallel budgets in a single instruction (e.g., *"use /parallel 4 for planning and /parallel 10 for implementation"*):
+When users supply multi-phase budgets in a single request (such as `"plan with DOP 4 and implement with DOP 10"` or `"explore with parallel(auto), then implement with DOP 8"`):
 
-```
-PHASE 1: Planning (DOP = 4)
-Coordinator dispatches 4 planning workers -> YIELDS TURN IMMEDIATELY
-All 4 workers finish -> Reactive wakeup
+```text
+PHASE 1: Planning (DOP = 4 or auto)
+Coordinator dispatches planning workers -> ENDS TURN IMMEDIATELY
+All Phase 1 workers finish -> Reactive wakeup
       |
       v
 PHASE 1 REDUCE & BARRIER
@@ -177,87 +166,62 @@ Coordinator compiles unified specification (specs/plan.md)
       |
       v
 PHASE 2: Implementation (DOP = 10)
-Coordinator dispatches 10 implementation workers referencing specs/plan.md -> YIELDS TURN IMMEDIATELY
-All 10 workers finish -> Reactive wakeup
+Coordinator dispatches 10 implementation workers referencing specs/plan.md -> ENDS TURN IMMEDIATELY
+All Phase 2 workers finish -> Reactive wakeup
       |
       v
 FINAL REDUCE & DELIVERY
-Coordinator integrates deliverables, executes validation, presents result
+Coordinator integrates deliverables, runs verification, presents result
 ```
 
-For complete multi-phase state machine specifications, consult [`references/multi_phase_orchestration.md`](references/multi_phase_orchestration.md).
+For full multi-phase state machine rules, read [`references/multi_phase_orchestration.md`](references/multi_phase_orchestration.md).
 
 ---
 
-## 🏁 The Racing Exception: Agent Racing & Tournaments
+## The racing exception: agent racing and tournaments
 
-While orthogonal partitioning is the standard default, **Racing** intentionally invests parallel budget into competitive redundancy:
+While orthogonal partitioning is the default, **Racing** intentionally invests parallel budget in competitive redundancy:
 
-1. **Stochastic Racing**: Dispatch `N` identical prompts to explore diverse generative solutions for complex, open-ended problems.
-2. **Perturbed Prompting**: Dispatch `N` workers with conflicting architectural constraints (e.g., low-latency vs high-durability vs fast-iteration).
-3. **Adversarial Red-Blue Racing**: Pair builder workers against breaker/exploiter workers to surface edge-case vulnerabilities.
-4. **Best-of-N Tournaments**: Collect `N` candidate solutions, rank them with automated benchmarks or judge rubrics, and merge or select the winner.
+1. **Stochastic racing:** Dispatch `N` identical prompts to explore diverse generative solutions for open-ended problems.
+2. **Perturbed prompting:** Dispatch `N` workers with competing architectural constraints (such as low latency vs. strict durability vs. fast iteration).
+3. **Adversarial red-blue racing:** Pair builder workers against breaker or security-auditor workers to uncover edge-case bugs.
+4. **Best-of-N tournaments:** Collect `N` candidate solutions, score them with automated tests or a judging rubric, and select or merge the winner.
 
-For full tournament brackets, evaluation rubrics, and synthesis patterns, consult [`references/racing_and_tournaments.md`](references/racing_and_tournaments.md).
-
----
-
-## 🔄 The Reduce (Reconciliation) Pipeline
-
-Parallel execution produces distributed artifacts. Before concluding, the Coordinator executes the **Reduce** phase:
-
-1. **Ingestion & Completeness Audit**: Verify that all `N` workers reported deliverables without lingering placeholders (`TODO`, `FIXME`, temporary mock stubs).
-2. **Reconciliation & Assembly**:
-   - Merge staged markdown sections into the master manuscript.
-   - Wire real code components together and purge stub adapters.
-   - Aggregate disjoint data matrices into unified summaries.
-3. **End-to-End Verification**:
-   - Run compilation, linters, or package-level test suites.
-   - Verify citation integrity and reference cross-links.
-4. **Delivery Summary**: Present the final synthesized result with transparent execution metrics (workers deployed, tasks completed, trade-offs resolved).
+For tournament brackets, rubrics, and selection rules, read [`references/racing_and_tournaments.md`](references/racing_and_tournaments.md).
 
 ---
 
-## ⚠️ Gotchas & Antipatterns
+## The Reduce (reconciliation) pipeline
 
-1. **The Blocking Coordinator Trap**: Lingering in active execution, looping with `sleep`, or polling subagents. The Coordinator MUST yield immediately after `invoke_subagent`.
-2. **The Coordinator-as-Worker Fallback Trap**: The Coordinator writing implementation code or performing search sweeps directly. The Coordinator delegates all execution to subagents.
-3. **The Sibling Cross-Talk Trap**: Allowing subagents to communicate laterally. Workers must remain decoupled and message only the parent Coordinator.
-4. **The Long-Lived Worker Context Bloat Trap**: Reusing subagents across disparate tasks. Spawn disposable, task-scoped workers with clean contexts.
-5. **The Write Collision Trap**: Multiple workers writing to the same file concurrently. Enforce exclusive file ownership or use the staging directory pattern.
-6. **The Leftover Staging Trap**: Forgetting to reconcile staged files or leaving temporary mock stubs in production paths. Always execute the Reduce phase.
-7. **Under-Budgeting Mismatch**: Spawning fewer workers than the user's allocated budget when sufficient independent tasks exist. Always endeavor to utilize the full budget.
+Parallel work produces distributed outputs. Before finishing, the Coordinator runs the **Reduce** phase:
 
----
-
-## 📚 Progressive Disclosure & References
-
-- **Task Decomposition Guide**: [`references/task_decomposition.md`](references/task_decomposition.md) -- Partitioning strategies, domain matrices, staging patterns, and single-writer protocols.
-- **Racing & Tournaments Guide**: [`references/racing_and_tournaments.md`](references/racing_and_tournaments.md) -- Stochastic races, perturbed constraints, adversarial tournaments, and best-of-N selection.
-- **Multi-Phase Orchestration Guide**: [`references/multi_phase_orchestration.md`](references/multi_phase_orchestration.md) -- Staged pipelines, barrier synchronization, state handoffs, and in-flight steering.
-- **Coordinator Playbook**: [`references/coordinator_playbook.md`](references/coordinator_playbook.md) -- Complete operational lifecycle, invocation parsing, dispatch standards, and reactive event handling.
+1. **Ingestion and completeness audit:** Verify that all `N` workers reported deliverables without leftover placeholders (`TODO`, `FIXME`, or mock stubs).
+2. **Reconciliation and assembly:**
+   - Merge staged Markdown sections into the master manuscript.
+   - Wire decoupled code modules together and remove temporary adapters.
+   - Combine disjoint analysis tables into a unified summary.
+3. **End-to-end verification:**
+   - Run builds, linters, or test suites across integrated modules.
+   - Check citation accuracy and internal cross-links.
+4. **Delivery summary:** Present the synthesized outcome along with clear execution counts (workers deployed, tasks completed, trade-offs resolved).
 
 ---
 
-## 🖥️ Pinning exact versions and reasoning effort in Antigravity
+## Gotchas and antipatterns
 
-> **Ecosystem boundary**: Use the `agy` CLI **only** when running inside Google Antigravity. If you run this skill in Claude Code or another agent environment, use that host's native subagent or CLI mechanism instead—never invoke `agy` outside Antigravity.
+1. **The blocking Coordinator trap:** Staying in synchronous execution, sleeping, or polling subagents. The Coordinator must end its turn immediately after dispatching subagents.
+2. **The Coordinator-as-worker fallback trap:** Writing implementation modules or running deep search sweeps inside the Coordinator instead of delegating to workers.
+3. **The sibling crosstalk trap:** Letting subagents coordinate laterally. Workers stay independent and report only to the parent Coordinator.
+4. **The long-lived worker context bloat trap:** Reusing one subagent across unrelated tasks. Spawn fresh, disposable workers for clean contexts.
+5. **The write collision trap:** Letting multiple workers edit the same file concurrently. Enforce exclusive file ownership or route shared outputs through `staging/`.
+6. **The leftover staging trap:** Leaving unreconciled staging files or temporary stubs behind. Always finish the Reduce phase and clean up staging directories.
+7. **Under-budgeting explicit numeric DOP:** Spawning fewer workers than an explicit numeric `DOP` when enough independent slices exist. Use the full budget for explicit numeric requests; use `parallel(auto)` when you need right-sized concurrency based on orthogonality and resource cost.
 
-In Antigravity, the default `invoke_subagent` tool exposes coarse tiers—`inherit`, `pro`, `flash`, and `flash_lite`—and can't pin an exact version or set a reasoning effort level. When the user asks for a specific version such as `gemini-4-argon` or `gemini-3.8-flash`, or a reasoning effort level—`low`, `medium`, `high`, `xhigh`, or `max`—start each worker as a headless `agy` CLI background job instead of calling `invoke_subagent`:
+---
 
-1. **Query live identifiers**:
-   Run `agy models` to query the live list of valid identifiers and effort variants. Examples include `gemini-4-argon-high`, `gemini-4-argon-medium`, `gemini-4-argon-low`, `gemini-3.8-flash-high`, `gemini-3.8-flash-medium`, and `gemini-3.8-flash-low`. Treat these identifiers as examples rather than an exhaustive list.
+## Progressive disclosure and references
 
-2. **Start non-blocking background workers**:
-   Run each worker in the background using `run_command` with `WaitMsBeforeAsync: 500`, writing to isolated staging files. Pass the prompt inline via `-p="..."`, since `agy -p` in text mode ignores standard input:
-   ```bash
-   agy --model gemini-3.8-flash \
-     --effort low \
-     --mode auto \
-     --disable-slash-commands \
-     -p="You are Worker 1. <task instructions>. Write your output to /tmp/worker-01.md."
-   ```
-   You can pass `--model <base-id> --effort <low|medium|high|xhigh|max>` or pass a combined identifier directly, such as `--model gemini-3.8-flash-low`.
-
-3. **Yield the turn right away**:
-   Just like standard subagent dispatch, stop calling tools as soon as you start all `N` background `agy` commands. The runtime wakes the Coordinator when each background task finishes, and the Coordinator then runs the standard Reduce phase over the staged outputs.
+- **Task Decomposition Guide**: [`references/task_decomposition.md`](references/task_decomposition.md): Partitioning strategies, `parallel(auto)` slice sizing, domain matrices, staging patterns, and single-writer rules.
+- **Racing and Tournaments Guide**: [`references/racing_and_tournaments.md`](references/racing_and_tournaments.md): Stochastic races, perturbed constraints, adversarial tournaments, and best-of-N selection.
+- **Multi-Phase Orchestration Guide**: [`references/multi_phase_orchestration.md`](references/multi_phase_orchestration.md): Staged pipelines, barrier synchronization, state handoffs, and in-flight steering.
+- **Coordinator Playbook**: [`references/coordinator_playbook.md`](references/coordinator_playbook.md): Complete operational lifecycle, budget resolution (including `auto`), worker briefing templates, and reactive event handling.

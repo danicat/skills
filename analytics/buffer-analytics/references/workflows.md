@@ -1,9 +1,9 @@
-# Buffer Analytics Workflows & Operational Runbook
+# Buffer analytics workflows and operational runbook
 
-## Ingestion Architecture
+## Ingestion architecture
 
 ```
-Buffer API (GraphQL / REST)
+Buffer API (GraphQL)
           │
           │ buffer CLI (cursor pagination, --output json)
           ▼
@@ -17,7 +17,7 @@ scripts/buffer_analytics.py
           └──> sync_history (audit run logs)
           │
           ▼
-    ~/.buffer/analytics.db (SQLite)
+     buffer_analytics.db (SQLite)
           │
           ▼
    v_posts_summary (Pivoted SQL View)
@@ -28,49 +28,50 @@ scripts/buffer_analytics.py
 
 ---
 
-## Standard Workflows
+## Standard workflows
 
-### 1. Initial Historical Backfill
-Paginates through the entire post history across all connected channels from newest to oldest:
+### 1. Initial historical backfill
+Paginates through the full post history across all connected channels from newest to oldest:
 ```bash
-python3 scripts/buffer_analytics.py sync --full
+uv run scripts/buffer_analytics.py sync --full --db buffer_analytics.db
 ```
 
-### 2. Routine Incremental Sync
-Syncs only new posts or updates from the last recorded timestamp (with a 2-day lookback overlap to refresh engagement metrics on recent posts):
+### 2. Routine incremental sync
+Syncs new posts or updates since the last recorded timestamp (with a 2-day lookback overlap to refresh engagement metrics on recent posts):
 ```bash
-python3 scripts/buffer_analytics.py sync
+uv run scripts/buffer_analytics.py sync --db buffer_analytics.db
 ```
 
-### 3. Channel-Specific Backfill
-Filter sync to a specific channel (e.g. LinkedIn only):
+### 3. Channel-specific backfill
+Filter sync to one channel (for example LinkedIn only):
 ```bash
-python3 scripts/buffer_analytics.py sync --channel-id 1234567890abcdef12345678
+uv run scripts/buffer_analytics.py sync --channel-id 1234567890abcdef12345678 --db buffer_analytics.db
 ```
 
-### 4. Date-Bounded Ingestion
+### 4. Date-bounded ingestion
 Backfill a specific campaign or date window:
 ```bash
-python3 scripts/buffer_analytics.py sync --start-date 2026-06-01T00:00:00Z --end-date 2026-08-18T00:00:00Z
+uv run scripts/buffer_analytics.py sync --start-date 2026-06-01T00:00:00Z --end-date 2026-08-18T00:00:00Z --db buffer_analytics.db
 ```
 
-### 5. Running Ad-Hoc SQL
-Execute custom queries with output formatting:
+### 5. Running ad-hoc SQL
+Execute custom queries with structured formatting:
 ```bash
 # Markdown table output
-python3 scripts/buffer_analytics.py query "SELECT * FROM v_posts_summary LIMIT 5" --format markdown
+uv run scripts/buffer_analytics.py query "SELECT * FROM v_posts_summary LIMIT 5" --format markdown --db buffer_analytics.db
 
 # JSON output
-python3 scripts/buffer_analytics.py query "SELECT service, AVG(impressions) FROM v_posts_summary GROUP BY service" --format json
+uv run scripts/buffer_analytics.py query "SELECT service, AVG(impressions) FROM v_posts_summary GROUP BY service" --format json --db buffer_analytics.db
 
 # CSV export
-python3 scripts/buffer_analytics.py query "SELECT * FROM v_posts_summary WHERE status = 'sent'" --format csv > /tmp/posts_export.csv
+uv run scripts/buffer_analytics.py query "SELECT * FROM v_posts_summary WHERE status = 'sent'" --format csv --db buffer_analytics.db > posts_export.csv
 ```
 
-### 6. Pre-Packaged Reports
+### 6. Pre-packaged reports
 ```bash
-python3 scripts/buffer_analytics.py report overview
-python3 scripts/buffer_analytics.py report top-posts
-python3 scripts/buffer_analytics.py report timing
-python3 scripts/buffer_analytics.py report hooks
+uv run scripts/buffer_analytics.py report overview --db buffer_analytics.db
+uv run scripts/buffer_analytics.py report top-posts --db buffer_analytics.db
+uv run scripts/buffer_analytics.py report channels --db buffer_analytics.db
+uv run scripts/buffer_analytics.py report timing --db buffer_analytics.db
+uv run scripts/buffer_analytics.py report hooks --db buffer_analytics.db
 ```

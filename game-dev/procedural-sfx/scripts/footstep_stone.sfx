@@ -1,0 +1,5 @@
+title "Stone Dungeon Footstep"
+type sfx
+
+inst step preset=footstep_stone vol=0.28
+track tap step: step:90ms

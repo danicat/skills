@@ -1,16 +1,16 @@
-# Agent Racing & Tournament Guide
+# Agent racing and tournament guide
 
-This reference guide details the primary exception to orthogonal task decomposition: **Agent Racing and Tournaments**.
+This guide covers the primary exception to orthogonal task decomposition: **Agent Racing and Tournaments**.
 
-While orthogonal partitioning divides a project into non-overlapping pieces, **Racing** dispatches multiple subagents on the *same* problem (or deliberate variations of it) to compare alternatives, discover diverse solutions, and select or synthesize the best outcome.
+While orthogonal partitioning splits a project into non-overlapping slices, **Racing** assigns multiple subagents to the *same* problem (or deliberate variations of it) to compare alternatives, generate diverse solutions, and select or merge the strongest result.
 
 ---
 
-## 1. When to Race: The Strategic Rationale
+## 1. When to race: the strategic rationale
 
-Standard parallel decomposition minimizes redundant work. Racing deliberately invests parallel budget into redundancy.
+Standard parallel execution minimizes redundant work. Racing deliberately invests parallel budget in competitive redundancy.
 
-```
+```text
        ORTHOGONAL PARTITIONING                     RACING / TOURNAMENT
        (Disjoint Work Units)                      (Redundant Alternatives)
 
@@ -30,53 +30,53 @@ Standard parallel decomposition minimizes redundant work. Racing deliberately in
                                                          Optimal Deliverable
 ```
 
-### Ideal Scenarios for Racing:
-1. **High-Stakes Architecture & Design**: Multiple valid approaches exist with distinct trade-offs (e.g., event-driven vs polling, relational vs document storage).
-2. **Difficult Optimization & Algorithmic Problems**: The solution space is large and non-deterministic; different heuristic paths yield varying performance.
-3. **Creative Divergence**: Generating slogans, hooks, editorial angles, or UI layouts where variety is essential before converging.
-4. **Adversarial & Security Auditing**: Independent agents approach the codebase without shared bias, catching vulnerabilities others miss.
-5. **High-Assurance Verification**: Consensus checks for critical calculations, security policies, or legal interpretations.
+### Ideal scenarios for racing
+1. **High-stakes architecture and design:** Multiple valid approaches have distinct trade-offs (such as event-driven vs. polling, or relational vs. document storage).
+2. **Hard optimization and algorithmic problems:** The search space is large and non-deterministic, so diverse paths uncover better complexity bounds.
+3. **Creative divergence:** Generating hooks, headlines, editorial angles, or UI layouts where variety improves final quality.
+4. **Adversarial and security auditing:** Independent workers inspect the codebase without shared anchoring, catching subtle flaws.
+5. **High-assurance verification:** Independent cross-checks on critical calculations, security rules, or policy analysis.
 
 ---
 
-## 2. The Four Racing Archetypes
+## 2. The four racing archetypes
 
-### Archetype 1: Identical Replicated Racing (Pure Stochastic Race)
-Dispatches `N` subagents with the exact same instructions and constraints.
-- **Mechanism**: Relies on model non-determinism, differing search pathways, and varied chain-of-thought exploration.
-- **Primary Use**: Bug hunting, creative brainstorming, complex math/algorithmic problem-solving.
-- **Evaluation**: The first valid solution that passes automated test harnesses, or the cleanest code structure.
+### Archetype 1: identical replicated racing (pure stochastic race)
+Dispatches `N` subagents with identical prompts and constraints.
+- **Mechanism:** Uses independent search paths and sampling diversity across workers.
+- **Primary use:** Bug hunting, creative brainstorming, and hard algorithmic puzzles.
+- **Evaluation:** First valid solution passing all tests, or cleanest code structure.
 
-### Archetype 2: Perturbed / Constrained Angle Racing
-Dispatches `N` subagents with differing architectural constraints, priorities, or paradigms.
-- **Example: Backend API Service Design (DOP = 3)**:
-  - Worker 1 Constraint: "Optimize for maximum write throughput and ultra-low latency."
-  - Worker 2 Constraint: "Optimize for strict ACID consistency and relational normalization."
-  - Worker 3 Constraint: "Optimize for developer ergonomics and rapid iteration speed."
-- **Evaluation**: Side-by-side trade-off matrix comparing latency, complexity, and operational cost.
+### Archetype 2: perturbed or constrained angle racing
+Dispatches `N` subagents with differing constraints, priorities, or paradigms.
+- **Example (Backend API service design, `DOP = 3`):**
+  - Worker 1 constraint: optimize for maximum write throughput and lowest tail latency.
+  - Worker 2 constraint: optimize for strict ACID consistency and relational clarity.
+  - Worker 3 constraint: optimize for operator simplicity and rapid iteration.
+- **Evaluation:** Side-by-side comparison matrix weighing latency, complexity, and operational cost.
 
-### Archetype 3: Multi-Persona / Adversarial Racing
-Dispatches agents with conflicting incentives or specialized roles.
-- **Example: Smart Contract Audit (DOP = 4)**:
-  - Worker 1: Defending Architect (explains invariants and safety proofs).
-  - Worker 2: White-Hat Exploiter (actively crafts exploit payloads and re-entrancy attacks).
-  - Worker 3: Gas Optimization Specialist (audits opcode efficiency).
-  - Worker 4: Formal Verification Reviewer (validates state machine transitions).
-- **Evaluation**: Exploits discovered by Worker 2 are tested against the defenses of Worker 1.
+### Archetype 3: multi-persona or adversarial racing
+Dispatches workers with opposing goals or specialized roles.
+- **Example (Security audit, `DOP = 4`):**
+  - Worker 1: Defender reviewing invariants and access controls.
+  - Worker 2: Red-team tester crafting exploit inputs and race scenarios.
+  - Worker 3: Performance specialist profiling hot paths and allocations.
+  - Worker 4: Formal reviewer verifying state transitions and rollback safety.
+- **Evaluation:** Validate exploit hypotheses discovered by Worker 2 directly against Worker 1's defenses.
 
-### Archetype 4: Tournament Brackets (Multi-Stage Best-of-N)
-Executes a multi-tier tournament for complex deliverables.
-- **Round 1 (Diverge)**: Spawn 4 to 8 agents generating independent prototypes.
-- **Round 2 (Evaluate & Prune)**: Benchmark or score each prototype; select the top 2 finalists.
-- **Round 3 (Converge & Polish)**: Finalists incorporate the best ideas discovered in competing submissions, or a designated Synthesis Agent merges both.
+### Archetype 4: tournament brackets (multi-stage Best-of-N)
+Runs a structured multi-round tournament for complex problems.
+- **Round 1 (Diverge):** Launch `4` to `8` workers producing independent prototypes.
+- **Round 2 (Evaluate and Prune):** Benchmark or score every candidate and pick the top `2` finalists.
+- **Round 3 (Converge and Polish):** Finalists fold in the strongest ideas from rival submissions, or a synthesis worker combines both.
 
 ---
 
-## 3. Evaluation & Selection Paradigms
+## 3. Evaluation and selection paradigms
 
-Once racing subagents submit their candidates, the Coordinator applies one of three convergence mechanisms:
+Once racing workers return candidates, the Coordinator applies one of three selection strategies:
 
-```
+```text
 +-------------------------------------------------------------------------+
 |                        CONVERGENCE MECHANISMS                           |
 |                                                                         |
@@ -97,56 +97,56 @@ Once racing subagents submit their candidates, the Coordinator applies one of th
 +-------------------------------------------------------------------------+
 ```
 
-### Mechanism A: Best-of-N Selection (Winner Take All)
-- Coordinator evaluates submissions against an objective rubric:
-  1. Correctness (automated test suite passes).
-  2. Performance (benchmark speed, memory efficiency).
-  3. Elegance & readability (clean abstractions, idiomatic style).
-- The highest-ranking candidate is chosen as the deliverable; runners-up are discarded.
+### Mechanism A: Best-of-N selection (winner take all)
+- Score submissions against an explicit rubric:
+  1. **Correctness:** Automated tests and invariants pass.
+  2. **Performance:** Latency, throughput, and memory footprint.
+  3. **Maintainability:** Clear abstractions and idiomatic style.
+- Ship the highest-scoring candidate and discard the rest.
 
-### Mechanism B: Hybrid Synthesis (Merge & Cherry-Pick)
-- Coordinator or a dedicated Synthesis Agent reviews all submissions to extract the best elements:
-  - Take the data structures from Candidate A.
-  - Take the error-handling patterns from Candidate B.
-  - Take the integration test suite from Candidate C.
-- Result: A composite solution superior to any single submission.
+### Mechanism B: hybrid synthesis (cherry-pick and merge)
+- Review every candidate to combine the strongest parts:
+  - Take the data model from Candidate A.
+  - Take the error-handling path from Candidate B.
+  - Take the edge-case tests from Candidate C.
+- Produce a composite solution stronger than any individual candidate.
 
-### Mechanism C: Majority Voting & Consensus
-- Used for fact verification, classification, and sanity checks.
-- If >= 2 out of 3 workers agree on a finding, it is accepted into the final report.
-- Outliers and disagreements are highlighted in an appendix for user review.
-
----
-
-## 4. Operational Playbook for Racing
-
-When invoking `/parallel` for a racing objective:
-
-### Step 1: Formulate the Racing Specification
-Draft a core problem statement and define:
-- What must remain invariant across all candidates (e.g., public API interface, test cases).
-- What degrees of freedom each candidate may explore (e.g., algorithms, libraries, caching).
-
-### Step 2: Set the Budget (DOP)
-- Small race (quick alternative check): `DOP = 2` to `3`.
-- Standard tournament / creative divergence: `DOP = 4` to `6`.
-- High-assurance / broad space search: `DOP = 8` to `12`.
-
-### Step 3: Dispatch & Immediately Yield
-Dispatch all `N` racing workers simultaneously using `invoke_subagent`. End turn immediately so the main chat session remains unblocked for user input.
-
-### Step 4: Adjudicate Submissions
-Upon receiving completion messages from all racing workers:
-1. Verify that all candidates satisfied invariant requirements.
-2. Run test suites, benchmarks, or scoring rubrics.
-3. Formulate the comparative evaluation table.
-4. Deliver the winning candidate or merged synthesis to the user with a transparent trade-off summary.
+### Mechanism C: majority voting and consensus
+- Ideal for fact checks, classification, and risk triage.
+- Accept findings confirmed by at least 2 of 3 independent workers; list minority outliers in an appendix for human review.
 
 ---
 
-## 5. Comparative Trade-Off Summary Template
+## 4. Operational playbook for racing
 
-When presenting race results to the user, format findings cleanly:
+When running a parallel race or tournament:
+
+### Step 1: formulate the racing specification
+Define clearly:
+- What stays fixed across all candidates (public interfaces, input data, test suites).
+- What varies freely per worker (algorithms, data structures, creative angle, trade-offs).
+
+### Step 2: set the budget (DOP)
+- **Focused check:** `DOP = 2` to `3`
+- **Standard tournament or creative divergence:** `DOP = 4` to `6`
+- **Broad search space:** `DOP = 8` to `12`
+- **Automatic sizing (`parallel(auto)` / `auto`):** Use `2` to `3` candidates for narrow engineering trade-offs, or `4` to `6` for high-ambiguity architecture or creative divergence so judge and synthesis cost stays proportional to task ambiguity.
+
+### Step 3: dispatch and yield immediately
+Dispatch all `N` racing workers concurrently into isolated staging targets (`staging/candidate_<id>/`) and end your turn immediately so the main chat stays unblocked.
+
+### Step 4: adjudicate submissions
+When all racing workers finish:
+1. Verify each candidate meets invariant requirements.
+2. Run test suites, benchmarks, or judging rubrics.
+3. Build a concise comparison matrix.
+4. Present the winner or hybrid synthesis along with trade-offs.
+
+---
+
+## 5. Comparative trade-off summary template
+
+Format race outcomes in a scannable comparison table:
 
 ```markdown
 ### Parallel Race Results (Budget: 3 Workers)
@@ -159,5 +159,5 @@ When presenting race results to the user, format findings cleanly:
 | **Complexity** | 180 lines | 420 lines | 610 lines |
 | **Status** | Verified (tests pass) | Verified (tests pass) | Verified (tests pass) |
 
-**Verdict**: Selected Candidate 2 for production balance of durability and index speed.
+**Verdict:** Selected Candidate 2 for balanced durability and index lookup speed.
 ```

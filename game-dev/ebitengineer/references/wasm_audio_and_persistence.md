@@ -1,20 +1,22 @@
-# WebAssembly Audio Late-Sync & Fail-Fast Save Persistence Reference
+# WebAssembly Audio Late-Sync, 44.1 kHz Stereo PCM & Fail-Fast Save Persistence Reference
 
-This module covers 4-byte aligned PCM stream seeking for WebAssembly browser autoplay unlock synchronization and build-tagged fail-fast save storage across Desktop (`!js`) and WebAssembly (`js && wasm`).
+This module covers 4-byte aligned 44.1 kHz 16-bit stereo PCM audio playback across `procedural-sfx`, `procedural-music`, and `lyria`, WebAssembly browser autoplay unlock synchronization, and build-tagged fail-fast save storage across Desktop (`!js`) and WebAssembly (`js && wasm`).
 
 ---
 
-## 1. WebAssembly Audio Autoplay Unlock & 4-Byte Aligned PCM `Seek()`
+## 1. Unified 44.1 kHz Stereo PCM Audio & WebAssembly Autoplay Unlock
+
+Ebitengine's `audio.Context` operates on **16-bit signed little-endian stereo PCM at 44,100 Hz (4 bytes per sample frame: 2 bytes Left + 2 bytes Right)**. Share a single `*audio.Context` across all `procedural-sfx` (`.sfx`), `procedural-music` (`.music`), and `lyria` audio buffers.
 
 Modern browsers block WebAudio playback until the user performs an explicit interaction gesture (key press, mouse click, or touch). Meanwhile, the game's `Update()` loop and visual clocks continue running from `0:00`.
 
-When the user finally interacts at elapsed time $T_{\text{elapsed}}$, starting BGM at `0:00` desynchronizes music from intro choreography or beat-synced visuals. Instead, compute the exact byte offset in Ebitengine's **16-bit stereo PCM format (4 bytes per sample frame: 2 channels × 2 bytes)** and `Seek()` into the loop:
+When the user finally interacts at elapsed time $T_{\text{elapsed}}$, starting BGM at `0:00` desynchronizes music from intro choreography or beat-synced visuals. Instead, compute the exact byte offset in Ebitengine's 4-byte stereo frame format and `Seek()` into the loop:
 
 $$
-\text{ByteOffset} = \left\lfloor T_{\text{elapsed}} \times \text{SampleRate} \right\rfloor \times 4
+\text{ByteOffset} = \left(\left\lfloor T_{\text{elapsed}} \times \text{SampleRate} \right\rfloor \times 4\right) \pmod{\text{LoopLengthBytes}}
 $$
 
-> **CRITICAL INVARIANT**: Ebitengine audio streams require byte offsets to be an exact multiple of `4` (4-byte frame alignment: 16-bit Left + 16-bit Right). Seeking to an unaligned byte offset corrupts stereo channels or returns an error.
+> **CRITICAL INVARIANT**: Ebitengine audio streams require all buffer lengths and seek offsets to be an exact multiple of `4` (`length &^ 3`). Passing an unaligned length or seeking to an unaligned byte offset causes a runtime panic or corrupts stereo channels.
 
 ```go
 package audio
@@ -47,11 +49,12 @@ func NewSyncedBGMPlayer(ctx *ebitaudio.Context, pcmStream io.ReadSeeker, loopLen
 	if ctx == nil {
 		return nil, fmt.Errorf("audio: nil audio.Context")
 	}
-	if loopLengthBytes <= 0 || loopLengthBytes%BytesPerSample != 0 {
-		return nil, fmt.Errorf("audio: loopLengthBytes (%d) must be positive and 4-byte aligned", loopLengthBytes)
+	alignedLen := loopLengthBytes &^ 3
+	if alignedLen <= 0 {
+		return nil, fmt.Errorf("audio: loopLengthBytes (%d) must be >= 4 bytes", loopLengthBytes)
 	}
 
-	loop := ebitaudio.NewInfiniteLoop(pcmStream, loopLengthBytes)
+	loop := ebitaudio.NewInfiniteLoop(pcmStream, alignedLen)
 	p, err := ctx.NewPlayer(loop)
 	if err != nil {
 		return nil, fmt.Errorf("audio: create BGM player: %w", err)
@@ -61,7 +64,7 @@ func NewSyncedBGMPlayer(ctx *ebitaudio.Context, pcmStream io.ReadSeeker, loopLen
 		ctx:             ctx,
 		loopStream:      loop,
 		player:          p,
-		loopLengthBytes: loopLengthBytes,
+		loopLengthBytes: alignedLen,
 	}, nil
 }
 
@@ -81,8 +84,8 @@ func AlignPCMByteOffset(elapsed time.Duration, sampleRate int, loopLengthBytes i
 	if wrappedOffset < 0 {
 		wrappedOffset = 0
 	}
-	// Enforce strict 4-byte frame boundary alignment
-	alignedOffset := (wrappedOffset / BytesPerSample) * BytesPerSample
+	// Enforce strict 4-byte frame boundary alignment (&^ 3)
+	alignedOffset := wrappedOffset &^ 3
 	return alignedOffset, nil
 }
 
@@ -120,6 +123,52 @@ func hasUserGesture() bool {
 		return true
 	}
 	return false
+}
+```
+
+### 1.1 Zero-Latency SFX Bank with Cooldown Throttling (`procedural-sfx`)
+Pre-compile `.sfx` scripts into 4-byte aligned `[]byte` buffers during boot and throttle rapid triggers in `Update()`:
+
+```go
+type SFXBank struct {
+	ctx        *ebitaudio.Context
+	cues       map[string][]byte
+	lastPlayed map[string]time.Time
+}
+
+func NewSFXBank(ctx *ebitaudio.Context) (*SFXBank, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("audio: nil audio.Context for SFXBank")
+	}
+	return &SFXBank{
+		ctx:        ctx,
+		cues:       make(map[string][]byte, 16),
+		lastPlayed: make(map[string]time.Time, 16),
+	}, nil
+}
+
+func (b *SFXBank) RegisterCue(name string, pcm []byte) error {
+	alignedLen := len(pcm) &^ 3
+	if name == "" || alignedLen == 0 {
+		return fmt.Errorf("audio: invalid SFX cue %q (aligned length=%d)", name, alignedLen)
+	}
+	b.cues[name] = pcm[:alignedLen]
+	return nil
+}
+
+func (b *SFXBank) PlaySFX(name string, cooldown time.Duration) error {
+	pcm, ok := b.cues[name]
+	if !ok {
+		return fmt.Errorf("audio: unknown SFX cue %q", name)
+	}
+	now := time.Now()
+	if last, exists := b.lastPlayed[name]; exists && now.Sub(last) < cooldown {
+		return nil
+	}
+	b.lastPlayed[name] = now
+	p := b.ctx.NewPlayerFromBytes(pcm)
+	p.Play()
+	return nil
 }
 ```
 

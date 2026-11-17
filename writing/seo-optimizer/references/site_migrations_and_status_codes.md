@@ -1,10 +1,10 @@
-# Site Migrations, HTTP Status Codes, and Crawl Infrastructure
+# Site migrations, HTTP status codes, and crawl infrastructure
 
 A comprehensive, authoritative engineering reference on HTTP status codes, domain and site migrations, crawl budget optimization, and crawlable site architecture based on official Google Search Central guidelines.
 
 ---
 
-## 1. HTTP Status Codes Decision Tree & Indexing Behavior
+## 1. HTTP status codes decision tree and indexing behavior
 
 HTTP status codes are the primary signal Googlebot uses to determine whether a URL should be crawled, indexed, canonicalized, or purged from the search index.
 
@@ -24,7 +24,7 @@ graph TD
     Code -->|429 / 503| ServerStress[Throttle Crawl Rate & Exponential Backoff via Retry-After]
 ```
 
-### Complete Status Code Matrix for Googlebot
+### Complete status code matrix for Googlebot
 
 | HTTP Status Code | Definition & Googlebot Behavior | Search Signal Transfer (PageRank, Canonical) | Recommended Implementation & Use Cases |
 | :--- | :--- | :--- | :--- |
@@ -39,11 +39,11 @@ graph TD
 
 ---
 
-## 2. Preventing and Fixing Soft 404 Errors
+## 2. Preventing and fixing Soft 404 errors
 
 A **Soft 404** occurs when a server returns an HTTP `200 OK` status for a page that is effectively an error page, empty document, or missing resource.
 
-### Common Causes of Soft 404s
+### Common causes of Soft 404s
 1. **Missing Content with `200 OK`**: Rendering a "Product not found" or "Page does not exist" message while returning `HTTP/1.1 200 OK`.
 2. **Blank or Thin Templates**: Dynamic single-page applications (SPAs) rendering an empty `<div id="app"></div>` when an API entity returns 404.
 3. **Blanket Homepage Redirects**: Redirecting hundreds of deleted sub-pages via `301` to `/` instead of a 1-to-1 equivalent or returning `404`/`410`.
@@ -59,9 +59,9 @@ graph LR
     D --> F[Clean Index Hygiene]
 ```
 
-### Server Configuration Fixes
+### Server configuration fixes
 
-#### NGINX Custom 404 / 410 Handling
+#### NGINX custom `404` / `410` handling
 ```nginx
 # Explicit 404 error page returning true 404 status
 error_page 404 /errors/404.html;
@@ -76,7 +76,7 @@ location /legacy-discontinued-api/ {
 }
 ```
 
-#### Apache `.htaccess` Configuration
+#### Apache `.htaccess` configuration
 ```apache
 # Set custom 404 document
 ErrorDocument 404 /errors/404.html
@@ -88,7 +88,7 @@ RewriteRule ^old-discontinued-products/.*$ - [G,L]
 
 ---
 
-## 3. Full Site & Domain Migrations Playbook
+## 3. Full site and domain migrations playbook
 
 A successful domain or site structure migration preserves search equity, historical traffic, and user trust by methodically managing URL transitions.
 
@@ -114,7 +114,7 @@ graph TD
     Phase 2: Launch & Cutover --> Phase 3: Post-Migration Monitoring
 ```
 
-### Step 1: Pre-Migration Redirect Mapping Matrix
+### Step 1: Pre-migration redirect mapping matrix
 
 Never rely on automated wildcard redirects for heterogeneous content. Build an exhaustive 1-to-1 CSV mapping matrix:
 
@@ -128,15 +128,15 @@ Never rely on automated wildcard redirects for heterogeneous content. Build an e
 > **Eliminate Redirect Chains and Loops:**
 > A redirect chain (`URL A -> 301 -> URL B -> 301 -> URL C`) slows page loading, squanders crawl capacity, and may cause Googlebot to abort following redirects after 5 hops. Always point `URL A -> 301 -> URL C` directly.
 
-### Step 2: XML Sitemaps Strategy During Migrations
+### Step 2: XML sitemaps strategy during migrations
 
 During a site move, do **not** delete the old sitemap immediately:
 
 1. **Maintain the Old Sitemap**: Keep the old sitemap (listing all legacy `old.example.com` URLs) live and submitted in Google Search Console on the old property. This signals Googlebot to crawl the legacy URLs and discover the `301` redirects immediately.
 2. **Submit the New Sitemap**: Deploy and submit the new sitemap (listing only `200 OK` destination URLs on `new.example.com`) on the new Search Console property.
-3. **Run Concurrently**: Keep both sitemaps submitted until the GSC Page Indexing report shows complete transition of indexation to the new domain (typically 3–6 months minimum).
+3. **Run concurrently**: Keep both sitemaps submitted until the GSC Page Indexing report shows complete transition of indexation to the new domain (typically 3 to 6 months minimum).
 
-### Step 3: Google Search Console Change of Address Tool
+### Step 3: Google Search Console Change of Address tool
 
 For domain-level migrations (e.g., `example.com` to `example.io` or `oldbrand.com` to `newbrand.com`), use the Change of Address tool:
 
@@ -155,11 +155,11 @@ For domain-level migrations (e.g., `example.com` to `example.io` or `oldbrand.co
 
 ---
 
-## 4. Crawl Budget & Crawling Infrastructure for Large Sites
+## 4. Crawl budget and crawling infrastructure for large sites
 
 Crawl budget is the number of URLs Googlebot can and wants to crawl on your site within a given timeframe. It is governed by **Crawl Capacity Limit** (server health and throughput) and **Crawl Demand** (site popularity and freshness).
 
-### The Control Triad: robots.txt vs. noindex vs. Sitemaps
+### The control triad: `robots.txt` vs. `noindex` vs. sitemaps
 
 | Mechanism | Primary Function | Level of Action | Can Googlebot Read Page Content? | Does it Appear in Google Search Results? |
 | :--- | :--- | :--- | :--- | :--- |
@@ -171,7 +171,7 @@ Crawl budget is the number of URLs Googlebot can and wants to crawl on your site
 > **The `robots.txt` + `noindex` Trap:**
 > If you add `noindex` to a page and simultaneously block that page with `Disallow` in `robots.txt`, Googlebot **cannot crawl the page to see the `noindex` tag**. The page may remain indexed if referenced by external links. **To remove an indexed URL via `noindex`, robots.txt MUST allow Googlebot to fetch the page.**
 
-### Blocked Resources: Preserving Full Browser Rendering
+### Blocked resources: preserving full browser rendering
 
 Googlebot operates a full, modern rendering pipeline (Evergreen Chromium). To accurately evaluate page layouts, mobile-friendliness, Core Web Vitals, and hidden content, it requires access to all layout resources.
 
@@ -189,11 +189,11 @@ graph TD
 - **Never Disallow Assets**: Do not block `/css/`, `/js/`, `/static/`, `/fonts/`, or `/images/` in `robots.txt`.
 - **Validation**: Use the GSC **URL Inspection Tool** -> **Test Live URL** -> **View Tested Page** -> **Screenshot / More Info** to confirm no critical resources are blocked.
 
-### Preventing Infinite Crawl Traps & State-Changing Requests
+### Preventing infinite crawl traps and state-changing requests
 
 Crawlers can be trapped in infinite loops or overload dynamic servers by executing state-altering actions.
 
-#### 1. Blocking State-Changing Actions
+#### 1. Blocking state-changing actions
 Search crawlers should never trigger side-effects:
 ```robots.txt
 User-agent: *
@@ -204,7 +204,7 @@ Disallow: /account/logout
 Disallow: /user/preferences
 ```
 
-#### 2. Faceted Navigation & Internal Search Queries
+#### 2. Faceted navigation and internal search queries
 Faceted navigation (sorting by price, color, size, combined filter arrays) creates millions of duplicate low-value URL permutations:
 ```robots.txt
 User-agent: *
@@ -220,11 +220,11 @@ Disallow: /*?*sessionid=
 
 ---
 
-## 5. Crawlable Link Architecture
+## 5. Crawlable link architecture
 
 Googlebot discovers the web by extracting and traversing HTML hyperlinks. It does not click arbitrary buttons, execute synthetic event listeners, or parse arbitrary DOM data attributes as navigable links.
 
-### Crawlable vs. Non-Crawlable Link Standards
+### Crawlable vs. non-crawlable link standards
 
 ```mermaid
 graph LR
@@ -253,15 +253,15 @@ graph LR
 
 ---
 
-## 6. Pagination & Infinite Scroll Architecture
+## 6. Pagination and infinite scroll architecture
 
 Content spanning multiple pages (multi-page technical guides, paginated archive listings, product catalogs) must provide explicit crawlable links in the document body.
 
-### Deprecated Standards Notice
+### Deprecated standards notice
 > [!IMPORTANT]
 > Google **no longer supports** `<link rel="next" href="...">` and `<link rel="prev" href="...">` in the HTML `<head>`. Pagination discovery is driven entirely by standard crawlable `<a href="...">` links inside the HTML body prose or navigation components.
 
-### HTML Body Pagination Structure
+### HTML body pagination structure
 Multi-page articles and list feeds must render accessible navigation blocks:
 
 ```html
@@ -274,7 +274,7 @@ Multi-page articles and list feeds must render accessible navigation blocks:
 </nav>
 ```
 
-### Search-Friendly Infinite Scroll Requirements
+### Search-friendly infinite scroll requirements
 
 If your site implements infinite scroll or client-side lazy loading:
 1. **Fallback Paginated URLs**: Each chunk or page of items must correspond to a distinct, bookmarkable, and shareable URL (e.g. `/posts/page/2/` or `/posts?page=2`).
@@ -283,11 +283,11 @@ If your site implements infinite scroll or client-side lazy loading:
 
 ---
 
-## 7. XML Sitemap Types & Freshness Integrity
+## 7. XML sitemap types and freshness integrity
 
 Sitemaps inform search engines about discoverable URLs, media metadata, and content modification timestamps.
 
-### Sitemap Types & Capabilities
+### Sitemap types and capabilities
 
 | Sitemap Type | Namespace / Protocol | Key Elements | Primary Use Case |
 | :--- | :--- | :--- | :--- |
@@ -296,7 +296,7 @@ Sitemaps inform search engines about discoverable URLs, media metadata, and cont
 | **Video Sitemap** | `http://www.google.com/schemas/sitemap-video/1.1` | `<video:video>`, `<video:thumbnail_loc>`, `<video:title>`, `<video:description>`, `<video:content_loc>` | Embedded technical webinars, video tutorials, conference talks. |
 | **News Sitemap** | `http://www.google.com/schemas/sitemap-news/0.9` | `<news:news>`, `<news:publication>`, `<news:publication_date>`, `<news:title>` | Time-sensitive news articles published within the last 48 hours. |
 
-### Sitemap Limits & Index Architecture
+### Sitemap limits and index architecture
 - **Limits**: A single sitemap file cannot exceed **50,000 URLs** or **50MB** (uncompressed).
 - **Sitemap Index Files**: For larger collections, organize sitemaps hierarchically using a sitemap index file:
 
@@ -314,7 +314,7 @@ Sitemaps inform search engines about discoverable URLs, media metadata, and cont
 </sitemapindex>
 ```
 
-### `<lastmod>` Freshness Integrity Standards
+### `<lastmod>` freshness integrity standards
 
 The `<lastmod>` tag tells Googlebot when a page was last meaningfully modified so it can prioritize re-crawling.
 

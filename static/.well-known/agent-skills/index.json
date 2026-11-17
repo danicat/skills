@@ -6,273 +6,238 @@
       "type": "skill-md",
       "description": "Philosophical and inductive knowledge-distillation workflow that extracts general principles, causal laws, and portable concepts from concrete facts, evidence, and examples. Applies Aristotle's essence-versus-accident split, Bacon's inductive ascent, Peirce's concept naming, and Popper's flip test to turn raw facts into high-value knowledge without hollow platitudes. Activate when abstracting ideas, distilling lessons, or synthesizing principles from evidence.",
       "url": "https://skills.danicat.dev/workflows/abstract/SKILL.md",
-      "digest": "sha256:5dd031efcaf5ed3ae854917aa7263dae4ff585a408f42803981ca3c533881011"
+      "digest": "sha256:5118487b158079213aa053d8e411c567b468c2997d8969405a2bd30e70dbaa13"
     },
     {
       "name": "brainstorm",
       "type": "skill-md",
-      "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N), /brainstorm, or when exploring non-obvious solutions, architectures, or creative directions.",
+      "description": "Divergent ideation and option-generation engine that breaks LLM mode collapse using symmetry-breaking algorithms and optional parallel subagent dispatch. Applies taboo deflection, assumption inversion, tension breaking, cross-domain transfer, and testable bets to generate 3 high-conviction proposals per run, or fans out identical instructions across N subagents before reducing consensus and outlier breakthroughs. Activate on brainstorm(N) or when exploring non-obvious solutions, architectures, or creative directions.",
       "url": "https://skills.danicat.dev/workflows/brainstorm/SKILL.md",
-      "digest": "sha256:1fde2c265ee5363c9687e138ed61c21d33d0065e1a9c7cf60509462bf1d97cdd"
+      "digest": "sha256:f0476d729bf553df42871fdcacabeafd6b7ced832af586b4e27412ab955595f2"
     },
     {
       "name": "discovery",
       "type": "skill-md",
       "description": "Scientific and procedural problem-space exploration workflow that widens the investigative aperture across any domain to surface blind spots, hidden constraints, overlooked outliers, and unknown unknowns before narrowing on a choice. Frames and quantifies findings using a 6-tier evidence hierarchy. Activate when exploring a problem space, investigating systems or markets, hunting for hidden gems, or uncovering what an initial framing missed.",
       "url": "https://skills.danicat.dev/workflows/discovery/SKILL.md",
-      "digest": "sha256:369029a89c5b6d146cac5c3109f2bc96d9ff793533e6a2448860e479d1e2fc89"
+      "digest": "sha256:b7cf8378056d93aed8b1a514de6b93570ecdabb3ae242dfdb6954e97e4bfd4b9"
     },
     {
       "name": "double-diamond",
       "type": "archive",
       "description": "Universal multi-agent orchestration workflow based on the Double Diamond framework (Inception -> Discovery -> Definition -> Development -> Delivery). Coordinates parallel subagents with context isolation to separate problem-space research from solution-space implementation. Activate for complex, high-ambiguity initiatives across software engineering, in-depth research, long-form writing, legal analysis, or product strategy requiring structured human alignment gates.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/double-diamond.tar.gz",
-      "digest": "sha256:de808b065409a8921c8fcfa5c6728d80dc20fcc968c51891a208c3ee6275d3fe"
+      "digest": "sha256:6070669e6df7a808a810b50809feef080d2bd884c48a569e7350973408255e97"
     },
     {
       "name": "intercom",
       "type": "skill-md",
-      "description": "Cross-project and cross-session collaboration between Antigravity agents using the agentapi CLI and conversation_summaries.db. Finds active peer sessions across workspaces, looks up target project IDs, routes messages to other projects with return-address headers, and starts new sessions across workspaces. Activate when collaborating between agents in different projects, handing off tasks across workspaces, finding peer session IDs, or sending cross-project messages with agentapi.",
+      "description": "Cross-project and cross-session collaboration between Antigravity agents using the agentapi CLI and conversation_summaries.db. Finds active peer sessions across workspaces, looks up target project IDs, and routes messages to live sessions in other projects with return-address headers. Activate when collaborating between agents in different projects, handing off tasks across workspaces, finding peer session IDs, or sending cross-project messages with agentapi.",
       "url": "https://skills.danicat.dev/workflows/intercom/SKILL.md",
-      "digest": "sha256:938491225bc8e13a97207d0bf62f246521aa9e13874c97e74d8e335878cd628b"
+      "digest": "sha256:51a237ce45ec71cd5a0dff50f9f51bd995390cf5e7f2782f9f0b3648b19a5c62"
     },
     {
       "name": "less-is-more",
       "type": "skill-md",
-      "description": "Life and craft philosophy inspired by MasterChef that teaches focusing on what is important and doing it well instead of crowding the plate with mediocre extras. Counters AI bloat across product scope, writing, architecture, and frontend UX by elevating the hero ingredient, applying the Inverted Pyramid, replacing noisy text buttons with Material Symbols icons and hover hints, hiding settings in non-modal popovers, and enforcing plain English. Activate when simplifying cluttered frontend interfaces, pruning feature scope, tightening prose, or focusing a design on what matters most.",
+      "description": "Craft philosophy focused on removing clutter, cutting visual pollution, and doing one core thing at a high standard instead of shipping ten mediocre extras. Guides product scope, interface design, software architecture, and writing toward clarity, restraint, and excellence. Activate when simplifying cluttered designs, trimming feature creep, cleaning up noisy interfaces, or sharpening focus on what matters most.",
       "url": "https://skills.danicat.dev/workflows/less-is-more/SKILL.md",
-      "digest": "sha256:67f9a6662039c5bf58077e6d0978ab6661a355c816ebc835993730dfbc13f2a7"
+      "digest": "sha256:d255fdd3fba938a743e05d0aee1914bff246b0e9009d73a65a3035c719c970a3"
     },
     {
       "name": "parallel",
       "type": "archive",
-      "description": "General-purpose task parallelization and agent scaling engine. Orchestrates concurrent subagents for ANY task (research, analysis, writing, coding, planning, evaluation) across arbitrary parallel budgets. Enforces immediate main session unblocking, flat orthogonal task partitioning, and agent racing / tournament comparisons. Activate whenever the user invokes /parallel, requests parallel execution, specifies a DOP/budget, or wants concurrent agent swarms.",
+      "description": "General-purpose task parallelization and agent scaling engine. Orchestrates concurrent subagents for research, analysis, writing, coding, planning, and evaluation across numeric budgets (DOP) or automatic sizing (auto). Enforces non-blocking coordination, disjoint task partitioning, and agent racing or tournament selection. Activate when the user requests parallel execution, specifies a concurrency budget, or asks for concurrent subagents.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/parallel.tar.gz",
-      "digest": "sha256:03ad167c5bf6b080c08b8578d7e8c3655f4bb1b30eb7180c9515409b86e37a98"
-    },
-    {
-      "name": "router",
-      "type": "skill-md",
-      "description": "Automatic model and thinking-effort router that dispatches tasks as headless agy CLI background jobs. Scores prompt complexity to choose between gemini-3.5-flash-lite, gemini-3.8-flash, and gemini-4-argon across low, medium, and high thinking levels while keeping the main chat unblocked. Activate on router, router(N), router(auto), /router, or when routing tasks to right-sized tiers and parallel worker counts.",
-      "url": "https://skills.danicat.dev/workflows/router/SKILL.md",
-      "digest": "sha256:2311679046c7c11838af2f7f803ad24509e89a7737bf26055eb21e48127d93c1"
+      "digest": "sha256:1cd6e72013fe8d3dc4b16b232e25b03403e46340388361109f5ca4e2008c1849"
     },
     {
       "name": "show-me-the-money",
       "type": "skill-md",
-      "description": "Mine project conversation history and git logs using a Map-Reduce workflow with parallel Flash/Flash-Lite agy CLI workers to recover unimplemented features. Scans all sessions in the current project by default, running one worker per session in the Map step and resolving the latest snapshot in the Reduce step. Activate when looking for forgotten features, mining past sessions for unfinished work, or asking \"what did I forget to build?\".",
+      "description": "Mine project conversation history and git logs using a Map-Reduce workflow with parallel Gemini 4 Hydrogen agy CLI workers to recover unimplemented features. Scans all sessions in the current project by default, running one worker per session in the Map step and resolving the latest snapshot in the Reduce step. Activate when looking for forgotten features, mining past sessions for unfinished work, or asking \"what did I forget to build?\".",
       "url": "https://skills.danicat.dev/workflows/show-me-the-money/SKILL.md",
-      "digest": "sha256:5bfc52206b83222b4e4f235b283d1eb7c14301a4074c188d5c88cb1a7ee46c30"
+      "digest": "sha256:a7b91af5e34fcad0ee98d1d221707f852fdc067a7e582c074e96d5a972ed5021"
     },
     {
       "name": "skill-optimizer",
       "type": "archive",
       "description": "Comprehensive guide to develop and improve Agent Skill performance. Contains best practices for skill formatting (frontmatter and metadata), naming, descriptions, fine-tuning activation triggers, evaluations, production-readiness and open sourcing. Activate when developing new skills or refining existing ones.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/skill-optimizer.tar.gz",
-      "digest": "sha256:159fa3808736210e3e8063176b24d165b9e912c068dfcdfabaac5ef87d32c531"
+      "digest": "sha256:e979a53bdc65d436ec3acdae6c74d1491e8a2b7e07009793f4140df6541fa22c"
     },
     {
       "name": "spike",
       "type": "skill-md",
       "description": "Pragmatic Agile spike workflow for retiring technical, design, or functional risk before committing to implementation or estimates. Applies Extreme Programming risk-reduction rules with a right-sized toolkit, spanning spec and source audits, blast-radius traces, state-table walk-throughs, and throwaway probes, to deliver a fast, proof-backed Go/No-Go/Pivot verdict. Activate when running a spike or resolving a blocking unknown.",
       "url": "https://skills.danicat.dev/workflows/spike/SKILL.md",
-      "digest": "sha256:0f4b9fe890aadb64a8ce3ccf398d295e117d3151c410808dd12e01f24b12a13b"
+      "digest": "sha256:b8b437465253334058c82e88af49dedd87b9befd98179b80849d2891241ddbe1"
     },
     {
       "name": "swarm-coding",
       "type": "archive",
-      "description": "Orchestrates multi-agent hierarchical swarms using a divide-and-conquer architecture for complex, multi-system, or orthogonal engineering initiatives (e.g., concurrent backend, frontend, database, QA). Manages hierarchical Lead Agents and Specialists, Single Writer file boundaries, and strict parent-child communication. Activate on swarm-coding(N), /swarm-coding <N>, /swarm <N>, or any mention of 'swarm' or multi-agent team coordination across technical domains.",
+      "description": "Hierarchical multi-agent engineering workflow that divides multi-system codebases across a root Coordinator, domain Tech Leads, and task-scoped Specialists. Uses spec-first contracts, Single Writer file ownership, and a Map-Reduce integration pass to prevent context bloat and edit collisions. Use for large full-stack builds or cross-domain refactors spanning independent subsystems such as backend, frontend, data, and QA.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/swarm-coding.tar.gz",
-      "digest": "sha256:32db40e4acdf127e268e36c340a5a96aaa5b4c7092180980f30e6bda80199e7d"
+      "digest": "sha256:cdf2a6ec7967729d46e20724993d3ced9c5b400c7b83dbd1e9b6ce2950c3dcfb"
     },
     {
       "name": "uno-reverse",
       "type": "skill-md",
-      "description": "Radical simplification, red-teaming, and Occam's Razor devil's advocate for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specifications by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Prefers impartial dedicated subagent delegation to prevent context contamination and confirmation bias. Activate when reviewing complex technical proposals, pruning bloated architectures, red-teaming design docs, eliminating speculative features, or seeking the simplest possible path to production.",
+      "description": "Contrarian simplification, red-teaming, and Occam's Razor review for software architecture, PRDs, agent workflows, and technical designs. Challenges feature creep, speculative abstractions, and bloated specs by proposing minimum viable primitives that deliver 90% of value with 10% of moving parts. Delegates reviews to an isolated subagent by default to avoid confirmation bias. Activate when pruning bloated designs, red-teaming specs, or finding the simplest path to production.",
       "url": "https://skills.danicat.dev/workflows/uno-reverse/SKILL.md",
-      "digest": "sha256:42420d6935b4a02f915529e01f0f0faa958367179212fa7ea6946c9b67c5c1b5"
+      "digest": "sha256:4083d136362d4a787d769c93975f0f8e58209d651f24999d0eefc84979aadbee"
     },
     {
       "name": "buffer-analytics",
       "type": "archive",
       "description": "Collect and analyze social media data from Buffer in a local SQLite database. Stores your full post history and metrics across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view reports on engagement, clicks, and views. Activate when you need to analyze social media performance, find the best days or times to post, identify top-performing content, or query Buffer data with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer-analytics.tar.gz",
-      "digest": "sha256:39ed7398f07aeac0b69939b776269a0d9abf5b40d64334ad990d546088735945"
+      "digest": "sha256:b0714802abb85288eeb1c473a82a61ecadac1d095c1ab6455104ea8c2a7c2cad"
     },
     {
       "name": "google-analytics",
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
-      "digest": "sha256:0d9d500f15be6a2a6b86e6bc8a6afefcfcfaf9875d9b37984a860d7b7c34bbdb"
+      "digest": "sha256:0f315992d65610b80dc90585712ddd7317239c6f42cfa3b05c586e3fd425ac6a"
     },
     {
       "name": "pagespeed-insights",
       "type": "skill-md",
-      "description": "Run, extract, and debug Google PageSpeed Insights (pagespeed.web.dev) Mobile and Desktop Lighthouse reports using Chrome DevTools MCP (chrome-devtools-mcp). Reads raw Lighthouse Result (LHR) JSON from window.__LIGHTHOUSE_MOBILE_JSON__ and window.__LIGHTHOUSE_DESKTOP_JSON__ without noisy DOM snapshots. Activate when auditing a pagespeed.web.dev URL, running a live PageSpeed Insights check, or fixing Core Web Vitals (LCP, CLS, TBT, FCP, Speed Index).",
+      "description": "Run and extract Google PageSpeed Insights Mobile and Desktop audits via the v5 REST API (runPagespeed) or pagespeed.web.dev SSR window variables. Returns CrUX Core Web Vitals (LCP, INP, CLS) and Lighthouse lab diagnostics (TBT, FCP, Speed Index) without DOM snapshots. Activate when auditing a live URL or pagespeed.web.dev report or fixing Core Web Vitals.",
       "url": "https://skills.danicat.dev/analytics/pagespeed-insights/SKILL.md",
-      "digest": "sha256:65937713ab826f8809ac6c88130018da4e074c68801183a3c8a15e0515c80b77"
+      "digest": "sha256:ef9a0800b69973bcdead96a6f8697a4b3f24e1f52a70541c23c51c4520a1f749"
     },
     {
       "name": "search-analytics",
       "type": "archive",
       "description": "Collect and analyze Google Search Console organic search data in a local SQLite database. Stores clicks, impressions, click-through rates (CTR), average ranking positions, and landing pages so you can run SQL queries or view performance reports. Activate when analyzing Google Search traffic, tracking keyword rankings, finding SEO content optimization opportunities, or querying Search Console data with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/search-analytics.tar.gz",
-      "digest": "sha256:7782a33bed193258935fc439779c74458df2c4a0d82a2323d585048e4f7edb3a"
+      "digest": "sha256:c5ee30ff9da1f2570b75fa9bba2e8cc61f390f1bc052247f4e41d6d0a482831c"
     },
     {
       "name": "skill-analytics",
       "type": "archive",
-      "description": "Mine and analyze Agent Skill usage, Context-Tax ROI, and trigger attribution from conversation transcripts in a local SQLite database. Scans conversation transcripts and installed skill tiers (built-in, plugin, global, workspace, and catalog) to detect zero-use shelfware and tune activation descriptions. Activate when analyzing skill usage over time, auditing system-prompt token overhead, measuring autonomous vs. explicit (::skill or //skill) triggers, or querying conversation skill events with SQL.",
+      "description": "Mine and analyze Agent Skill usage, prompt-tax ROI, and trigger attribution from conversation transcripts in a local SQLite database. Scans conversation transcripts and installed skill tiers (built-in, plugin, global, workspace, and catalog) to detect zero-use shelfware and tune activation descriptions. Activate when analyzing skill usage over time, auditing system-prompt token overhead, measuring autonomous vs. explicit (::skill or //skill) triggers, or querying conversation skill events with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/skill-analytics.tar.gz",
-      "digest": "sha256:48617a1fd5752e1ba9d3ecd932ca11fa4d52e4472819ddf2a1f16edbb921ac69"
+      "digest": "sha256:67b5d65e8b3df8385ff7367140d30778cb60d7dca835a9355ea51803b5db52c5"
     },
     {
       "name": "ebitengineer",
       "type": "archive",
-      "description": "Engineering architecture and best practices for building 2D games in Go using Ebitengine (v2). Covers modular game architecture, scene state machines, virtual resolution scaling, delta-time physics, zero-allocation draw loops, Kage shaders, and WebAssembly audio synchronization. Activate when designing, building, optimizing, or debugging 2D games in Go, implementing game systems with Ebitengine, or compiling games to WebAssembly.",
+      "description": "Engineering architecture and best practices for building 2D games in Go using Ebitengine (v2). Covers modular game architecture, scene state machines, virtual resolution scaling, delta-time physics, zero-allocation draw loops, sprite sheet and AnimationController playback, 4-byte aligned 44.1 kHz stereo PCM audio, Kage shaders, and WebAssembly builds. Activate when building, optimizing, or debugging 2D games in Go, or compiling Ebitengine games to WebAssembly.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/ebitengineer.tar.gz",
-      "digest": "sha256:b025690359d2e4d72d27632ca2272056c3a7a26bad125596783d82c3a20db3b6"
+      "digest": "sha256:b621ce720042c8b34a8de73b55e914d26360de0bdee144ece517881ae88093d6"
     },
     {
       "name": "game-design",
       "type": "archive",
-      "description": "Interactive game design workflow and Game Design Document (GDD) authoring guide for 2D games. Structures game ideation through interactive probing interviews, defining core gameplay loops, win and loss conditions, control schemes, visual asset pipelines, and audio strategies into a clean GDD.md. Activate when conceptualizing a new game, defining gameplay mechanics, conducting game design interviews (/grill-me), or authoring a Game Design Document.",
+      "description": "Interactive 2D game design workflow and Game Design Document (GDD) authoring guide. Structures co-creation through one-decision-at-a-time interviews covering genre, camera projection, core loops, win/loss rules, controls, 2D HD or pixel-art sprite pipelines, and procedural or AI audio and cutscenes into GDD.md. Activate when conceptualizing a 2D game, defining mechanics, or authoring a Game Design Document.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/game-design.tar.gz",
-      "digest": "sha256:e1247b280aba7a7e76b415f79580abc4d1cc268a388f6bc60b51e022aa47992e"
+      "digest": "sha256:5828f5a9158ec5c5cf6396c5f8ec3979845b5445a4d8eb006a0ca701ef1a320f"
     },
     {
-      "name": "procedural-art",
+      "name": "procedural-music",
       "type": "archive",
-      "description": "Pure-code procedural graphics, sprite generation, and visual effects (VFX) guide for 2D games. Generates sprites, tilesets, particle systems, and vector shapes in memory without external image files, enforcing 2D matrix transformation order, sub-frame animation easing, and pre-allocated particle pools. Activate when creating procedural 2D sprites, building zero-asset games, designing particle effects, or implementing 2D matrix transformations.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-art.tar.gz",
-      "digest": "sha256:eb72f4666647acc407e3b9a72407a74c558408c1e9821e56816aedf628d2d713"
+      "description": "Pure-code procedural music composition guide and .music DSL for polyphonic BGM in Ebitengine. Compiles 4-byte aligned 16-bit 44.1 kHz stereo PCM soundtracks via a pure-Go SEGA Mega Drive YM2612 4-op FM + PolyBLEP SN76489 PSG synth or macOS CoreAudio (-apple gs_instruments.dls), with music-theory validation.",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-music.tar.gz",
+      "digest": "sha256:80f62b3026d9b6fac0b69b4edda53a702328b7673e453818490f4fb06a14899d"
     },
     {
-      "name": "procedural-composer",
+      "name": "procedural-sfx",
       "type": "archive",
-      "description": "Pure-code procedural audio synthesis guide for sound effects (SFX) and polyphonic background music (BGM) in games. Generates 16-bit stereo PCM audio in memory without external audio files, featuring multi-channel polyphonic composition, ADSR envelopes, frequency modulation, and declarative JSON sound definitions with a CLI player and WAV exporter. Activate when synthesizing sound effects, composing chiptune background music, building zero-asset audio engines, or exporting procedural sounds to WAV.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-composer.tar.gz",
-      "digest": "sha256:3f37328d99f11af4d71f0d293b6bf6ea83118a667b2bfee7a77f303420910437"
+      "description": "Pure-code procedural game sound effect (SFX) synthesis engine and .sfx DSL for Ebitengine. Compiles 4-byte aligned 16-bit 44.1 kHz stereo PCM cues in memory with PolyBLEP anti-aliasing, 18 archetype presets, duty and SVF filter sweeps, Galois LFSR chiptune noise, 2-operator FM, soft-clipping, boundary micro-fades, and acoustic QA validation.",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-sfx.tar.gz",
+      "digest": "sha256:dd461a9ec2f2c74dd8d366c34e2a80afd9d2955c47ed5dab7e397b020fcf5137"
     },
     {
-      "name": "sprite-animation",
+      "name": "sprite-design",
       "type": "archive",
-      "description": "2D sprite sheet management, frame animation sequencing, and Aseprite integration guide for games. Covers sprite grid slicing, animation state machines (idle, walk, attack, death), frame duration timing, tag loops, and Go animation controllers in Ebitengine. Activate when slicing sprite sheets, configuring character animations, integrating Aseprite files (.ase/.aseprite), or writing game animation controllers.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/sprite-animation.tar.gz",
-      "digest": "sha256:a666086ab6adfb5d02e9573b3d5b4872cfb6bb3dc8c04879a6d2c582dfe599c5"
+      "description": "Guide and .sprite engine for 2D game sprites, tilesets, and frame animations in Ebitengine. Covers the two-step AI character sheet to chroma-key grid pipeline with nano-banana, normalization into .sprite, .aseprite, .png, and .json containers, procedural SDF sprites, visual QA checks, and zero-allocation AnimationController state machines.",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/sprite-design.tar.gz",
+      "digest": "sha256:2107369ef7b9fa0cf45357b5402b4779cbe8846f6f25ce0cb509492c9c4b9059"
     },
     {
       "name": "vibe-game-developer",
       "type": "skill-md",
-      "description": "Master orchestrator and workflow router for building 2D games in Go with Ebitengine. Coordinates the full game development lifecycle across concept design (GDD creation), engine architecture, asset pipelines (pure-code procedural vs. AI-generated media), animation controllers, and WebAssembly deployment. Activate when building a 2D game from scratch, planning game workflows, routing game asset requests, or managing end-to-end game projects.",
+      "description": "Workflow router and orchestrator for building 2D games in Go with Ebitengine. Coordinates game design and GDD creation (game-design), engine architecture and WebAssembly builds (ebitengineer), 2D HD and pixel-art sprites (sprite-design and nano-banana), procedural and AI audio and video cutscenes (procedural-sfx, procedural-music, lyria, and gemini-omni), Go verification (godoctor), and multi-agent scaling (swarm-coding, parallel).",
       "url": "https://skills.danicat.dev/game-dev/vibe-game-developer/SKILL.md",
-      "digest": "sha256:c4bf1ae4609028aed64a9ba35dbf2232af826947a2dcdd32e16808c0aac165a5"
+      "digest": "sha256:9efbebf76d85a2d2c177ce154a4ac34a55a8cfc637650da7c1f4c33a68fa7720"
     },
     {
       "name": "gemini-omni",
       "type": "archive",
-      "description": "Conversational video generation, multimodal video editing, first-and-last-frame interpolation, multi-reference video synthesis, and video extension using Gemini Omni 1.1 Flash (gemini-omni-1.1-flash) via the gemini-api CLI and Google Gen AI SDKs. Generates 3s-10s video clips (extendable up to 40s) from 360p to 4K with native synchronized audio, dialogue, and sound effects. Activate when generating videos from text, animating starting/ending frames, editing existing videos conversationally, or extending video clips.",
+      "description": "Generate, animate, edit, interpolate, extend, and upscale video clips (3 to 15 seconds, 360p to 4K at 24 FPS) with native synchronized audio using Gemini Omni 1.2 Flash (gemini-omni-1.2-flash) via uv run scripts/omni.py and the Google Gen AI Interactions API across Gemini Enterprise / Vertex AI (global) and Gemini API. Activate when creating videos from text or images, editing or extending clips, or upscaling video resolution.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/gemini-omni.tar.gz",
-      "digest": "sha256:e2644bee4590e71f1c766e785f5cefea889238071b44dae1076000494d7b5f22"
+      "digest": "sha256:0773457f57425242246af341ba0867b7fa7e03b41b363b44732336c56803ae7a"
     },
     {
       "name": "lyria",
       "type": "archive",
-      "description": "Generative music and audio synthesis from text prompts or reference images using Google Lyria models via the gemini-api CLI and Google Gen AI SDKs. Generates 44.1 kHz stereo music clips, full songs with custom lyrics, and instrumental soundtracks using lyria-3.5 and lyria-3-clip-preview, with support for multimodal image inputs and MP3/WAV export. Activate when composing background music, generating songs, creating soundtracks from images, or producing AI audio clips.",
+      "description": "Generate 44.1 kHz stereo music, full songs with lyrics, and instrumental tracks from text prompts or reference images using Google Lyria models (lyria-3.5, lyria-3-clip-preview, lyria-3-pro-preview) via uv run scripts/lyria.py, the gemini-api CLI, or Google Gen AI SDKs across Gemini Enterprise / Vertex AI (global) and Gemini API. Activate when composing soundtracks, generating songs, or creating audio from images.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/lyria.tar.gz",
-      "digest": "sha256:3e5c7556b197105c0962014510285ee752a85420088133b294fa57a16861ce23"
+      "digest": "sha256:2a12820ed6612af869cea2abe06540a773b4fd866a2a9fdf8ea9ef832a2d94ec"
     },
     {
       "name": "nano-banana",
       "type": "archive",
-      "description": "Conversational image generation and multimodal image editing using Google Nano Banana models via the gemini-api CLI and Google Gen AI SDKs. Generates high-resolution images (512px, 1K, 2K, 4K), performs style transfers and mask-based image edits (\"banana this\"), and maintains character or style consistency using multi-image reference inputs. Activate when generating illustrations, editing or transforming images, creating visual assets, or maintaining character consistency across scenes.",
+      "description": "Conversational image generation and multimodal editing with Google Nano Banana models via uv run scripts/banana.py, the gemini-api CLI, and Google Gen AI SDKs. Generates up to 4K visuals, panoramas, character sheets, and chroma-key sprite grids with multi-image reference consistency and Search grounding. Activate when generating or editing images, sprites, or art, or when asked to \"banana\" an image.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/nano-banana.tar.gz",
-      "digest": "sha256:fd578b0da251ec4c85ee108dc4c38fdc9783b4e2d0ded8605cf139b19ce7929d"
+      "digest": "sha256:a44b9eeb05a8db383b3ea7492772a763e883eb590324c17ad2b567adc844a6c1"
     },
     {
-      "name": "adr-template",
+      "name": "design-docs",
       "type": "skill-md",
-      "description": "Guide and template for authoring and maintaining Architecture Decision Records (ADRs). Captures structural decisions, background context, trade-offs, and compliance verification in lightweight, immutable markdown records to preserve engineering context. Activate when making significant architectural choices, documenting technical trade-offs, proposing major refactorings, or authoring ADRs.",
-      "url": "https://skills.danicat.dev/coding/adr-template/SKILL.md",
-      "digest": "sha256:bb2bbd1b92d8fd1db4ed242e92170b26d55b9e2e9a9d9dd59f56cc951e29a15a"
-    },
-    {
-      "name": "engineering-flow",
-      "type": "skill-md",
-      "description": "Engineering standards, decision pipelines, and code hygiene guidelines for software development. Covers architectural decision workflows (RFCs and ADRs), task prioritization, grounded technical research, semantic versioning, and clean code practices like explicit error handling and dead code removal. Activate when designing system architecture, planning releases, refactoring codebases, establishing project standards, or resolving technical uncertainty.",
-      "url": "https://skills.danicat.dev/coding/engineering-flow/SKILL.md",
-      "digest": "sha256:efb5186721d66f5e74072194ade3f164094793a19bea93c3c09aff1edf3eca45"
+      "description": "Author and manage Request for Comments (RFC) proposals and Architecture Decision Records (ADRs). Covers collaborative design proposals, trade-off analysis, spike evidence, proposal lifecycle states, and immutable decision logs across design/rfc/ and design/adr/. Activate when proposing features, evaluating architectural options, or recording engineering decisions.",
+      "url": "https://skills.danicat.dev/coding/design-docs/SKILL.md",
+      "digest": "sha256:732b90421a8a9869f81eb1c7f141f74ace66c9e0f7342a3b048570205635a51c"
     },
     {
       "name": "godoctor",
       "type": "archive",
       "description": "Developer tooling and architectural safety rules for Go. Orchestrates high-level Go toolchain and static analysis utilities (gofmt, goimports, go vet, modernize, golangci-lint, deadcode), guards edits with compiler rollback gates, eliminates blind spots via Selene mutation testing, and enables fast test and coverage analytics with TestQuery SQLite queries. Activate when writing or refactoring Go code, fixing compilation or test failures, auditing test thoroughness, or enforcing idiomatic Go standards.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/godoctor.tar.gz",
-      "digest": "sha256:624f66fddeaa7f8dad15fc018c4f9dbe2210ceb60a3a1ec8afa8c5bf209954a4"
+      "digest": "sha256:5a551b3321dba03960af92dbfe7c8284760f27e079d8bc1cf5098022ef5d2946"
     },
     {
       "name": "google-oss",
       "type": "archive",
       "description": "Compliance and licensing guide for Google Open Source repositories and personal open-source projects published by Googlers. Enforces source file license headers (such as Apache-2.0) using addlicense, verifies license files, inserts required non-official product disclaimers, and audits pre-release compliance. Activate when preparing Google Open Source or Googler personal projects for release, applying copyright headers, or adding required disclaimers.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-oss.tar.gz",
-      "digest": "sha256:cce19260d10dd7c459122cabc137c9a48dfd5949e34ca8737f14b9e2f02507a8"
-    },
-    {
-      "name": "latest-version",
-      "type": "archive",
-      "description": "Query and verify latest stable package versions from official registries (npm, PyPI, Go proxy, Cargo, RubyGems) and Gemini models. Resolves accurate version constraints, checks for deprecated or yanked packages, and prevents version guessing. Activate when adding or updating dependencies, initializing new projects, editing package manifests (such as package.json, go.mod, pyproject.toml, Cargo.toml), or selecting Gemini models.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/latest-version.tar.gz",
-      "digest": "sha256:20ca2ed8b6cda597ccc0955940527c5c20fb86db84544d7bffc2edaa68f8326b"
-    },
-    {
-      "name": "pyhd",
-      "type": "archive",
-      "description": "Modern Python development workflow, project architecture, and code quality guidelines using uv, Ruff, and pytest. Enforces strict virtual environment isolation with uv, modern Python 3.10+ typing, AST-safe linting and formatting with Ruff, and automated pytest verification loops. Activate when creating, refactoring, testing, or building Python code, managing dependencies with uv, or configuring pyproject.toml.",
-      "url": "https://skills.danicat.dev/.well-known/agent-skills/pyhd.tar.gz",
-      "digest": "sha256:6c86df1c5e41e6e2df777d6edb38e235248d10c5c24147297ca2a524fca80054"
-    },
-    {
-      "name": "rfc-template",
-      "type": "skill-md",
-      "description": "Collaborative design proposal framework and template for Request for Comments (RFC) documents. Structures technical design proposals, explores alternative solutions, documents spikes and open questions, and tracks proposal lifecycle states before formalizing decisions into ADRs. Activate when proposing major features, exploring technical solutions under uncertainty, drafting design documents, or gathering engineering consensus.",
-      "url": "https://skills.danicat.dev/coding/rfc-template/SKILL.md",
-      "digest": "sha256:98e67540351d5fbdb634303f171d29f81e4c915c282e84429080a2bfbd9b3f7c"
+      "digest": "sha256:b957a9581d8a4d880eccb17af022faea1daccd454b147ec2c8b5876f23b27f55"
     },
     {
       "name": "buffer",
       "type": "archive",
-      "description": "Manage, draft, schedule, and publish social media content across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) using the Buffer CLI (@bufferapp/cli). Covers account and channel inspection, queue scheduling with dry-run safety validation, draft ideas management, and GraphQL schema introspection. Activate when scheduling social media posts, inspecting Buffer channels, automating social publishing, or managing social queues.",
+      "description": "Manage, draft, schedule, and publish social media content across connected channels (LinkedIn, X/Twitter, Bluesky, Threads, and Instagram) using the Buffer CLI (@bufferapp/cli). Covers channel discovery, dry-run validation, approval-gated queue scheduling, draft ideas, and live schema inspection. Activate when scheduling social media posts, inspecting Buffer channels, or automating social publishing workflows.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer.tar.gz",
-      "digest": "sha256:ae297044e3238d331b05b3fd1455819c24b9b862f075e1c502024613fe658e5b"
+      "digest": "sha256:a94b48a6d873128534ebc58ebcb7502665791f3ab0a8567adddcb53214994fa7"
     },
     {
       "name": "deslopify",
       "type": "archive",
-      "description": "Editorial guidelines and rewriting workflow for purging text of AI clichés, tropes, and formulaic filler. Identifies and removes overused AI vocabulary (such as delve, tapestry, seamlessly), negative parallelism, dramatic countdowns, and repetitive summaries to restore natural human cadence. Activate when rewriting text to remove AI tells, polishing drafts to sound authentically human, eliminating filler tropes, or auditing prose style.",
+      "description": "Editorial guide and rewriting workflow for removing AI cliches, tropes, and formulaic filler from prose. Flags overused vocabulary (such as delve, tapestry, seamlessly), negative parallelism, dramatic countdowns, reasoning throat-clearing, and fractal summaries while preserving the author's voice. Activate when auditing prose for AI tells or polishing drafts to read naturally.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/deslopify.tar.gz",
-      "digest": "sha256:df8144b71eb3de48f02d0980a764a4e867c79445654d639a7ae154aff0554e9b"
+      "digest": "sha256:aac5e58ec34239e619f0f158e34cf33896bfa8cea8f7cd710f32dea75489b219"
     },
     {
       "name": "inverted-pyramid",
       "type": "skill-md",
-      "description": "Structural guide and editorial model for organizing technical articles, developer documentation, and READMEs. Applies the Inverted Pyramid model to place high-value summaries and actionable quickstarts first, cascading down to usage workflows, architectural details, and compliance. Activate when structuring technical articles, writing or refactoring README files, organizing documentation hierarchy, or making technical guides scannable.",
+      "description": "Structural guide for organizing technical articles, developer documentation, and README files with the inverted pyramid model. Places summaries and runnable quickstarts first, followed by usage workflows, architecture, and compliance. Activate when structuring technical posts, writing or refactoring README files, or designing scannable documentation hierarchies.",
       "url": "https://skills.danicat.dev/writing/inverted-pyramid/SKILL.md",
-      "digest": "sha256:9dbd3322cbc15ea6b84e31298a4345993a98248df59377411e9615cddd16158f"
+      "digest": "sha256:0bd87a8644ce4c69e65a02cf78f117affa96de0d5df2295121728ef15c33fa8c"
     },
     {
       "name": "seo-optimizer",
       "type": "archive",
-      "description": "Technical SEO and Generative Engine Optimization (GEO) guide for developer docs and engineering blogs. Optimizes content for search engines and AI answer engines (Google AI Overviews, ChatGPT, Perplexity), splits human summary from search description metadata, verifies JSON-LD structured data (TechArticle), and maintains llms.txt. Activate when auditing technical SEO, optimizing articles for AI answer engines (GEO), generating llms.txt, or structuring search metadata.",
+      "description": "Technical SEO and Generative Engine Optimization (GEO) guide for developer docs and engineering blogs. Splits human summary hooks from search description metadata, validates TechArticle JSON-LD, configures AI crawler robots.txt rules, and generates llms.txt indexes. Activate when auditing technical SEO, tuning pages for AI search grounding, or structuring frontmatter metadata.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/seo-optimizer.tar.gz",
-      "digest": "sha256:522053dfd9f43f1a8ad2a924f404f630e034525b82931563ef83ec44f55f5e4d"
+      "digest": "sha256:99685acab4e886f23d0728ab84665c91b5c5050595395e69e6e849f8cb4580ad"
     },
     {
       "name": "social-copy",
       "type": "archive",
-      "description": "Editorial workflow and platform playbooks for drafting developer-native social media copy and campaigns. Extracts technical evidence via git log inspections or /grill-me interviews, establishes a canonical foundation narrative (CANONICAL.md), tailors derivatives for connected platforms (such as LinkedIn, X/Twitter, Bluesky, and others), and enforces anti-slop guidelines. Activate when drafting social media posts, writing release announcements, authoring technical threads, or running developer campaigns.",
+      "description": "Editorial workflow and platform playbooks for developer social media copy and campaigns. Extracts technical evidence from git history or author interviews, builds a canonical narrative (CANONICAL.md), adapts posts sequentially for LinkedIn, X, Bluesky, Instagram, Reddit, and Threads, and checks for AI cliches. Activate when drafting or auditing developer social posts and launches.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/social-copy.tar.gz",
-      "digest": "sha256:0e9ddb1f1a1c1ae916ea83b4e72384c1a2e6dc90c17ddba64a0bb0c97e113972"
+      "digest": "sha256:99057218dacb57e3e2a383d1088d1f949917f433cef02e0720c4b4aa360847c4"
     }
   ]
 }

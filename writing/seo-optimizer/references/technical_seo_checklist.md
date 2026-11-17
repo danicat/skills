@@ -1,10 +1,10 @@
-# Technical SEO Checklist for Developer Content & Static Sites
+# Technical SEO checklist for developer content and static sites
 
 A rigorous, full-scope technical SEO checklist for engineering publications, developer documentation, and static site generators (Hugo, Astro, Next.js), strictly aligned with official Google Search Central guidelines and Generative Engine Optimization (GEO) standards.
 
 ---
 
-## 1. Head HTML Integrity & Document Structure
+## 1. Head HTML integrity and document structure
 
 The `<head>` section is parsed sequentially by browsers and search engine crawlers. Structural defects in `<head>` can cause premature closure of the head context, resulting in dropped `<meta>` tags, unparsed canonical links, and indexing failures.
 
@@ -25,20 +25,20 @@ The `<head>` section is parsed sequentially by browsers and search engine crawle
 
 ---
 
-## 2. Titles & Meta Descriptions
+## 2. Titles and meta descriptions
 
 Titles and descriptions determine SERP snippet display and supply critical grounding context for AI Overviews and answer synthesis.
 
-- [ ] **Dual-Purpose Metadata Split**:
-  - **`summary` (For Humans)**: Curiosity-inducing editorial teaser (80–180 chars) for homepage feeds and social cards.
-  - **`description` (For Search & LLM Engines)**: Factual, direct answer (120–160 chars) loaded into `<meta name="description">` and JSON-LD `description`.
+- [ ] **Dual-purpose metadata split**:
+  - **`summary` (for humans)**: Curiosity-inducing editorial teaser (`80` to `180` chars) for homepage feeds and social cards.
+  - **`description` (for search and LLM engines)**: Factual, direct answer (`120` to `160` chars) loaded into `<meta name="description">` and JSON-LD `description`.
   - Never duplicate identical text between `summary` and `description`.
-- [ ] **Title Tag Optimization (`<title>`)**:
-  - **Length**: **40–60 characters** (under 40 lacks signal; over 60 gets truncated on desktop and mobile SERPs).
-  - **Front-Loading**: Place the primary keyword / core technology stack within the first 3 words (e.g., *"Building an MCP Server in Go"*).
-  - **Brand Suffix**: Append brand/site suffix via layout templates (e.g., `<title>{{ .Title }} | example.com</title>`), not manually in markdown frontmatter.
-- [ ] **Meta Description Formatting (`<meta name="description">`)**:
-  - **Length**: **120–160 characters**.
+- [ ] **Title tag optimization (`<title>`)**:
+  - **Length**: **40 to 60 characters** (under `40` lacks signal; over `60` gets truncated on desktop and mobile SERPs).
+  - **Front-loading**: Place the primary keyword / core technology stack within the first `3` words (e.g., *"Building an MCP Server in Go"*).
+  - **Brand suffix**: Append brand/site suffix via layout templates (e.g., `<title>{{ .Title }} | example.com</title>`), not manually in markdown frontmatter.
+- [ ] **Meta description formatting (`<meta name="description">`)**:
+  - **Length**: **120 to 160 characters**.
   - **Content Formula**: Context / Problem + Core Technical Solution.
   - **Clean Formatting**: Plain text only; escape or avoid unescaped double quotes (`"`) that prematurely terminate the HTML attribute.
 - [ ] **Robots Meta Directives**:
@@ -53,7 +53,7 @@ Titles and descriptions determine SERP snippet display and supply critical groun
 
 ---
 
-## 3. Site Attribution & Visual Assets
+## 3. Site attribution and visual assets
 
 Proper visual identity markup guarantees crisp site attribution badges and eligibility for Google Discover visual feeds.
 
@@ -71,14 +71,14 @@ Proper visual identity markup guarantees crisp site attribution badges and eligi
   - Every article should feature a high-quality visual asset at least **1200px wide**.
   - Maintain a standard aspect ratio: `16:9` (recommended, e.g., 1200x675), `4:3`, or `1:1`.
   - Pair with `<meta name="robots" content="max-image-preview:large">`.
-- [ ] **Descriptive Image `alt` Text**:
-  - Provide informative, context-rich alternative text (30–100 characters) for every image and architecture diagram.
+- [ ] **Descriptive image `alt` text**:
+  - Provide informative, context-rich alternative text (`30` to `100` characters) for every image and architecture diagram.
   - *Bad*: `alt="diagram"` or `alt="screenshot"`
   - *Good*: `alt="Sequence diagram showing JSON-RPC handshake between Gemini CLI client and Go MCP server"`
 
 ---
 
-## 4. Crawlable Link Architecture & Outbound Link Qualification
+## 4. Crawlable link architecture and outbound link qualification
 
 Google discovers and evaluates web topology exclusively through standard crawlable hyperlinks.
 
@@ -102,7 +102,7 @@ Google discovers and evaluates web topology exclusively through standard crawlab
 
 ---
 
-## 5. HTTP Status & Redirect Hygiene
+## 5. HTTP status and redirect hygiene
 
 Clean HTTP response codes ensure efficient crawl budget usage and rapid search index updates.
 
@@ -123,7 +123,7 @@ Clean HTTP response codes ensure efficient crawl budget usage and rapid search i
 
 ---
 
-## 6. Multilingual & International Parity
+## 6. Multilingual and international parity
 
 Multilingual technical sites must provide crystal-clear language signals without falling into international indexing traps.
 
@@ -150,7 +150,7 @@ Multilingual technical sites must provide crystal-clear language signals without
 
 ---
 
-## 7. Schema.org Validation & AI Grounding
+## 7. Schema.org validation and AI grounding
 
 Structured data provides direct entity grounding for generative search engines and powers rich result badges in SERPs.
 
@@ -168,7 +168,7 @@ Structured data provides direct entity grounding for generative search engines a
 
 ---
 
-## 8. Core Web Vitals & Mobile-First Parity
+## 8. Core Web Vitals and mobile-first parity
 
 Page experience and responsive performance metrics serve as baseline ranking and usability gates.
 
@@ -187,12 +187,12 @@ Page experience and responsive performance metrics serve as baseline ranking and
 
 ---
 
-## Quick Reference Summary Table
+## Quick reference summary table
 
 | Category | Primary Metric / Requirement | Tool / Validation |
 | :--- | :--- | :--- |
 | **Document Structure** | Single `H1`, no unclosed head tags, UTF-8 in first 1KB | W3C Validator / Lighthouse |
-| **Titles & Descriptions** | Title: 40–60 chars, Desc: 120–160 chars, Split Summary | `scripts/audit_seo.py` |
+| **Titles and descriptions** | Title: `40` to `60` chars, Desc: `120` to `160` chars, Split Summary | `scripts/audit_seo.py` |
 | **Attribution & Images** | Favicon >= 48px, Discover Hero >= 1200px, `max-image-preview:large` | Lighthouse / Chrome DevTools |
 | **Link Architecture** | Crawlable `<a href>`, `rel="sponsored"`, `rel="ugc"`, no internal `nofollow` | Google Search Console |
 | **Redirect Hygiene** | 301 server redirects, true 404/410 status codes, self-referencing canonical | `curl -I <URL>` |

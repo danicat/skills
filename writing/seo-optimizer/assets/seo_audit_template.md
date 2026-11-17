@@ -1,26 +1,26 @@
-# Technical SEO & Generative Engine Optimization (GEO) Audit Report
+# Technical SEO and GEO audit report
 
 **Article:** `{{ ARTICLE_TITLE }}`
-**File Path:** `{{ FILE_PATH }}`
+**File path:** `{{ FILE_PATH }}`
 **Auditor:** `seo-optimizer` Agent Skill
 **Date:** `{{ AUDIT_DATE }}`
 
 ---
 
-## 1. Executive Summary & Health Score
+## 1. Executive summary and health score
 
-| Dimension | Target Benchmark | Current Score | Status |
+| Dimension | Target benchmark | Current score | Status |
 | :--- | :--- | :--- | :--- |
-| **Traditional Technical SEO** | 85–100 / 100 | `{{ SEO_SCORE }}/100` | {{ SEO_STATUS }} |
-| **Generative Engine (GEO)** | 80–100 / 100 | `{{ GEO_SCORE }}/100` | {{ GEO_STATUS }} |
-| **Readability (Fog Index)** | 11.0–15.0 | `{{ FOG_INDEX }}` | {{ FOG_STATUS }} |
-| **AI Slop Score** | < 25 / 100 | `{{ SLOP_SCORE }}` | {{ SLOP_STATUS }} |
+| **Traditional technical SEO** | 85 to 100 / 100 | `{{ SEO_SCORE }}/100` | {{ SEO_STATUS }} |
+| **Generative engine (GEO)** | 80 to 100 / 100 | `{{ GEO_SCORE }}/100` | {{ GEO_STATUS }} |
+| **Readability (Fog Index)** | 11.0 to 15.0 | `{{ FOG_INDEX }}` | {{ FOG_STATUS }} |
+| **AI slop score** | < 25 / 100 | `{{ SLOP_SCORE }}` | {{ SLOP_STATUS }} |
 
 ---
 
-## 2. Metadata Split & Frontmatter Audit
+## 2. Metadata split and frontmatter audit
 
-### Current Frontmatter:
+### Current frontmatter
 ```yaml
 title: "{{ CURRENT_TITLE }}"
 summary: "{{ CURRENT_SUMMARY }}"
@@ -29,7 +29,7 @@ categories: {{ CURRENT_CATEGORIES }}
 tags: {{ CURRENT_TAGS }}
 ```
 
-### Proposed Optimized Frontmatter:
+### Proposed optimized frontmatter
 ```yaml
 title: "{{ OPTIMIZED_TITLE }}"
 summary: "{{ OPTIMIZED_SUMMARY }}"
@@ -38,45 +38,45 @@ categories: {{ OPTIMIZED_CATEGORIES }}
 tags: {{ OPTIMIZED_TAGS }}
 ```
 
-- **Title Analysis:** Length: `{{ TITLE_LEN }}` chars. Front-loaded with primary entity.
-- **Description vs Summary Analysis:**
-  - `summary` provides an engaging editorial hook for on-site cards.
-  - `description` provides a dense, keyword-rich direct answer snippet for Google and LLMs.
+- **Title analysis:** Length `{{ TITLE_LEN }}` chars, front-loaded with the primary entity.
+- **Description vs. summary analysis:**
+  - `summary` provides an editorial hook for on-site cards.
+  - `description` provides a keyword-dense direct answer snippet for Google Search and LLMs.
 
 ---
 
-## 3. Heading & Content Structure
+## 3. Heading and content structure
 
-- **Heading Outline:**
+- **Heading outline:**
   - `H1`: Provided via frontmatter title
-  - `H2`: {{ H2_COUNT }} sections
-  - `H3`: {{ H3_COUNT }} subsections
-- **Hierarchy Status:** {{ HIERARCHY_STATUS }} (No skipped heading levels).
-- **Inverted Pyramid Status:** Lead section contains definitive 1-sentence answer hook within opening 150 words.
+  - `H2`: `{{ H2_COUNT }}` sections
+  - `H3`: `{{ H3_COUNT }}` subsections
+- **Hierarchy status:** `{{ HIERARCHY_STATUS }}` (zero skipped heading levels).
+- **Inverted pyramid status:** Lead section states a direct one-sentence answer within the opening `150` words.
 
 ---
 
-## 4. Accessibility & Asset Review
+## 4. Accessibility and asset review
 
-| Asset | Current Alt Text | Recommendation |
+| Asset | Current alt text | Recommendation |
 | :--- | :--- | :--- |
 | `image.png` | `{{ CURRENT_ALT }}` | `{{ OPTIMIZED_ALT }}` |
 
 ---
 
-## 5. Schema.org JSON-LD Verification
+## 5. Schema.org JSON-LD verification
 
-- **Primary Type:** `TechArticle`
+- **Primary type:** `TechArticle`
 - **Dependencies:** `{{ DEPENDENCIES }}`
-- **Proficiency Level:** `{{ PROFICIENCY_LEVEL }}`
-- **Author Entity:** {{ AUTHOR_NAME }}
-- **Publisher Entity:** {{ PUBLISHER_NAME }}
+- **Proficiency level:** `{{ PROFICIENCY_LEVEL }}`
+- **Author entity:** {{ AUTHOR_NAME }}
+- **Publisher entity:** {{ PUBLISHER_NAME }}
 
 ---
 
-## 6. Actionable Implementation Checklist
+## 6. Actionable implementation checklist
 
-- [ ] Update frontmatter with distinct `summary` and `description`.
-- [ ] Refine image alt text to describe architectural diagrams.
-- [ ] Add direct-answer definition block under first major `H2`.
-- [ ] Verify clean build in static generator.
+- [ ] Update frontmatter with distinct `summary` and `description` values.
+- [ ] Refine image `alt` text to explain diagrams clearly.
+- [ ] Add a direct-answer definition block under the first major `H2`.
+- [ ] Verify clean static build output and HTML `<head>` tags.

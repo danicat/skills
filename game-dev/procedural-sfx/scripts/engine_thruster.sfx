@@ -1,0 +1,5 @@
+title "Rocket Engine Thruster Burst"
+type sfx
+
+inst roar preset=engine_thruster vol=0.32
+track burn roar: roar:450ms

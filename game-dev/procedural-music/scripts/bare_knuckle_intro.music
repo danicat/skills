@@ -1,0 +1,77 @@
+title "Bare Knuckle / Streets of Rage - Intro (The Street of Rage - Yuzo Koshiro - 41-Bar VGM Hardware Register Reproduction)"
+type song
+tempo moderato 100
+time 4/4
+
+inst fm_brass_lead  wave=ym2612_brass vol=0.18 pan=-0.18 adsr=0.004,0.14,0.84,0.08 vib=5.2,1.80 lpf=0.48
+inst fm_brass_echo  wave=ym2612_brass gm=synth_brass_1 vol=0.13 pan=0.24 adsr=0.005,0.14,0.82,0.09 vib=5.2,1.60 lpf=0.44
+inst fm_brass_mid   wave=ym2612_epiano vol=0.14 pan=-0.26 adsr=0.004,0.15,0.80,0.09 vib=5.0,0.80 lpf=0.42
+inst fm_brass_low   wave=ym2612_brass gm=synth_brass_2 vol=0.13 pan=0.22 adsr=0.005,0.15,0.82,0.09 vib=4.8,0.80 lpf=0.40
+inst psg_lead       wave=psg_square gm=lead_square vol=0.15 pan=-0.10 adsr=0.003,0.12,0.86,0.08 vib=5.8,2.40 lpf=0.46
+inst psg_echo       wave=psg_arp gm=clavinet vol=0.095 pan=0.35 adsr=0.003,0.12,0.80,0.08 vib=5.8,2.20 lpf=0.42
+inst high_bell      wave=ym2612_bell vol=0.065 pan=0.28 adsr=0.002,0.14,0.78,0.10 vib=6.0,3.20 lpf=0.58
+inst psg_harm       wave=ym2612_strings vol=0.11 pan=-0.32 adsr=0.025,0.16,0.84,0.12 vib=4.6,1.20 lpf=0.38
+inst fm_bass        wave=ym2612_slap_bass
+inst sub_bass       wave=sub_bass gm=electric_bass adsr=0.004,0.11,0.88,0.05 lpf=0.038
+inst kick           wave=kick vol=0.19 pan=0.00
+
+pattern fade_out = (R:1~1~1)@vol=1.000->0.005
+
+pattern lead_main =
+  C3:1~1 | B2:1~1 | C3:1~1~2. B2:2. D3:2 | C3:1~1 | B2:1. D3:2 | C3:1~1 | (B2:1 |)*2
+  (A4:8 E5:8.*2 F5*3 R:16 D5:8.*2 G5*2 G5:8 |)*9
+  A4:8 E5:8.*2 F5*3 R:16 D5:8.*2 E5:4 D5 | G4:1 | R:1
+
+pattern mid_hook = A3:8 C5:8.*5 R:16 B4:8.*2 D5*2 D5:8 |
+pattern mid_var  = A3:8 C5:8.*4 C5:8 C5:16 R B4:8.*2 D5*2 D5:8 |
+pattern mid_main =
+  (A2:1~1 |)*7 (A2:1 |)*2
+  mid_hook*5 (mid_var mid_hook)*2
+  A3:8 C5:8.*5 R:16 B4:8.*2 D5:4*2 | D5:1 | R:1
+
+pattern low_main =
+  E3:1~1 | D3:1~1 | E3:1~1~2. D3:2. F3:2 | E3:1~1 | D3:1. F3:2 | E3:1~1 | (D3:1 |)*2
+  (R:8 A4:8.*2 A4:8 A3:16 A4:8 A3:16 A3:8 G3 G4:8.*2 B4 B4:8 G3:16 B4:8 |)*9
+  R:8 A4:8.*2 A4:8 A3:16 A4:8 A3:16 A3:8 G3 G4:8.*2 B4:4*2 | B3:1 | R:1
+
+pattern psg2_main =
+  R:2 A4:8t C5 E5 D5:1~1~4t G5:1~2t C5:8t B4 C5:1~1 E5:8t D5:2~2t
+  A4:1~1~1 A5:1~2.~16t G5:8~8t E5:4t D5 C5 E5:1~1~2t R:2~2t |
+  (R:1~1~1~1 |)*2
+  (A5:2 F5:4 C5 | D5:2. G5:4 | A5:2 F5:4 C5 | B4:1 |)*2
+  (R:1~1~1 |)*2
+
+pattern psg1_main =
+  R:2~8 A4:8t C5 E5 D5:1~1~4t G5:1~2t C5:8t B4 C5:1~1 E5:8t D5:2~2t
+  A4:1~1~1 A5:1~2.~16t G5:8~8t E5:4t D5 C5 E5:1~1 R:1~16t |
+  (R:1~1~1~1 |)*2
+  R:8 (A5:2 F5:4 C5:8*2 D5:2. G5:8*2 A5:2 F5:4 C5:8 (C5 R):16 B4:2.~8 B4:8)*2
+  R:2.~8 R:1~1~2*2
+
+pattern harm_main =
+  R:1~1~1~1 | C4:1~1 | R:1~4 A3:1. R:1~1~1~4 | (R:1~1~1~1 |)*4
+  E4:2 F4 | G4:2. F4:4 | E4:2 F4 | G4:1 | (R:1~1~1 |)*2
+
+pattern bass_intro = (A1:1~1 |)*3 A1:1 | A1:2.~8.
+pattern bass_body  = A2:16 (A2:8.*2 A2:4 A2:4.)*8 ((G2:16 A2:8)*4 A2:8. G2:16)*15 (G2:16 A2:8)*4 A2:4 A2:1~1*3
+pattern bass_fade  = (A2:1~1 A2:2.~8. R:16)@vol=1.000->0.005
+
+pattern drum_bar  = kick:8. kick:16 snare:8 kick:4 kick:8 snare:4 |
+pattern drum_head = kick:8. kick:16 snare:8 kick:4 kick:8
+pattern drum_main =
+  (R:1 |)*7 R:2. (snare*3 kick):16 |
+  (drum_bar*3 drum_head snare:8 (tom_hi*2):16 | drum_bar*3 drum_head (snare*2 tom_mid snare):16 |)*3
+  (R:1 |)*6
+pattern drum_fade = (R:1)*3@vol=1.000->0.005
+
+track ch01_fm_brass_lead fm_brass_lead: lead_main | fade_out
+track ch02_fm_brass_echo fm_brass_echo: lead_main | fade_out
+track ch03_fm_brass_mid  fm_brass_mid:  mid_main  | fade_out
+track ch04_fm_brass_low  fm_brass_low:  low_main  | fade_out
+track ch05_psg_lead      psg_lead:      psg2_main | fade_out
+track ch06_psg_echo      psg_echo:      psg1_main | fade_out
+track ch07_high_bell     high_bell:     psg2_main | fade_out
+track ch08_psg_harm      psg_harm:      harm_main | fade_out
+track ch09_fm_bass       fm_bass:       bass_intro bass_body | bass_fade
+track ch10_sub_bass      sub_bass:      bass_intro bass_body@-12 | bass_fade@-12
+track ch11_drums_main    kick:          drum_main | drum_fade

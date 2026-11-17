@@ -14,50 +14,53 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "flask>=3.0.0",
 #     "google-api-python-client>=2.100.0",
 #     "google-auth-oauthlib>=1.2.0",
 #     "google-auth>=2.28.0",
-#     "tabulate>=0.9.0",
-#     "requests>=2.31.0",
 # ]
 # ///
 """
 Google Search Console Ingestion Engine & SQL Analytics CLI.
 
 Ingests raw search performance data, properties, and sitemaps from the Google Search Console API
-into a local SQLite database (~/.gsc/analytics.db) without data loss, supporting:
-- Interactive OAuth 2.0 web authentication flow
+into a local SQLite database (default: search_analytics.db) without data loss, supporting:
+- Interactive OAuth 2.0 or Application Default Credentials authentication
 - Robust day-by-day historical backfill (up to GSC 16-month limit)
 - Automatic batch pagination (25,000 row chunks per day)
 - True incremental sync with data latency lookback overlap
 - Raw JSON retention on all records
-- Direct SQL querying and pre-canned analytical views
+- Release/milestone tracking and unfiltered pre-built analytical reports
 
 Usage:
   # 1. Authenticate with Google via local OAuth companion
-  python3 search_analytics.py auth [--port 8080]
+  uv run scripts/search_analytics.py auth [--port 8080]
 
   # 2. Incremental Sync (New days since last sync + 3-day latency refresh)
-  python3 search_analytics.py sync
+  uv run scripts/search_analytics.py sync
 
   # 3. Full Historical Backfill (16 months of daily granular data)
-  python3 search_analytics.py sync --full
+  uv run scripts/search_analytics.py sync --full
 
   # 4. Custom Date Range Sync
-  python3 search_analytics.py sync --start-date 2026-06-01 --end-date 2026-08-15
+  uv run scripts/search_analytics.py sync --start-date 2026-06-01 --end-date 2026-08-15
 
-  # 5. Execute Arbitrary SQL Query
-  python3 search_analytics.py query "SELECT query, SUM(clicks), SUM(impressions) FROM v_search_performance GROUP BY query ORDER BY SUM(clicks) DESC LIMIT 10"
+  # 5. Record a Release / SEO Milestone
+  uv run scripts/search_analytics.py milestone --title "v2.0 Launch" --date 2026-08-10
 
-  # 6. Run Pre-Built Reports
-  python3 search_analytics.py report overview
-  python3 search_analytics.py report top-queries
-  python3 search_analytics.py report top-pages
-  python3 search_analytics.py report countries
-  python3 search_analytics.py report devices
+  # 6. Execute Arbitrary SQL Query
+  uv run scripts/search_analytics.py query "SELECT query, SUM(clicks), SUM(impressions) FROM v_search_performance GROUP BY query ORDER BY SUM(clicks) DESC LIMIT 10"
+
+  # 7. Run Pre-Built Reports (All Tracked Dates by default; optional --days window)
+  uv run scripts/search_analytics.py report overview
+  uv run scripts/search_analytics.py report overview --days 28
+  uv run scripts/search_analytics.py report top-queries
+  uv run scripts/search_analytics.py report top-pages
+  uv run scripts/search_analytics.py report countries
+  uv run scripts/search_analytics.py report devices
+  uv run scripts/search_analytics.py report milestone-impact
 """
 
 import argparse
@@ -70,8 +73,40 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-# Enable insecure transport for localhost OAuth development
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
+def format_table(rows: List[Any], headers: List[str], style: str = "markdown") -> str:
+    """Formats query or report rows as a Markdown pipe table or ASCII grid using stdlib only."""
+    if not headers:
+        return ""
+    str_headers = [str(h) for h in headers]
+    str_rows = [["" if val is None else str(val) for val in row] for row in rows]
+    widths = [len(h) for h in str_headers]
+    for row in str_rows:
+        for i, val in enumerate(row):
+            if i < len(widths):
+                widths[i] = max(widths[i], len(val))
+
+    if style == "grid":
+        border = "+" + "+".join("-" * (w + 2) for w in widths) + "+"
+        header_sep = "+" + "+".join("=" * (w + 2) for w in widths) + "+"
+        lines = [
+            border,
+            "| " + " | ".join(str_headers[i].ljust(widths[i]) for i in range(len(widths))) + " |",
+            header_sep,
+        ]
+        for row in str_rows:
+            lines.append("| " + " | ".join((row[i] if i < len(row) else "").ljust(widths[i]) for i in range(len(widths))) + " |")
+            lines.append(border)
+        return "\n".join(lines)
+
+    lines = [
+        "| " + " | ".join(str_headers[i].ljust(widths[i]) for i in range(len(widths))) + " |",
+        "| " + " | ".join("-" * widths[i] for i in range(len(widths))) + " |",
+    ]
+    for row in str_rows:
+        lines.append("| " + " | ".join((row[i] if i < len(row) else "").ljust(widths[i]) for i in range(len(widths))) + " |")
+    return "\n".join(lines)
+
 
 ## Default Paths (Local to working directory, overridable via CLI flags)
 DEFAULT_CLIENT_SECRETS_FILE = (
@@ -84,11 +119,13 @@ DEFAULT_CREDENTIALS_FILE = (
     if os.path.exists(os.path.expanduser("~/.config/gsc/credentials.json"))
     else "credentials.json"
 )
-DEFAULT_DB_FILE = "analytics.db"
+DEFAULT_DB_FILE = "search_analytics.db"
 
 # Google Search Console API Constants
-SCOPES = [
+READONLY_SCOPES = [
     "https://www.googleapis.com/auth/webmasters.readonly",
+]
+WRITE_SCOPES = [
     "https://www.googleapis.com/auth/webmasters",
 ]
 API_SERVICE_NAME = "searchconsole"
@@ -232,7 +269,7 @@ WITH s_daily AS (
         SUM(clicks) AS clicks,
         SUM(impressions) AS impressions,
         CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END AS ctr_pct,
-        ROUND(AVG(position), 1) AS avg_position
+        ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
     FROM daily_site_performance
     GROUP BY site_url, date
 ),
@@ -245,7 +282,7 @@ p_daily AS (
         SUM(clicks) AS clicks,
         SUM(impressions) AS impressions,
         CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END AS ctr_pct,
-        ROUND(AVG(position), 1) AS avg_position
+        ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
     FROM search_performance
     GROUP BY site_url, date
 ),
@@ -287,7 +324,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
 FROM search_performance
 WHERE query != ''
 GROUP BY site_url, query;
@@ -303,7 +340,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
 FROM search_performance
 WHERE page != ''
 GROUP BY site_url, page;
@@ -317,7 +354,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
 FROM search_performance
 WHERE country != ''
 GROUP BY site_url, country;
@@ -331,7 +368,7 @@ SELECT
     ROUND(SUM(clicks), 0) AS total_clicks,
     ROUND(SUM(impressions), 0) AS total_impressions,
     ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
-    ROUND(AVG(position), 1) AS avg_position
+    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
 FROM search_performance
 WHERE device != ''
 GROUP BY site_url, device;
@@ -348,29 +385,32 @@ CREATE TABLE IF NOT EXISTS site_milestones (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 8. Milestone Impact Cohort Comparison View
+-- 8. Milestone Impact Cohort Comparison View (Unfiltered Property Totals)
 DROP VIEW IF EXISTS v_milestone_impact;
 CREATE VIEW v_milestone_impact AS
 SELECT
     m.commit_hash,
     m.title AS milestone_title,
     m.event_date AS milestone_date,
-    CASE WHEN sp.date < m.event_date THEN 'Pre-Milestone' ELSE 'Post-Milestone' END AS cohort,
-    COUNT(DISTINCT sp.date) AS days_tracked,
-    ROUND(SUM(sp.impressions), 0) AS total_impressions,
-    ROUND(SUM(sp.clicks), 0) AS total_clicks,
-    ROUND((SUM(sp.clicks) / MAX(SUM(sp.impressions), 1)) * 100, 2) AS ctr_pct,
-    ROUND(AVG(sp.position), 1) AS avg_position
-FROM search_performance sp
+    CASE WHEN ds.date < m.event_date THEN 'Pre-Milestone' ELSE 'Post-Milestone' END AS cohort,
+    COUNT(DISTINCT ds.date) AS days_tracked,
+    ROUND(SUM(ds.total_impressions), 0) AS total_impressions,
+    ROUND(SUM(ds.total_clicks), 0) AS total_clicks,
+    ROUND((SUM(ds.total_clicks) * 100.0) / MAX(SUM(ds.total_impressions), 1), 2) AS ctr_pct,
+    ROUND(SUM(ds.avg_position * ds.total_impressions) * 1.0 / MAX(SUM(ds.total_impressions), 1), 1) AS avg_position
+FROM v_daily_summary ds
 CROSS JOIN site_milestones m
 GROUP BY m.commit_hash, cohort;
 """
 
 
 def init_db(db_path: str = DEFAULT_DB_FILE) -> sqlite3.Connection:
-    ensure_dirs()
+    if db_path != ":memory:":
+        ensure_dirs(db_path=db_path)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA foreign_keys = ON;")
     conn.executescript(SCHEMA_DDL)
     conn.commit()
     return conn
@@ -392,44 +432,64 @@ def credentials_to_dict(credentials) -> Dict[str, Any]:
 
 
 def save_credentials_to_disk(credentials, filepath: str = DEFAULT_CREDENTIALS_FILE):
-    ensure_dirs()
+    ensure_dirs(config_file=filepath)
     data = credentials_to_dict(credentials)
-    with open(filepath, "w") as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
-def load_credentials_from_disk(filepath: str = DEFAULT_CREDENTIALS_FILE, service_account_path: Optional[str] = None):
+def load_credentials_from_disk(
+    filepath: str = DEFAULT_CREDENTIALS_FILE,
+    service_account_path: Optional[str] = None,
+    scopes: Optional[List[str]] = None,
+):
+    import google.auth
+    from google.auth.exceptions import DefaultCredentialsError
     import google.oauth2.credentials
     import google.oauth2.service_account
 
+    target_scopes = scopes or READONLY_SCOPES
+
     # 1. Check explicit service account JSON
-    sa_path = service_account_path or ("service_account.json" if os.path.exists("service_account.json") else os.path.expanduser("~/.config/gsc/service_account.json"))
+    sa_path = service_account_path or (
+        "service_account.json"
+        if os.path.exists("service_account.json")
+        else os.path.expanduser("~/.config/gsc/service_account.json")
+    )
     if os.path.exists(sa_path):
         try:
             return google.oauth2.service_account.Credentials.from_service_account_file(
-                sa_path, scopes=SCOPES
+                sa_path, scopes=target_scopes
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"Error: Failed to load service account credentials from '{sa_path}': {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     # 2. Check direct Search Console OAuth credentials JSON
     if os.path.exists(filepath):
         try:
-            with open(filepath, "r") as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
             return google.oauth2.credentials.Credentials(**data)
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"Error: Failed to parse OAuth credentials file '{filepath}': {e}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     # 3. Check Google Application Default Credentials (ADC / gcloud)
     try:
-        import google.auth
-        credentials, _ = google.auth.default(scopes=SCOPES)
+        credentials, _ = google.auth.default(scopes=target_scopes)
         return credentials
-    except Exception:
-        pass
-
-    return None
+    except DefaultCredentialsError:
+        return None
+    except Exception as e:
+        print(f"Error: Failed to resolve Google ADC credentials: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def get_search_console_service(credentials):
@@ -465,29 +525,26 @@ def sync_properties_and_sitemaps(service, conn: sqlite3.Connection) -> List[str]
         )
 
         # Sync sitemaps for this property
-        try:
-            sm_resp = service.sitemaps().list(siteUrl=site_url).execute()
-            for sm in sm_resp.get("sitemap", []):
-                path = sm.get("path")
-                sm_type = sm.get("type", "sitemap")
-                last_dl = sm.get("lastDownloaded")
-                last_sub = sm.get("lastSubmitted")
-                errors = sm.get("errors", 0)
-                warnings = sm.get("warnings", 0)
-                indexed = None
-                if "contents" in sm and sm["contents"]:
-                    indexed = int(sm["contents"][0].get("indexed", 0))
+        sm_resp = service.sitemaps().list(siteUrl=site_url).execute()
+        for sm in sm_resp.get("sitemap", []):
+            path = sm.get("path")
+            sm_type = sm.get("type", "sitemap")
+            last_dl = sm.get("lastDownloaded")
+            last_sub = sm.get("lastSubmitted")
+            errors = sm.get("errors", 0)
+            warnings = sm.get("warnings", 0)
+            indexed = None
+            if "contents" in sm and sm["contents"]:
+                indexed = int(sm["contents"][0].get("indexed", 0))
 
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO sitemaps
-                    (site_url, path, type, last_downloaded, last_submitted, errors, warnings, indexed_count, raw_json, synced_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (site_url, path, sm_type, last_dl, last_sub, errors, warnings, indexed, json.dumps(sm), now),
-                )
-        except Exception as ex:
-            print(f"Warning: Could not fetch sitemaps for {site_url}: {ex}")
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO sitemaps
+                (site_url, path, type, last_downloaded, last_submitted, errors, warnings, indexed_count, raw_json, synced_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (site_url, path, sm_type, last_dl, last_sub, errors, warnings, indexed, json.dumps(sm), now),
+            )
 
     conn.commit()
     return verified_urls
@@ -499,9 +556,9 @@ def fetch_day_data(
     target_date: str,
     dimensions: List[str],
     search_type: str = "web",
+    max_rows: int = 25000,
 ) -> List[Dict[str, Any]]:
-    """Fetches all search analytics rows for a single day using 25,000 batch pagination."""
-    max_rows = 25000
+    """Fetches all search analytics rows for a single day using batch pagination."""
     start_row = 0
     day_rows = []
 
@@ -514,18 +571,13 @@ def fetch_day_data(
             "rowLimit": max_rows,
             "startRow": start_row,
         }
-        try:
-            resp = service.searchanalytics().query(siteUrl=site_url, body=req).execute()
-            rows = resp.get("rows", [])
-            if not rows:
-                break
-            day_rows.extend(rows)
-            start_row += max_rows
-            if len(rows) < max_rows:
-                break
-        except Exception as e:
-            # Handle rate limits or temporary API errors
-            print(f"Error querying {site_url} on {target_date} (startRow={start_row}): {e}")
+        resp = service.searchanalytics().query(siteUrl=site_url, body=req).execute()
+        rows = resp.get("rows", [])
+        if not rows:
+            break
+        day_rows.extend(rows)
+        start_row += len(rows)
+        if len(rows) < max_rows:
             break
 
     return day_rows
@@ -594,20 +646,27 @@ def ingest_daily_site_performance(
     start_date: str,
     end_date: str,
     search_type: str = "web",
+    max_rows: int = 25000,
 ) -> int:
     """Fetches unfiltered property-level daily totals (dimensions=['date']) without anonymized query loss."""
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    req = {
-        "startDate": start_date,
-        "endDate": end_date,
-        "dimensions": ["date"],
-        "type": search_type,
-        "aggregationType": "byProperty",
-        "rowLimit": 25000,
-    }
-    try:
+    start_row = 0
+    total_rows = 0
+
+    while True:
+        req = {
+            "startDate": start_date,
+            "endDate": end_date,
+            "dimensions": ["date"],
+            "type": search_type,
+            "aggregationType": "byProperty",
+            "rowLimit": max_rows,
+            "startRow": start_row,
+        }
         resp = service.searchanalytics().query(siteUrl=site_url, body=req).execute()
         rows = resp.get("rows", [])
+        if not rows:
+            break
         for r in rows:
             d_str = r["keys"][0]
             clicks = r.get("clicks", 0)
@@ -623,11 +682,13 @@ def ingest_daily_site_performance(
                 (site_url, d_str, search_type, clicks, impressions, ctr, position, json.dumps(r), now),
             )
         conn.commit()
-        print(f"  ✓ Ingested {len(rows)} property-level daily totals ({start_date} to {end_date})")
-        return len(rows)
-    except Exception as e:
-        print(f"Error fetching property-level daily performance for {site_url}: {e}")
-        return 0
+        total_rows += len(rows)
+        start_row += len(rows)
+        if len(rows) < max_rows:
+            break
+
+    print(f"  ✓ Ingested {total_rows} property-level daily totals ({start_date} to {end_date})")
+    return total_rows
 
 
 def run_sync_pipeline(
@@ -641,173 +702,331 @@ def run_sync_pipeline(
     dimensions_str: str = "page,query,country,device",
 ):
     """Orchestrates properties sync, determines backfill/incremental date bounds, and runs ingestion."""
-    creds = load_credentials_from_disk(credentials_file)
+    creds = load_credentials_from_disk(credentials_file, scopes=READONLY_SCOPES)
     if not creds:
-        print(f"Error: Credentials not found at {credentials_file}.")
-        print("Run 'python3 search_analytics.py auth' to authorize with Google Search Console.")
+        print(f"Error: Credentials not found at {credentials_file}.", file=sys.stderr)
+        print("Run 'uv run scripts/search_analytics.py auth' or configure Google ADC.", file=sys.stderr)
         sys.exit(1)
 
     service = get_search_console_service(creds)
     conn = init_db(db_file)
-    dimensions = [d.strip() for d in dimensions_str.split(",") if d.strip()]
+    try:
+        dimensions = [d.strip() for d in dimensions_str.split(",") if d.strip()]
 
-    # 1. Sync properties & sitemaps
-    verified_sites = sync_properties_and_sitemaps(service, conn)
-    sites_to_sync = [target_site_url] if target_site_url else verified_sites
+        # 1. Sync properties & sitemaps
+        verified_sites = sync_properties_and_sitemaps(service, conn)
+        sites_to_sync = [target_site_url] if target_site_url else verified_sites
 
-    if not sites_to_sync:
-        print("No verified properties found in Google Search Console.")
-        return
+        if not sites_to_sync:
+            print("Error: No verified properties found in Google Search Console.", file=sys.stderr)
+            sys.exit(1)
 
-    # 2. Determine Date Bounds
-    # GSC data latency is ~2-3 days
-    latest_available_date = datetime.date.today() - datetime.timedelta(days=2)
+        # 2. Determine Date Bounds (GSC data latency is ~2-3 days)
+        latest_available_date = datetime.date.today() - datetime.timedelta(days=2)
 
-    for site in sites_to_sync:
-        started_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        for site in sites_to_sync:
+            started_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-        if custom_start and custom_end:
-            start_date = custom_start
-            end_date = custom_end
-            sync_type = "date_range"
-        elif full_backfill:
-            # GSC maximum historical retention window is 16 months (approx 480 days)
-            start_date = (latest_available_date - datetime.timedelta(days=480)).isoformat()
-            end_date = latest_available_date.isoformat()
-            sync_type = "full_backfill"
-        elif days:
-            start_date = (latest_available_date - datetime.timedelta(days=days)).isoformat()
-            end_date = latest_available_date.isoformat()
-            sync_type = f"last_{days}_days"
-        else:
-            # Incremental Sync: Look up latest synced date in SQLite
-            cur = conn.cursor()
-            cur.execute("SELECT MAX(date) AS max_date FROM search_performance WHERE site_url = ?", (site,))
-            row = cur.fetchone()
-            max_date = row["max_date"] if row and row["max_date"] else None
-
-            if max_date:
-                # Include a 3-day lookback overlap to capture delayed metric revisions
-                start_dt = datetime.date.fromisoformat(max_date) - datetime.timedelta(days=3)
-                start_date = start_dt.isoformat()
+            if custom_start and custom_end:
+                start_date = custom_start
+                end_date = custom_end
+                sync_type = "date_range"
+            elif full_backfill:
+                # GSC maximum historical retention window is 16 months (approx 480 days)
+                start_date = (latest_available_date - datetime.timedelta(days=480)).isoformat()
                 end_date = latest_available_date.isoformat()
-                sync_type = "incremental"
+                sync_type = "full_backfill"
+            elif days:
+                start_date = (latest_available_date - datetime.timedelta(days=days)).isoformat()
+                end_date = latest_available_date.isoformat()
+                sync_type = f"last_{days}_days"
             else:
-                # Default initial backfill: 90 days if fresh database
-                start_date = (latest_available_date - datetime.timedelta(days=90)).isoformat()
-                end_date = latest_available_date.isoformat()
-                sync_type = "initial_90_days"
+                # Incremental Sync: Look up latest synced date in SQLite
+                cur = conn.cursor()
+                cur.execute("SELECT MAX(date) AS max_date FROM search_performance WHERE site_url = ?", (site,))
+                row = cur.fetchone()
+                max_date = row["max_date"] if row and row["max_date"] else None
 
-        print(f"\n=======================================================")
-        print(f"Starting {sync_type.upper()} for: {site}")
-        print(f"Date Range: {start_date} -> {end_date}")
-        print(f"Database: {db_file}")
-        print(f"=======================================================")
+                if max_date:
+                    # Include a 3-day lookback overlap to capture delayed metric revisions
+                    start_dt = datetime.date.fromisoformat(max_date) - datetime.timedelta(days=3)
+                    start_date = start_dt.isoformat()
+                    end_date = latest_available_date.isoformat()
+                    sync_type = "incremental"
+                else:
+                    # Default initial backfill: 90 days if fresh database
+                    start_date = (latest_available_date - datetime.timedelta(days=90)).isoformat()
+                    end_date = latest_available_date.isoformat()
+                    sync_type = "initial_90_days"
 
-        try:
-            site_rows = ingest_daily_site_performance(service, conn, site, start_date, end_date)
-            rows_synced = ingest_search_performance(service, conn, site, start_date, end_date, dimensions)
-            total_synced = site_rows + rows_synced
-            completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
-            conn.execute(
-                """
-                INSERT INTO sync_history (site_url, sync_type, start_date, end_date, rows_synced, status, started_at, completed_at)
-                VALUES (?, ?, ?, ?, ?, 'SUCCESS', ?, ?)
-                """,
-                (site, sync_type, start_date, end_date, total_synced, started_at, completed_at),
-            )
-            conn.commit()
-            print(f"\n✅ Sync completed successfully for {site}: {rows_synced:,} keyword rows, {site_rows:,} daily property totals recorded ({total_synced:,} total).")
+            print("\n=======================================================")
+            print(f"Starting {sync_type.upper()} for: {site}")
+            print(f"Date Range: {start_date} -> {end_date}")
+            print(f"Database: {db_file}")
+            print("=======================================================")
 
-        except Exception as ex:
-            completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
-            conn.execute(
-                """
-                INSERT INTO sync_history (site_url, sync_type, start_date, end_date, rows_synced, status, error_message, started_at, completed_at)
-                VALUES (?, ?, ?, ?, 0, 'FAILED', ?, ?, ?)
-                """,
-                (site, sync_type, start_date, end_date, str(ex), started_at, completed_at),
-            )
-            conn.commit()
-            print(f"\n❌ Sync failed for {site}: {ex}")
+            try:
+                site_rows = ingest_daily_site_performance(service, conn, site, start_date, end_date)
+                rows_synced = ingest_search_performance(service, conn, site, start_date, end_date, dimensions)
+                total_synced = site_rows + rows_synced
+                completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                conn.execute(
+                    """
+                    INSERT INTO sync_history (site_url, sync_type, start_date, end_date, rows_synced, status, started_at, completed_at)
+                    VALUES (?, ?, ?, ?, ?, 'SUCCESS', ?, ?)
+                    """,
+                    (site, sync_type, start_date, end_date, total_synced, started_at, completed_at),
+                )
+                conn.commit()
+                print(f"\nSync completed for {site}: {rows_synced:,} keyword rows, {site_rows:,} daily property totals ({total_synced:,} total).")
+
+            except Exception as ex:
+                completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                conn.execute(
+                    """
+                    INSERT INTO sync_history (site_url, sync_type, start_date, end_date, rows_synced, status, error_message, started_at, completed_at)
+                    VALUES (?, ?, ?, ?, 0, 'FAILED', ?, ?, ?)
+                    """,
+                    (site, sync_type, start_date, end_date, str(ex), started_at, completed_at),
+                )
+                conn.commit()
+                print(f"\nError: Sync failed for {site}: {ex}", file=sys.stderr)
+                sys.exit(1)
+    finally:
+        conn.close()
 
 
 # ---------------------------------------------------------------------------
-# SQL Query Runner & Pre-Packaged Reports
+# Milestones, SQL Query Runner & Pre-Packaged Reports
 # ---------------------------------------------------------------------------
 
-def run_sql_query(query: str, db_path: str = DEFAULT_DB_FILE, output_format: str = "markdown"):
-    """Executes arbitrary SQL queries against ~/.gsc/analytics.db and formats output."""
-    if not os.path.exists(db_path):
-        print(f"Error: Database {db_path} does not exist. Run 'python3 search_analytics.py sync' first.")
+def record_milestone(
+    title: str,
+    date_str: str,
+    commit_hash: Optional[str] = None,
+    description: str = "",
+    category: str = "Release",
+    scope: str = "sitewide",
+    author: Optional[str] = None,
+    db_path: str = DEFAULT_DB_FILE,
+) -> str:
+    """Records a release or SEO milestone in the local SQLite database."""
+    try:
+        datetime.date.fromisoformat(date_str)
+    except ValueError:
+        print(
+            f"Error: Invalid date format '{date_str}'. Expected YYYY-MM-DD.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-
+    c_hash = commit_hash or f"milestone-{date_str}"
+    conn = init_db(db_path)
     try:
-        cur.execute(query)
-    except Exception as e:
-        print(f"SQL Error: {e}")
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO site_milestones (
+                commit_hash, event_date, title, description, category, scope, author
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                c_hash,
+                date_str,
+                title,
+                description,
+                category,
+                scope,
+                author if author is not None else os.environ.get("USER", ""),
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    print(f"Milestone recorded in SQLite: '{title}' [{c_hash}] on {date_str}")
+    return c_hash
+
+
+VALID_REPORTS = (
+    "overview",
+    "top-queries",
+    "top-pages",
+    "countries",
+    "devices",
+    "timing",
+    "milestone-impact",
+)
+
+
+def build_report_query(name: str, days: Optional[int] = None) -> Tuple[str, str, Tuple[Any, ...]]:
+    """Builds the SQL query, title, and parameters for a pre-packaged Search Console report."""
+    if name not in VALID_REPORTS:
+        print(
+            f"Error: Unknown report '{name}'. Available: {', '.join(VALID_REPORTS)}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    rows = cur.fetchall()
-    if not rows:
-        print("Query returned 0 rows.")
-        return
+    if days is not None:
+        if days < 1:
+            print("Error: --days must be a positive integer (>= 1).", file=sys.stderr)
+            sys.exit(1)
+        if name == "milestone-impact":
+            print(
+                "Error: --days cannot be combined with 'milestone-impact', which compares full pre- and post-milestone cohorts.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
-    cols = [desc[0] for desc in cur.description]
+        window_param = f"-{days - 1} days"
+        if name == "overview":
+            sql = """
+                WITH kw_counts AS (
+                    SELECT
+                        site_url,
+                        COUNT(DISTINCT CASE WHEN query != '' THEN query END) AS distinct_queries,
+                        COUNT(DISTINCT CASE WHEN page != '' THEN page END) AS distinct_pages
+                    FROM search_performance
+                    WHERE date >= date((SELECT MAX(date) FROM v_daily_summary), ?)
+                    GROUP BY site_url
+                )
+                SELECT
+                    ds.site_url,
+                    MIN(ds.date) AS earliest_date,
+                    MAX(ds.date) AS latest_date,
+                    COUNT(DISTINCT ds.date) AS active_days,
+                    COALESCE(kw.distinct_queries, 0) AS distinct_queries,
+                    COALESCE(kw.distinct_pages, 0) AS distinct_pages,
+                    ROUND(SUM(ds.total_clicks), 0) AS total_clicks,
+                    ROUND(SUM(ds.total_impressions), 0) AS total_impressions,
+                    ROUND(SUM(ds.total_clicks) * 100.0 / MAX(SUM(ds.total_impressions), 1), 2) AS avg_ctr_pct,
+                    ROUND(SUM(ds.avg_position * ds.total_impressions) * 1.0 / MAX(SUM(ds.total_impressions), 1), 1) AS avg_position
+                FROM v_daily_summary ds
+                LEFT JOIN kw_counts kw ON ds.site_url = kw.site_url
+                WHERE ds.date >= date((SELECT MAX(date) FROM v_daily_summary), ?)
+                GROUP BY ds.site_url;
+            """
+            return f"OVERVIEW (Last {days} Days)", sql, (window_param, window_param)
 
-    if output_format == "json":
-        data = [dict(r) for r in rows]
-        print(json.dumps(data, indent=2))
-        return
+        window_reports: Dict[str, Tuple[str, str]] = {
+            "top-queries": (
+                f"TOP-QUERIES (Last {days} Days)",
+                """
+                SELECT
+                    query,
+                    COUNT(DISTINCT date) AS active_days,
+                    ROUND(SUM(clicks), 0) AS total_clicks,
+                    ROUND(SUM(impressions), 0) AS total_impressions,
+                    ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
+                    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
+                FROM search_performance
+                WHERE query != ''
+                  AND date >= date((SELECT MAX(date) FROM search_performance), ?)
+                GROUP BY site_url, query
+                ORDER BY total_clicks DESC, total_impressions DESC
+                LIMIT 15;
+                """,
+            ),
+            "top-pages": (
+                f"TOP-PAGES (Last {days} Days)",
+                """
+                SELECT
+                    page,
+                    COUNT(DISTINCT query) AS ranking_queries,
+                    ROUND(SUM(clicks), 0) AS total_clicks,
+                    ROUND(SUM(impressions), 0) AS total_impressions,
+                    ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
+                    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
+                FROM search_performance
+                WHERE page != ''
+                  AND date >= date((SELECT MAX(date) FROM search_performance), ?)
+                GROUP BY site_url, page
+                ORDER BY total_clicks DESC, total_impressions DESC
+                LIMIT 15;
+                """,
+            ),
+            "countries": (
+                f"COUNTRIES (Last {days} Days)",
+                """
+                SELECT
+                    country,
+                    ROUND(SUM(clicks), 0) AS total_clicks,
+                    ROUND(SUM(impressions), 0) AS total_impressions,
+                    ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
+                    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
+                FROM search_performance
+                WHERE country != ''
+                  AND date >= date((SELECT MAX(date) FROM search_performance), ?)
+                GROUP BY site_url, country
+                ORDER BY total_clicks DESC, total_impressions DESC
+                LIMIT 15;
+                """,
+            ),
+            "devices": (
+                f"DEVICES (Last {days} Days)",
+                """
+                SELECT
+                    device,
+                    ROUND(SUM(clicks), 0) AS total_clicks,
+                    ROUND(SUM(impressions), 0) AS total_impressions,
+                    ROUND(CASE WHEN SUM(impressions) > 0 THEN (SUM(clicks) / SUM(impressions)) * 100 ELSE 0 END, 2) AS avg_ctr_pct,
+                    ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
+                FROM search_performance
+                WHERE device != ''
+                  AND date >= date((SELECT MAX(date) FROM search_performance), ?)
+                GROUP BY site_url, device
+                ORDER BY total_clicks DESC;
+                """,
+            ),
+            "timing": (
+                f"TIMING (Last {days} Days)",
+                """
+                SELECT
+                    day_of_week,
+                    COUNT(*) AS days_recorded,
+                    ROUND(AVG(total_clicks), 1) AS avg_daily_clicks,
+                    ROUND(AVG(total_impressions), 0) AS avg_daily_impressions,
+                    ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS avg_ctr_pct
+                FROM v_daily_summary
+                WHERE date >= date((SELECT MAX(date) FROM v_daily_summary), ?)
+                GROUP BY day_of_week
+                ORDER BY avg_daily_clicks DESC;
+                """,
+            ),
+        }
+        title, sql = window_reports[name]
+        return title, sql, (window_param,)
 
-    if output_format == "csv":
-        writer = csv.writer(sys.stdout)
-        writer.writerow(cols)
-        for r in rows:
-            writer.writerow(list(r))
-        return
-
-    # Markdown Table / Grid format
-    try:
-        from tabulate import tabulate
-        table_style = "grid" if output_format == "table" else "github"
-        print(tabulate([list(r) for r in rows], headers=cols, tablefmt=table_style))
-    except ImportError:
-        # Fallback text formatter
-        col_widths = [len(c) for c in cols]
-        for r in rows:
-            for i, val in enumerate(r):
-                col_widths[i] = max(col_widths[i], len(str(val)))
-        header = " | ".join([cols[i].ljust(col_widths[i]) for i in range(len(cols))])
-        sep = "-+-".join(["-" * col_widths[i] for i in range(len(cols))])
-        print(f"{header}\n{sep}")
-        for r in rows:
-            print(" | ".join([str(r[i]).ljust(col_widths[i]) for i in range(len(cols))]))
-
-
-def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
-    """Runs pre-canned SQL analytical reports."""
-    reports = {
-        "overview": """
+    reports: Dict[str, Tuple[str, str]] = {
+        "overview": (
+            "OVERVIEW (All Tracked Dates)",
+            """
+            WITH kw_counts AS (
+                SELECT
+                    site_url,
+                    COUNT(DISTINCT CASE WHEN query != '' THEN query END) AS distinct_queries,
+                    COUNT(DISTINCT CASE WHEN page != '' THEN page END) AS distinct_pages
+                FROM search_performance
+                GROUP BY site_url
+            )
             SELECT
-                site_url,
-                MIN(date) AS earliest_date,
-                MAX(date) AS latest_date,
-                COUNT(DISTINCT date) AS active_days,
-                COUNT(DISTINCT query) AS distinct_queries,
-                COUNT(DISTINCT page) AS distinct_pages,
-                ROUND(SUM(clicks), 0) AS total_clicks,
-                ROUND(SUM(impressions), 0) AS total_impressions,
-                ROUND((SUM(clicks)/SUM(impressions))*100, 2) AS avg_ctr_pct,
-                ROUND(AVG(position), 1) AS avg_position
-            FROM search_performance
-            GROUP BY site_url;
-        """,
-        "top-queries": """
+                ds.site_url,
+                MIN(ds.date) AS earliest_date,
+                MAX(ds.date) AS latest_date,
+                COUNT(DISTINCT ds.date) AS active_days,
+                COALESCE(kw.distinct_queries, 0) AS distinct_queries,
+                COALESCE(kw.distinct_pages, 0) AS distinct_pages,
+                ROUND(SUM(ds.total_clicks), 0) AS total_clicks,
+                ROUND(SUM(ds.total_impressions), 0) AS total_impressions,
+                ROUND(SUM(ds.total_clicks) * 100.0 / MAX(SUM(ds.total_impressions), 1), 2) AS avg_ctr_pct,
+                ROUND(SUM(ds.avg_position * ds.total_impressions) * 1.0 / MAX(SUM(ds.total_impressions), 1), 1) AS avg_position
+            FROM v_daily_summary ds
+            LEFT JOIN kw_counts kw ON ds.site_url = kw.site_url
+            GROUP BY ds.site_url;
+            """,
+        ),
+        "top-queries": (
+            "TOP-QUERIES (All Tracked Dates)",
+            """
             SELECT
                 query,
                 active_days,
@@ -818,8 +1037,11 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_top_queries
             ORDER BY total_clicks DESC, total_impressions DESC
             LIMIT 15;
-        """,
-        "top-pages": """
+            """,
+        ),
+        "top-pages": (
+            "TOP-PAGES (All Tracked Dates)",
+            """
             SELECT
                 page,
                 ranking_queries,
@@ -830,8 +1052,11 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_top_pages
             ORDER BY total_clicks DESC, total_impressions DESC
             LIMIT 15;
-        """,
-        "countries": """
+            """,
+        ),
+        "countries": (
+            "COUNTRIES (All Tracked Dates)",
+            """
             SELECT
                 country,
                 total_clicks,
@@ -841,8 +1066,11 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
             FROM v_country_breakdown
             ORDER BY total_clicks DESC, total_impressions DESC
             LIMIT 15;
-        """,
-        "devices": """
+            """,
+        ),
+        "devices": (
+            "DEVICES (All Tracked Dates)",
+            """
             SELECT
                 device,
                 total_clicks,
@@ -851,19 +1079,25 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
                 avg_position
             FROM v_device_breakdown
             ORDER BY total_clicks DESC;
-        """,
-        "timing": """
+            """,
+        ),
+        "timing": (
+            "TIMING (All Tracked Dates)",
+            """
             SELECT
                 day_of_week,
                 COUNT(*) AS days_recorded,
                 ROUND(AVG(total_clicks), 1) AS avg_daily_clicks,
                 ROUND(AVG(total_impressions), 0) AS avg_daily_impressions,
-                ROUND(AVG(avg_ctr_pct), 2) AS avg_ctr_pct
+                ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS avg_ctr_pct
             FROM v_daily_summary
             GROUP BY day_of_week
             ORDER BY avg_daily_clicks DESC;
-        """,
-        "milestone-impact": """
+            """,
+        ),
+        "milestone-impact": (
+            "MILESTONE-IMPACT",
+            """
             SELECT
                 commit_hash,
                 milestone_title,
@@ -875,15 +1109,64 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
                 ctr_pct || '%' AS ctr,
                 avg_position
             FROM v_milestone_impact;
-        """,
+            """,
+        ),
     }
+    title, sql = reports[name]
+    return title, sql, ()
 
-    if report_name not in reports:
-        print(f"Unknown report '{report_name}'. Available: {', '.join(reports.keys())}")
+
+def run_sql_query(
+    query: str,
+    db_path: str = DEFAULT_DB_FILE,
+    output_format: str = "markdown",
+    params: Tuple[Any, ...] = (),
+):
+    """Executes arbitrary SQL queries against the analytics SQLite database and formats output."""
+    if not os.path.exists(db_path):
+        print(
+            f"Error: Database {db_path} does not exist. Run 'uv run scripts/search_analytics.py sync' first.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    print(f"\n==================== Report: {report_name.upper()} ====================\n")
-    run_sql_query(reports[report_name], db_path)
+    conn = init_db(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        if not rows:
+            print("Query returned 0 rows.")
+            return
+
+        cols = [desc[0] for desc in cur.description]
+
+        if output_format == "json":
+            data = [dict(r) for r in rows]
+            print(json.dumps(data, indent=2))
+            return
+
+        if output_format == "csv":
+            writer = csv.writer(sys.stdout)
+            writer.writerow(cols)
+            for r in rows:
+                writer.writerow(list(r))
+            return
+
+        table_style = "grid" if output_format == "table" else "markdown"
+        print(format_table([list(r) for r in rows], cols, style=table_style))
+    except Exception as e:
+        print(f"SQL Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        conn.close()
+
+
+def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE, days: Optional[int] = None):
+    """Runs pre-canned SQL analytical reports."""
+    title, sql, params = build_report_query(report_name, days=days)
+    print(f"\n==================== Report: {title} ====================\n")
+    run_sql_query(sql, db_path, params=params)
 
 
 # ---------------------------------------------------------------------------
@@ -892,19 +1175,19 @@ def run_report(report_name: str, db_path: str = DEFAULT_DB_FILE):
 
 def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: int = 8080, host: str = "127.0.0.1"):
     if not os.path.exists(client_secrets_file):
-        print(f"Error: Client secrets file not found at {client_secrets_file}.")
-        print("Please place your downloaded OAuth client secret JSON file at that path.")
+        print(f"Error: Client secrets file not found at {client_secrets_file}.", file=sys.stderr)
+        print("Place your downloaded OAuth client secret JSON file at that path.", file=sys.stderr)
         sys.exit(1)
 
     import google_auth_oauthlib.flow
 
     # Check client secret type (installed / desktop app vs web application)
-    with open(client_secrets_file, "r") as f:
+    with open(client_secrets_file, "r", encoding="utf-8") as f:
         secret_data = json.load(f)
 
     if "installed" in secret_data:
         flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-            client_secrets_file, scopes=SCOPES
+            client_secrets_file, scopes=WRITE_SCOPES
         )
         try:
             creds = flow.run_local_server(port=port, prompt="consent", access_type="offline", open_browser=True)
@@ -912,11 +1195,20 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
             print(f"Port {port} is in use, selecting an available ephemeral port...")
             creds = flow.run_local_server(port=0, prompt="consent", access_type="offline", open_browser=True)
         save_credentials_to_disk(creds, credentials_file)
-        script_name = os.path.basename(sys.argv[0])
-        print(f"You can now run: python3 {script_name} sync --days 30\n")
+        print("You can now run: uv run scripts/search_analytics.py sync --days 30\n")
         return
 
-    # Web application flow using Flask
+    if "web" not in secret_data:
+        print(
+            "Error: Invalid OAuth client secrets JSON (expected 'installed' or 'web' key).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # Web application flow using Flask (scoped insecure localhost transport)
+    if host in ("127.0.0.1", "localhost"):
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
     import flask
 
     app = flask.Flask(__name__)
@@ -924,7 +1216,7 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
 
     @app.route("/")
     def index():
-        creds = load_credentials_from_disk(credentials_file)
+        creds = load_credentials_from_disk(credentials_file, scopes=WRITE_SCOPES)
         status_badge = (
             '<span style="color: #137333; background: #e6f4ea; padding: 4px 10px; border-radius: 12px; font-weight: 600;">Authorized</span>'
             if creds
@@ -945,7 +1237,7 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
             </style>
         </head>
         <body>
-            <h1>🔐 Search Analytics OAuth Authorization</h1>
+            <h1>Search Analytics OAuth Authorization</h1>
             <div class="card">
                 <h3>Authentication Status: {status_badge}</h3>
                 <p>Authorize access to Google Search Console to enable automated SQLite ingestion and SQL analytics.</p>
@@ -960,7 +1252,7 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
     @app.route("/authorize")
     def authorize():
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            client_secrets_file, scopes=SCOPES
+            client_secrets_file, scopes=WRITE_SCOPES
         )
         flow.redirect_uri = flask.url_for("oauth2callback", _external=True)
 
@@ -977,7 +1269,7 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
     def oauth2callback():
         state = flask.session.get("state")
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            client_secrets_file, scopes=SCOPES, state=state
+            client_secrets_file, scopes=WRITE_SCOPES, state=state
         )
         flow.redirect_uri = flask.url_for("oauth2callback", _external=True)
 
@@ -988,9 +1280,9 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
         <!DOCTYPE html>
         <html>
         <body style="font-family: sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #137333;">🎉 Authorization Successful!</h2>
+            <h2 style="color: #137333;">Authorization Successful</h2>
             <p>Credentials saved to <code>~/.config/gsc/credentials.json</code>.</p>
-            <p>You can close this browser tab and return to the terminal to run <code>python3 search_analytics.py sync</code>.</p>
+            <p>You can close this browser tab and return to the terminal to run <code>uv run scripts/search_analytics.py sync</code>.</p>
         </body>
         </html>
         """
@@ -1005,15 +1297,18 @@ def run_auth_web_server(client_secrets_file: str, credentials_file: str, port: i
 # ---------------------------------------------------------------------------
 
 def cli_submit_sitemap(site_url: str, sitemap_url: str, credentials_file: str):
-    creds = load_credentials_from_disk(credentials_file)
+    creds = load_credentials_from_disk(credentials_file, scopes=WRITE_SCOPES)
     if not creds:
-        print("Error: No credentials found. Run 'python3 search_analytics.py auth' to authorize.")
+        print(
+            "Error: No credentials found. Run 'uv run scripts/search_analytics.py auth' to authorize.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     service = get_search_console_service(creds)
     print(f"Submitting sitemap {sitemap_url} to site {site_url}...")
     service.sitemaps().submit(siteUrl=site_url, feedpath=sitemap_url).execute()
-    print("✓ Sitemap successfully submitted to Google Search Console!")
+    print("✓ Sitemap successfully submitted to Google Search Console.")
 
 
 # ---------------------------------------------------------------------------
@@ -1061,7 +1356,7 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
     # 1. Auth command
-    auth_parser = subparsers.add_parser("auth", parents=[base_parser], help="Launch OAuth 2.0 Web Server to authorize")
+    auth_parser = subparsers.add_parser("auth", parents=[base_parser], help="Launch OAuth 2.0 flow to authorize")
     auth_parser.add_argument("--port", type=int, default=8080, help="Port to run OAuth app (default: 8080)")
     auth_parser.add_argument("--host", default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
 
@@ -1074,16 +1369,32 @@ def main():
     sync_parser.add_argument("--days", type=int, help="Number of days to sync back from latest date")
     sync_parser.add_argument("--dimensions", default="page,query,country,device", help="Comma-separated dimensions")
 
-    # 3. Query command (Direct SQL)
+    # 3. Milestone command
+    milestone_parser = subparsers.add_parser("milestone", parents=[base_parser], help="Record a release or SEO milestone in SQLite")
+    milestone_parser.add_argument("--title", required=True, help="Milestone title")
+    milestone_parser.add_argument("--date", required=True, help="Milestone date (YYYY-MM-DD)")
+    milestone_parser.add_argument("--commit", help="Git commit hash or identifier")
+    milestone_parser.add_argument("--description", default="", help="Milestone release notes")
+    milestone_parser.add_argument("--category", default="Release", help="Milestone category")
+    milestone_parser.add_argument("--scope", default="sitewide", help="Milestone scope")
+    milestone_parser.add_argument("--author", default=os.environ.get("USER", ""), help="Author of release")
+
+    # 4. Query command (Direct SQL)
     query_parser = subparsers.add_parser("query", parents=[base_parser], help="Execute arbitrary SQL against the database")
     query_parser.add_argument("sql", help="SQL query string")
     query_parser.add_argument("--format", default="markdown", choices=["markdown", "table", "json", "csv"], help="Output format")
 
-    # 4. Report command (Pre-packaged SQL views)
+    # 5. Report command (Pre-packaged SQL views)
     report_parser = subparsers.add_parser("report", parents=[base_parser], help="Run pre-packaged analytical SQL report")
-    report_parser.add_argument("name", choices=["overview", "top-queries", "top-pages", "countries", "devices", "timing", "milestone-impact"], help="Report name")
+    report_parser.add_argument("name", choices=list(VALID_REPORTS), help="Report name")
+    report_parser.add_argument(
+        "--days",
+        type=int,
+        default=None,
+        help="Optional trailing day window anchored on latest ingested date (e.g. --days 28)",
+    )
 
-    # 5. Sitemaps submission command
+    # 6. Sitemaps submission command
     submit_parser = subparsers.add_parser("submit-sitemap", parents=[base_parser], help="Submit an XML sitemap to Search Console")
     submit_parser.add_argument("--site-url", required=True, help="Site property URL (e.g. https://example.com/ or sc-domain:example.com)")
     submit_parser.add_argument("--sitemap-url", required=True, help="Full URL of the sitemap XML")
@@ -1111,10 +1422,21 @@ def main():
             days=args.days,
             dimensions_str=args.dimensions,
         )
+    elif args.command == "milestone":
+        record_milestone(
+            title=args.title,
+            date_str=args.date,
+            commit_hash=args.commit,
+            description=args.description,
+            category=args.category,
+            scope=args.scope,
+            author=args.author,
+            db_path=args.db,
+        )
     elif args.command == "query":
         run_sql_query(args.sql, args.db, args.format)
     elif args.command == "report":
-        run_report(args.name, args.db)
+        run_report(args.name, args.db, days=args.days)
     elif args.command == "submit-sitemap":
         cli_submit_sitemap(args.site_url, args.sitemap_url, args.credentials)
 

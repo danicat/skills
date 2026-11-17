@@ -1,6 +1,6 @@
 # 2D Camera Systems, Viewport Transforms & Game Feel ("Juice") Reference
 
-This module covers genre-agnostic 2D camera math using `ebiten.GeoM`, frame-rate independent exponential damping (lerp), Squirrel Eiserloh's trauma-based screen shake, hitstop (freeze frames), and spring-driven squash-and-stretch deformation.
+This module covers genre-agnostic 2D camera math using `ebiten.GeoM`, frame-rate independent exponential damping (lerp), Squirrel Eiserloh's trauma-based screen shake, hitstop (freeze frames), spring-driven squash-and-stretch deformation, sprite pivot transformation order, non-linear easing functions, and zero-allocation particle pools.
 
 ---
 
@@ -169,7 +169,7 @@ func (ts *TraumaShaker) Update(dt float64, cam *Camera) {
 
 ## 4. Hitstop (Freeze Frames) & Time Dilation
 
-Hitstop briefly pauses gameplay simulation (e.g., `30ms–90ms`) on critical impacts, parries, puzzle line clears, or boss kills while keeping camera shake and HUD effects active:
+Hitstop briefly pauses gameplay simulation (such as `30ms to 90ms`) on critical impacts, parries, puzzle line clears, or boss kills while keeping camera shake and HUD effects active:
 
 ```go
 type TimeController struct {
@@ -247,5 +247,238 @@ func (s *ScaleSpring) Update(dt float64) {
 
 	s.ScaleX += s.VelX * dt
 	s.ScaleY += s.VelY * dt
+}
+```
+
+---
+
+## 6. Sprite Pivot Transformation Order (`Transform2D`)
+
+2D affine matrix multiplication in `ebiten.GeoM` is non-commutative. Whenever scaling or rotating a sprite around a local pivot point `(OriginX, OriginY)` and placing it at world coordinates `(X, Y)`, apply operations in strict order:
+
+1. `m.Translate(-OriginX, -OriginY)`: Shift the local pivot to `(0, 0)`.
+2. `m.Scale(ScaleX, ScaleY)`: Scale around the pivot.
+3. `m.Rotate(Rotation)`: Rotate in radians around the pivot.
+4. `m.Translate(OriginX+X, OriginY+Y)`: Translate to the final world position.
+
+```go
+type Transform2D struct {
+	X, Y     float64 // World position
+	ScaleX   float64 // Horizontal scale
+	ScaleY   float64 // Vertical scale
+	Rotation float64 // Angle in radians
+	OriginX  float64 // Pivot offset X
+	OriginY  float64 // Pivot offset Y
+}
+
+func (t Transform2D) GetGeoM() ebiten.GeoM {
+	var m ebiten.GeoM
+	m.Translate(-t.OriginX, -t.OriginY)
+	m.Scale(t.ScaleX, t.ScaleY)
+	m.Rotate(t.Rotation)
+	m.Translate(t.OriginX+t.X, t.OriginY+t.Y)
+	return m
+}
+```
+
+---
+
+## 7. Non-Linear Easing Functions
+
+Normalized easing curves (`t` in `[0.0, 1.0]`) drive camera transitions, UI pop-ins, hit-flash fades, and tweened sprite animations cleanly:
+
+```go
+func EaseLinear(t float64) float64 { return t }
+
+func EaseInQuad(t float64) float64 { return t * t }
+
+func EaseOutQuad(t float64) float64 { return t * (2.0 - t) }
+
+func EaseInOutCubic(t float64) float64 {
+	if t < 0.5 {
+		return 4.0 * t * t * t
+	}
+	return 1.0 - math.Pow(-2.0*t+2.0, 3.0)/2.0
+}
+
+func EaseElasticOut(t float64) float64 {
+	if t <= 0 {
+		return 0
+	}
+	if t >= 1 {
+		return 1
+	}
+	p := 0.3
+	return math.Pow(2.0, -10.0*t)*math.Sin((t-p/4.0)*(2.0*math.Pi)/p) + 1.0
+}
+```
+
+---
+
+## 8. Zero-Allocation Particle System Pool
+
+Pre-allocate a fixed `[]Particle` pool, reusable glow texture (with premultiplied RGBA), and persistent `ebiten.DrawImageOptions` struct during initialization so spawning, updating, and rendering particles with additive blending (`ebiten.BlendLighter`) causes zero heap allocations in `Draw()`:
+
+```go
+package vfx
+
+import (
+	"fmt"
+	"image"
+	"image/color"
+	"math"
+	"math/rand/v2"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
+
+// PremultiplyRGBA converts straight RGB + Alpha into valid premultiplied color.RGBA (R, G, B <= A).
+func PremultiplyRGBA(r, g, b, a uint8) color.RGBA {
+	alpha := uint16(a)
+	return color.RGBA{
+		R: uint8((uint16(r)*alpha + 127) / 255),
+		G: uint8((uint16(g)*alpha + 127) / 255),
+		B: uint8((uint16(b)*alpha + 127) / 255),
+		A: a,
+	}
+}
+
+func LerpColor(c1, c2 color.RGBA, t float64) color.RGBA {
+	if t <= 0 {
+		return c1
+	}
+	if t >= 1 {
+		return c2
+	}
+	r := uint8(float64(c1.R) + t*(float64(c2.R)-float64(c1.R)))
+	g := uint8(float64(c1.G) + t*(float64(c2.G)-float64(c1.G)))
+	b := uint8(float64(c1.B) + t*(float64(c2.B)-float64(c1.B)))
+	a := uint8(float64(c1.A) + t*(float64(c2.A)-float64(c1.A)))
+	if r > a {
+		r = a
+	}
+	if g > a {
+		g = a
+	}
+	if b > a {
+		b = a
+	}
+	return color.RGBA{R: r, G: g, B: b, A: a}
+}
+
+type Particle struct {
+	X, Y       float64
+	VX, VY     float64
+	AX, AY     float64
+	Life       float64
+	Age        float64
+	StartSize  float64
+	EndSize    float64
+	StartColor color.RGBA
+	EndColor   color.RGBA
+	Additive   bool
+	Active     bool
+}
+
+type ParticleSystem struct {
+	pool    []Particle
+	texture *ebiten.Image
+	drawOp  ebiten.DrawImageOptions
+}
+
+func NewParticleSystem(maxParticles int) (*ParticleSystem, error) {
+	if maxParticles <= 0 {
+		return nil, fmt.Errorf("vfx: maxParticles must be > 0, got %d", maxParticles)
+	}
+	img := image.NewRGBA(image.Rect(0, 0, 16, 16))
+	for y := 0; y < 16; y++ {
+		for x := 0; x < 16; x++ {
+			d := math.Hypot(float64(x)+0.5-8.0, float64(y)+0.5-8.0) - 8.0
+			if d < 0 {
+				alpha := uint8(math.Min(255.0, math.Max(0.0, (-d/8.0)*255.0)))
+				img.SetRGBA(x, y, PremultiplyRGBA(255, 255, 255, alpha))
+			}
+		}
+	}
+	return &ParticleSystem{
+		pool:    make([]Particle, maxParticles),
+		texture: ebiten.NewImageFromImage(img),
+	}, nil
+}
+
+func (ps *ParticleSystem) EmitExplosion(x, y float64, count int) {
+	spawned := 0
+	for i := range ps.pool {
+		if !ps.pool[i].Active {
+			p := &ps.pool[i]
+			p.Active = true
+			p.X = x
+			p.Y = y
+			angle := rand.Float64() * 2.0 * math.Pi
+			speed := 50.0 + rand.Float64()*150.0
+			p.VX = math.Cos(angle) * speed
+			p.VY = math.Sin(angle) * speed
+			p.AX = 0
+			p.AY = 40.0
+			p.Life = 0.4 + rand.Float64()*0.4
+			p.Age = 0
+			p.StartSize = 1.2 + rand.Float64()*0.8
+			p.EndSize = 0.1
+			p.StartColor = PremultiplyRGBA(255, 200, 50, 255)
+			p.EndColor = PremultiplyRGBA(200, 30, 10, 0)
+			p.Additive = true
+
+			spawned++
+			if spawned >= count {
+				break
+			}
+		}
+	}
+}
+
+func (ps *ParticleSystem) Update(dt float64) {
+	for i := range ps.pool {
+		p := &ps.pool[i]
+		if !p.Active {
+			continue
+		}
+		p.Age += dt
+		if p.Age >= p.Life {
+			p.Active = false
+			continue
+		}
+		p.VX += p.AX * dt
+		p.VY += p.AY * dt
+		p.X += p.VX * dt
+		p.Y += p.VY * dt
+	}
+}
+
+func (ps *ParticleSystem) Draw(screen *ebiten.Image) {
+	for i := range ps.pool {
+		p := &ps.pool[i]
+		if !p.Active {
+			continue
+		}
+		progress := p.Age / p.Life
+		size := p.StartSize + progress*(p.EndSize-p.StartSize)
+		curColor := LerpColor(p.StartColor, p.EndColor, progress)
+
+		ps.drawOp.GeoM.Reset()
+		ps.drawOp.GeoM.Translate(-8, -8)
+		ps.drawOp.GeoM.Scale(size, size)
+		ps.drawOp.GeoM.Translate(p.X, p.Y)
+
+		ps.drawOp.ColorScale.Reset()
+		ps.drawOp.ColorScale.ScaleWithColor(curColor)
+
+		if p.Additive {
+			ps.drawOp.Blend = ebiten.BlendLighter
+		} else {
+			ps.drawOp.Blend = ebiten.BlendSourceOver
+		}
+
+		screen.DrawImage(ps.texture, &ps.drawOp)
+	}
 }
 ```

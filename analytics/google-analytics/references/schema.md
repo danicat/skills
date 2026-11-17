@@ -1,10 +1,10 @@
-# Google Analytics 4 SQLite Schema Reference
+# Google Analytics 4 schema reference
 
 The Google Analytics database is created and maintained automatically by `scripts/google_analytics.py`. Database tables, indexes, and analytical views are provisioned during sync operations.
 
 ---
 
-## 1. Relational Tables
+## 1. Relational tables
 
 ### `daily_pages`
 Stores daily pageviews, active users, sessions, active dwell time, and bounce rate broken down by country, device, and traffic source.
@@ -153,7 +153,7 @@ Audit log recording every backfill and incremental sync operation.
 
 ---
 
-## 2. Analytical SQL Views
+## 2. Analytical SQL views
 
 ### `v_daily_summary`
 Daily aggregated traffic totals across all landing pages.
@@ -165,7 +165,7 @@ Daily aggregated traffic totals across all landing pages.
 | `total_active_users` | `INTEGER` | Sum of active visitors |
 | `total_page_views` | `INTEGER` | Sum of pageviews |
 | `total_engagement_min`| `REAL` | Total active dwell time in minutes |
-| `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
+| `avg_bounce_pct` | `REAL` | Session-weighted bounce rate percentage |
 
 ---
 
@@ -181,7 +181,7 @@ Page-level rollup with views, active users, average dwell time, and bounce rate.
 | `total_sessions` | `INTEGER` | Visitor sessions |
 | `avg_dwell_sec` | `REAL` | Average active dwell time per user (seconds) |
 | `total_dwell_min`| `REAL` | Total cumulative active dwell time (minutes) |
-| `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
+| `avg_bounce_pct` | `REAL` | Session-weighted bounce rate percentage |
 
 ---
 
@@ -200,7 +200,7 @@ Acquisition channels and source/medium pairs with sessions, new users, engagemen
 | `avg_dwell_sec` | `REAL` | Average dwell time across all sessions (seconds) |
 | `engaged_dwell_sec` | `REAL` | Average dwell time per engaged session (seconds) |
 | `total_dwell_min`| `REAL` | Total active dwell time in minutes |
-| `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
+| `avg_bounce_pct` | `REAL` | Session-weighted bounce rate percentage |
 
 ---
 
@@ -214,7 +214,7 @@ Geographical ranking by country with sessions, pageviews, and dwell time.
 | `total_users` | `INTEGER` | Total active visitors |
 | `total_page_views` | `INTEGER` | Total pageviews |
 | `avg_dwell_sec` | `REAL` | Average dwell time per user (seconds) |
-| `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
+| `avg_bounce_pct` | `REAL` | Session-weighted bounce rate percentage |
 
 ---
 
@@ -254,5 +254,5 @@ Pre vs post milestone comparison of page traffic and engagement.
 | `total_views` | `INTEGER` | Total pageviews in cohort |
 | `total_users` | `INTEGER` | Total active visitors in cohort |
 | `total_sessions` | `INTEGER` | Total sessions in cohort |
-| `avg_engagement_sec` | `REAL` | Average active engagement duration (seconds) |
-| `avg_bounce_pct` | `REAL` | Average bounce rate percentage |
+| `avg_engagement_sec` | `REAL` | Active engagement duration per active user (seconds) |
+| `avg_bounce_pct` | `REAL` | Session-weighted bounce rate percentage |

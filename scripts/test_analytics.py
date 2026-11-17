@@ -13,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Centralized Test Suite Runner for All Analytics Skills:
-- writing/buffer-analytics
-- writing/google-analytics
-- writing/search-analytics
+- analytics/buffer-analytics
+- analytics/google-analytics
+- analytics/search-analytics
+- analytics/skill-analytics
 
 Validates:
 1. SQLite Database schemas, DDL scripts, indexes, and views.

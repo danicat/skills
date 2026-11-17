@@ -220,5 +220,207 @@
       "/veo/",
       "/media/veo/"
     ]
+  },
+  {
+    "id": "router",
+    "name": "router",
+    "formerCategory": "workflows",
+    "categoryEmoji": "🔄",
+    "retiredAt": "2026-11-13",
+    "lifespan": "Nov 2026",
+    "lastCommitSha": "e62a262",
+    "installs": 1,
+    "causeOfDeath": "Replaced by built-in Orchestrator",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Antigravity ships with the built-in Orchestrator, which handles dynamic planning, model selection, and execution hand-off natively without a prompt-scoring wrapper.",
+    "successorLabel": "Orchestrator (built-in)",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget router",
+    "legacyAliases": [
+      "/router/",
+      "/workflows/router/",
+      "/agents/router/"
+    ]
+  },
+  {
+    "id": "latest-version",
+    "name": "latest-version",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Feb 2026 - Nov 2026",
+    "lastCommitSha": "62e0794",
+    "installs": 23,
+    "causeOfDeath": "Obsolete",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Obsolete package and model version wrapper; package managers and official documentation handle version lookups natively. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget latest-version",
+    "legacyAliases": [
+      "/latest-version/",
+      "/coding/latest-version/"
+    ]
+  },
+  {
+    "id": "engineering-flow",
+    "name": "engineering-flow",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Aug 2026 - Nov 2026",
+    "lastCommitSha": "62e0794",
+    "installs": 19,
+    "causeOfDeath": "Superseded by dedicated workflow skills",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Superseded by dedicated workflow skills such as discovery, spike, less-is-more, and uno-reverse.",
+    "successorLabel": "discovery / spike / less-is-more",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget engineering-flow",
+    "legacyAliases": [
+      "/engineering-flow/",
+      "/coding/engineering-flow/"
+    ]
+  },
+  {
+    "id": "adr-template",
+    "name": "adr-template",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Jul 2026 - Nov 2026",
+    "lastCommitSha": "82e81eb",
+    "installs": 17,
+    "causeOfDeath": "Merged into design-docs",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Merged with rfc-template into design-docs so collaborative RFC proposals and immutable ADR logs live in a single skill.",
+    "successorId": "design-docs",
+    "successorUrl": "/coding/design-docs/",
+    "migrationCommand": "kungfu forget adr-template && kungfu learn design-docs",
+    "legacyAliases": [
+      "/adr-template/",
+      "/coding/adr-template/"
+    ]
+  },
+  {
+    "id": "rfc-template",
+    "name": "rfc-template",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Jul 2026 - Nov 2026",
+    "lastCommitSha": "82e81eb",
+    "installs": 16,
+    "causeOfDeath": "Merged into design-docs",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Merged with adr-template into design-docs.",
+    "successorId": "design-docs",
+    "successorUrl": "/coding/design-docs/",
+    "migrationCommand": "kungfu forget rfc-template && kungfu learn design-docs",
+    "legacyAliases": [
+      "/rfc-template/",
+      "/coding/rfc-template/"
+    ]
+  },
+  {
+    "id": "pyhd",
+    "name": "pyhd",
+    "formerCategory": "coding",
+    "categoryEmoji": "💻",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Feb 2026 - Nov 2026",
+    "lastCommitSha": "62e0794",
+    "installs": 20,
+    "causeOfDeath": "Obsolete",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Obsolete Python setup and style wrapper; modern models already handle uv, Ruff, pytest, and idiomatic Python natively. Killed without replacement.",
+    "successorId": null,
+    "successorUrl": null,
+    "migrationCommand": "kungfu forget pyhd",
+    "legacyAliases": [
+      "/pyhd/",
+      "/coding/pyhd/"
+    ]
+  },
+  {
+    "id": "procedural-art",
+    "name": "procedural-art",
+    "formerCategory": "game-dev",
+    "categoryEmoji": "🕹️",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Aug 2026 - Nov 2026",
+    "lastCommitSha": "40b57ed",
+    "installs": 18,
+    "causeOfDeath": "Consolidated into sprite-design",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Procedural SDF sprite authoring moved into sprite-design, while runtime particle pools, easing math, and GeoM pivot transforms moved into ebitengineer.",
+    "successorId": "sprite-design",
+    "successorUrl": "/game-dev/sprite-design/",
+    "migrationCommand": "kungfu forget procedural-art && kungfu learn sprite-design",
+    "legacyAliases": [
+      "/procedural-art/",
+      "/game-dev/procedural-art/"
+    ]
+  },
+  {
+    "id": "sprite-animation",
+    "name": "sprite-animation",
+    "formerCategory": "game-dev",
+    "categoryEmoji": "🕹️",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Aug 2026 - Nov 2026",
+    "lastCommitSha": "a722f02",
+    "installs": 18,
+    "causeOfDeath": "Consolidated into sprite-design",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Replaced by sprite-design, which unifies AI chroma-key sheet normalization, binary .aseprite containers, procedural SDF sprites, visual QA, and AnimationController runtime code.",
+    "successorId": "sprite-design",
+    "successorUrl": "/game-dev/sprite-design/",
+    "migrationCommand": "kungfu forget sprite-animation && kungfu learn sprite-design",
+    "legacyAliases": [
+      "/sprite-animation/",
+      "/game-dev/sprite-animation/"
+    ]
+  },
+  {
+    "id": "procedural-composer",
+    "name": "procedural-composer",
+    "formerCategory": "game-dev",
+    "categoryEmoji": "🕹️",
+    "retiredAt": "2026-11-16",
+    "lifespan": "Aug 2026 - Nov 2026",
+    "lastCommitSha": "40b57ed",
+    "installs": 22,
+    "causeOfDeath": "Split into procedural-sfx and procedural-music",
+    "tier": "rip",
+    "tierLabel": "R.I.P.",
+    "tierEmoji": "🪦",
+    "epitaph": "Split into procedural-sfx for 18-archetype PolyBLEP/LFSR/SVF game sound cues and procedural-music for multi-channel YM2612 FM, SN76489 PSG, and macOS CoreAudio soundtracks.",
+    "successorLabel": "procedural-sfx / procedural-music",
+    "successorId": "procedural-music",
+    "successorUrl": "/game-dev/procedural-music/",
+    "migrationCommand": "kungfu forget procedural-composer && kungfu learn procedural-sfx && kungfu learn procedural-music",
+    "legacyAliases": [
+      "/procedural-composer/",
+      "/game-dev/procedural-composer/"
+    ]
   }
 ]

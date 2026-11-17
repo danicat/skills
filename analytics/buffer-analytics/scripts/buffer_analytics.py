@@ -14,10 +14,8 @@
 # limitations under the License.
 
 # /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "tabulate>=0.9.0",
-# ]
+# requires-python = ">=3.11"
+# dependencies = []
 # ///
 """
 buffer_analytics.py - Robust SQLite Data Ingestion, Backfill & SQL Analytics for Buffer
@@ -220,8 +218,9 @@ def get_db_connection(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
 
 
 def run_buffer_cli(args: List[str], timeout_ms: int = 60000) -> Dict[str, Any]:
-    """Execute a buffer CLI command and return parsed JSON."""
-    cmd = ["buffer"] + args + ["--output", "json"]
+    """Execute a Buffer CLI command and return parsed JSON."""
+    buffer_bin = os.environ.get("BUFFER_CLI_BIN", "buffer")
+    cmd = [buffer_bin] + args + ["--output", "json"]
     try:
         proc = subprocess.run(
             cmd,
@@ -230,17 +229,21 @@ def run_buffer_cli(args: List[str], timeout_ms: int = 60000) -> Dict[str, Any]:
             timeout=timeout_ms / 1000.0,
             check=False,
         )
-        if proc.returncode != 0:
-            err_msg = proc.stderr.strip() or proc.stdout.strip()
-            raise RuntimeError(f"Buffer CLI exited with code {proc.returncode}: {err_msg}")
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            f"Buffer CLI executable '{buffer_bin}' not found. Install @bufferapp/cli (Node.js 20+) or set BUFFER_CLI_BIN."
+        ) from exc
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(f"Buffer CLI timed out after {timeout_ms} ms: {' '.join(cmd)}") from exc
+
+    if proc.returncode != 0:
+        err_msg = proc.stderr.strip() or proc.stdout.strip()
+        raise RuntimeError(f"Buffer CLI exited with code {proc.returncode}: {err_msg}")
+
+    try:
         return json.loads(proc.stdout)
-    except FileNotFoundError:
-        # Fallback to npx @bufferapp/cli
-        cmd_npx = ["npx", "-y", "@bufferapp/cli@latest"] + args + ["--output", "json"]
-        proc = subprocess.run(cmd_npx, capture_output=True, text=True, check=False)
-        if proc.returncode != 0:
-            raise RuntimeError(f"npx Buffer CLI failed: {proc.stderr.strip()}")
-        return json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Buffer CLI returned invalid JSON: {exc}") from exc
 
 
 def get_organization_id() -> str:
@@ -314,6 +317,7 @@ def backfill_posts(
     status_filter: Optional[List[str]] = None,
     full_sync: bool = False,
     page_size: int = 100,
+    max_pages: int = 500,
 ) -> Dict[str, Any]:
     """
     Robustly backfill posts with cursor-based pagination and upsert to SQLite.
@@ -336,16 +340,18 @@ def backfill_posts(
             # Small lookback overlap of 2 days to catch updated metrics on recent posts
             try:
                 latest_dt = datetime.datetime.fromisoformat(row["max_sent"].replace("Z", "+00:00"))
-                overlap_dt = latest_dt - datetime.timedelta(days=2)
-                start_date = overlap_dt.isoformat()
-            except Exception:
-                pass
+            except ValueError as exc:
+                raise ValueError(f"Invalid sent_at timestamp in database: {row['max_sent']}") from exc
+            overlap_dt = latest_dt - datetime.timedelta(days=2)
+            start_date = overlap_dt.isoformat()
 
     total_fetched = 0
     total_inserted = 0
     total_updated = 0
     after_cursor: Optional[str] = None
     has_next_page = True
+    page_count = 0
+    seen_cursors: set[str] = set()
 
     fields = (
         "items.id,items.status,items.text,items.externalLink,items.createdAt,items.updatedAt,"
@@ -358,14 +364,23 @@ def backfill_posts(
 
     try:
         while has_next_page:
+            if page_count >= max_pages:
+                raise RuntimeError(f"Exceeded max_pages={max_pages} while paginating Buffer posts")
+            page_count += 1
+
             json_input: Dict[str, Any] = {
                 "organizationId": org_id,
+                "sort": [{"field": "createdAt", "direction": "desc"}],
             }
             filt: Dict[str, Any] = {}
             if channel_id:
                 filt["channelIds"] = [channel_id]
             if status_filter:
                 filt["status"] = status_filter
+            if start_date:
+                filt["startDate"] = start_date
+            if end_date:
+                filt["endDate"] = end_date
             if filt:
                 json_input["filter"] = filt
 
@@ -396,6 +411,8 @@ def backfill_posts(
             for item in items:
                 post_id = item.get("id")
                 item_date = item.get("sentAt") or item.get("createdAt")
+                if end_date and item_date and item_date > end_date:
+                    continue
                 if not full_sync and start_date and item_date and item_date < start_date:
                     reached_cutoff = True
                     break
@@ -412,7 +429,10 @@ def backfill_posts(
 
                 char_count = len(text)
                 word_count = len(text.split()) if text else 0
-                has_link = 1 if ("http://" in text or "https://" in text or item.get("externalLink")) else 0
+                linkedin_meta = metadata.get("linkedin") if isinstance(metadata.get("linkedin"), dict) else {}
+                has_link_attachment = bool(metadata.get("linkAttachment") or linkedin_meta.get("linkAttachment"))
+                has_link_asset = any(isinstance(a, dict) and a.get("type") == "link" for a in assets)
+                has_link = 1 if ("http://" in text or "https://" in text or has_link_attachment or has_link_asset) else 0
                 has_media = 1 if len(assets) > 0 else 0
 
                 raw_json = json.dumps(item)
@@ -506,8 +526,8 @@ def backfill_posts(
                     )
 
                 # Upsert Assets
-                for ast in assets:
-                    ast_id = ast.get("id") or f"{post_id}_asset_{ast.get('type')}"
+                for idx, ast in enumerate(assets):
+                    ast_id = ast.get("id") or f"{post_id}_asset_{idx}_{ast.get('type') or 'media'}"
                     cursor.execute(
                         """
                         INSERT INTO post_assets (id, post_id, type, mime_type, source, thumbnail, raw_json)
@@ -547,11 +567,15 @@ def backfill_posts(
                 break
 
             # Pagination check
-            has_next_page = page_info.get("hasNextPage", False)
-            after_cursor = page_info.get("endCursor")
+            has_next_page = bool(page_info.get("hasNextPage", False))
+            next_cursor = page_info.get("endCursor")
 
-            if not has_next_page or not after_cursor:
+            if not has_next_page or not next_cursor:
                 break
+            if next_cursor in seen_cursors:
+                raise RuntimeError(f"Pagination cursor stalled on repeated endCursor: {next_cursor}")
+            seen_cursors.add(next_cursor)
+            after_cursor = next_cursor
 
         # Record successful sync history
         cursor.execute(
@@ -694,6 +718,23 @@ REPORTS = {
         WHERE status = 'sent'
         ORDER BY impressions DESC
         LIMIT 10;
+    """,
+    "channels": """
+        SELECT
+            c.id AS channel_id,
+            c.service,
+            c.name AS channel_name,
+            c.timezone,
+            c.is_disconnected,
+            COUNT(p.id) AS sent_posts,
+            COALESCE(ROUND(SUM(v.impressions), 0), 0) AS total_impressions,
+            COALESCE(ROUND(AVG(v.impressions), 0), 0) AS avg_impressions,
+            COALESCE(ROUND(AVG(v.engagement_rate), 2), 0.0) AS avg_engagement_rate
+        FROM channels c
+        LEFT JOIN posts p ON p.channel_id = c.id AND p.status = 'sent'
+        LEFT JOIN v_posts_summary v ON v.post_id = p.id
+        GROUP BY c.id
+        ORDER BY total_impressions DESC;
     """,
     "timing": """
         SELECT

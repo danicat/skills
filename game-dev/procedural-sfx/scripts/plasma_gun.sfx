@@ -1,0 +1,7 @@
+title "Heavy Plasma Blast"
+type sfx
+
+inst transient wave=noise noise_filter=0.85 vol=0.28 adsr=0.001,0.03,0.00,0.02 hpf=1200->600
+inst core      preset=plasma_gun vol=0.30 lpf=3600->350 q=2.4
+track snap transient: transient:50ms R:130ms
+track body core:      1200Hz->180Hz:180ms

@@ -13,16 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """
 Test Suite for search-analytics
 Validates:
-1. SQLite schema DDL, indexes, and all 7 analytical views (v_search_performance, v_daily_summary,
-   v_top_queries, v_top_pages, v_country_breakdown, v_device_breakdown, v_milestone_impact).
-2. Data insertion, cannibalization queries, CTR calculations, and cohort impacts.
+1. SQLite schema DDL, indexes, WAL/FK pragmas, and all 7 analytical views (v_search_performance,
+   v_daily_summary, v_top_queries, v_top_pages, v_country_breakdown, v_device_breakdown, v_milestone_impact).
+2. Impression-weighted position and CTR calculations, cannibalization queries, and cohort impacts.
 3. Every SQL query used as an example in SKILL.md and references/queries.md.
-4. Pre-packaged reports in scripts/search_analytics.py.
-5. Dynamic extraction and execution of all SQL code blocks in markdown documentation.
-6. CLI argument parsing and help interface.
+4. Pre-packaged reports in scripts/search_analytics.py (all tracked dates default and optional --days).
+5. Multi-page startRow pagination and fail-fast API propagation.
+6. Dynamic extraction and execution of all SQL code blocks in markdown documentation.
+7. CLI argument parsing, milestone recording, and validation.
 """
 
 import os
@@ -30,6 +35,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import unittest
 
 # Locate directory roots
@@ -189,7 +195,7 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 ROUND(SUM(impressions), 0) AS imps,
                 ROUND(SUM(clicks), 0) AS clks,
                 ROUND((SUM(clicks)/SUM(impressions))*100, 2) AS ctr_pct,
-                ROUND(AVG(position), 1) AS avg_rank
+                ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_rank
             FROM search_performance
             WHERE position <= 10
             GROUP BY query, page
@@ -230,7 +236,7 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 ROUND(SUM(impressions), 0) AS total_impressions,
                 ROUND(SUM(clicks), 0) AS total_clicks,
                 ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-                ROUND(AVG(position), 1) AS avg_rank
+                ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_rank
             FROM search_performance
             WHERE position <= 10
             GROUP BY query, page
@@ -273,7 +279,7 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 ROUND(SUM(clicks), 0) AS clicks,
                 ROUND(SUM(impressions), 0) AS impressions,
                 ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-                ROUND(AVG(position), 1) AS avg_rank
+                ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_rank
             FROM search_performance
             WHERE device != ''
             GROUP BY device
@@ -286,21 +292,21 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 COUNT(DISTINCT date) AS day_count,
                 ROUND(AVG(total_clicks), 1) AS avg_clicks_per_day,
                 ROUND(AVG(total_impressions), 0) AS avg_impressions_per_day,
-                ROUND(AVG(avg_ctr_pct), 2) AS avg_ctr_pct
+                ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS avg_ctr_pct
             FROM v_daily_summary
             GROUP BY day_of_week
             ORDER BY avg_clicks_per_day DESC;
             """,
-            # 6. Month-over-Month Growth Trajectory
+            # 6. Month-over-Month Growth Trajectory (Unfiltered property totals)
             """
             SELECT
-                strftime('%Y-%m', date) AS year_month,
+                year_month,
                 COUNT(DISTINCT date) AS days_in_month,
-                ROUND(SUM(clicks), 0) AS total_clicks,
-                ROUND(SUM(impressions), 0) AS total_impressions,
-                ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS monthly_ctr_pct,
-                ROUND(AVG(position), 1) AS avg_rank
-            FROM search_performance
+                ROUND(SUM(total_clicks), 0) AS total_clicks,
+                ROUND(SUM(total_impressions), 0) AS total_impressions,
+                ROUND(SUM(total_clicks) * 100.0 / MAX(SUM(total_impressions), 1), 2) AS monthly_ctr_pct,
+                ROUND(SUM(avg_position * total_impressions) * 1.0 / MAX(SUM(total_impressions), 1), 1) AS avg_rank
+            FROM v_daily_summary
             GROUP BY year_month
             ORDER BY year_month DESC;
             """,
@@ -312,7 +318,7 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 ROUND(SUM(clicks), 0) AS total_clicks,
                 ROUND(SUM(impressions), 0) AS total_impressions,
                 ROUND((SUM(clicks) / SUM(impressions)) * 100, 2) AS ctr_pct,
-                ROUND(AVG(position), 1) AS avg_position
+                ROUND(SUM(position * impressions) * 1.0 / MAX(SUM(impressions), 1), 1) AS avg_position
             FROM search_performance
             WHERE query != ''
               AND LOWER(query) NOT LIKE '%brand_name%'
@@ -330,98 +336,163 @@ class TestSearchAnalyticsQueries(unittest.TestCase):
                 self.assertGreater(len(rows), 0, f"Recipe #{idx} returned empty result.")
 
     def test_prepackaged_cli_reports(self):
-        reports = {
-            "overview": """
-                SELECT
-                    site_url,
-                    MIN(date) AS earliest_date,
-                    MAX(date) AS latest_date,
-                    COUNT(DISTINCT date) AS active_days,
-                    COUNT(DISTINCT query) AS distinct_queries,
-                    COUNT(DISTINCT page) AS distinct_pages,
-                    ROUND(SUM(clicks), 0) AS total_clicks,
-                    ROUND(SUM(impressions), 0) AS total_impressions,
-                    ROUND((SUM(clicks)/SUM(impressions))*100, 2) AS avg_ctr_pct,
-                    ROUND(AVG(position), 1) AS avg_position
-                FROM search_performance
-                GROUP BY site_url;
-            """,
-            "top-queries": """
-                SELECT
-                    query,
-                    active_days,
-                    total_clicks,
-                    total_impressions,
-                    avg_ctr_pct,
-                    avg_position
-                FROM v_top_queries
-                ORDER BY total_clicks DESC, total_impressions DESC
-                LIMIT 15;
-            """,
-            "top-pages": """
-                SELECT
-                    page,
-                    ranking_queries,
-                    total_clicks,
-                    total_impressions,
-                    avg_ctr_pct,
-                    avg_position
-                FROM v_top_pages
-                ORDER BY total_clicks DESC, total_impressions DESC
-                LIMIT 15;
-            """,
-            "countries": """
-                SELECT
-                    country,
-                    total_clicks,
-                    total_impressions,
-                    avg_ctr_pct,
-                    avg_position
-                FROM v_country_breakdown
-                ORDER BY total_clicks DESC, total_impressions DESC
-                LIMIT 15;
-            """,
-            "devices": """
-                SELECT
-                    device,
-                    total_clicks,
-                    total_impressions,
-                    avg_ctr_pct,
-                    avg_position
-                FROM v_device_breakdown
-                ORDER BY total_clicks DESC;
-            """,
-            "timing": """
-                SELECT
-                    day_of_week,
-                    COUNT(*) AS days_recorded,
-                    ROUND(AVG(total_clicks), 1) AS avg_daily_clicks,
-                    ROUND(AVG(total_impressions), 0) AS avg_daily_impressions,
-                    ROUND(AVG(avg_ctr_pct), 2) AS avg_ctr_pct
-                FROM v_daily_summary
-                GROUP BY day_of_week
-                ORDER BY avg_daily_clicks DESC;
-            """,
-            "milestone-impact": """
-                SELECT
-                    commit_hash,
-                    milestone_title,
-                    milestone_date,
-                    cohort,
-                    days_tracked,
-                    total_impressions,
-                    total_clicks,
-                    ctr_pct || '%' AS ctr,
-                    avg_position
-                FROM v_milestone_impact;
-            """,
-        }
-        for name, sql in reports.items():
+        for name in search_analytics.VALID_REPORTS:
             with self.subTest(report_name=name):
-                cursor = self.conn.execute(sql)
+                _, sql, params = search_analytics.build_report_query(name)
+                cursor = self.conn.execute(sql, params)
                 rows = cursor.fetchall()
                 self.assertIsNotNone(rows)
                 self.assertGreater(len(rows), 0, f"Report '{name}' returned empty result.")
+
+    def test_default_db_nested_dir_and_foreign_keys(self):
+        """Verifies DEFAULT_DB_FILE, nested dir creation in init_db, and foreign-key cascades."""
+        self.assertEqual(search_analytics.DEFAULT_DB_FILE, "search_analytics.db")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            nested_db = os.path.join(tmpdir, "nested", "dir", "gsc.db")
+            conn = search_analytics.init_db(nested_db)
+            conn.execute(
+                "INSERT INTO properties (site_url, permission_level, raw_json, synced_at) VALUES ('https://example.com/', 'siteOwner', '{}', '2026-08-20T00:00:00Z')"
+            )
+            conn.execute(
+                "INSERT INTO sitemaps (site_url, path, type, raw_json, synced_at) VALUES ('https://example.com/', 'https://example.com/sitemap.xml', 'sitemap', '{}', '2026-08-20T00:00:00Z')"
+            )
+            conn.commit()
+            conn.execute("DELETE FROM properties WHERE site_url = 'https://example.com/'")
+            remaining = conn.execute("SELECT COUNT(*) FROM sitemaps").fetchone()[0]
+            self.assertEqual(remaining, 0)
+            conn.close()
+
+    def test_impression_weighted_avg_position(self):
+        """Ensures v_top_queries computes impression-weighted average position rather than simple shard average."""
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.executescript(search_analytics.SCHEMA_DDL)
+        # 1000 impressions at pos 1.0 + 10 impressions at pos 50.0 -> (1000 + 500)/1010 = 1.485 -> 1.5
+        conn.executemany(
+            """INSERT INTO search_performance (
+                site_url, date, query, page, country, device, search_appearance,
+                search_type, clicks, impressions, ctr, position, raw_json, synced_at
+            ) VALUES (?, ?, ?, ?, ?, ?, '', 'web', ?, ?, ?, ?, '{}', '2026-08-20T00:00:00Z')""",
+            [
+                ("https://example.com/", "2026-08-01", "weighted query", "https://example.com/a", "usa", "DESKTOP", 100, 1000, 0.1, 1.0),
+                ("https://example.com/", "2026-08-01", "weighted query", "https://example.com/a", "usa", "MOBILE", 0, 10, 0.0, 50.0),
+            ],
+        )
+        row = conn.execute("SELECT avg_position FROM v_top_queries WHERE query = 'weighted query'").fetchone()
+        self.assertEqual(row["avg_position"], 1.5)
+        conn.close()
+
+    def test_overview_and_milestone_unfiltered_plus_days(self):
+        """Verifies report overview & v_milestone_impact read unfiltered v_daily_summary and honor optional --days."""
+        _, sql, params = search_analytics.build_report_query("overview", days=None)
+        ov = self.conn.execute(sql, params).fetchone()
+        self.assertEqual(ov["active_days"], 4)
+        self.assertEqual(ov["total_clicks"], 770.0)
+        self.assertEqual(ov["total_impressions"], 21100.0)
+        self.assertGreater(ov["distinct_queries"], 0)
+
+        pre = self.conn.execute(
+            "SELECT days_tracked, total_clicks FROM v_milestone_impact WHERE cohort = 'Pre-Milestone'"
+        ).fetchone()
+        post = self.conn.execute(
+            "SELECT days_tracked, total_clicks FROM v_milestone_impact WHERE cohort = 'Post-Milestone'"
+        ).fetchone()
+        self.assertEqual(pre["days_tracked"], 3)
+        self.assertEqual(pre["total_clicks"], 420.0)
+        self.assertEqual(post["days_tracked"], 1)
+        self.assertEqual(post["total_clicks"], 350.0)
+
+        # Verify no implicit 30-day truncation and explicit --days windowing
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.executescript(search_analytics.SCHEMA_DDL)
+        conn.executemany(
+            """INSERT INTO daily_site_performance (
+                site_url, date, search_type, clicks, impressions, ctr, position, raw_json, synced_at
+            ) VALUES ('https://example.com/', ?, 'web', ?, ?, 0.05, 2.0, '{}', '2026-08-20T00:00:00Z')""",
+            [
+                ("2026-06-01", 20, 400),
+                ("2026-08-01", 30, 600),
+                ("2026-08-15", 40, 800),
+                ("2026-08-16", 50, 1000),
+            ],
+        )
+        _, sql_all, p_all = search_analytics.build_report_query("overview", days=None)
+        all_row = conn.execute(sql_all, p_all).fetchone()
+        self.assertEqual(all_row["earliest_date"], "2026-06-01")
+        self.assertEqual(all_row["active_days"], 4)
+        self.assertEqual(all_row["total_clicks"], 140.0)
+
+        _, sql_30, p_30 = search_analytics.build_report_query("overview", days=30)
+        row_30 = conn.execute(sql_30, p_30).fetchone()
+        self.assertEqual(row_30["earliest_date"], "2026-08-01")
+        self.assertEqual(row_30["active_days"], 3)
+
+        _, sql_7, p_7 = search_analytics.build_report_query("overview", days=7)
+        row_7 = conn.execute(sql_7, p_7).fetchone()
+        self.assertEqual(row_7["earliest_date"], "2026-08-15")
+        self.assertEqual(row_7["active_days"], 2)
+        conn.close()
+
+    def test_fetch_day_data_pagination_and_fail_fast(self):
+        """Verifies startRow pagination across batches and fail-fast error propagation."""
+        starts = []
+        pages = {
+            0: {"rows": [{"keys": ["q1", "p1"], "clicks": 1, "impressions": 10}, {"keys": ["q2", "p2"], "clicks": 2, "impressions": 20}]},
+            2: {"rows": [{"keys": ["q3", "p3"], "clicks": 3, "impressions": 30}]},
+        }
+
+        class FakeExec:
+            def __init__(self, start_row):
+                self.start_row = start_row
+
+            def execute(self):
+                starts.append(self.start_row)
+                return pages[self.start_row]
+
+        class FakeSearchAnalytics:
+            def query(self, siteUrl, body):
+                return FakeExec(body["startRow"])
+
+        class FakeService:
+            def searchanalytics(self):
+                return FakeSearchAnalytics()
+
+        rows = search_analytics.fetch_day_data(FakeService(), "https://example.com/", "2026-08-01", ["query", "page"], max_rows=2)
+        self.assertEqual(starts, [0, 2])
+        self.assertEqual(len(rows), 3)
+
+        class FailingExec:
+            def execute(self):
+                raise RuntimeError("API 429 quota exceeded")
+
+        class FailingSearchAnalytics:
+            def query(self, siteUrl, body):
+                return FailingExec()
+
+        class FailingService:
+            def searchanalytics(self):
+                return FailingSearchAnalytics()
+
+        with self.assertRaises(RuntimeError):
+            search_analytics.fetch_day_data(FailingService(), "https://example.com/", "2026-08-01", ["query", "page"])
+
+    def test_record_milestone(self):
+        """Verifies record_milestone persists entries into site_milestones."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "gsc.db")
+            c_hash = search_analytics.record_milestone(
+                title="v3.0 Launch",
+                date_str="2026-08-18",
+                commit_hash="abc999",
+                description="Major release",
+                db_path=db_path,
+            )
+            self.assertEqual(c_hash, "abc999")
+            conn = sqlite3.connect(db_path)
+            row = conn.execute("SELECT title, event_date FROM site_milestones WHERE commit_hash = 'abc999'").fetchone()
+            self.assertEqual(row, ("v3.0 Launch", "2026-08-18"))
+            conn.close()
 
     def test_daily_summary_zero_loss_reconciliation(self):
         """Validates that v_daily_summary correctly prioritizes unfiltered property totals over privacy-truncated query sums."""
@@ -505,9 +576,19 @@ class TestSearchAnalyticsCLI(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("Google Search Console", result.stdout)
         self.assertIn("sync", result.stdout)
+        self.assertIn("milestone", result.stdout)
         self.assertIn("report", result.stdout)
         self.assertIn("query", result.stdout)
         self.assertIn("submit-sitemap", result.stdout)
+
+    def test_cli_report_invalid_days_fails_fast(self):
+        script_path = os.path.join(SCRIPT_DIR, "search_analytics.py")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = os.path.join(tmpdir, "gsc.db")
+            cmd = [sys.executable, script_path, "report", "overview", "--days", "0", "--db", db_path]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--days", result.stderr)
 
 
 if __name__ == "__main__":

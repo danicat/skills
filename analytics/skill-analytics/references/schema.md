@@ -1,10 +1,10 @@
-# Skill Analytics SQLite Schema Reference
+# Skill analytics SQLite schema reference
 
-The Skill Analytics database (`skill_analytics.db`) is provisioned and maintained automatically by `scripts/analyze.py`. All tables, indexes, and analytical views are created during `sync` operations.
+The `skill_analytics.db` SQLite warehouse is provisioned and maintained automatically by `scripts/analyze.py`. All tables, indexes, and analytical views are created during `sync` operations.
 
 ---
 
-## 1. Relational Tables
+## 1. Relational tables
 
 ### `skills_inventory`
 Stores every discovered skill across built-in, plugin, global, workspace, and catalog tiers along with its Tier-1 routing token footprint (`name + description`) and Tier-2 body metrics.
@@ -15,7 +15,7 @@ Stores every discovered skill across built-in, plugin, global, workspace, and ca
 | `source_tier` | `TEXT` | NOT NULL | Installation tier (`builtin`, `plugin`, `global`, `workspace`, `catalog`) |
 | `source_origin` | `TEXT` | NOT NULL | Plugin name, catalog repository, or scope origin |
 | `category` | `TEXT` | | Skill category (`agents`, `analytics`, `coding`, `game-dev`, `media`, `writing`) |
-| `version` | `TEXT` | | Semantic version from frontmatter (`0.5.0`, `unversioned`) |
+| `version` | `TEXT` | | Semantic version from frontmatter (`0.3.0`, `unversioned`) |
 | `description` | `TEXT` | | Full Tier-1 routing description string |
 | `skill_path` | `TEXT` | | Local path or canonical remote URL |
 | `is_always_in_prompt` | `INTEGER` | NOT NULL, DEFAULT 0 | `1` if injected into the system prompt `<skills>` block on every turn; `0` if JIT-only |
@@ -28,7 +28,7 @@ Stores every discovered skill across built-in, plugin, global, workspace, and ca
 ---
 
 ### `conversations`
-Stores conversation-level metadata across the union of `conversation_summaries.db` and `brain/` transcript directories.
+Stores conversation-level metadata across the union of `conversation_summaries.db` and `brain/` transcript folders.
 
 | Column | Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
@@ -65,7 +65,7 @@ Tracks file size, modification timestamp (`mtime_ns`), and SHA-256 head watermar
 ---
 
 ### `skill_events`
-Stores every extracted skill activation, companion resource view, CLI subcommand execution, script run, and user prompt notation (`::skill`, `//skill`, `:?`, `/skill`).
+Stores every extracted skill activation, companion resource read, CLI command execution, script run, and user prompt notation (`::skill`, `//skill`, `:?`, `/skill`).
 
 | Column | Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
@@ -76,11 +76,11 @@ Stores every extracted skill activation, companion resource view, CLI subcommand
 | `step_type` | `TEXT` | NOT NULL | `USER_INPUT` or `PLANNER_RESPONSE` |
 | `invocation_kind` | `TEXT` | NOT NULL | `direct_skill_view`, `skill_resource_view`, `cli_invocation`, or `user_notation` |
 | `notation_type` | `TEXT` | | For `user_notation`: `modern_::`, `classic_//`, `find_:?` |
-| `subcommand` | `TEXT` | | Subcommand or action (`load`, `find`, `learn`, `run`, `script_exec`, `show`, `list`, `status`, `update`, `forget`, `catalog`, `view_file`) |
+| `subcommand` | `TEXT` | | Action name (`read_file`, `view_file`, `load`, `find`, `learn`, `run`, `script_exec`, `show`, `list`, `status`, `update`, `forget`, `catalog`, `telemetry`) |
 | `target_skill` | `TEXT` | | Target skill name (or comma-joined list for rejected multi-skill batches) |
 | `raw_args` | `TEXT` | | Parsed CLI arguments or file path |
 | `subpath_or_script` | `TEXT` | | Loaded subpath (`references/...`), script name, `--load`, or search query |
-| `page_number` | `INTEGER` | DEFAULT 1 | Page number for paginated `kungfu load -p N` calls |
+| `page_number` | `INTEGER` | DEFAULT 1 | Page number for paginated `kungfu load -p N` calls or `read_file` continuation reads (`> 1` for offset/line reads) |
 | `trigger_mode` | `TEXT` | DEFAULT `'autonomous'` | `autonomous` (frontmatter description match), `user_explicit` (`::`, `//`, `/`), or `rule_driven` |
 | `source_tier` | `TEXT` | | `builtin`, `plugin`, `global`, `workspace`, `kungfu_cli`, `direct_script`, `user_prompt`, `repo_authoring` |
 | `raw_snippet` | `TEXT` | NOT NULL | Command line or prompt excerpt |
@@ -88,11 +88,11 @@ Stores every extracted skill activation, companion resource view, CLI subcommand
 
 ---
 
-## 2. Analytical SQL Views
+## 2. Analytical SQL views
 
 | View Name | Description |
 | :--- | :--- |
-| `v_skill_roi` | Joins `skills_inventory` and `skill_events` to compute Context-Tax vs. Activation ROI (`SHELFWARE_CANDIDATE`, `LOW_ROI_GLOBAL`, `PROMOTE_TO_GLOBAL`, `ACTIVE_GLOBAL`, `HEALTHY_JIT`). |
+| `v_skill_roi` | Joins `skills_inventory` and `skill_events` to compute uncached (`cumulative_prompt_tax_tokens`), Gemini 4 90% cache-discounted (`cache_adjusted_tax_tokens`), and activation ROI metrics (`SHELFWARE_CANDIDATE`, `LOW_ROI_GLOBAL`, `PROMOTE_TO_GLOBAL`, `ACTIVE_GLOBAL`, `HEALTHY_JIT`). |
 | `v_trigger_attribution` | Breaks down activations per skill by `autonomous_activations`, `explicit_activations`, `rule_activations`, `autonomous_share_pct`, and `trigger_health` (`NEEDS_DESCRIPTION_TUNING`, `WEAK_AUTONOMOUS_TRIGGER`, `HEALTHY_TRIGGER`). |
 | `v_daily_invocations` | Daily time-series of events grouped by `day`, `invocation_kind`, and `action`. |
 | `v_subcommand_summary` | Aggregate counts, production vs. self-test split, conversation reach, and first/last seen timestamps by `invocation_kind` and `action`. |

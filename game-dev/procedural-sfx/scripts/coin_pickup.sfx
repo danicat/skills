@@ -1,0 +1,5 @@
+title "Arcade Coin Pickup"
+type sfx
+
+inst chime preset=coin_pickup duty=0.50 vol=0.24
+track main chime: B5:75ms E6:240ms
