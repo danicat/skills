@@ -139,7 +139,7 @@
       "type": "archive",
       "description": "Pure-code procedural music composition guide and .music DSL for polyphonic BGM in Ebitengine. Compiles 4-byte aligned 16-bit 44.1 kHz stereo PCM soundtracks via a pure-Go SEGA Mega Drive YM2612 4-op FM + PolyBLEP SN76489 PSG synth or macOS CoreAudio (-apple gs_instruments.dls), with music-theory validation.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/procedural-music.tar.gz",
-      "digest": "sha256:80f62b3026d9b6fac0b69b4edda53a702328b7673e453818490f4fb06a14899d"
+      "digest": "sha256:502a563ac548dc5de0a8f6797afa26aba59b6a64eac2d5627a9f43dc628d9691"
     },
     {
       "name": "procedural-sfx",
