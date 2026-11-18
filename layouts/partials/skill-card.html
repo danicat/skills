@@ -8,20 +8,17 @@
 {{- if not $f -}}
   {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
 {{- end -}}
-{{- $isUnproven := $f.isUnproven | default false -}}
 {{- $freshScore := int ($f.score | default 0) -}}
 {{- $sortFreshness := int $f.sortScore -}}
-{{- $tierEmoji := $f.tierEmoji -}}
 {{- $tierLabel := $f.tierLabel -}}
 {{- $tierId := $f.tier -}}
 {{- $lastDate := $f.lastCommitDate -}}
 {{- $stars := int ($m.likes | default 0) -}}
 {{- $views := int ($m.views | default 0) -}}
 {{- $copies := int ($m.copies | default 0) -}}
-{{- $isMint := eq $tierId "mint" -}}
 {{- $popScore := add (mul 100 $stars) $views -}}
 {{- $defaultScore := add (mul 10 $sortFreshness) $popScore -}}
-<article class="skill-card danicat-card group{{ if $isMint }} is-mint{{ end }}"
+<article class="skill-card danicat-card group"
      id="card-{{ $skillId }}"
      data-skill-id="{{ $skillId }}"
      data-category="{{ $s.Params.category }}"
@@ -33,6 +30,7 @@
      data-views="{{ $views }}"
      data-copies="{{ $copies }}"
      data-freshness="{{ $sortFreshness }}"
+     data-age-days="{{ $f.ageDays }}"
      data-tier="{{ $tierId }}"
      data-score="{{ $popScore }}"
      data-default-score="{{ $defaultScore }}">
@@ -46,7 +44,7 @@
       </div>
 
       <div class="flex items-center gap-1.5">
-        {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" $copies "views" $views) }}
+        {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t) }}
 
         <button type="button"
                 class="metric-pill star-btn"

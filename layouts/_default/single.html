@@ -25,22 +25,14 @@
   {{- if not $f -}}
     {{- errorf "[Fail-Fast] Skill '%s' is missing from data/freshness.json. Run: node scripts/update_freshness.mjs" $skillId -}}
   {{- end -}}
-  {{- $isUnproven := $f.isUnproven | default false -}}
+  {{- $fp := $t.freshnessPage | default dict -}}
   {{- $fScore := int ($f.score | default 0) -}}
   {{- $fTier := $f.tier -}}
-  {{- $isMint := eq $fTier "mint" -}}
-  {{- $fEmoji := $f.tierEmoji -}}
   {{- $fLabel := $f.tierLabel -}}
-  {{- $fTrendLabel := $f.trendLabel | default "Stable" -}}
-  {{- $fAgeDays := int ($f.ageDays | default 0) -}}
+  {{- $fAgeDays := int (math.Round ($f.ageDays | default 0)) -}}
   {{- $fSha := $f.lastCommitSha | default "" -}}
+  {{- $fFullSha := $f.lastCommitFullSha | default $fSha -}}
   {{- $fRepo := $f.repo | default "danicat/skills" -}}
-  {{- $fWeekly := $f.weeklyInstalls | default (slice 0 0 0 0 0 0 0 0) -}}
-  {{- $fAllTime := int ($f.installs | default 0) -}}
-  {{- $fCurWeek := int ($f.currentWeeklyInstalls | default 0) -}}
-  {{- $fAudits := $f.securityAudits | default dict -}}
-  {{- $fPlainNote := $f.securityNote | default "" -}}
-  {{- $fEditorialNote := $f.editorialNote | default "" -}}
 
   {{- $tierTransLabel := $fLabel -}}
   {{- if and $t.freshnessTiers (index $t.freshnessTiers $fTier) -}}
@@ -57,7 +49,7 @@
   </nav>
 
   {{/* Simplified Skill Summary Card (with localized description) */}}
-  <section id="detailSkillCard" data-tier="{{ $fTier }}" class="skill-card danicat-card mb-8{{ if $isMint }} is-mint{{ end }}">
+  <section id="detailSkillCard" data-tier="{{ $fTier }}" class="skill-card danicat-card mb-8">
     <div>
       <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
         <div class="flex items-center flex-wrap gap-2">
@@ -71,7 +63,7 @@
         </div>
 
         <div class="flex items-center flex-wrap gap-2">
-          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" ($m.copies | default 0) "views" $views) }}
+          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t) }}
 
           <button type="button"
                   class="metric-pill star-btn"
@@ -168,113 +160,60 @@
         </div>
       </div>
 
-      {{/* Skill Health Sidebar Card */}}
+      {{/* Skill Freshness Sidebar Card */}}
       <div class="danicat-card p-5">
         <div class="flex items-center justify-between gap-2 mb-3">
           <span class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{{ $t.ui.freshnessCardTitle | default "Freshness" }}</span>
-          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "stars" $stars "copies" ($m.copies | default 0) "views" $views "showTierLabel" true) }}
+          {{ partial "freshness-pill.html" (dict "freshness" $f "translations" $t "showTierLabel" true) }}
         </div>
 
         <div class="space-y-3 text-xs">
-          {{/* Commit Recency */}}
+          {{/* Substantive Commit Recency */}}
           <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
-            <span class="text-neutral-500 dark:text-neutral-400">{{ $t.ui.lastUpdatedLabel | default "Last updated" }}</span>
+            <span class="text-neutral-500 dark:text-neutral-400">{{ $t.ui.lastUpdatedLabel | default "Updated" }}</span>
             <div class="flex items-center gap-1.5 font-medium text-neutral-800 dark:text-neutral-200">
               <span>
                 {{- if eq $fAgeDays 0 -}}
-                  {{ $t.ui.updatedToday | default "Updated today" }}
+                  {{ $t.ui.updatedToday | default "today" }}
                 {{- else -}}
                   {{ $fAgeDays }}d ago
                 {{- end -}}
               </span>
               {{- if $fSha -}}
                 <span class="opacity-40">·</span>
-                <a href="https://github.com/danicat/skills/commit/{{ $fSha }}" target="_blank" rel="noopener noreferrer" class="font-mono text-[11px] text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ substr $fSha 0 7 }}</a>
+                <a href="https://github.com/danicat/skills/commit/{{ $fFullSha }}" target="_blank" rel="noopener noreferrer" class="font-mono text-[11px] text-primary-600 dark:text-primary-400 hover:underline no-underline">{{ $fSha }}</a>
               {{- end -}}
             </div>
           </div>
 
-          {{/* npx skills Installs */}}
+          {{/* Latest Substantive Diff */}}
           <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
-            <span class="text-neutral-500 dark:text-neutral-400">Installs</span>
+            <span class="text-neutral-500 dark:text-neutral-400">{{ $fp.latestDiffLabel | default "Latest diff" }}</span>
             <span class="font-mono text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
-              {{ $fAllTime }} npx
+              {{ $f.lastDiffLines }} {{ $fp.substantiveLinesLabel | default "substantive lines" }}
             </span>
           </div>
 
-          {{/* 8-Week Install Sparkline */}}
-          {{- $maxW := 1 -}}
-          {{- range $wVal := $fWeekly -}}
-            {{- if gt (int $wVal) $maxW -}}
-              {{- $maxW = int $wVal -}}
-            {{- end -}}
-          {{- end -}}
-          <div class="py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-neutral-500 dark:text-neutral-400">{{ $t.ui.weeklyActivityLabel | default "Weekly activity" }}</span>
-              <span class="font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
-                {{- if $isUnproven -}}
-                  🌱 Unproven
-                {{- else -}}
-                  {{ $fCurWeek }}/wk · {{ $fTrendLabel }}
-                {{- end -}}
-              </span>
-            </div>
-            <svg viewBox="0 0 120 26" class="w-full h-6 overflow-visible" role="img" aria-label="8-week activity sparkline">
-              {{- range $idx, $wVal := $fWeekly -}}
-                {{- $installs := int $wVal -}}
-                {{- $barH := 3 -}}
-                {{- if gt $installs 0 -}}
-                  {{- $barH = add 4 ( div (mul $installs 20) $maxW ) -}}
-                {{- end -}}
-                {{- $x := mul $idx 15 -}}
-                {{- $y := sub 25 $barH -}}
-                <rect x="{{ $x }}" y="{{ $y }}" width="11" height="{{ $barH }}" rx="2" class="{{ if eq $idx 7 }}fill-primary-500 dark:fill-primary-400{{ else }}fill-neutral-300 dark:fill-neutral-700{{ end }}">
-                  <title>W{{ add $idx 1 }}: {{ if eq $installs 1 }}1 install{{ else }}{{ $installs }} installs{{ end }}</title>
-                </rect>
-              {{- end -}}
-            </svg>
+          {{/* Commit History */}}
+          <div class="flex items-center justify-between py-1.5 border-b border-neutral-200/60 dark:border-neutral-700/60">
+            <span class="text-neutral-500 dark:text-neutral-400">{{ $fp.historyLabel | default "History" }}</span>
+            <span class="font-mono text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+              {{ $f.substantiveCommits }} {{ $fp.commitsSinceLabel | default "commits since" }} {{ $f.createdDate }}
+            </span>
           </div>
 
-          {{/* Security Audits */}}
-          <div class="py-1">
-            <div class="text-neutral-500 dark:text-neutral-400 mb-1.5">{{ $t.ui.securityCheckLabel | default "Security" }}</div>
-            <div class="flex flex-wrap gap-1.5 mb-2">
-              {{- $p0 := index $fAudits "0" | default dict -}}
-              {{- $p1 := index $fAudits "1" | default dict -}}
-              {{- $p2 := index $fAudits "2" | default dict -}}
-              {{- if $p0.riskLevel -}}
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                  <span>{{ if eq $p0.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
-                  <span>Gen Trust Hub: {{ $p0.riskLevel }}</span>
-                </span>
+          {{/* Bundle Summary */}}
+          <div class="flex items-center justify-between py-1.5">
+            <span class="text-neutral-500 dark:text-neutral-400">{{ $fp.bundleLabel | default "Bundle" }}</span>
+            <span class="font-mono text-[11px] font-medium text-neutral-800 dark:text-neutral-200">
+              v{{ $f.version }} ·
+              {{- if eq $f.distributionType "archive" -}}
+                {{ " " }}{{ $f.fileCount }} {{ $fp.filesLabel | default "files" }}{{- if $f.hasTests }} · {{ $fp.testedLabel | default "tested" }}{{- end -}}
+              {{- else -}}
+                {{ " SKILL.md" }}
               {{- end -}}
-              {{- if $p1.riskLevel -}}
-                {{- $totalAlerts := int ($p1.alerts | default 0) -}}
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                  <span>{{ if eq $p1.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
-                  <span>Socket: {{ if eq $totalAlerts 1 }}1 Alert{{ else }}{{ $totalAlerts }} Alerts{{ end }}</span>
-                </span>
-              {{- end -}}
-              {{- if $p2.riskLevel -}}
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                  <span>{{ if eq $p2.status "pass" }}✓{{ else }}ℹ️{{ end }}</span>
-                  <span>Snyk: {{ $p2.riskLevel }}</span>
-                </span>
-              {{- end -}}
-            </div>
-            {{- if $fPlainNote -}}
-              <p class="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed m-0">
-                {{ $fPlainNote }}
-              </p>
-            {{- end -}}
+            </span>
           </div>
-
-          {{- if $fEditorialNote -}}
-            <div class="pt-2 border-t border-neutral-200/60 dark:border-neutral-700/60 text-[11px] text-neutral-600 dark:text-neutral-300 italic leading-relaxed">
-              “{{ $fEditorialNote }}”
-            </div>
-          {{- end -}}
 
           <div class="pt-2 border-t border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between">
             <a href="{{ "/freshness/" | relLangURL }}" class="text-[11px] font-semibold text-primary-600 dark:text-primary-400 hover:underline no-underline">

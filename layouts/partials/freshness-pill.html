@@ -1,38 +1,32 @@
 {{- $f := .freshness | default dict -}}
 {{- $t := .translations | default site.Data.translations.en -}}
+{{- $fp := $t.freshnessPage | default dict -}}
 {{- $showTierLabel := .showTierLabel | default false -}}
 {{- $alignLeft := .alignLeft | default false -}}
 {{- if not $f.tier -}}
   {{- errorf "[Fail-Fast] Missing freshness data in freshness-pill.html. Run: node scripts/update_freshness.mjs" -}}
 {{- end -}}
-{{- $isUnproven := $f.isUnproven | default false -}}
 {{- $freshScore := int ($f.score | default 0) -}}
-{{- $tierEmoji := $f.tierEmoji -}}
-{{- $tierLabel := $f.tierLabel -}}
 {{- $tierId := $f.tier -}}
-{{- $uPct := int $f.updateFreshness -}}
-{{- $vPct := int $f.usageFreshness -}}
-{{- $vitalityPts := int $f.vitalityPoints -}}
-{{- $bonusPts := int $f.adoptionBonusPoints -}}
-{{- $secPenalty := int $f.securityPenalty -}}
-{{- $ageDays := int (math.Round $f.ageDays) -}}
+{{- $tierLabel := $f.tierLabel -}}
+{{- if and $t.freshnessTiers (index $t.freshnessTiers $tierId) -}}
+  {{- $tierLabel = index $t.freshnessTiers $tierId -}}
+{{- end -}}
+{{- $ageDays := int (math.Round ($f.ageDays | default 0)) -}}
+{{- $todayLabel := $t.ui.updatedToday | default "today" -}}
 {{- $lastDate := $f.lastCommitDate -}}
-{{- $installs := int $f.installs -}}
-{{- $curWeek := int $f.currentWeeklyInstalls -}}
-{{- $stars := int (.stars | default ($f.likes | default 0)) -}}
-{{- $copies := int (.copies | default ($f.copies | default 0)) -}}
-{{- $views := int (.views | default ($f.views | default 0)) -}}
-{{- $newLabel := $t.ui.newBadge | default "New" -}}
+{{- $lastSha := $f.lastCommitSha -}}
+{{- $diffLines := int ($f.lastDiffLines | default 0) -}}
+{{- $subCommits := int ($f.substantiveCommits | default 1) -}}
+{{- $createdDate := $f.createdDate | default $lastDate -}}
 
 <a href="{{ "/freshness/" | relLangURL }}"
    class="metric-pill freshness-pill has-breakdown no-underline{{ if $alignLeft }} breakdown-left{{ end }}"
    data-tier="{{ $tierId }}"
-   aria-label="{{ if $isUnproven }}{{ $tierEmoji }} {{ $newLabel }} (Unproven){{ else }}{{ $tierEmoji }} {{ $tierLabel }} {{ $freshScore }}%{{ end }}">
-  <span class="freshness-emoji" aria-hidden="true">{{ $tierEmoji }}</span>
+   aria-label="{{ $tierLabel }} {{ $freshScore }}%">
+  <span class="freshness-dot" aria-hidden="true"></span>
   <span class="metric-val freshness-val">
-    {{- if $isUnproven -}}
-      {{- $newLabel -}}
-    {{- else if $showTierLabel -}}
+    {{- if $showTierLabel -}}
       {{- printf "%d%% · %s" $freshScore $tierLabel -}}
     {{- else -}}
       {{- printf "%d%%" $freshScore -}}
@@ -41,46 +35,32 @@
 
   <span class="freshness-breakdown" role="tooltip">
     <span class="fb-header">
-      <span class="fb-tier">{{ $tierEmoji }} {{ if $isUnproven }}{{ $newLabel }}{{ else }}{{ $tierLabel }}{{ end }}</span>
-      <span class="fb-score">{{ if $isUnproven }}Unproven{{ else }}{{ $freshScore }}%{{ end }}</span>
-    </span>
-
-    {{- if $isUnproven -}}
-      <span class="fb-note">Recently added skill awaiting community usage to earn a percentage score.</span>
-    {{- else -}}
-      <span class="fb-section">
-        <span class="fb-row">
-          <span class="fb-label">Recency (0–70)</span>
-          <span class="fb-val">{{ $vitalityPts }} / 70</span>
-        </span>
-        <span class="fb-row">
-          <span class="fb-label">Installs (0–30)</span>
-          <span class="fb-val">+{{ $bonusPts }} / 30</span>
-        </span>
-        {{- if gt $secPenalty 0 -}}
-          <span class="fb-row fb-penalty">
-            <span class="fb-label">Security penalty</span>
-            <span class="fb-val">-{{ $secPenalty }}</span>
-          </span>
-        {{- end -}}
+      <span class="fb-tier inline-flex items-center gap-1.5">
+        <span class="freshness-dot" aria-hidden="true"></span>
+        <span>{{ $tierLabel }}</span>
       </span>
-    {{- end -}}
-
-    <span class="fb-divider"></span>
+      <span class="fb-score">{{ $freshScore }}%</span>
+    </span>
 
     <span class="fb-section">
       <span class="fb-row">
-        <span class="fb-label">Git recency (70%)</span>
-        <span class="fb-val">{{ if eq $ageDays 0 }}today{{ else }}{{ $ageDays }}d ago{{ end }} · {{ $lastDate }}</span>
+        <span class="fb-label">{{ $t.ui.lastUpdatedLabel | default "Updated" }}</span>
+        <span class="fb-val">{{ if eq $ageDays 0 }}{{ $todayLabel }}{{ else }}{{ $ageDays }}d{{ end }} · {{ $lastDate }}</span>
       </span>
       <span class="fb-row">
-        <span class="fb-label">npx skills (30%)</span>
-        <span class="fb-val">{{ $installs }} ({{ $curWeek }}/wk) · {{ $f.trendLabel | default "Stable" }}</span>
+        <span class="fb-label">{{ $fp.commitLabel | default "Commit" }}</span>
+        <span class="fb-val">{{ $lastSha }} · {{ $diffLines }} {{ $fp.linesUnit | default "lines" }}</span>
       </span>
-      <span class="fb-row fb-sub">
-        <span class="fb-label">Web</span>
-        <span class="fb-val">{{ $stars }} ★ · {{ $copies }} 📋 · {{ $views }} 👁</span>
+      <span class="fb-row">
+        <span class="fb-label">{{ $fp.revisionsLabel | default "Revisions" }}</span>
+        <span class="fb-val">{{ $subCommits }} · {{ $createdDate }}</span>
       </span>
+    </span>
+
+    <span class="fb-divider"></span>
+
+    <span class="fb-row fb-sub">
+      <span class="fb-label">{{ $fp.curveSummary | default "30d grace · 90d half-life" }}</span>
     </span>
   </span>
 </a>

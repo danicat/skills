@@ -230,32 +230,6 @@ pre.chroma {
   z-index: 30;
 }
 
-.skill-card.is-mint,
-.skill-card[data-tier="mint"] {
-  border-color: #f59e0b;
-  background-image: linear-gradient(135deg, rgba(254, 243, 199, 0.32) 0%, rgba(255, 255, 255, 0) 60%);
-  box-shadow: 0 2px 10px -2px rgba(245, 158, 11, 0.16), 0 0 0 1px rgba(245, 158, 11, 0.28);
-}
-
-html.dark .skill-card.is-mint,
-html.dark .skill-card[data-tier="mint"] {
-  border-color: rgba(251, 191, 36, 0.75);
-  background-image: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0) 60%);
-  box-shadow: 0 4px 16px -2px rgba(245, 158, 11, 0.2), 0 0 0 1px rgba(251, 191, 36, 0.25);
-}
-
-.skill-card.is-mint:hover,
-.skill-card[data-tier="mint"]:hover {
-  border-color: #d97706;
-  box-shadow: 0 10px 24px -4px rgba(245, 158, 11, 0.26), 0 0 0 1px rgba(217, 119, 6, 0.45);
-}
-
-html.dark .skill-card.is-mint:hover,
-html.dark .skill-card[data-tier="mint"]:hover {
-  border-color: #fbbf24;
-  box-shadow: 0 10px 26px -4px rgba(251, 191, 36, 0.28), 0 0 0 1px rgba(251, 191, 36, 0.45);
-}
-
 /* Install Tabs & Command Boxes */
 .install-tabs {
   display: flex;
@@ -570,70 +544,56 @@ html.dark .freshness-pill {
   color: rgb(var(--color-neutral-300));
 }
 
-/* Monotonic Freshness Tier Color Scale:
-   🌱 New (Sky) -> ✨ Mint (Mint Teal) -> 🌿 Fresh (Green) -> 🕸️ Stale (Yellow) -> 🤢 Spoiled (Orange) -> 🦠 Rotten (Crimson Red) -> 🪦 R.I.P. (Charcoal)
-   (Gold #f59e0b is reserved for .skill-card.is-mint borders) */
-.freshness-pill[data-tier="new"] {
+.freshness-dot {
+  width: 0.44rem;
+  height: 0.44rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Monotonic Engineering Freshness Color Scale:
+   Current (Emerald) -> Active (Sky Blue) -> Aging (Amber) -> Outdated (Crimson Red) -> R.I.P. (Charcoal) */
+.freshness-pill[data-tier="current"] {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.36);
+  color: #15803d;
+}
+html.dark .freshness-pill[data-tier="current"] {
+  background-color: rgba(16, 185, 129, 0.16);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #4ade80;
+}
+
+.freshness-pill[data-tier="active"] {
   background-color: rgba(14, 165, 233, 0.12);
-  border-color: rgba(14, 165, 233, 0.35);
+  border-color: rgba(14, 165, 233, 0.36);
   color: #0369a1;
 }
-html.dark .freshness-pill[data-tier="new"] {
+html.dark .freshness-pill[data-tier="active"] {
   background-color: rgba(14, 165, 233, 0.16);
   border-color: rgba(56, 189, 248, 0.4);
   color: #38bdf8;
 }
 
-.freshness-pill[data-tier="mint"] {
-  background-color: rgba(20, 184, 166, 0.12);
-  border-color: rgba(20, 184, 166, 0.38);
-  color: #0f766e;
+.freshness-pill[data-tier="aging"] {
+  background-color: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #b45309;
 }
-html.dark .freshness-pill[data-tier="mint"] {
-  background-color: rgba(20, 184, 166, 0.16);
-  border-color: rgba(45, 212, 191, 0.42);
-  color: #2dd4bf;
-}
-
-.freshness-pill[data-tier="fresh"] {
-  background-color: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #15803d;
-}
-html.dark .freshness-pill[data-tier="fresh"] {
-  background-color: rgba(34, 197, 94, 0.15);
-  border-color: rgba(74, 222, 128, 0.38);
-  color: #4ade80;
+html.dark .freshness-pill[data-tier="aging"] {
+  background-color: rgba(245, 158, 11, 0.16);
+  border-color: rgba(251, 191, 36, 0.42);
+  color: #fbbf24;
 }
 
-.freshness-pill[data-tier="stale"] {
-  background-color: rgba(234, 179, 8, 0.14);
-  border-color: rgba(234, 179, 8, 0.4);
-  color: #a16207;
-}
-html.dark .freshness-pill[data-tier="stale"] {
-  background-color: rgba(234, 179, 8, 0.16);
-  border-color: rgba(250, 204, 21, 0.42);
-  color: #facc15;
-}
-
-.freshness-pill[data-tier="spoiled"] {
-  background-color: rgba(249, 115, 22, 0.14);
-  border-color: rgba(249, 115, 22, 0.4);
-  color: #c2410c;
-}
-html.dark .freshness-pill[data-tier="spoiled"] {
-  background-color: rgba(249, 115, 22, 0.16);
-  border-color: rgba(251, 146, 60, 0.42);
-  color: #fb923c;
-}
-
-.freshness-pill[data-tier="rotten"] {
+.freshness-pill[data-tier="outdated"] {
   background-color: rgba(220, 38, 38, 0.14);
   border-color: rgba(220, 38, 38, 0.42);
   color: #b91c1c;
 }
-html.dark .freshness-pill[data-tier="rotten"] {
+html.dark .freshness-pill[data-tier="outdated"] {
   background-color: rgba(220, 38, 38, 0.18);
   border-color: rgba(248, 113, 113, 0.45);
   color: #f87171;
@@ -783,16 +743,6 @@ html.dark .freshness-breakdown .fb-val {
   color: rgb(var(--color-neutral-100));
 }
 
-.freshness-breakdown .fb-penalty .fb-label,
-.freshness-breakdown .fb-penalty .fb-val {
-  color: #dc2626;
-}
-
-html.dark .freshness-breakdown .fb-penalty .fb-label,
-html.dark .freshness-breakdown .fb-penalty .fb-val {
-  color: #f87171;
-}
-
 .freshness-breakdown .fb-divider {
   height: 1px;
   background-color: rgb(var(--color-neutral-200));
@@ -901,54 +851,6 @@ html.dark .commit-sha-badge {
   background-color: rgb(var(--color-neutral-800));
   border-color: rgb(var(--color-neutral-700));
   color: rgb(var(--color-neutral-400));
-}
-
-.security-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 0.375rem;
-  font-size: 0.74rem;
-  font-weight: 600;
-  cursor: help;
-  white-space: nowrap;
-}
-
-.security-badge.sec-pass {
-  background-color: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.32);
-  color: #15803d;
-}
-
-html.dark .security-badge.sec-pass {
-  background-color: rgba(34, 197, 94, 0.16);
-  border-color: rgba(74, 222, 128, 0.35);
-  color: #4ade80;
-}
-
-.security-badge.sec-cli {
-  background-color: rgba(14, 165, 233, 0.12);
-  border: 1px solid rgba(14, 165, 233, 0.32);
-  color: #0369a1;
-}
-
-html.dark .security-badge.sec-cli {
-  background-color: rgba(14, 165, 233, 0.16);
-  border-color: rgba(56, 189, 248, 0.35);
-  color: #38bdf8;
-}
-
-.security-badge.sec-pending {
-  background-color: rgba(113, 113, 122, 0.12);
-  border: 1px solid rgba(113, 113, 122, 0.32);
-  color: #52525b;
-}
-
-html.dark .security-badge.sec-pending {
-  background-color: rgba(63, 63, 70, 0.5);
-  border-color: rgba(113, 113, 122, 0.45);
-  color: #a1a1aa;
 }
 
 .star-btn:hover {

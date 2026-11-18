@@ -301,6 +301,9 @@
         var freshA = parseFloat(a.getAttribute('data-freshness') || '0');
         var freshB = parseFloat(b.getAttribute('data-freshness') || '0');
         if (freshB !== freshA) return freshB - freshA;
+        var ageA = parseFloat(a.getAttribute('data-age-days') || '0');
+        var ageB = parseFloat(b.getAttribute('data-age-days') || '0');
+        if (ageA !== ageB) return ageA - ageB;
         var scoreFA = parseFloat(a.getAttribute('data-score') || '0');
         var scoreFB = parseFloat(b.getAttribute('data-score') || '0');
         if (scoreFB !== scoreFA) return scoreFB - scoreFA;

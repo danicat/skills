@@ -23,102 +23,75 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-const CATEGORIES = ['game-dev', 'media', 'coding', 'workflows', 'writing', 'analytics'];
-const PARAMS_TOML_PATH = path.join(ROOT_DIR, 'config', '_default', 'params.toml');
-const METRICS_PATH = path.join(ROOT_DIR, 'data', 'metrics_snapshot.json');
-const CURATION_PATH = path.join(ROOT_DIR, 'data', 'curation.json');
-const OUTPUT_PATH = path.join(ROOT_DIR, 'data', 'freshness.json');
+export const CATEGORIES = ['game-dev', 'media', 'coding', 'workflows', 'writing', 'analytics'];
+export const HISTORICAL_CATEGORIES = [
+  'game-dev',
+  'media',
+  'coding',
+  'workflows',
+  'traits',
+  'agents',
+  'writing',
+  'analytics',
+  'standards',
+];
+export const GRACE_DAYS = 30;
+export const HALF_LIFE_DAYS = 90;
+export const MIN_SUBSTANTIVE_LINES = 4;
+
+const IGNORED_DIRS = new Set(['__pycache__', '.git', 'node_modules']);
+const IGNORED_FILES = new Set(['.DS_Store']);
+const TEST_FILE_PATTERN = /^test_|_test\.(go|py|js|mjs|ts)$|\.(test|spec)\.(js|mjs|ts)$/;
+const METADATA_LINE_PATTERN = /^(name|category|tags|author|license|catalog|canonical|version|metadata):/;
+const LICENSE_HEADER_PATTERN =
+  /^(#|\/\/|\*|<!--|-->)\s*(Copyright 202\d|SPDX-License|Licensed under|you may not use|http:\/\/www\.apache\.org|Unless required|WITHOUT WARRANTIES|See the License|limitations under)/i;
 
 export function classifyTier(score) {
-  if (score === null || score === undefined) {
-    return { tier: 'new', label: 'New', emoji: '🌱', half: 'new' };
+  const numeric = Number(score);
+  if (numeric >= 85) {
+    return { tier: 'current', label: 'Current' };
   }
-  if (score >= 90) {
-    return { tier: 'mint', label: 'Mint', emoji: '✨', half: 'fresh' };
+  if (numeric >= 60) {
+    return { tier: 'active', label: 'Active' };
   }
-  if (score >= 70) {
-    return { tier: 'fresh', label: 'Fresh', emoji: '🌿', half: 'fresh' };
+  if (numeric >= 35) {
+    return { tier: 'aging', label: 'Aging' };
   }
-  if (score >= 50) {
-    return { tier: 'stale', label: 'Stale', emoji: '🕸️', half: 'fresh' };
-  }
-  if (score >= 25) {
-    return { tier: 'spoiled', label: 'Spoiled', emoji: '🤢', half: 'danger' };
-  }
-  return { tier: 'rotten', label: 'Rotten', emoji: '🦠', half: 'danger' };
+  return { tier: 'outdated', label: 'Outdated' };
 }
 
-const commitModifiedSkillsCount = new Map();
-function getModifiedSkillsCount(sha) {
-  if (commitModifiedSkillsCount.has(sha)) {
-    return commitModifiedSkillsCount.get(sha);
+export function computeFreshnessScore(ageDays) {
+  const clamped = Math.max(0, Number(ageDays) || 0);
+  if (clamped <= GRACE_DAYS) {
+    return 100;
   }
-  const out = execFileSync(
-    'git',
-    ['show', '--name-status', '--format=', sha],
-    { cwd: ROOT_DIR, encoding: 'utf8' }
-  )
-    .trim()
-    .split('\n')
-    .filter(Boolean);
-
-  const modifiedSkills = new Set();
-  for (const line of out) {
-    const parts = line.split(/\t+/);
-    const status = parts[0];
-    const file = parts[parts.length - 1];
-    if (status.startsWith('A')) continue;
-    const match = file.match(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)\/([^/]+)\//);
-    if (match) {
-      modifiedSkills.add(match[2]);
-    } else if (/^([^/.]+)\/(SKILL\.md|scripts|references)/.test(file)) {
-      modifiedSkills.add(file.split('/')[0]);
-    }
-  }
-  commitModifiedSkillsCount.set(sha, modifiedSkills.size);
-  return modifiedSkills.size;
+  const decayed = 100 * Math.pow(0.5, (clamped - GRACE_DAYS) / HALF_LIFE_DAYS);
+  return Math.max(0, Math.min(100, Math.round(decayed)));
 }
 
-function isSubstantiveSkillCommit(sha, subject, skillId, relSkillDir, isInitialCommit, ignoredCommits) {
-  if (isInitialCommit) return true;
-  if (ignoredCommits.has(sha.slice(0, 7)) || ignoredCommits.has(sha)) return false;
-
-  const lowerSubj = subject.toLowerCase();
-  const mentionsSkill =
-    lowerSubj.includes(skillId.toLowerCase()) ||
-    (relSkillDir.startsWith('game-dev/') && lowerSubj.includes('game-dev'));
-
-  const bulkCount = getModifiedSkillsCount(sha);
-  if (bulkCount >= 10 && !mentionsSkill) return false;
-
-  if (/^(chore|docs|style|ci)(\(|:)/.test(lowerSubj) && bulkCount >= 5 && !mentionsSkill) {
-    return false;
+export function countSubstantiveLinesFromDiff(diffText) {
+  if (!diffText) {
+    return 0;
   }
-
-  const diff = execFileSync(
-    'git',
-    ['show', '-M', '--format=', sha, '--', relSkillDir, `traits/${skillId}`, `agents/${skillId}`, `coding/${skillId}`, `standards/${skillId}`, skillId],
-    { cwd: ROOT_DIR, encoding: 'utf8' }
-  );
-  const changedLines = diff
+  const changedLines = diffText
     .split('\n')
-    .filter((l) => (l.startsWith('+') && !l.startsWith('+++')) || (l.startsWith('-') && !l.startsWith('---')));
+    .filter((line) => (line.startsWith('+') && !line.startsWith('+++')) || (line.startsWith('-') && !line.startsWith('---')));
 
-  const substantiveLines = changedLines.filter((l) => {
-    const line = l.slice(1).trim();
-    if (!line || line === '---') return false;
-    if (/^(name|category|tags|author|license|catalog|canonical|version):/.test(line)) return false;
-    if (
-      /^(#|\/\/|\*)\s*(Copyright 202\d|SPDX-License|Licensed under|you may not use|http:\/\/www\.apache\.org|Unless required|See the License|limitations under)/i.test(
-        line
-      )
-    ) {
-      return false;
+  let count = 0;
+  for (const rawLine of changedLines) {
+    const trimmed = rawLine.slice(1).trim();
+    if (!trimmed || trimmed === '---') {
+      continue;
     }
-    return true;
-  });
-
-  return substantiveLines.length >= 4;
+    if (METADATA_LINE_PATTERN.test(trimmed)) {
+      continue;
+    }
+    if (LICENSE_HEADER_PATTERN.test(trimmed)) {
+      continue;
+    }
+    count++;
+  }
+  return count;
 }
 
 function resolveCommittedSkillPath(relFilePath) {
@@ -132,409 +105,257 @@ function resolveCommittedSkillPath(relFilePath) {
   return relFilePath;
 }
 
-function getGitHistoryStrict(relSkillDir, skillId, curation) {
-  const targetMdPath = resolveCommittedSkillPath(`${relSkillDir}/SKILL.md`);
-  const logLines = execFileSync(
-    'git',
-    ['log', '--follow', '--format=%H|%h|%aI|%s', '--', targetMdPath],
-    { cwd: ROOT_DIR, encoding: 'utf8' }
-  )
-    .trim()
-    .split('\n')
-    .filter(Boolean);
+function parseGitLogLines(rawOutput) {
+  const entries = [];
+  for (const line of rawOutput.trim().split('\n')) {
+    if (!line) {
+      continue;
+    }
+    const [sha, shortSha, committedAt, ...subjectParts] = line.split('|');
+    if (!sha || !shortSha || !committedAt) {
+      continue;
+    }
+    entries.push({
+      sha,
+      shortSha,
+      committedAt,
+      timeMs: new Date(committedAt).getTime(),
+      subject: subjectParts.join('|'),
+    });
+  }
+  return entries;
+}
 
-  if (logLines.length === 0) {
+function buildSkillPathspecs(relSkillDir, skillId) {
+  const candidates = [relSkillDir, ...HISTORICAL_CATEGORIES.map((cat) => `${cat}/${skillId}`), skillId];
+  return [...new Set(candidates)];
+}
+
+export function getSkillGitHistory(relSkillDir, skillId) {
+  const pathspecs = buildSkillPathspecs(relSkillDir, skillId);
+  const committedSkillMdPath = resolveCommittedSkillPath(`${relSkillDir}/SKILL.md`);
+
+  const folderLogRaw = execFileSync(
+    'git',
+    ['log', '--format=%H|%h|%aI|%s', '--', ...pathspecs],
+    { cwd: ROOT_DIR, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }
+  );
+  const followLogRaw = execFileSync(
+    'git',
+    ['log', '--follow', '--format=%H|%h|%aI|%s', '--', committedSkillMdPath],
+    { cwd: ROOT_DIR, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }
+  );
+
+  const bySha = new Map();
+  let order = 0;
+  for (const item of [...parseGitLogLines(folderLogRaw), ...parseGitLogLines(followLogRaw)]) {
+    if (!bySha.has(item.sha)) {
+      bySha.set(item.sha, { ...item, order: order++ });
+    }
+  }
+
+  const commits = Array.from(bySha.values()).sort((a, b) => b.timeMs - a.timeMs || a.order - b.order);
+  if (commits.length === 0) {
     throw new Error(`[Fail-Fast] No git commit history found for ${relSkillDir}/SKILL.md. Commit the skill first.`);
   }
 
-  const ignoredCommits = new Set(curation?.ignoredCommits || []);
-  let chosenLine = logLines[logLines.length - 1];
-  for (let i = 0; i < logLines.length; i++) {
-    const [fullSha, , , subj] = logLines[i].split('|');
-    const isInitial = i === logLines.length - 1;
-    if (isSubstantiveSkillCommit(fullSha, subj || '', skillId, relSkillDir, isInitial, ignoredCommits)) {
-      chosenLine = logLines[i];
-      break;
+  let latestSubstantive = null;
+  let substantiveCommits = 0;
+
+  for (let i = 0; i < commits.length; i++) {
+    const commit = commits[i];
+    const isInitialCommit = i === commits.length - 1;
+    const diff = execFileSync(
+      'git',
+      ['show', '-M', '--format=', commit.sha, '--', ...pathspecs],
+      { cwd: ROOT_DIR, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }
+    );
+    const diffLines = countSubstantiveLinesFromDiff(diff);
+    if (isInitialCommit || diffLines >= MIN_SUBSTANTIVE_LINES) {
+      substantiveCommits++;
+      if (!latestSubstantive) {
+        latestSubstantive = { ...commit, diffLines };
+      }
     }
   }
 
-  const [sha, shortSha, committedAt, subject] = chosenLine.split('|');
-  const [, , firstCommittedAt] = logLines[logLines.length - 1].split('|');
-
+  const initialCommit = commits[commits.length - 1];
   const nowMs = Date.now();
-  const lastMs = new Date(committedAt).getTime();
-  const firstMs = new Date(firstCommittedAt || committedAt).getTime();
+  const lastMs = latestSubstantive.timeMs;
+  const firstMs = initialCommit.timeMs;
 
   const ageDays = Math.max(0, Number(((nowMs - lastMs) / 86_400_000).toFixed(2)));
-  const plantedDaysAgo = Math.max(0, Number(((nowMs - firstMs) / 86_400_000).toFixed(2)));
+  const effectiveDecayDays = Math.max(0, Number(Math.max(0, ageDays - GRACE_DAYS).toFixed(2)));
+  const createdDaysAgo = Math.max(0, Number(((nowMs - firstMs) / 86_400_000).toFixed(2)));
 
   return {
-    lastCommitSha: shortSha,
-    lastCommitFullSha: sha,
-    lastCommitAt: committedAt,
-    lastCommitSubject: subject || '',
-    firstCommitAt: firstCommittedAt || committedAt,
+    lastCommitSha: latestSubstantive.shortSha,
+    lastCommitFullSha: latestSubstantive.sha,
+    lastCommitAt: latestSubstantive.committedAt,
+    lastCommitDate: latestSubstantive.committedAt.slice(0, 10),
+    lastCommitSubject: latestSubstantive.subject,
+    lastDiffLines: latestSubstantive.diffLines,
+    createdAt: initialCommit.committedAt,
+    createdDate: initialCommit.committedAt.slice(0, 10),
+    createdDaysAgo,
+    isNew: createdDaysAgo <= 14,
     ageDays,
-    plantedDaysAgo,
-    isNew: plantedDaysAgo <= 14,
+    effectiveDecayDays,
+    substantiveCommits,
+    totalCommits: commits.length,
   };
 }
 
-function readFirebaseConfig() {
-  const toml = fs.readFileSync(PARAMS_TOML_PATH, 'utf8');
-  const apiKeyMatch = toml.match(/apiKey\s*=\s*"([^"]+)"/);
-  const projectIdMatch = toml.match(/projectId\s*=\s*"([^"]+)"/);
-  if (!apiKeyMatch || !projectIdMatch) {
-    throw new Error('[Fail-Fast] Missing [firebase] apiKey or projectId in config/_default/params.toml');
-  }
-  return { apiKey: apiKeyMatch[1], projectId: projectIdMatch[1] };
-}
-
-async function fetchLiveFirestoreSkillsMap() {
-  const { apiKey, projectId } = readFirebaseConfig();
-  const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/(default)/documents/skills?pageSize=300&key=${encodeURIComponent(apiKey)}`;
-  const res = await fetch(url, {
-    headers: {
-      Referer: 'https://skills.danicat.dev/',
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`[Fail-Fast] Firestore skills fetch failed with HTTP ${res.status}`);
-  }
-  const data = await res.json();
-  const bySkill = {};
-  const parseIntField = (fieldObj) => {
-    if (!fieldObj) return 0;
-    const raw = fieldObj.integerValue !== undefined ? fieldObj.integerValue : fieldObj.doubleValue;
-    return Math.max(0, Number.parseInt(raw || '0', 10) || 0);
-  };
-
-  for (const doc of data.documents || []) {
-    const docId = (doc.name || '').split('/').pop() || '';
-    const f = doc.fields || {};
-    const rawSkill = f.skill?.stringValue || docId.replace(/^(game-dev|media|coding|workflows|traits|agents|writing|analytics|standards)-/, '');
-    const sId = String(rawSkill || '').toLowerCase();
-    if (!sId) continue;
-    if (!bySkill[sId]) {
-      bySkill[sId] = {
-        likes: 0,
-        views: 0,
-        copies: 0,
-        lastUpdated: null,
-      };
+function listSkillFilesRecursive(absDir, relPrefix = '') {
+  const entries = fs.readdirSync(absDir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+  const files = [];
+  for (const entry of entries) {
+    if (IGNORED_DIRS.has(entry.name) || IGNORED_FILES.has(entry.name)) {
+      continue;
     }
-    bySkill[sId].likes += parseIntField(f.likes);
-    bySkill[sId].views += parseIntField(f.views);
-    bySkill[sId].copies += parseIntField(f.copies);
-    if (f.lastUpdated?.timestampValue) {
-      bySkill[sId].lastUpdated = f.lastUpdated.timestampValue;
+    const absPath = path.join(absDir, entry.name);
+    const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      files.push(...listSkillFilesRecursive(absPath, relPath));
+    } else if (entry.isFile()) {
+      if (entry.name.endsWith('.pyc') || entry.name.endsWith('.pyo')) {
+        continue;
+      }
+      files.push(relPath);
     }
   }
-
-  return bySkill;
+  return files;
 }
 
-function hydrateGitTimestamps(rawGit) {
-  const nowMs = Date.now();
-  const lastMs = new Date(rawGit.lastCommitAt).getTime();
-  const firstMs = new Date(rawGit.firstCommitAt || rawGit.lastCommitAt).getTime();
-  const ageDays = Math.max(0, Number(((nowMs - lastMs) / 86_400_000).toFixed(2)));
-  const plantedDaysAgo = Math.max(0, Number(((nowMs - firstMs) / 86_400_000).toFixed(2)));
-  return {
-    ...rawGit,
-    ageDays,
-    plantedDaysAgo,
-    isNew: plantedDaysAgo <= 14,
-  };
-}
-
-async function fetchSkillsShTelemetry(skillId, repo = 'danicat/skills') {
-  const detailUrl = `https://www.skills.sh/${repo}/${skillId}`;
-  const auditUrl = `https://skills.sh/api/v1/skills/audit/${repo}/${skillId}`;
-
-  const [detailRes, auditRes] = await Promise.all([
-    fetch(detailUrl, { headers: { 'User-Agent': 'skills.danicat.dev-freshness-harvester/1.0' } }),
-    fetch(auditUrl, { headers: { 'User-Agent': 'skills.danicat.dev-freshness-harvester/1.0' } }),
-  ]);
-
-  if (detailRes.status >= 500) {
-    throw new Error(`[Fail-Fast] skills.sh returned HTTP ${detailRes.status} for ${detailUrl}`);
+export function inspectSkillBundle(relSkillDir) {
+  const absDir = path.join(ROOT_DIR, relSkillDir);
+  const skillMdPath = path.join(absDir, 'SKILL.md');
+  if (!fs.existsSync(skillMdPath)) {
+    throw new Error(`[Fail-Fast] Missing SKILL.md at ${skillMdPath}`);
   }
 
-  let installs = 0;
-  let weeklyInstalls = [0, 0, 0, 0, 0, 0, 0, 0];
-  let indexedOnSkillsSh = false;
-
-  if (detailRes.status === 200) {
-    const html = await detailRes.text();
-    const isSoft404 =
-      html.includes('name="robots" content="noindex, follow"') &&
-      html.includes('404: This page could not be found');
-    if (!isSoft404) {
-      indexedOnSkillsSh = true;
-      const totalMatch = html.match(/Installs<\/span><\/div><div[^>]*>([^<]+)<\/div>/);
-      const ldMatch = html.match(/userInteractionCount["']?\s*:\s*(\d+)/);
-      if (totalMatch) {
-        const raw = totalMatch[1].trim().replace(/,/g, '');
-        if (/^\d+$/.test(raw)) {
-          installs = Number.parseInt(raw, 10);
-        }
-      } else if (ldMatch) {
-        installs = Number(ldMatch[1]);
-      }
-
-      const flightMatch = html.match(/\\"values\\":\[([0-9,]+)\]/);
-      const ariaMatch = html.match(/Weekly installs:\s*([0-9,\s]+)/i);
-      const rawWeekly = flightMatch ? flightMatch[1] : ariaMatch ? ariaMatch[1] : null;
-      if (rawWeekly) {
-        const parsed = rawWeekly
-          .split(',')
-          .map((n) => Number.parseInt(n.trim(), 10))
-          .filter((n) => !Number.isNaN(n));
-        if (parsed.length === 8) {
-          weeklyInstalls = parsed;
-        }
-      }
-    }
+  const rawSkillMd = fs.readFileSync(skillMdPath, 'utf8');
+  const fmMatch = rawSkillMd.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fmMatch) {
+    throw new Error(`[Fail-Fast] Missing YAML frontmatter in ${relSkillDir}/SKILL.md`);
   }
+  const versionMatch = fmMatch[1].match(/^\s*version:\s*["']?([^"'\r\n]+)["']?/m);
+  if (!versionMatch || !versionMatch[1].trim()) {
+    throw new Error(`[Fail-Fast] Missing metadata.version in ${relSkillDir}/SKILL.md`);
+  }
+  const version = versionMatch[1].trim();
 
-  let securityAudits = {};
-  if (auditRes.status === 200) {
-    const rawAudit = await auditRes.json();
-    const auditsObj = rawAudit.audits || rawAudit || {};
-    for (const [partner, val] of Object.entries(auditsObj)) {
-      if (val && typeof val === 'object' && val.status) {
-        const partnerKey = val.partner || partner;
-        securityAudits[partnerKey] = {
-          status: val.status,
-          riskLevel: val.riskLevel || val.status.toUpperCase(),
-          alerts: val.alerts ?? 0,
-        };
+  const files = listSkillFilesRecursive(absDir);
+  const fileCount = files.length;
+  const distributionType = fileCount > 1 ? 'archive' : 'skill-md';
+
+  let scriptCount = 0;
+  let testCount = 0;
+  let referenceCount = 0;
+
+  for (const relPath of files) {
+    const base = path.basename(relPath);
+    if (relPath.startsWith('scripts/')) {
+      if (base === 'go.mod' || base === 'go.sum') {
+        continue;
       }
+      if (TEST_FILE_PATTERN.test(base)) {
+        testCount++;
+      } else {
+        scriptCount++;
+      }
+    } else if (/^(references|assets|examples|resources)\//.test(relPath)) {
+      referenceCount++;
     }
   }
 
   return {
-    indexedOnSkillsSh,
-    installs,
-    weeklyInstalls,
-    securityAudits,
+    version,
+    distributionType,
+    fileCount,
+    scriptCount,
+    testCount,
+    referenceCount,
+    hasTests: testCount > 0,
   };
 }
 
-function computeFreshnessMetrics({ git, skillsSh, curation }) {
-  // 1. Substantive Git Recency U in [0, 1] with 45-day half-life (70% weight)
-  const uRaw = Math.pow(0.5, git.ageDays / 45);
-  const updateFreshness = Math.round(100 * uRaw);
-  const vitalityPoints = Math.round(70 * uRaw);
+export function buildFreshnessCatalog() {
+  const result = {};
 
-  // 2. npx skills Installs (30% weight)
-  const rawW = skillsSh.weeklyInstalls || [0, 0, 0, 0, 0, 0, 0, 0];
-  const npxAllTime = Number(skillsSh.installs || 0);
-
-  // Gate 0: Newly added skill without proven user activity yet -> 🌱 New
-  const isUnproven = git.plantedDaysAgo <= 14 && npxAllTime <= 2;
-
-  if (isUnproven) {
-    const tierInfo = classifyTier(null);
-    return {
-      score: null,
-      sortScore: 80,
-      isUnproven: true,
-      tier: tierInfo.tier,
-      tierLabel: tierInfo.label,
-      tierEmoji: tierInfo.emoji,
-      half: tierInfo.half,
-      updateFreshness,
-      usageFreshness: 0,
-      vitalityPoints: 0,
-      adoptionBonusPoints: 0,
-      trendRatio: 0,
-      trendLabel: 'Unproven',
-      securityPenalty: 0,
-    };
-  }
-
-  // Raw 8-week trend from skills.sh
-  const hist5Wk = (rawW[0] + rawW[1] + rawW[2] + rawW[3] + rawW[4]) / 5;
-  const recent3Wk = (rawW[5] + rawW[6] + rawW[7]) / 3;
-  const trendRatio = Number(((recent3Wk + 0.25) / (hist5Wk + 0.25)).toFixed(2));
-
-  let trendLabel = 'Stable';
-  if (trendRatio >= 1.25) {
-    trendLabel = 'Growing';
-  } else if (trendRatio >= 0.75) {
-    trendLabel = 'Stable';
-  } else if (trendRatio >= 0.35) {
-    trendLabel = 'Decaying';
-  } else {
-    trendLabel = 'Flatlined';
-  }
-
-  // 30% weight: log-normalized installs against a target benchmark of 25 installs
-  const iRaw = Math.min(1.0, Math.log10(1 + npxAllTime) / Math.log10(1 + 25));
-  const usageFreshness = Math.round(100 * iRaw);
-  const adoptionBonusPoints = Math.round(30 * iRaw);
-
-  // 3. Security Penalty
-  let securityPenalty = 0;
-  const audits = skillsSh.securityAudits || {};
-  const hasOverride = Boolean(curation?.auditOverride);
-
-  if (!hasOverride) {
-    for (const a of Object.values(audits)) {
-      const risk = String(a.riskLevel || '').toUpperCase();
-      if (a.status === 'fail' || risk === 'CRITICAL') {
-        securityPenalty += 25;
-      } else if (risk === 'HIGH') {
-        securityPenalty += 15;
-      }
-    }
-  }
-
-  const score = Math.max(0, Math.min(100, vitalityPoints + adoptionBonusPoints - securityPenalty));
-  const tierInfo = classifyTier(score);
-
-  return {
-    score,
-    sortScore: score,
-    isUnproven: false,
-    tier: tierInfo.tier,
-    tierLabel: tierInfo.label,
-    tierEmoji: tierInfo.emoji,
-    half: tierInfo.half,
-    updateFreshness,
-    usageFreshness,
-    vitalityPoints,
-    adoptionBonusPoints,
-    trendRatio,
-    trendLabel,
-    securityPenalty,
-  };
-}
-
-async function main() {
-  console.log('✨ Harvesting Skill Freshness (Git 70% + npx skills 30%)...\n');
-
-  const existingSnapshot = fs.existsSync(METRICS_PATH)
-    ? JSON.parse(fs.readFileSync(METRICS_PATH, 'utf8'))
-    : {};
-  const liveFirestore = await fetchLiveFirestoreSkillsMap();
-  const curationMap = fs.existsSync(CURATION_PATH)
-    ? JSON.parse(fs.readFileSync(CURATION_PATH, 'utf8'))
-    : {};
-
-  // Merge live Firestore into metrics_snapshot.json
-  const updatedSnapshot = { ...existingSnapshot };
-  for (const [sId, data] of Object.entries(liveFirestore)) {
-    const prev = updatedSnapshot[sId] || {};
-    updatedSnapshot[sId] = {
-      likes: Math.max(Number(prev.likes || 0), data.likes),
-      views: Math.max(Number(prev.views || 0), data.views),
-      copies: Math.max(Number(prev.copies || 0), data.copies),
-      lastUpdated: data.lastUpdated || prev.lastUpdated || null,
-    };
-  }
-  fs.writeFileSync(METRICS_PATH, JSON.stringify(updatedSnapshot, null, 2) + '\n', 'utf8');
-
-  const skillEntries = [];
   for (const cat of CATEGORIES) {
     const catDir = path.join(ROOT_DIR, cat);
-    if (!fs.existsSync(catDir)) continue;
+    if (!fs.existsSync(catDir)) {
+      throw new Error(`[Fail-Fast] Missing category directory: ${cat}`);
+    }
+
     for (const folder of fs.readdirSync(catDir).sort()) {
-      const skillMdPath = path.join(catDir, folder, 'SKILL.md');
-      if (fs.existsSync(skillMdPath)) {
-        skillEntries.push({
-          category: cat,
-          skillId: folder,
-          displayName: folder,
-          url: `/${cat}/${folder}/`,
-          repo: 'danicat/skills',
-          relDir: `${cat}/${folder}`,
-        });
+      const relSkillDir = `${cat}/${folder}`;
+      const skillMdPath = path.join(ROOT_DIR, relSkillDir, 'SKILL.md');
+      if (!fs.existsSync(skillMdPath)) {
+        continue;
       }
+
+      const git = getSkillGitHistory(relSkillDir, folder);
+      const bundle = inspectSkillBundle(relSkillDir);
+      const score = computeFreshnessScore(git.ageDays);
+      const tierInfo = classifyTier(score);
+
+      result[folder] = {
+        id: folder,
+        displayName: folder,
+        url: `/${cat}/${folder}/`,
+        repo: 'danicat/skills',
+        category: cat,
+        version: bundle.version,
+        distributionType: bundle.distributionType,
+        score,
+        sortScore: score,
+        tier: tierInfo.tier,
+        tierLabel: tierInfo.label,
+        isNew: git.isNew,
+        graceDays: GRACE_DAYS,
+        halfLifeDays: HALF_LIFE_DAYS,
+        ageDays: git.ageDays,
+        effectiveDecayDays: git.effectiveDecayDays,
+        lastCommitSha: git.lastCommitSha,
+        lastCommitFullSha: git.lastCommitFullSha,
+        lastCommitAt: git.lastCommitAt,
+        lastCommitDate: git.lastCommitDate,
+        lastCommitSubject: git.lastCommitSubject,
+        lastDiffLines: git.lastDiffLines,
+        createdAt: git.createdAt,
+        createdDate: git.createdDate,
+        substantiveCommits: git.substantiveCommits,
+        totalCommits: git.totalCommits,
+        fileCount: bundle.fileCount,
+        scriptCount: bundle.scriptCount,
+        testCount: bundle.testCount,
+        referenceCount: bundle.referenceCount,
+        hasTests: bundle.hasTests,
+      };
     }
   }
 
-  const result = {};
-  for (const entry of skillEntries) {
-    const curation = curationMap[entry.skillId] || null;
-    const git = getGitHistoryStrict(entry.relDir, entry.skillId, curation);
-    const firestore = updatedSnapshot[entry.skillId] || {
-      likes: 0,
-      views: 0,
-      copies: 0,
-    };
-    const skillsSh = await fetchSkillsShTelemetry(entry.skillId, entry.repo);
+  return result;
+}
 
-    const metrics = computeFreshnessMetrics({ git, skillsSh, curation });
+function main() {
+  console.log(`Harvesting pure Git freshness (${GRACE_DAYS}d grace + ${HALF_LIFE_DAYS}d half-life)...\n`);
+  const catalog = buildFreshnessCatalog();
+  const outputPath = path.join(ROOT_DIR, 'data', 'freshness.json');
+  fs.writeFileSync(outputPath, JSON.stringify(catalog, null, 2) + '\n', 'utf8');
 
-    const scanners = Object.values(skillsSh.securityAudits || {});
-    const passedCount = scanners.filter((s) => s.status === 'pass').length;
-    const warnCount = scanners.filter((s) => s.status === 'warn').length;
-    const failCount = scanners.filter((s) => s.status === 'fail').length;
-
-    let defaultSecurityNote = 'All active security scanners passed with zero alerts.';
-    if (!skillsSh.indexedOnSkillsSh || scanners.length === 0) {
-      defaultSecurityNote = 'Newly published skill awaiting initial upstream skills.sh scanner pass.';
-    } else if (warnCount > 0 && failCount === 0) {
-      defaultSecurityNote = 'Static scanner flagged local CLI execution documentation; Gen Trust Hub and Socket report 0 supply-chain alerts.';
-    }
-
-    result[entry.skillId] = {
-      id: entry.skillId,
-      displayName: entry.displayName,
-      url: entry.url,
-      repo: entry.repo,
-      category: entry.category,
-      score: metrics.score,
-      sortScore: metrics.sortScore,
-      isUnproven: metrics.isUnproven,
-      tier: metrics.tier,
-      tierLabel: metrics.tierLabel,
-      tierEmoji: metrics.tierEmoji,
-      half: metrics.half,
-      isNew: git.isNew || metrics.isUnproven,
-      updateFreshness: metrics.updateFreshness,
-      usageFreshness: metrics.usageFreshness,
-      vitalityPoints: metrics.vitalityPoints,
-      adoptionBonusPoints: metrics.adoptionBonusPoints,
-      trendRatio: metrics.trendRatio,
-      trendLabel: metrics.trendLabel,
-      securityPenalty: metrics.securityPenalty,
-      lastCommitSha: git.lastCommitSha,
-      lastCommitAt: git.lastCommitAt,
-      lastCommitDate: git.lastCommitAt.slice(0, 10),
-      ageDays: git.ageDays,
-      plantedDate: git.firstCommitAt.slice(0, 10),
-      installs: skillsSh.installs,
-      weeklyInstalls: skillsSh.weeklyInstalls,
-      currentWeeklyInstalls: skillsSh.weeklyInstalls[7] || 0,
-      likes: Number(firestore.likes || 0),
-      views: Number(firestore.views || 0),
-      copies: Number(firestore.copies || 0),
-      securityAudits: skillsSh.securityAudits,
-      scannerSummary: {
-        total: scanners.length,
-        pass: passedCount,
-        warn: warnCount,
-        fail: failCount,
-      },
-      securityNote: curation?.securityNote || defaultSecurityNote,
-      editorialNote: curation?.editorialNote || '',
-    };
-
-    const scoreDisplay = metrics.score === null ? 'NEW' : `${String(metrics.score).padStart(3)}%`;
+  for (const entry of Object.values(catalog)) {
+    const scoreText = `${String(entry.score).padStart(3)}%`;
     console.log(
-      `  ${metrics.tierEmoji} ${entry.skillId.padEnd(22)} ${scoreDisplay} (${metrics.tierLabel.padEnd(7)}) | Git=${String(metrics.updateFreshness).padStart(3)}% (${metrics.vitalityPoints}pts) | npx=${String(skillsSh.installs).padStart(2)} (${metrics.adoptionBonusPoints}pts) | last=${git.lastCommitAt.slice(0, 10)} (${String(Math.round(git.ageDays)).padStart(3)}d)`
+      `  ${entry.id.padEnd(22)} ${scoreText} (${entry.tierLabel.padEnd(8)}) | age=${String(Math.round(entry.ageDays)).padStart(3)}d | diff=${String(entry.lastDiffLines).padStart(4)}L | commits=${String(entry.substantiveCommits).padStart(2)}/${String(entry.totalCommits).padStart(2)} | last=${entry.lastCommitDate} (${entry.lastCommitSha})`
     );
   }
 
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(result, null, 2) + '\n', 'utf8');
-  console.log(`\n✅ Wrote ${Object.keys(result).length} skills to ${path.relative(ROOT_DIR, OUTPUT_PATH)}`);
+  console.log(`\nWrote ${Object.keys(catalog).length} skills to ${path.relative(ROOT_DIR, outputPath)}`);
 }
 
-main().catch((err) => {
-  console.error('\n[FRESHNESS HARVEST FAILED]', err);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}
