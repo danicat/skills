@@ -97,3 +97,35 @@ Extract the top `5 to 10` posts per network and compare their structure:
 Separate genuine **calendar-day effects** from **author effort bias**:
 - **Effort bias**: Long-form technical posts and announcements often launch on Mondays or Thursdays, inflating averages on those days over casual mid-week posts.
 - **Cadence vs. saturation**: Publishing `> 5` posts per week can dilute median impressions per post, whereas `1 to 2` substantial posts per week protect reach per post.
+
+---
+
+## 6. Platform regime breaks and baseline hygiene
+
+Social networks periodically rewrite their feed ranking and distribution systems. When a major distribution shift happens, historical impression averages stop acting as a valid benchmark.
+
+### Rules for avoiding apples-to-oranges comparisons
+- **Segment by distribution regime:** Never pool pre-shift and post-shift posts into a single baseline, and never judge post-shift raw impressions against pre-shift months or prior-year periods.
+- **Known regime break (LinkedIn H2 2026):** In H2 2026, LinkedIn transitioned heavily from a connection-based Social Graph to an LLM-driven Interest Graph (widely tracked around the `360Brew` architecture), compressing broad 2nd- and 3rd-degree feed impressions across personal and company accounts.
+- **Do not over-analyze incomplete post-shift windows:** Until H2 2026 finishes and a clean post-shift baseline exists, treat raw LinkedIn impression declines as a regime break rather than a content, topic, or audience failure. Avoid drawing strategic conclusions from partial post-shift months where no comparable baseline exists yet.
+- **Diagnose distribution shift vs. content fatigue:** Always inspect `impressions` and `engagement_rate` side by side on substantive posts (`char_count >= 300`):
+  - **Impressions down, `engagement_rate` flat or up:** Platform distribution compression. Fewer passive viewers see each post, while matched readers engage at the same or higher rate.
+  - **Impressions down, `engagement_rate` also down (within the same regime):** Genuine hook, format, or audience mismatch.
+
+### Diagnostic SQL template (substantive posts: reach vs. engagement rate by month)
+```sql
+SELECT
+    service,
+    year_month,
+    COUNT(*) AS substantive_posts,
+    ROUND(AVG(impressions), 0) AS avg_impressions,
+    MAX(impressions) AS max_impressions,
+    ROUND(AVG(reactions + comments), 1) AS avg_interactions,
+    ROUND(AVG(engagement_rate), 2) AS avg_engagement_rate
+FROM v_posts_summary
+WHERE status = 'sent'
+  AND impressions > 0
+  AND char_count >= 300
+GROUP BY service, year_month
+ORDER BY service, year_month;
+```

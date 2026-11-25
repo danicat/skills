@@ -12,7 +12,7 @@ metadata:
   category: analytics
   tags: "buffer, social-media, engagement, impressions, posts"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.3.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -143,6 +143,16 @@ FROM v_posts_summary
 WHERE status = 'sent' AND service = 'linkedin'
 GROUP BY placement;
 ```
+
+---
+
+## Platform regime breaks and baseline hygiene
+
+When a social network changes how its feed distributes posts, raw impression baselines before and after the shift are **not comparable (apples to oranges)**.
+
+- **Known regime break (LinkedIn H2 2026 distribution reset):** Across H2 2026, LinkedIn shifted distribution away from broad connection-graph reach toward tighter LLM-driven Interest Graph matching (widely tracked around the `360Brew` ranking updates). Personal profiles saw steep platform-wide impression compression while engagement rates per view often stayed steady or rose.
+- **Wait for a clean post-shift baseline:** Do **not** over-analyze LinkedIn H2 2026 reach drops, compare post-shift raw impressions against H1 2026 or 2025, or blame topic niches until the full half-year completes and establishes a valid post-shift baseline.
+- **Separate reach compression from audience rejection:** Always check `impressions` alongside `engagement_rate` on substantive posts (`char_count >= 300`). Falling impressions with flat or rising `engagement_rate` signals a platform distribution shift, not a drop in content quality. See Section 6 of [`references/inquiry_playbook.md`](references/inquiry_playbook.md) for the diagnostic SQL template.
 
 ---
 
