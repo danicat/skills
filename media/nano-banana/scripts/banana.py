@@ -23,11 +23,15 @@
 
 import argparse
 import base64
+import json
 import os
 import sys
+from typing import Any
 import warnings
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module=r"google\.genai.*")
+
+DEFAULT_LOCATION = "global"
 
 MODEL_MAP = {
     "nano-banana-2.1": "gemini-nano-banana-2.1",
@@ -61,13 +65,14 @@ IMAGE_MIME_TYPES = {
 AUTH_REMEDIATION_MESSAGE = (
     "Authentication guidance:\n"
     "  Option 1: Vertex AI / Gemini Enterprise (Application Default Credentials):\n"
-    "    gcloud auth application-default login\n"
-    "    export GOOGLE_CLOUD_PROJECT=\"your-gcp-project-id\"\n"
+    "    gcloud auth application-default login --billing-project YOUR_PROJECT_ID\n"
+    "    export GOOGLE_CLOUD_PROJECT=\"YOUR_PROJECT_ID\"\n"
     "    export GOOGLE_CLOUD_LOCATION=\"global\"\n"
     "    export GOOGLE_GENAI_USE_ENTERPRISE=\"true\"\n"
     "  Option 2: Gemini Developer API (API Key):\n"
     "    export GEMINI_API_KEY=\"your-api-key\"\n"
-    "CRITICAL FOR AGENTS: Fail fast. Do NOT attempt unauthorized workarounds, fallback image generators, "
+    "CRITICAL FOR AGENTS: Fail fast. Always default to location='global' unless explicitly asked otherwise. "
+    "Do NOT attempt unauthorized workarounds, fallback image generators, "
     "or procedural placeholder files. Stop immediately, report this exact authentication error to the user, "
     "and ask them to configure credentials."
 )
@@ -107,7 +112,9 @@ def detect_mime_type(img_path: str) -> str:
     _, ext = os.path.splitext(img_path.lower())
     if ext not in IMAGE_MIME_TYPES:
         supported = ", ".join(sorted(IMAGE_MIME_TYPES.keys()))
-        raise ValueError(f"Unsupported input image format '{ext or '(none)'}' for '{img_path}'. Supported: {supported}.")
+        raise ValueError(
+            f"Unsupported input image format '{ext or '(none)'}' for '{img_path}'. Supported: {supported}."
+        )
     return IMAGE_MIME_TYPES[ext]
 
 
@@ -120,16 +127,39 @@ def save_output_image(filename: str, img_bytes: bytes) -> None:
         f.write(img_bytes)
 
 
-def normalize_image_size(resolution: str) -> str:
-    """Normalize shorthand '512' resolution flag to '512px' for API payloads."""
-    return "512px" if resolution == "512" else resolution
+def normalize_image_size(resolution: str, api_mode: str = "interactions") -> str:
+    """Normalize resolution flag to the exact value expected by Interactions API vs. Models API."""
+    if resolution in ("512", "512px"):
+        return "512" if api_mode == "interactions" else "512px"
+    return resolution
 
 
 def validate_capabilities(args, model_id: str) -> None:
-    """Validate requested CLI arguments against model capability constraints."""
+    """Validate requested CLI arguments against model and API capability constraints."""
     if len(args.input_image) > 14:
         print("Error: Maximum of 14 input/reference images allowed.", file=sys.stderr)
         sys.exit(1)
+
+    for img_path in args.input_image:
+        try:
+            detect_mime_type(img_path)
+        except ValueError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    if args.api == "models":
+        if getattr(args, "previous_interaction_id", None):
+            print(
+                "Error: '--previous-interaction-id' requires '--api interactions' (not '--api models').",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        if getattr(args, "store", None) is not None:
+            print(
+                "Error: '--store' / '--no-store' requires '--api interactions' (not '--api models').",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     if args.resolution in ("2K", "4K") and model_id == "gemini-3.1-flash-lite-image":
         print(
@@ -180,11 +210,66 @@ def validate_capabilities(args, model_id: str) -> None:
         sys.exit(1)
 
 
+def build_interaction_kwargs(
+    args,
+    model_id: str,
+    image_size: str,
+    *,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Build the request dictionary for client.interactions.create."""
+    response_format = {
+        "type": "image",
+        "aspect_ratio": args.aspect_ratio,
+        "image_size": image_size,
+    }
+
+    tools: list[dict[str, Any]] = []
+    if args.image_search:
+        tools.append({"type": "google_search", "search_types": ["web_search", "image_search"]})
+    elif args.search:
+        tools.append({"type": "google_search"})
+
+    generation_config: dict[str, Any] = {}
+    if args.thinking_level:
+        generation_config["thinking_level"] = args.thinking_level
+
+    if args.input_image:
+        input_payload: list[dict[str, Any]] | str = []
+        for img_path in args.input_image:
+            mime = detect_mime_type(img_path)
+            if dry_run and not os.path.isfile(img_path):
+                b64_data = base64.b64encode(b"dry-run-placeholder").decode("utf-8")
+            else:
+                with open(img_path, "rb") as f:
+                    b64_data = base64.b64encode(f.read()).decode("utf-8")
+            input_payload.append({"type": "image", "data": b64_data, "mime_type": mime})
+        input_payload.append({"type": "text", "text": args.prompt})
+    else:
+        input_payload = args.prompt
+
+    kwargs: dict[str, Any] = {
+        "model": model_id,
+        "input": input_payload,
+        "response_format": response_format,
+    }
+    if tools:
+        kwargs["tools"] = tools
+    if generation_config:
+        kwargs["generation_config"] = generation_config
+    if getattr(args, "previous_interaction_id", None):
+        kwargs["previous_interaction_id"] = args.previous_interaction_id
+    if getattr(args, "store", None) is not None:
+        kwargs["store"] = args.store
+
+    return kwargs
+
+
 def build_models_config(args, image_size: str):
     """Build GenerateContentConfig for Models API requests."""
     from google.genai import types
 
-    config_kwargs: dict = {
+    config_kwargs: dict[str, Any] = {
         "response_modalities": ["TEXT", "IMAGE"],
         "image_config": types.ImageConfig(
             aspect_ratio=args.aspect_ratio,
@@ -210,6 +295,42 @@ def build_models_config(args, image_size: str):
         config_kwargs["tools"] = [types.Tool(google_search=types.GoogleSearch())]
 
     return types.GenerateContentConfig(**config_kwargs)
+
+
+def decode_media_bytes(raw: str | bytes) -> bytes:
+    """Decode base64 string or pass through raw bytes safely."""
+    return base64.b64decode(raw) if isinstance(raw, str) else raw
+
+
+def extract_image_from_interaction(interaction) -> bytes | None:
+    """Extract output image bytes from an Interactions API response."""
+    output_image = getattr(interaction, "output_image", None)
+    if output_image and getattr(output_image, "data", None):
+        return decode_media_bytes(output_image.data)
+
+    for step in getattr(interaction, "steps", None) or []:
+        if getattr(step, "type", "") == "model_output":
+            for block in getattr(step, "content", None) or []:
+                if getattr(block, "type", "") == "image" and getattr(block, "data", None):
+                    return decode_media_bytes(block.data)
+
+    return None
+
+
+def extract_image_from_models_response(response) -> bytes | None:
+    """Extract the first non-thought inline image from a generate_content response."""
+    candidates = getattr(response, "candidates", None) or []
+    if not candidates:
+        return None
+    content = getattr(candidates[0], "content", None)
+    parts = getattr(content, "parts", None) or []
+    for part in parts:
+        if getattr(part, "thought", False):
+            continue
+        inline_data = getattr(part, "inline_data", None)
+        if inline_data and getattr(inline_data, "data", None):
+            return decode_media_bytes(inline_data.data)
+    return None
 
 
 def init_client(args):
@@ -243,12 +364,15 @@ def init_client(args):
             )
             sys.exit(1)
 
-        project = args.project or env_project or default_project
-        location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION") or "global"
+        quota_project = getattr(credentials, "quota_project_id", None)
+        project = args.project or env_project or default_project or quota_project
+        location = args.location or os.environ.get("GOOGLE_CLOUD_LOCATION") or DEFAULT_LOCATION
 
         if not project:
             print(
-                "Error: Vertex AI / Gemini Enterprise requested or inferred, but no GCP Project ID was found.\n"
+                "Error: Vertex AI / Gemini Enterprise requested or inferred, but no GCP Project ID was found. "
+                "Pass --project <PROJECT_ID>, set GOOGLE_CLOUD_PROJECT, "
+                "or run 'gcloud auth application-default login --billing-project <PROJECT_ID>'.\n"
                 f"{AUTH_REMEDIATION_MESSAGE}",
                 file=sys.stderr,
             )
@@ -267,13 +391,59 @@ def init_client(args):
     return genai.Client(api_key=api_key)
 
 
+def run_image(client: Any, args, model_id: str, image_size: str, models_config: Any = None) -> None:
+    """Execute image generation or editing against Interactions API or Models API and write output."""
+    if args.api == "interactions":
+        kwargs = build_interaction_kwargs(args, model_id, image_size)
+        interaction = client.interactions.create(**kwargs)
+        interaction_id = getattr(interaction, "id", None)
+        if interaction_id:
+            print(f"Interaction ID: {interaction_id}")
+
+        img_bytes = extract_image_from_interaction(interaction)
+        if not img_bytes:
+            raise ValueError("No image returned from Interactions API response.")
+        save_output_image(args.filename, img_bytes)
+    else:
+        from PIL import Image
+
+        contents: list[Any] = []
+        for img_path in args.input_image:
+            detect_mime_type(img_path)
+            with Image.open(img_path) as img:
+                img.load()
+                contents.append(img.copy())
+        contents.append(args.prompt)
+
+        response = client.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=models_config,
+        )
+        img_bytes = extract_image_from_models_response(response)
+        if not img_bytes:
+            raise ValueError("No image data found in generate_content response candidates.")
+        save_output_image(args.filename, img_bytes)
+
+    print(f"Success! Image saved to {args.filename}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Generate, edit, and transform images using Google Nano Banana foundation models.",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("-p", "--prompt", required=True, help="Text prompt describing the image to generate or edit")
-    parser.add_argument("-f", "--filename", required=True, help="Output image filename (such as output.png)")
+    parser.add_argument(
+        "-f",
+        "--filename",
+        "-o",
+        "--out",
+        "--output",
+        dest="filename",
+        required=True,
+        help="Output image filename (such as output.png)",
+    )
     parser.add_argument("-i", "--input-image", action="append", default=[], help="Path to input/reference image(s) (up to 14)")
     parser.add_argument(
         "-m",
@@ -289,7 +459,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--resolution",
         choices=["512px", "512", "1K", "2K", "4K"],
         default="1K",
-        help="Output resolution (default: 1K; 512px is only supported on nano-banana-2)",
+        help="Output resolution (default: 1K; 512 / 512px is only supported on nano-banana-2)",
     )
     parser.add_argument(
         "-a",
@@ -314,6 +484,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable Google Image Search grounding (Banana 2.1 and Banana 2)",
     )
     parser.add_argument(
+        "--previous-interaction-id",
+        default=None,
+        help="Continue from a prior interaction ID for multi-turn conversational image editing (Interactions API only)",
+    )
+    parser.add_argument(
+        "--store",
+        dest="store",
+        action="store_true",
+        default=None,
+        help="Store interaction state on the server for follow-up --previous-interaction-id turns",
+    )
+    parser.add_argument(
+        "--no-store",
+        dest="store",
+        action="store_false",
+        help="Run a stateless request (store=false)",
+    )
+    parser.add_argument(
         "--api",
         choices=["interactions", "models"],
         default="interactions",
@@ -334,21 +522,21 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Alias for --enterprise (Vertex AI Application Default Credentials)",
     )
-    parser.add_argument("--project", help="GCP Project ID for Vertex AI / Gemini Enterprise")
-    parser.add_argument("--location", help="GCP Location for Vertex AI / Gemini Enterprise (default: GOOGLE_CLOUD_LOCATION or global)")
+    parser.add_argument("--project", help="GCP Project ID for Vertex AI / Gemini Enterprise (defaults to GOOGLE_CLOUD_PROJECT or ADC billing project)")
+    parser.add_argument("--location", help=f"GCP Location for Vertex AI / Gemini Enterprise (default: GOOGLE_CLOUD_LOCATION or {DEFAULT_LOCATION})")
     return parser
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     model_id = resolve_model(args.model)
 
     validate_capabilities(args, model_id)
-    image_size = normalize_image_size(args.resolution)
+    image_size = normalize_image_size(args.resolution, args.api)
 
     print(f"Model: {model_id} ({args.model})")
-    print(f"Resolution: {args.resolution} | Aspect Ratio: {args.aspect_ratio}")
+    print(f"Resolution: {args.resolution} (API: {image_size}) | Aspect Ratio: {args.aspect_ratio}")
     if args.input_image:
         print(f"Reference Images ({len(args.input_image)}): {args.input_image}")
     print(f"Output: {args.filename}")
@@ -356,102 +544,18 @@ def main() -> None:
     models_config = build_models_config(args, image_size) if args.api == "models" else None
 
     if args.dry_run:
+        if args.api == "interactions":
+            preview = build_interaction_kwargs(args, model_id, image_size, dry_run=True)
+            print(json.dumps(preview, indent=2))
         print("Dry run validation succeeded.")
-        return
+        return 0
 
     client = init_client(args)
-
     from google.genai.errors import APIError
-    from PIL import Image
 
     try:
-        if args.api == "interactions":
-            response_format = {
-                "type": "image",
-                "aspect_ratio": args.aspect_ratio,
-                "image_size": image_size,
-            }
-
-            tools = []
-            if args.image_search:
-                tools.append({"type": "google_search", "search_types": ["web_search", "image_search"]})
-            elif args.search:
-                tools.append({"type": "google_search"})
-
-            generation_config = {}
-            if args.thinking_level:
-                generation_config["thinking_level"] = args.thinking_level
-
-            if args.input_image:
-                input_payload = []
-                for img_path in args.input_image:
-                    mime = detect_mime_type(img_path)
-                    with open(img_path, "rb") as f:
-                        b64_data = base64.b64encode(f.read()).decode("utf-8")
-                    input_payload.append({"type": "image", "data": b64_data, "mime_type": mime})
-                input_payload.append({"type": "text", "text": args.prompt})
-            else:
-                input_payload = args.prompt
-
-            kwargs = {
-                "model": model_id,
-                "input": input_payload,
-                "response_format": response_format,
-            }
-            if tools:
-                kwargs["tools"] = tools
-            if generation_config:
-                kwargs["generation_config"] = generation_config
-
-            interaction = client.interactions.create(**kwargs)
-
-            img_bytes = None
-            if interaction.output_image and interaction.output_image.data:
-                img_bytes = base64.b64decode(interaction.output_image.data)
-            else:
-                for step in getattr(interaction, "steps", []):
-                    if getattr(step, "type", "") == "model_output":
-                        for block in getattr(step, "content", []):
-                            if getattr(block, "type", "") == "image" and getattr(block, "data", None):
-                                img_bytes = base64.b64decode(block.data)
-                                break
-
-            if not img_bytes:
-                raise ValueError("No image returned from Interactions API response.")
-
-            save_output_image(args.filename, img_bytes)
-
-        else:
-            contents = []
-            for img_path in args.input_image:
-                detect_mime_type(img_path)
-                with Image.open(img_path) as img:
-                    img.load()
-                    contents.append(img.copy())
-            contents.append(args.prompt)
-
-            response = client.models.generate_content(
-                model=model_id,
-                contents=contents,
-                config=models_config,
-            )
-
-            img_bytes = None
-            if response.candidates and response.candidates[0].content:
-                for part in response.candidates[0].content.parts:
-                    if getattr(part, "thought", False):
-                        continue
-                    if part.inline_data and part.inline_data.data:
-                        img_bytes = part.inline_data.data
-                        break
-
-            if not img_bytes:
-                raise ValueError("No image data found in generate_content response candidates.")
-
-            save_output_image(args.filename, img_bytes)
-
-        print(f"Success! Image saved to {args.filename}")
-
+        run_image(client, args, model_id, image_size, models_config)
+        return 0
     except APIError as e:
         print(f"API Error generating image with {model_id}: {e}\n{AUTH_REMEDIATION_MESSAGE}", file=sys.stderr)
         sys.exit(1)
@@ -461,4 +565,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -23,11 +23,15 @@
 
 import argparse
 import base64
+import json
 import os
 import sys
+from typing import Any
 import warnings
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module=r"google\.genai.*")
+
+DEFAULT_LOCATION = "global"
 
 MODEL_MAP = {
     "lyria-3.5": "lyria-3.5",
@@ -59,14 +63,15 @@ IMAGE_MIME_TYPES = {
 AUTH_HELP_MESSAGE = (
     "Authenticate using one of the following methods:\n"
     "  1. Vertex AI / Gemini Enterprise (ADC):\n"
-    "     gcloud auth application-default login\n"
-    "     export GOOGLE_CLOUD_PROJECT=\"your-gcp-project-id\"\n"
+    "     gcloud auth application-default login --billing-project YOUR_PROJECT_ID\n"
+    "     export GOOGLE_CLOUD_PROJECT=\"YOUR_PROJECT_ID\"\n"
     "     export GOOGLE_CLOUD_LOCATION=\"global\"\n"
     "     export GOOGLE_GENAI_USE_ENTERPRISE=\"true\"\n"
-    "     (or pass --enterprise --project \"your-gcp-project-id\" --location \"global\")\n"
+    "     (or pass --enterprise --project \"YOUR_PROJECT_ID\" --location \"global\")\n"
     "  2. Gemini Developer API:\n"
     "     export GEMINI_API_KEY=\"your-api-key\"\n\n"
-    "AGENT INSTRUCTION: Do NOT attempt rogue workarounds, mock audio files, or silent fallbacks. "
+    "AGENT INSTRUCTION: Always default to location='global' unless explicitly asked otherwise. "
+    "Do NOT attempt rogue workarounds, mock audio files, or silent fallbacks. "
     "Stop immediately, report this exact authentication error to the user, and ask them to configure credentials."
 )
 
@@ -183,11 +188,93 @@ def save_text_file(filename: str, text: str) -> None:
         f.write(text)
 
 
+def decode_media_bytes(raw: str | bytes) -> bytes:
+    """Decode base64 string or pass through raw bytes safely."""
+    return base64.b64decode(raw) if isinstance(raw, str) else raw
+
+
+def build_interaction_kwargs(
+    args,
+    model_id: str,
+    audio_format: str,
+    *,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Build the request dictionary for client.interactions.create."""
+    if args.input_image:
+        input_payload: list[dict[str, Any]] | str = [{"type": "text", "text": args.prompt}]
+        for img_path in args.input_image:
+            mime_type = detect_mime_type(img_path)
+            if dry_run and not os.path.isfile(img_path):
+                b64_data = base64.b64encode(b"dry-run-placeholder").decode("utf-8")
+            else:
+                with open(img_path, "rb") as img_file:
+                    b64_data = base64.b64encode(img_file.read()).decode("utf-8")
+            input_payload.append(
+                {
+                    "type": "image",
+                    "mime_type": mime_type,
+                    "data": b64_data,
+                }
+            )
+    else:
+        input_payload = args.prompt
+
+    kwargs: dict[str, Any] = {"model": model_id, "input": input_payload}
+    if audio_format == "wav":
+        kwargs["response_format"] = {
+            "type": "audio",
+            "mime_type": "audio/wav",
+        }
+    return kwargs
+
+
 def build_models_config():
     """Build GenerateContentConfig requesting audio and text modalities."""
     from google.genai import types
 
     return types.GenerateContentConfig(response_modalities=["AUDIO", "TEXT"])
+
+
+def extract_audio_and_lyrics_from_interaction(interaction) -> tuple[bytes | None, str | None]:
+    """Extract output audio bytes and optional lyrics text from an Interactions API response."""
+    audio_bytes: bytes | None = None
+    gen_audio = getattr(interaction, "output_audio", None)
+    if gen_audio and getattr(gen_audio, "data", None):
+        audio_bytes = decode_media_bytes(gen_audio.data)
+
+    lyrics_text = getattr(interaction, "output_text", None)
+
+    if not audio_bytes and hasattr(interaction, "steps"):
+        lyrics_parts: list[str] = []
+        for step in getattr(interaction, "steps", None) or []:
+            if getattr(step, "type", None) == "model_output":
+                for block in getattr(step, "content", None) or []:
+                    b_type = getattr(block, "type", None)
+                    if b_type == "audio" and getattr(block, "data", None) and audio_bytes is None:
+                        audio_bytes = decode_media_bytes(block.data)
+                    elif b_type == "text" and getattr(block, "text", None):
+                        lyrics_parts.append(block.text)
+        if not lyrics_text and lyrics_parts:
+            lyrics_text = "\n".join(lyrics_parts)
+
+    return audio_bytes, lyrics_text
+
+
+def extract_audio_and_lyrics_from_models_response(response) -> tuple[bytes | None, str | None]:
+    """Extract audio bytes and optional lyrics text from a generate_content response."""
+    audio_bytes: bytes | None = None
+    lyrics_parts: list[str] = []
+    candidates = getattr(response, "candidates", None) or []
+    if candidates and getattr(candidates[0], "content", None):
+        for part in getattr(candidates[0].content, "parts", None) or []:
+            inline_data = getattr(part, "inline_data", None)
+            if inline_data and getattr(inline_data, "data", None) and audio_bytes is None:
+                audio_bytes = decode_media_bytes(inline_data.data)
+            elif getattr(part, "text", None):
+                lyrics_parts.append(part.text)
+    lyrics_text = "\n".join(lyrics_parts) if lyrics_parts else None
+    return audio_bytes, lyrics_text
 
 
 def init_client(args):
@@ -229,18 +316,20 @@ def init_client(args):
             )
             sys.exit(1)
 
-        project = args.project or env_project or default_project
+        quota_project = getattr(credentials, "quota_project_id", None)
+        project = args.project or env_project or default_project or quota_project
         location = (
             args.location
             or os.environ.get("GOOGLE_CLOUD_LOCATION")
-            or "global"
+            or DEFAULT_LOCATION
         )
 
         if not project:
             print(
                 "Error: Vertex AI / Gemini Enterprise requested (--enterprise, --vertexai, --project, "
                 "or GOOGLE_GENAI_USE_ENTERPRISE=true), but no GCP Project ID was found. "
-                "Pass --project <PROJECT_ID> or set GOOGLE_CLOUD_PROJECT.\n\n"
+                "Pass --project <PROJECT_ID>, set GOOGLE_CLOUD_PROJECT, "
+                "or run 'gcloud auth application-default login --billing-project <PROJECT_ID>'.\n\n"
                 f"{AUTH_HELP_MESSAGE}",
                 file=sys.stderr,
             )
@@ -265,6 +354,48 @@ def init_client(args):
     return genai.Client(api_key=api_key)
 
 
+def run_music(
+    client: Any,
+    args,
+    model_id: str,
+    audio_format: str,
+    models_config: Any = None,
+) -> None:
+    """Execute music generation against Interactions API or Models API and write audio/lyrics."""
+    if args.api == "interactions":
+        kwargs = build_interaction_kwargs(args, model_id, audio_format)
+        interaction = client.interactions.create(**kwargs)
+        audio_bytes, lyrics_text = extract_audio_and_lyrics_from_interaction(interaction)
+    else:
+        from PIL import Image
+
+        contents: list[Any] = [args.prompt]
+        for img_path in args.input_image:
+            with Image.open(img_path) as img:
+                img.load()
+                contents.append(img.copy())
+
+        response = client.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=models_config,
+        )
+        audio_bytes, lyrics_text = extract_audio_and_lyrics_from_models_response(response)
+
+    if not audio_bytes:
+        raise ValueError(f"No audio data returned from Lyria 3 model {model_id}.")
+
+    save_binary_file(args.filename, audio_bytes)
+    print(f"Success! Audio saved to {args.filename}")
+
+    if lyrics_text:
+        print("\nGenerated Lyrics / Structure:")
+        print(lyrics_text)
+        if args.lyrics_file:
+            save_text_file(args.lyrics_file, lyrics_text)
+            print(f"Lyrics saved to {args.lyrics_file}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Construct the CLI argument parser."""
     parser = argparse.ArgumentParser(
@@ -281,6 +412,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-f",
         "--filename",
         "--out",
+        "--output",
         "-o",
         dest="filename",
         default="music.mp3",
@@ -337,19 +469,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--project",
-        help="GCP Project ID for Vertex AI / Gemini Enterprise (defaults to GOOGLE_CLOUD_PROJECT)",
+        help="GCP Project ID for Vertex AI / Gemini Enterprise (defaults to GOOGLE_CLOUD_PROJECT or ADC billing project)",
     )
     parser.add_argument(
         "--location",
         default=None,
-        help="GCP Location for Vertex AI / Gemini Enterprise (defaults to GOOGLE_CLOUD_LOCATION or 'global')",
+        help=f"GCP Location for Vertex AI / Gemini Enterprise (defaults to GOOGLE_CLOUD_LOCATION or '{DEFAULT_LOCATION}')",
     )
     return parser
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     model_id = resolve_model(args.model)
     audio_format = validate_capabilities(args, model_id)
@@ -363,110 +495,18 @@ def main() -> None:
     models_config = build_models_config() if args.api == "models" else None
 
     if args.dry_run:
+        if args.api == "interactions":
+            preview = build_interaction_kwargs(args, model_id, audio_format, dry_run=True)
+            print(json.dumps(preview, indent=2))
         print("Dry run validation succeeded.")
-        return
+        return 0
 
     client = init_client(args)
-
     from google.genai.errors import APIError
-    from PIL import Image
-
-    audio_bytes = None
-    lyrics_text = None
 
     try:
-        if args.api == "interactions":
-            if args.input_image:
-                input_payload = [{"type": "text", "text": args.prompt}]
-                for img_path in args.input_image:
-                    mime_type = detect_mime_type(img_path)
-                    with open(img_path, "rb") as img_file:
-                        b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-                    input_payload.append(
-                        {
-                            "type": "image",
-                            "mime_type": mime_type,
-                            "data": b64_data,
-                        }
-                    )
-            else:
-                input_payload = args.prompt
-
-            kwargs = {"model": model_id, "input": input_payload}
-            if audio_format == "wav":
-                kwargs["response_format"] = {
-                    "type": "audio",
-                    "mime_type": "audio/wav",
-                }
-
-            interaction = client.interactions.create(**kwargs)
-
-            gen_audio = getattr(interaction, "output_audio", None)
-            if gen_audio and getattr(gen_audio, "data", None):
-                raw_audio = gen_audio.data
-                audio_bytes = (
-                    base64.b64decode(raw_audio)
-                    if isinstance(raw_audio, str)
-                    else raw_audio
-                )
-
-            lyrics_text = getattr(interaction, "output_text", None)
-
-            if not audio_bytes and hasattr(interaction, "steps"):
-                lyrics_parts = []
-                for step in getattr(interaction, "steps", []):
-                    if getattr(step, "type", None) == "model_output":
-                        for block in getattr(step, "content", []):
-                            b_type = getattr(block, "type", None)
-                            if b_type == "audio" and getattr(block, "data", None):
-                                raw_block = block.data
-                                audio_bytes = (
-                                    base64.b64decode(raw_block)
-                                    if isinstance(raw_block, str)
-                                    else raw_block
-                                )
-                            elif b_type == "text" and getattr(block, "text", None):
-                                lyrics_parts.append(block.text)
-                if not lyrics_text and lyrics_parts:
-                    lyrics_text = "\n".join(lyrics_parts)
-        else:
-            contents = [args.prompt]
-            for img_path in args.input_image:
-                with Image.open(img_path) as img:
-                    img.load()
-                    contents.append(img.copy())
-
-            response = client.models.generate_content(
-                model=model_id,
-                contents=contents,
-                config=models_config,
-            )
-
-            if response.candidates and response.candidates[0].content:
-                for part in response.candidates[0].content.parts:
-                    if part.inline_data and part.inline_data.data:
-                        raw_data = part.inline_data.data
-                        audio_bytes = (
-                            base64.b64decode(raw_data)
-                            if isinstance(raw_data, str)
-                            else raw_data
-                        )
-                    elif part.text:
-                        lyrics_text = part.text
-
-        if not audio_bytes:
-            raise ValueError(f"No audio data returned from Lyria 3 model {model_id}.")
-
-        save_binary_file(args.filename, audio_bytes)
-        print(f"Success! Audio saved to {args.filename}")
-
-        if lyrics_text:
-            print("\nGenerated Lyrics / Structure:")
-            print(lyrics_text)
-            if args.lyrics_file:
-                save_text_file(args.lyrics_file, lyrics_text)
-                print(f"Lyrics saved to {args.lyrics_file}")
-
+        run_music(client, args, model_id, audio_format, models_config)
+        return 0
     except APIError as e:
         print(
             f"API Error generating music with {model_id}: {e}\n\n"
@@ -484,4 +524,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

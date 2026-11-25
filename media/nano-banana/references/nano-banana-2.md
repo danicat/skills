@@ -6,7 +6,7 @@
 - **Model Code**: `gemini-3.1-flash-image`
 - **CLI Aliases**: `nano-banana-2`, `gemini-3.1-flash-image`
 - **Release Date**: May 28, 2026 (GA; preview released February 2026)
-- **Status**: General Availability (GA)
+- **Status**: Deprecated (October 6, 2026; no shutdown date announced. Migrate to `gemini-nano-banana-2.1`)
 - **DeepMind Model Card**: [gemini-3-1-flash-image](https://deepmind.google/models/model-cards/gemini-3-1-flash-image/)
 
 ---

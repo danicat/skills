@@ -12,7 +12,7 @@ metadata:
   category: media
   tags: "video, animation, upscale, generative, media"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.4.0"
+  version: "0.4.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -31,7 +31,7 @@ Generate, edit, interpolate, extend, and upscale video (`360p` to `4k` MP4 at `2
 ## Available scripts
 
 - **[scripts/omni.py](scripts/omni.py)**: PEP 723 standalone Python CLI (`uv run scripts/omni.py`) for **Gemini Omni 1.2 Flash** (`gemini-omni-1.2-flash`, with aliases `omni-1.2-flash`, `omni-1.2`, `1.2`, `flash-1.2`). Supports text-to-video, image-to-video, first-and-last-frame interpolation, multi-reference video generation, conversational video editing (`--previous-interaction-id` or `-i video.mp4`), video extension (`--task extend`), standalone video upscaling (`--task upscale`), seeds (`--seed`), Cloud Storage output (`--gcs-uri`), URI delivery polling (`--delivery uri`), optional 44.1 kHz stereo WAV audio extraction (`--extract-audio`), and both Gemini Enterprise / Vertex AI ADC (`--enterprise`, `--vertexai`) and Gemini API Key (`GEMINI_API_KEY`).
-- **[scripts/test_omni.py](scripts/test_omni.py)**: Automated unit and CLI test suite verifying `gemini-omni-1.2-flash` resolution, duration rules, `upscale` and `extend` constraints, MIME detection (`video/quicktime` for `.mov`, unsupported format rejection), reference limits, deprecated control tag detection, and fail-fast credential checks.
+- **[scripts/test_omni.py](scripts/test_omni.py)**: Automated contract and execution test suite validating Interactions API payloads directly against `google-genai` Pydantic schemas, mocked end-to-end video writes (inline bytes/str, `steps` fallback, `gcs_uri`, Files API `uri` polling, and background runs), duration/upscale/`--background` guards, MIME detection, deprecated control tag detection, and ADC/quota-project authentication.
 
 ---
 
@@ -84,7 +84,7 @@ Activate this skill when the user asks to:
 | **Reference images** | Up to `6` in Gemini API / `10` on Enterprise (up to 3 per character for 2 characters) across `3s` to `15s` |
 | **Reference videos** | Up to `3` (around `3s` each) for `3s` to `10s` clips; `1` (around `3s`) for `11s` to `15s` clips |
 | **Resolutions and aspect ratios** | `360p`, `720p` (default), `1080p`, `4k` at `24 FPS`; `16:9` (default), `9:16` |
-| **Lifecycle** | Active GA model (retirement November 5, 2027 or later); `1.1` and preview models are deprecated or shut down |
+| **Lifecycle** | Active GA model (retirement November 5, 2027 or later); `gemini-omni-1.1-flash` routes to `1.2` on December 3, 2026 and preview models are shut down |
 | **Watermarking** | Invisible **SynthID** watermark embedded in video frames and audio |
 | **Reference guide** | [gemini-omni-1-2-flash.md](references/gemini-omni-1-2-flash.md) |
 

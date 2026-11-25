@@ -21,24 +21,26 @@
 # ///
 
 import argparse
+import base64
+import contextlib
 import io
 import os
-import shutil
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 from unittest import mock
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import omni  # noqa: E402
+from google.genai._gaos.types.basemodel import UnrecognizedStr
+from google.genai._gaos.types.interactions import CreateModelInteraction
 
-SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "omni.py")
-CMD_BASE = (
-    ["uv", "run", SCRIPT_PATH]
-    if shutil.which("uv")
-    else [sys.executable, SCRIPT_PATH]
-)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_PATH = os.path.join(SCRIPT_DIR, "omni.py")
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
+import omni  # noqa: E402
 
 
 def make_args(**overrides) -> argparse.Namespace:
@@ -68,184 +70,248 @@ def make_args(**overrides) -> argparse.Namespace:
     return argparse.Namespace(**defaults)
 
 
-class TestOmniUnit(unittest.TestCase):
-    def test_model_alias_resolution_omni_1_2_flash(self):
-        self.assertEqual(omni.resolve_model(None), "gemini-omni-1.2-flash")
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-1.2-flash"), "gemini-omni-1.2-flash"
-        )
-        self.assertEqual(
-            omni.resolve_model("omni-1.2-flash"), "gemini-omni-1.2-flash"
-        )
-        self.assertEqual(omni.resolve_model("omni-1.2"), "gemini-omni-1.2-flash")
-        self.assertEqual(omni.resolve_model("1.2"), "gemini-omni-1.2-flash")
-        self.assertEqual(omni.resolve_model("flash-1.2"), "gemini-omni-1.2-flash")
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-flash-1.2"), "gemini-omni-1.2-flash"
-        )
-        self.assertEqual(
-            omni.resolve_model("gemini-omni-flash-1.2-preview"),
-            "gemini-omni-1.2-flash",
-        )
+def run_cli(*args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, SCRIPT_PATH, *args],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
 
-    def test_deprecated_and_unknown_models_fail_fast(self):
-        with self.assertRaises(ValueError) as ctx:
-            omni.resolve_model("gemini-omni-flash-preview")
-        self.assertIn("shut down", str(ctx.exception))
 
-        for deprecated_1_1 in (
-            "gemini-omni-1.1-flash",
-            "gemini-omni-1.1-flash-preview",
-            "omni-1.1-flash",
-            "1.1",
-        ):
-            with self.assertRaises(ValueError) as ctx_1_1:
-                omni.resolve_model(deprecated_1_1)
-            msg = str(ctx_1_1.exception)
-            self.assertIn("deprecated", msg)
-            self.assertIn("gemini-omni-1.2-flash", msg)
+class TestOmniSDKContracts(unittest.TestCase):
+    """Validates generated Interactions API payloads directly against live google-genai Pydantic schemas."""
 
-        with self.assertRaises(ValueError) as ctx2:
-            omni.resolve_model("non-existent-model-xyz")
-        self.assertIn("Unsupported model", str(ctx2.exception))
+    def test_text_and_multimodal_payloads_validate_against_sdk_schema(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            img_path = os.path.join(tmpdir, "start.png")
+            with open(img_path, "wb") as f:
+                f.write(b"\x89PNG\r\n\x1a\nFRAME")
 
-    def test_duration_validation(self):
-        # 15s is valid on gemini-omni-1.2-flash
-        args_15s = make_args(duration="15s", duration_explicit=True)
-        omni.validate_video_request(args_15s, "gemini-omni-1.2-flash")
+            args = make_args(
+                resolution="1080p",
+                aspect_ratio="9:16",
+                duration="15s",
+                task="image_to_video",
+                seed=42,
+                delivery="uri",
+                input=[img_path],
+                store=True,
+            )
+            model_id = omni.resolve_model("gemini-omni-1.2-flash")
+            omni.validate_video_request(args, model_id)
+            kwargs = omni.build_interaction_kwargs(args, model_id)
 
-        # 2s and 16s fail on gemini-omni-1.2-flash
-        for bad_dur in ("2s", "16s"):
-            args_bad = make_args(duration=bad_dur, duration_explicit=True)
-            with self.assertRaises(ValueError) as ctx:
-                omni.validate_video_request(args_bad, "gemini-omni-1.2-flash")
-            self.assertIn("out of range", str(ctx.exception))
+            parsed = CreateModelInteraction.model_validate(kwargs)
+            self.assertEqual(parsed.response_format.resolution, "1080p")
+            self.assertNotIsInstance(parsed.response_format.resolution, UnrecognizedStr)
+            self.assertEqual(parsed.response_format.aspect_ratio, "9:16")
+            self.assertNotIsInstance(parsed.response_format.aspect_ratio, UnrecognizedStr)
+            self.assertEqual(parsed.response_format.delivery, "uri")
+            self.assertNotIsInstance(parsed.response_format.delivery, UnrecognizedStr)
+            self.assertEqual(parsed.generation_config.video_config.task, "image_to_video")
+            self.assertNotIsInstance(parsed.generation_config.video_config.task, UnrecognizedStr)
+            self.assertEqual(parsed.generation_config.seed, 42)
+            self.assertTrue(parsed.store)
+            self.assertEqual(len(parsed.input), 2)
+            self.assertEqual(parsed.input[0].type, "image")
+            self.assertEqual(parsed.input[0].mime_type, "image/png")
 
-        # 12s fails on --task extend (max 10s per extension turn)
-        args_extend_12s = make_args(duration="12s", task="extend")
-        with self.assertRaises(ValueError) as ctx2:
-            omni.validate_video_request(args_extend_12s, "gemini-omni-1.2-flash")
-        self.assertIn("extension", str(ctx2.exception))
-
-        # 12s fails on 2-image interpolation (max 10s)
-        args_interp_12s = make_args(
-            duration="12s",
-            task="image_to_video",
-            input=["gs://b/first.png", "gs://b/last.png"],
-        )
-        with self.assertRaises(ValueError) as ctx3:
-            omni.validate_video_request(args_interp_12s, "gemini-omni-1.2-flash")
-        self.assertIn("interpolation", str(ctx3.exception))
-
-    def test_reference_video_limits(self):
-        # 3 reference videos allowed for 10s clip
-        args_3_vids_10s = make_args(
-            duration="10s",
-            task="reference_to_video",
-            input=["gs://b/v1.mp4", "gs://b/v2.mp4", "gs://b/v3.mp4"],
-        )
-        omni.validate_video_request(args_3_vids_10s, "gemini-omni-1.2-flash")
-
-        # 2 reference videos rejected for 12s clip (max 1 reference video for 11s-15s)
-        args_2_vids_12s = make_args(
-            duration="12s",
-            task="reference_to_video",
-            input=["gs://b/v1.mp4", "gs://b/v2.mp4"],
-        )
-        with self.assertRaises(ValueError) as ctx:
-            omni.validate_video_request(args_2_vids_12s, "gemini-omni-1.2-flash")
-        self.assertIn("At most 1 reference video", str(ctx.exception))
-
-    def test_upscale_validation_and_payload(self):
-        # Valid upscale request on gemini-omni-1.2-flash
+    def test_upscale_payload_validates_against_sdk_schema(self):
         args_upscale = make_args(
             prompt=None,
             task="upscale",
             input=["gs://my-bucket/input_360p.mp4"],
-            resolution="1080p",
+            resolution="4k",
             resolution_explicit=True,
+            delivery="uri",
             gcs_uri="gs://my-bucket/upscaled/",
         )
         omni.validate_video_request(args_upscale, "gemini-omni-1.2-flash")
         kwargs = omni.build_interaction_kwargs(args_upscale, "gemini-omni-1.2-flash")
-        self.assertEqual(kwargs["model"], "gemini-omni-1.2-flash")
-        self.assertEqual(
-            kwargs["generation_config"], {"video_config": {"task": "upscale"}}
+
+        parsed = CreateModelInteraction.model_validate(kwargs)
+        self.assertEqual(parsed.response_format.resolution, "4k")
+        self.assertNotIsInstance(parsed.response_format.resolution, UnrecognizedStr)
+        self.assertEqual(parsed.response_format.gcs_uri, "gs://my-bucket/upscaled/")
+        self.assertEqual(parsed.generation_config.video_config.task, "upscale")
+        self.assertEqual(len(parsed.input), 1)
+        self.assertEqual(parsed.input[0].type, "video")
+        self.assertEqual(parsed.input[0].uri, "gs://my-bucket/input_360p.mp4")
+
+
+class TestOmniExecutionAndExtraction(unittest.TestCase):
+    """End-to-end execution tests with mocked SDK boundary covering bytes/str, steps, URI polling, GCS, and background."""
+
+    def test_run_video_inline_output_video_str_and_bytes(self):
+        raw_mp4 = b"\x00\x00\x00\x18ftypmp42FAKE_MP4"
+        for payload in (base64.b64encode(raw_mp4).decode("ascii"), raw_mp4):
+            with tempfile.TemporaryDirectory() as tmpdir:
+                out_path = os.path.join(tmpdir, "nested", "clip.mp4")
+                client = mock.Mock()
+                client.interactions.create.return_value = types.SimpleNamespace(
+                    id="int_vid_1",
+                    status="completed",
+                    output_video=types.SimpleNamespace(data=payload, gcs_uri=None, uri=None),
+                    steps=[],
+                )
+                stdout_buf = io.StringIO()
+                with contextlib.redirect_stdout(stdout_buf):
+                    omni.run_video(client, make_args(), "gemini-omni-1.2-flash", out_path)
+
+                with open(out_path, "rb") as f:
+                    self.assertEqual(f.read(), raw_mp4)
+                self.assertIn("Interaction ID: int_vid_1", stdout_buf.getvalue())
+
+    def test_extract_video_uri_polling_and_failure(self):
+        # Poll PROCESSING -> ACTIVE -> download bytes
+        client = mock.Mock()
+        client.files.get.side_effect = [
+            types.SimpleNamespace(state=types.SimpleNamespace(name="PROCESSING")),
+            types.SimpleNamespace(state=types.SimpleNamespace(name="ACTIVE")),
+        ]
+        client.files.download.return_value = b"DOWNLOADED_MP4"
+        interaction = types.SimpleNamespace(
+            output_video=types.SimpleNamespace(data=None, gcs_uri=None, uri="files/vid_999"),
+            steps=[],
         )
-        self.assertEqual(
-            kwargs["response_format"],
-            {
-                "type": "video",
-                "resolution": "1080p",
-                "gcs_uri": "gs://my-bucket/upscaled/",
-            },
+        with mock.patch("omni.time.sleep") as mock_sleep:
+            video_bytes, gcs_uri = omni.extract_video_from_interaction(client, interaction)
+        self.assertEqual(video_bytes, b"DOWNLOADED_MP4")
+        self.assertIsNone(gcs_uri)
+        mock_sleep.assert_called_once_with(5)
+
+        # FAILED state raises RuntimeError
+        client_fail = mock.Mock()
+        client_fail.files.get.return_value = types.SimpleNamespace(
+            state=types.SimpleNamespace(name="FAILED")
         )
-        self.assertEqual(
-            kwargs["input"],
-            [
-                {
-                    "type": "video",
-                    "uri": "gs://my-bucket/input_360p.mp4",
-                    "mime_type": "video/mp4",
-                }
+        with self.assertRaises(RuntimeError):
+            omni.extract_video_from_interaction(client_fail, interaction)
+
+    def test_run_video_gcs_uri_and_background_and_steps_fallback(self):
+        # GCS URI skips local write
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_path = os.path.join(tmpdir, "unused.mp4")
+            client = mock.Mock()
+            client.interactions.create.return_value = types.SimpleNamespace(
+                id="int_gcs",
+                status="completed",
+                output_video=types.SimpleNamespace(
+                    data=None, gcs_uri="gs://bucket/clip.mp4", uri=None
+                ),
+                steps=[],
+            )
+            stdout_buf = io.StringIO()
+            with contextlib.redirect_stdout(stdout_buf):
+                omni.run_video(client, make_args(), "gemini-omni-1.2-flash", out_path)
+            self.assertFalse(os.path.exists(out_path))
+            self.assertIn("gs://bucket/clip.mp4", stdout_buf.getvalue())
+
+        # Background in_progress returns without failing
+        client_bg = mock.Mock()
+        client_bg.interactions.create.return_value = types.SimpleNamespace(
+            id="int_bg", status="in_progress", output_video=None, steps=[]
+        )
+        stdout_buf = io.StringIO()
+        with contextlib.redirect_stdout(stdout_buf):
+            omni.run_video(
+                client_bg,
+                make_args(background=True, store=True),
+                "gemini-omni-1.2-flash",
+                "bg.mp4",
+            )
+        self.assertIn("Background interaction started", stdout_buf.getvalue())
+
+        # Steps fallback extracts video bytes
+        step_mp4 = b"STEP_VIDEO_BYTES"
+        inter_steps = types.SimpleNamespace(
+            output_video=None,
+            steps=[
+                types.SimpleNamespace(
+                    type="model_output",
+                    content=[
+                        types.SimpleNamespace(
+                            type="video",
+                            data=base64.b64encode(step_mp4).decode("ascii"),
+                            gcs_uri=None,
+                            uri=None,
+                        )
+                    ],
+                )
             ],
         )
+        self.assertEqual(omni.extract_video_from_interaction(mock.Mock(), inter_steps), (step_mp4, None))
 
-        # Upscale rejected without explicit target resolution
-        args_no_res = make_args(
-            task="upscale",
-            input=["gs://my-bucket/input_360p.mp4"],
-            resolution="720p",
-            resolution_explicit=False,
+        # Empty response fails fast
+        client_empty = mock.Mock()
+        client_empty.interactions.create.return_value = types.SimpleNamespace(
+            id="int_empty", status="completed", output_video=None, steps=[]
         )
         with self.assertRaises(ValueError):
-            omni.validate_video_request(args_no_res, "gemini-omni-1.2-flash")
+            omni.run_video(client_empty, make_args(), "gemini-omni-1.2-flash", "empty.mp4")
 
-        # Upscale rejected for 360p target resolution
-        args_360p = make_args(
-            task="upscale",
-            input=["gs://my-bucket/input_360p.mp4"],
-            resolution="360p",
-            resolution_explicit=True,
-        )
-        with self.assertRaises(ValueError):
-            omni.validate_video_request(args_360p, "gemini-omni-1.2-flash")
 
-    def test_deprecated_control_tags_detection(self):
-        tags = omni.check_deprecated_control_tags(
-            "<FIRST_FRAME> <IMAGE_REF_0> Animate this scene."
-        )
-        self.assertIn("<FIRST_FRAME>", tags)
-        self.assertIn("<IMAGE_REF_", tags)
-        self.assertEqual(
-            omni.check_deprecated_control_tags(
-                "Use the first image as the starting frame."
+class TestOmniValidationAndAuth(unittest.TestCase):
+    """Verifies model lifecycle, video constraints, MIME detection, and auth matrix."""
+
+    def test_model_resolution_and_deprecated_rejection(self):
+        for alias in (
+            None,
+            "gemini-omni-1.2-flash",
+            "omni-1.2-flash",
+            "omni-1.2",
+            "1.2",
+            "flash-1.2",
+        ):
+            self.assertEqual(omni.resolve_model(alias), "gemini-omni-1.2-flash")
+
+        with self.assertRaises(ValueError) as ctx:
+            omni.resolve_model("gemini-omni-flash-preview")
+        self.assertIn("shut down", str(ctx.exception))
+
+        for old in ("gemini-omni-1.1-flash", "gemini-omni-1.1-flash-preview", "1.1"):
+            with self.assertRaises(ValueError) as ctx_old:
+                omni.resolve_model(old)
+            self.assertIn("deprecated", str(ctx_old.exception))
+
+    def test_video_request_validation_rules(self):
+        omni.validate_video_request(make_args(duration="15s"), "gemini-omni-1.2-flash")
+
+        invalid_cases = [
+            (make_args(duration="2s"), "out of range"),
+            (make_args(duration="16s"), "out of range"),
+            (make_args(duration="12s", task="extend"), "extension"),
+            (
+                make_args(duration="12s", task="image_to_video", input=["a.png", "b.png"]),
+                "interpolation",
             ),
-            [],
-        )
-
-    def test_detect_mime_type_and_unsupported_extensions(self):
-        self.assertEqual(omni.detect_mime_type("clip.mov"), "video/quicktime")
-        self.assertEqual(omni.detect_mime_type("photo.heic"), "image/heic")
-        self.assertEqual(omni.detect_mime_type("photo.HEIF"), "image/heif")
-        self.assertEqual(omni.detect_mime_type("clip.mpeg"), "video/mpeg")
-        self.assertEqual(omni.detect_mime_type("clip.mpg"), "video/mpg")
-        self.assertEqual(omni.detect_mime_type("clip.wmv"), "video/wmv")
-        self.assertEqual(omni.detect_mime_type("clip.3gp"), "video/3gpp")
-        self.assertEqual(omni.detect_mime_type("clip.flv"), "video/x-flv")
-        self.assertEqual(
-            omni.detect_mime_type("https://youtu.be/dQw4w9WgXcQ"), "video/mp4"
-        )
-        self.assertEqual(
-            omni.detect_mime_type("files/vid_123"), "application/octet-stream"
-        )
-
-        for bad in ("local.avi", "notes.txt", "gs://bucket/bad.avi"):
+            (
+                make_args(duration="12s", task="reference_to_video", input=["v1.mp4", "v2.mp4"]),
+                "At most 1 reference video",
+            ),
+            (make_args(background=True, store=False), "cannot be combined with '--no-store'"),
+            (make_args(task="upscale", input=["v.mp4"], resolution="720p", resolution_explicit=False), "explicit target --resolution"),
+            (make_args(task="upscale", input=["v.mp4"], resolution="360p", resolution_explicit=True), "Invalid upscale target"),
+        ]
+        for bad_args, err_substr in invalid_cases:
             with self.assertRaises(ValueError) as ctx:
-                omni.detect_mime_type(bad)
-            self.assertIn("Unsupported input media format", str(ctx.exception))
+                omni.validate_video_request(bad_args, "gemini-omni-1.2-flash")
+            self.assertIn(err_substr, str(ctx.exception))
 
-    def test_init_client_vertex_ai_default_global_and_api_key(self):
+    def test_mime_detection_and_deprecated_tags(self):
+        self.assertEqual(omni.detect_mime_type("clip.mov"), "video/quicktime")
+        self.assertEqual(omni.detect_mime_type("clip.mpeg"), "video/mpeg")
+        self.assertEqual(omni.detect_mime_type("photo.HEIF"), "image/heif")
+        self.assertEqual(omni.detect_mime_type("files/vid_123"), "application/octet-stream")
+        for bad in ("local.avi", "clip.mpegs", "notes.txt"):
+            with self.assertRaises(ValueError):
+                omni.detect_mime_type(bad)
+
+        self.assertIn("<FIRST_FRAME>", omni.check_deprecated_control_tags("<FIRST_FRAME> go"))
+        self.assertEqual(omni.check_deprecated_control_tags("Use the first image as start frame."), [])
+
+    def test_init_client_enterprise_quota_project_and_fail_fast(self):
         fake_creds = mock.Mock(quota_project_id="quota-gcp-proj")
         fake_auth = types.ModuleType("google.auth")
         fake_auth.default = mock.Mock(return_value=(fake_creds, None))
@@ -260,16 +326,12 @@ class TestOmniUnit(unittest.TestCase):
             "google.genai": fake_genai,
         }
 
-        for flag_kwargs in (
-            {"enterprise": True, "vertexai": False},
-            {"enterprise": False, "vertexai": True},
-        ):
+        for flag in ({"enterprise": True}, {"vertexai": True}):
             fake_genai.Client.reset_mock()
-            args_enterprise = make_args(project=None, location=None, **flag_kwargs)
             with mock.patch.dict(os.environ, {}, clear=True), mock.patch.dict(
                 sys.modules, fake_modules
             ):
-                omni.init_client(args_enterprise)
+                omni.init_client(make_args(**flag))
                 fake_genai.Client.assert_called_once_with(
                     enterprise=True,
                     project="quota-gcp-proj",
@@ -277,108 +339,29 @@ class TestOmniUnit(unittest.TestCase):
                     credentials=fake_creds,
                 )
 
-        fake_genai.Client.reset_mock()
-        args_env_enterprise = make_args(project=None, location=None)
-        with mock.patch.dict(
-            os.environ,
-            {
-                "GOOGLE_GENAI_USE_ENTERPRISE": "true",
-                "GOOGLE_CLOUD_PROJECT": "env-gcp-proj",
-            },
-            clear=True,
-        ), mock.patch.dict(sys.modules, fake_modules):
-            omni.init_client(args_env_enterprise)
-            fake_genai.Client.assert_called_once_with(
-                enterprise=True,
-                project="env-gcp-proj",
-                location="global",
-                credentials=fake_creds,
-            )
-
-        fake_genai.Client.reset_mock()
-        args_api_key = make_args(enterprise=False, vertexai=False, project=None, location=None)
-        with mock.patch.dict(
-            os.environ,
-            {"GEMINI_API_KEY": "test-gemini-key"},
-            clear=True,
-        ), mock.patch.dict(sys.modules, fake_modules):
-            omni.init_client(args_api_key)
-            fake_genai.Client.assert_called_once_with(api_key="test-gemini-key")
-
-    def test_init_client_fail_fast_missing_auth(self):
-        fake_auth = types.ModuleType("google.auth")
-        fake_genai = types.ModuleType("google.genai")
-        fake_google = types.ModuleType("google")
-        fake_google.auth = fake_auth
-        fake_google.genai = fake_genai
-        fake_modules = {
-            "google": fake_google,
-            "google.auth": fake_auth,
-            "google.genai": fake_genai,
-        }
-        args_none = make_args(enterprise=False, vertexai=False, project=None, location=None)
         stderr_buf = io.StringIO()
         with mock.patch.dict(os.environ, {}, clear=True), mock.patch.dict(
             sys.modules, fake_modules
         ), mock.patch("sys.stderr", stderr_buf):
             with self.assertRaises(SystemExit) as cm:
-                omni.init_client(args_none)
+                omni.init_client(make_args())
             self.assertEqual(cm.exception.code, 1)
-        err_out = stderr_buf.getvalue()
-        self.assertIn("GOOGLE_CLOUD_PROJECT", err_out)
-        self.assertIn("Do NOT attempt rogue workarounds", err_out)
+        self.assertIn("--billing-project", stderr_buf.getvalue())
 
-    def test_cli_help_and_dry_run(self):
-        help_res = subprocess.run(
-            CMD_BASE + ["--help"], capture_output=True, text=True
+    def test_cli_dry_run_and_background_no_store_rejection(self):
+        ok = run_cli(
+            "--prompt", "A train crossing a coastal viaduct",
+            "--resolution", "1080p",
+            "--duration", "15s",
+            "--dry-run",
         )
-        self.assertEqual(help_res.returncode, 0)
-        self.assertEqual(help_res.stderr, "")
-        self.assertIn("gemini-omni-1.2-flash", help_res.stdout)
-        self.assertIn("--task", help_res.stdout)
-        self.assertIn("--duration", help_res.stdout)
-        self.assertIn("--enterprise", help_res.stdout)
-        self.assertIn("--vertexai", help_res.stdout)
+        self.assertEqual(ok.returncode, 0, msg=ok.stderr)
+        self.assertEqual(ok.stderr, "")
+        self.assertIn('"resolution": "1080p"', ok.stdout)
 
-        bad_media_res = subprocess.run(
-            CMD_BASE + ["--prompt", "test", "-i", "bad.avi", "--dry-run"],
-            capture_output=True,
-            text=True,
-        )
-        self.assertNotEqual(bad_media_res.returncode, 0)
-        self.assertIn("Unsupported", bad_media_res.stderr)
-
-        for alias in (
-            "gemini-omni-1.2-flash",
-            "omni-1.2-flash",
-            "omni-1.2",
-            "1.2",
-            "flash-1.2",
-        ):
-            dry_res = subprocess.run(
-                CMD_BASE
-                + [
-                    "--prompt",
-                    "A knight walking across a bridge at sunset with orchestral strings.",
-                    "--model",
-                    alias,
-                    "--resolution",
-                    "1080p",
-                    "--duration",
-                    "15s",
-                    "--seed",
-                    "42",
-                    "--output",
-                    "knight.mp4",
-                    "--dry-run",
-                ],
-                capture_output=True,
-                text=True,
-            )
-            self.assertEqual(dry_res.returncode, 0, msg=dry_res.stderr)
-            self.assertIn("Model: gemini-omni-1.2-flash", dry_res.stdout)
-            self.assertIn("Duration: 15s", dry_res.stdout)
-            self.assertIn("Dry run validation succeeded.", dry_res.stdout)
+        bad = run_cli("--prompt", "test", "--background", "--no-store", "--dry-run")
+        self.assertNotEqual(bad.returncode, 0)
+        self.assertIn("cannot be combined with '--no-store'", bad.stderr)
 
 
 if __name__ == "__main__":

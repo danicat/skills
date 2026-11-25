@@ -12,7 +12,7 @@ metadata:
   category: media
   tags: "image-generation, image-editing, sprites, generative-ai, vertex-ai, gemini-api"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.6.0"
+  version: "0.6.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -22,14 +22,14 @@ Generate, edit, and iterate on visual assets conversationally with Google's **Na
 
 > [!CAUTION]
 > **Fail fast with zero fallbacks on authentication or tool errors**:
-> Never improvise workarounds if `gemini-api` or `scripts/banana.py` fails. If `gemini-api` is missing or fails because only Vertex AI / Gemini Enterprise credentials are present, run `uv run scripts/banana.py` with Application Default Credentials (`GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION="global"`, `GOOGLE_GENAI_USE_ENTERPRISE="true"`, and `gcloud auth application-default login`). If authentication still fails, **stop at once**, report the exact error to the user, and ask them to configure credentials. Never invent placeholder images or fall back to unauthorized generators.
+> Never improvise workarounds if `gemini-api` or `scripts/banana.py` fails. If `gemini-api` is missing or fails because only Vertex AI / Gemini Enterprise credentials are present, run `uv run scripts/banana.py` with Application Default Credentials (`gcloud auth application-default login --billing-project YOUR_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION="global"`, `GOOGLE_GENAI_USE_ENTERPRISE="true"`). If authentication still fails, **stop at once**, report the exact error to the user, and ask them to configure credentials. Never invent placeholder images or fall back to unauthorized generators.
 
 ---
 
 ## Available scripts
 
-- **[scripts/banana.py](scripts/banana.py)**: PEP 723 standalone Python CLI (`uv run scripts/banana.py`) for text-to-image generation, multimodal editing, and reference consistency with capability guards and first-class **Vertex AI / Gemini Enterprise** (`enterprise=True`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION="global"`, ADC) and **Gemini Developer API** (`GEMINI_API_KEY`) support.
-- **[scripts/test_banana.py](scripts/test_banana.py)**: Automated CLI test suite checking flag parsing, capability guards, retired model rejection, and fail-fast authentication (`uv run scripts/test_banana.py` or `python3 scripts/test_banana.py`).
+- **[scripts/banana.py](scripts/banana.py)**: PEP 723 standalone Python CLI (`uv run scripts/banana.py`) for text-to-image generation, multimodal editing, multi-turn `--previous-interaction-id` iteration, and reference consistency with capability guards and first-class **Vertex AI / Gemini Enterprise** (`enterprise=True`, `GOOGLE_CLOUD_PROJECT` or ADC billing project, `GOOGLE_CLOUD_LOCATION="global"`, ADC) and **Gemini Developer API** (`GEMINI_API_KEY`) support.
+- **[scripts/test_banana.py](scripts/test_banana.py)**: Automated contract and execution test suite validating Interactions API payloads directly against `google-genai` Pydantic schemas, end-to-end mocked image writes (including thought-part filtering and steps fallback), ADC/quota-project authentication, capability guards, and retired model rejection (`uv run scripts/test_banana.py`).
 
 ---
 
@@ -41,11 +41,11 @@ Generate, edit, and iterate on visual assets conversationally with Google's **Na
 
 ```bash
 # 1. Authenticate with Vertex AI / Gemini Enterprise (Application Default Credentials)
-gcloud auth application-default login
-export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
+gcloud auth application-default login --billing-project YOUR_PROJECT_ID
+export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
 export GOOGLE_CLOUD_LOCATION="global"
 export GOOGLE_GENAI_USE_ENTERPRISE="true"
-# (Or pass per command: --enterprise --project "your-gcp-project-id" --location "global")
+# (Or pass per command: --enterprise --project "YOUR_PROJECT_ID" --location "global")
 
 # 2. Or authenticate with the Gemini Developer API (API key)
 export GEMINI_API_KEY="your-api-key"
@@ -92,8 +92,8 @@ Activate this skill whenever the user asks to:
 | Capability / Feature | Nano Banana 2.1 (`nano-banana-2.1`) | Nano Banana 2 Lite (`nano-banana-2-lite`) | Nano Banana 2 (`nano-banana-2`) | Nano Banana Pro (`nano-banana-pro`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Model ID (`-m`)** | `gemini-nano-banana-2.1` | `gemini-3.1-flash-lite-image` | `gemini-3.1-flash-image` | `gemini-3-pro-image` |
-| **Primary Focus** | **Primary workhorse**: speed, 4K, panoramas, Search grounding, multi-turn editing | Latency under 2 seconds and high throughput at low cost | Previous-generation generalist with `512px` and `4K` output | Studio precision, interleaved storyboards, style references |
-| **Resolutions (`-r`)** | `1K`, `2K`, `4K` | `1K` (1024px) only | `512px` (`512`), `1K`, `2K`, `4K` | `1K`, `2K`, `4K` |
+| **Primary Focus** | **Primary workhorse**: speed, 4K, panoramas, Search grounding, multi-turn editing | Latency under 2 seconds and high throughput at low cost | **Deprecated** (Oct 6, 2026; migrate to `nano-banana-2.1`); retains `512` (`512px`) output | Studio precision, interleaved storyboards, style references |
+| **Resolutions (`-r`)** | `1K`, `2K`, `4K` | `1K` (1024px) only | `512` (`512px` in Models API), `1K`, `2K`, `4K` | `1K`, `2K`, `4K` |
 | **Aspect Ratios (`-a`)** | All 14 discrete ratios (panoramic seam elimination on `1:4`, `4:1`, `1:8`, `8:1`) | All 14 discrete ratios | All 14 discrete ratios (incl. `1:4`, `4:1`, `1:8`, `8:1`) | 10 standard ratios |
 | **Search Grounding** | **Web Search + Image Search** | Not supported | **Web Search + Image Search** | **Web Search** |
 | **Thinking Mode** | `minimal`, `medium` (**default**), `high` | `minimal` (**default**), `high` | `minimal` (**default**), `high` | Enabled by default |
@@ -106,7 +106,7 @@ Activate this skill whenever the user asks to:
 > **Vertex AI `global` endpoint, unsupported parameters, and retired models**:
 > - **Use `global` on Vertex AI / Gemini Enterprise**: `gemini-nano-banana-2.1` runs on the `global` endpoint (`us-central1` returns `404`).
 > - **Do not pass sampling parameters to `gemini-nano-banana-2.1`**: `seed`, `temperature`, `topP`, `topK`, and `logprobs` are unsupported and return an HTTP `400` API error.
-> - **Retired models**: All `imagen-4.0*` and `imagen-3.0*` models shut down on August 17, 2026, and legacy `gemini-2.5-flash-image` is deprecated. Migrate to `gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, or `gemini-3-pro-image`.
+> - **Retired and deprecated models**: All `imagen-4.0*` and `imagen-3.0*` models shut down on August 17, 2026, legacy `gemini-2.5-flash-image` is deprecated, and `gemini-3.1-flash-image` (`nano-banana-2`) was deprecated on October 6, 2026 (no shutdown date announced). Migrate to `gemini-nano-banana-2.1`, `gemini-3.1-flash-lite-image`, or `gemini-3-pro-image`.
 
 ---
 
@@ -161,16 +161,17 @@ uv run scripts/banana.py -p "Treasure chest icon" -f "chest.png" -m "nano-banana
 
 #### `scripts/banana.py` argument reference
 - `-p`, `--prompt`: Generation or edit instructions (required).
-- `-f`, `--filename`: Output image path (required; parent directories are created automatically).
+- `-f`, `--filename`, `-o`, `--out`, `--output`: Output image path (required; parent directories are created automatically).
 - `-i`, `--input-image`: Input or reference image path (repeat up to 14 times; `.png`, `.jpg`, `.jpeg`, `.webp`, `.heic`, `.heif`).
 - `-m`, `--model`: `nano-banana-2.1` (default, alias `nano-banana-2-1`), `nano-banana-2-lite`, `nano-banana-2`, `nano-banana-pro`.
-- `-r`, `--resolution`: `512px` (`512`, `nano-banana-2` only), `1K` (default), `2K`, `4K`.
+- `-r`, `--resolution`: `512` (`512px`, `nano-banana-2` only; sends `"512"` on Interactions API and `"512px"` on Models API), `1K` (default), `2K`, `4K`.
 - `-a`, `--aspect-ratio`: `1:1` (default), `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9`.
 - `--thinking-level`: `minimal`, `medium` (`nano-banana-2.1` only), or `high`.
 - `--search` / `--image-search`: Enable Google Web Search (`2.1`, `2`, `pro`) or Web + Image Search (`2.1`, `2`).
+- `--previous-interaction-id`, `--store` / `--no-store`: Multi-turn conversational editing state (`--api interactions` only; prints `Interaction ID:` on response).
 - `--api`: `interactions` (default) or `models` (`generate_content` with `GenerateContentConfig`).
-- `--enterprise` / `--vertexai`, `--project`, `--location`: Vertex AI / Gemini Enterprise ADC (`GOOGLE_CLOUD_LOCATION` defaults to `global`).
-- `--dry-run`: Validate model capabilities and API configuration without calling the API.
+- `--enterprise` / `--vertexai`, `--project`, `--location`: Vertex AI / Gemini Enterprise ADC (`GOOGLE_CLOUD_PROJECT` or ADC billing project; `GOOGLE_CLOUD_LOCATION` defaults to `global`).
+- `--dry-run`: Validate model capabilities, input formats, and Interactions API JSON payload offline without calling the API.
 
 ### 2. CLI execution via `gemini-api image`
 

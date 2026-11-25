@@ -12,7 +12,7 @@ metadata:
   category: media
   tags: "music, audio, soundtrack, generative-ai, vertex-ai, gemini-api"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.6.0"
+  version: "0.6.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -22,8 +22,8 @@ Generate 44.1 kHz stereo music, full songs with structured lyrics, and instrumen
 
 > [!CAUTION]
 > **Strict fail-fast authentication policy**:
-> - If `gemini-api` fails, is not installed, or lacks Vertex AI authentication, run `uv run scripts/lyria.py` with Vertex AI / Application Default Credentials (`GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION="global"`, `GOOGLE_GENAI_USE_ENTERPRISE="true"`, and `gcloud auth application-default login`) or `GEMINI_API_KEY`.
-> - If authentication still fails in `scripts/lyria.py`, stop immediately, report the exact authentication error to the user, and ask them to configure credentials (`gcloud auth application-default login` + `export GOOGLE_CLOUD_PROJECT=...` or `export GEMINI_API_KEY=...`).
+> - If `gemini-api` fails, is not installed, or lacks Vertex AI authentication, run `uv run scripts/lyria.py` with Vertex AI / Application Default Credentials (`gcloud auth application-default login --billing-project YOUR_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION="global"`, `GOOGLE_GENAI_USE_ENTERPRISE="true"`) or `GEMINI_API_KEY`.
+> - If authentication still fails in `scripts/lyria.py`, stop immediately, report the exact authentication error to the user, and ask them to configure credentials (`gcloud auth application-default login --billing-project YOUR_PROJECT_ID` + `export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"` or `export GEMINI_API_KEY=...`).
 > - Never synthesize placeholder audio files, never silently swap models, and never inspect credential stores outside standard environment variables and ADC.
 
 ---
@@ -31,7 +31,7 @@ Generate 44.1 kHz stereo music, full songs with structured lyrics, and instrumen
 ## Available scripts
 
 - **[scripts/lyria.py](scripts/lyria.py)**: PEP 723 standalone Python CLI (`uv run scripts/lyria.py`) for text-to-music and image-to-music generation, lyric export, and MP3/WAV output via `google-genai`. Supports **Gemini Enterprise / Vertex AI** (`--enterprise`, `--vertexai`, `--project`, `--location`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, ADC) and **Gemini Developer API** (`GEMINI_API_KEY`).
-- **[scripts/test_lyria.py](scripts/test_lyria.py)**: Automated unit and CLI test suite verifying model resolution, MP3/WAV format constraints, MIME detection, nested directory creation, offline `--dry-run` checks, and fail-fast credential errors.
+- **[scripts/test_lyria.py](scripts/test_lyria.py)**: Automated contract and execution test suite validating Interactions API payloads directly against `google-genai` Pydantic schemas, mocked end-to-end audio/lyrics writes (`output_audio`, `steps`, and `models` API), ADC/quota-project authentication, MP3/WAV constraints, and retired model rejection.
 
 ---
 
@@ -45,8 +45,8 @@ You can run Lyria music generation with either the bundled Python script (`uv ru
 
 ```bash
 # 1a. Authenticate with Gemini Enterprise / Vertex AI (Application Default Credentials)
-gcloud auth application-default login
-export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
+gcloud auth application-default login --billing-project YOUR_PROJECT_ID
+export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
 export GOOGLE_CLOUD_LOCATION="global"
 export GOOGLE_GENAI_USE_ENTERPRISE="true"
 
@@ -167,7 +167,7 @@ uv run scripts/lyria.py \
 
 #### `scripts/lyria.py` CLI argument reference
 - `-p`, `--prompt`: Text prompt describing style, genre, instruments, BPM, and structure (required).
-- `-f`, `--filename`, `--out`, `-o`: Output path (default: `music.mp3`). Ending in `.wav` automatically selects WAV when you omit `--format`.
+- `-f`, `--filename`, `--out`, `--output`, `-o`: Output path (default: `music.mp3`). Ending in `.wav` automatically selects WAV when you omit `--format`.
 - `-m`, `--model`: `lyria-3.5` (`3.5`, default), `lyria-3-clip-preview` (`lyria-3-clip`, `clip`, `lyria-clip`), or `lyria-3-pro-preview` (`lyria-3-pro`, `pro`, `lyria-pro`).
 - `-i`, `--input-image`: Path to reference images for mood inspiration (`.png`, `.jpg`, `.jpeg`, `.webp`, `.heic`, `.heif`, up to 10).
 - `--format`: Explicit audio container format (`mp3` or `wav`). Must match the output filename extension; `wav` requires `lyria-3.5` and `--api interactions`.
@@ -175,7 +175,7 @@ uv run scripts/lyria.py \
 - `--api`: `interactions` (default) or `models` (`generate_content`).
 - `--dry-run`: Validate model choice, image extensions, and audio format offline before initializing credentials.
 - `--enterprise`, `--vertexai`: Enable Gemini Enterprise / Vertex AI authentication via Application Default Credentials. Enabled automatically when `GOOGLE_GENAI_USE_ENTERPRISE=true`, `GOOGLE_GENAI_USE_VERTEXAI=true`, `--project` is passed, or `GOOGLE_CLOUD_PROJECT` is set without `GEMINI_API_KEY`.
-- `--project`: Google Cloud Project ID (defaults to `GOOGLE_CLOUD_PROJECT` or `GCP_PROJECT`).
+- `--project`: Google Cloud Project ID (defaults to `GOOGLE_CLOUD_PROJECT`, `GCP_PROJECT`, or ADC billing project).
 - `--location`: Google Cloud Location (defaults to `GOOGLE_CLOUD_LOCATION` or `global`).
 
 ---

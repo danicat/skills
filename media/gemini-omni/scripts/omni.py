@@ -99,7 +99,6 @@ VIDEO_MIME_TYPES = {
     ".mov": "video/quicktime",
     ".webm": "video/webm",
     ".mpeg": "video/mpeg",
-    ".mpegs": "video/mpegs",
     ".mpg": "video/mpg",
     ".wmv": "video/wmv",
     ".3gp": "video/3gpp",
@@ -241,6 +240,11 @@ def validate_video_request(args, model_id: str) -> None:
                 f"Too many reference videos ({len(videos)}) for a {args.duration} clip. "
                 "At most 1 reference video (up to 3s long) is supported for 11s to 15s output videos."
             )
+
+    if getattr(args, "background", False) and getattr(args, "store", None) is False:
+        raise ValueError(
+            "Background execution (--background) requires stored state and cannot be combined with '--no-store'."
+        )
 
     if args.task == "upscale":
         if model_id != "gemini-omni-1.2-flash":
