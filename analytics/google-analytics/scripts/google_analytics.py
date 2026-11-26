@@ -116,6 +116,7 @@ try:
     import google.auth
     from google.auth import default
     from google.auth.exceptions import DefaultCredentialsError
+    import google.auth.transport.requests
     import google.oauth2.credentials
     import google.oauth2.service_account
     from google.analytics.data_v1beta import BetaAnalyticsDataClient
@@ -154,11 +155,17 @@ DEFAULT_CLIENT_SECRETS_FILE = (
         else "client_secret.json"
     )
 )
-DEFAULT_CREDENTIALS_FILE = (
-    os.path.expanduser("~/.config/ga4/credentials.json")
-    if os.path.exists(os.path.expanduser("~/.config/ga4/credentials.json"))
-    else "credentials.json"
-)
+def resolve_default_credentials_file() -> str:
+    """Resolve default OAuth credentials path, defaulting to ~/.config/ga4/credentials.json."""
+    global_creds = os.path.expanduser("~/.config/ga4/credentials.json")
+    if os.path.exists(global_creds):
+        return global_creds
+    if os.path.exists("credentials.json"):
+        return "credentials.json"
+    return global_creds
+
+
+DEFAULT_CREDENTIALS_FILE = resolve_default_credentials_file()
 
 READONLY_SCOPES = [
     "https://www.googleapis.com/auth/analytics.readonly",
@@ -170,11 +177,11 @@ WRITE_SCOPES = [
 
 
 def ensure_dirs(db_path: str = DEFAULT_DB_FILE, config_file: Optional[str] = None):
-    db_dir = os.path.dirname(os.path.abspath(db_path))
+    db_dir = os.path.dirname(os.path.abspath(os.path.expanduser(db_path)))
     if db_dir:
         os.makedirs(db_dir, exist_ok=True)
     if config_file:
-        cfg_dir = os.path.dirname(os.path.abspath(config_file))
+        cfg_dir = os.path.dirname(os.path.abspath(os.path.expanduser(config_file)))
         if cfg_dir:
             os.makedirs(cfg_dir, exist_ok=True)
 
@@ -426,21 +433,45 @@ def init_db(db_path: str = DEFAULT_DB_FILE) -> sqlite3.Connection:
 # Authentication & Credentials Management
 # ---------------------------------------------------------------------------
 
+def _parse_expiry_iso(raw_expiry: Any) -> Optional[datetime.datetime]:
+    """Parses an ISO-8601 expiry timestamp into a naive UTC datetime."""
+    if raw_expiry is None or raw_expiry == "":
+        return None
+    if isinstance(raw_expiry, datetime.datetime):
+        dt = raw_expiry
+    elif isinstance(raw_expiry, str):
+        text = raw_expiry.strip()
+        if text.endswith(("Z", "z")):
+            text = text[:-1] + "+00:00"
+        dt = datetime.datetime.fromisoformat(text)
+    else:
+        raise ValueError(f"Unsupported expiry value type: {type(raw_expiry).__name__}")
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+    return dt
+
+
 def credentials_to_dict(credentials) -> Dict[str, Any]:
-    return {
+    scopes = getattr(credentials, "scopes", None)
+    data: Dict[str, Any] = {
         "token": credentials.token,
         "refresh_token": credentials.refresh_token,
         "token_uri": credentials.token_uri,
         "client_id": credentials.client_id,
         "client_secret": credentials.client_secret,
-        "scopes": credentials.scopes,
+        "scopes": list(scopes) if scopes is not None else None,
     }
+    expiry = _parse_expiry_iso(getattr(credentials, "expiry", None))
+    if expiry is not None:
+        data["expiry"] = expiry.isoformat() + "Z"
+    return data
 
 
 def save_credentials_to_disk(credentials, filepath: str = DEFAULT_CREDENTIALS_FILE):
+    filepath = os.path.expanduser(filepath)
     ensure_dirs(config_file=filepath)
     data = credentials_to_dict(credentials)
-    with open(filepath, "w") as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
@@ -457,6 +488,7 @@ def load_credentials(
         )
         sys.exit(1)
 
+    filepath = os.path.expanduser(filepath)
     target_scopes = scopes or READONLY_SCOPES
 
     # 1. Check explicit OAuth credentials JSON with refresh token
@@ -464,13 +496,34 @@ def load_credentials(
         try:
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            return google.oauth2.credentials.Credentials(**data)
+            if "expiry" in data:
+                if data["expiry"]:
+                    data["expiry"] = _parse_expiry_iso(data["expiry"])
+                else:
+                    data.pop("expiry", None)
+            creds = google.oauth2.credentials.Credentials(**data)
         except Exception as e:
             print(
                 f"Error: Failed to parse OAuth credentials file '{filepath}': {e}",
                 file=sys.stderr,
             )
             sys.exit(1)
+
+        if creds.refresh_token and (creds.expired or creds.expiry is None):
+            try:
+                creds.refresh(google.auth.transport.requests.Request())
+                save_credentials_to_disk(creds, filepath)
+            except Exception as e:
+                print(
+                    f"Error: Failed to refresh OAuth credentials from '{filepath}': {e}",
+                    file=sys.stderr,
+                )
+                print(
+                    "Run 'uv run scripts/google_analytics.py auth' to re-authorize.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+        return creds
 
     # 2. Check service account JSON
     sa_path = service_account_path or (
@@ -522,13 +575,17 @@ def get_clients(
 
 def cmd_auth(
     client_secrets_file: str = DEFAULT_CLIENT_SECRETS_FILE,
-    credentials_file: str = DEFAULT_CREDENTIALS_FILE,
+    credentials_file: Optional[str] = None,
     port: int = 8080,
     host: str = "127.0.0.1",
 ):
     """Launches OAuth 2.0 companion flow to authenticate with analytics.edit and readonly scopes."""
     import google_auth_oauthlib.flow
 
+    client_secrets_file = os.path.expanduser(client_secrets_file)
+    credentials_file = os.path.expanduser(
+        credentials_file or os.path.expanduser("~/.config/ga4/credentials.json")
+    )
     ensure_dirs(config_file=credentials_file)
 
     if not os.path.exists(client_secrets_file):
@@ -1546,7 +1603,7 @@ def main():
     base_parser = argparse.ArgumentParser(add_help=False)
     base_parser.add_argument("--db", "--db-path", dest="db_path", default=DEFAULT_DB_FILE, help=f"Path to SQLite database (default: {DEFAULT_DB_FILE})")
     base_parser.add_argument("--property-id", default=DEFAULT_PROPERTY_ID, help=f"GA4 Property ID (default: {DEFAULT_PROPERTY_ID})")
-    base_parser.add_argument("--credentials", default=DEFAULT_CREDENTIALS_FILE, help=f"OAuth credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})")
+    base_parser.add_argument("--credentials", default=None, help=f"OAuth credentials JSON (default: {DEFAULT_CREDENTIALS_FILE})")
 
     parser = argparse.ArgumentParser(
         description="Google Analytics 4 Ingestion Engine & SQL Analytics CLI",
@@ -1605,7 +1662,7 @@ def main():
     if args.command == "auth":
         cmd_auth(
             client_secrets_file=args.client_secret,
-            credentials_file=args.credentials,
+            credentials_file=args.credentials or os.path.expanduser("~/.config/ga4/credentials.json"),
             port=args.port
         )
     elif args.command == "annotate":
@@ -1620,10 +1677,10 @@ def main():
             scope=args.scope,
             author=args.author,
             db_path=args.db_path,
-            credentials_file=args.credentials
+            credentials_file=args.credentials or DEFAULT_CREDENTIALS_FILE
         )
     elif args.command == "properties":
-        _, admin_client = get_clients(args.credentials, scopes=READONLY_SCOPES)
+        _, admin_client = get_clients(args.credentials or DEFAULT_CREDENTIALS_FILE, scopes=READONLY_SCOPES)
         list_properties(admin_client, args.db_path)
     elif args.command == "sync":
         run_sync(
@@ -1633,7 +1690,7 @@ def main():
             start_date=args.start_date,
             end_date=args.end_date,
             db_path=args.db_path,
-            credentials_file=args.credentials
+            credentials_file=args.credentials or DEFAULT_CREDENTIALS_FILE
         )
     elif args.command == "report":
         run_report(args.name, args.db_path, days=args.days)

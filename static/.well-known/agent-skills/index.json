@@ -90,14 +90,14 @@
       "type": "archive",
       "description": "Collect and analyze social media data from Buffer in a local SQLite database. Stores your full post history and metrics across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view reports on engagement, clicks, and views. Activate when you need to analyze social media performance, find the best days or times to post, identify top-performing content, or query Buffer data with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer-analytics.tar.gz",
-      "digest": "sha256:95cf07a44b75d9aa15cb687a6eeab6d06424ce22822da01c36f6d5548112827d"
+      "digest": "sha256:47d7a41ed1358d53e18d9433a5afee20c0049a14516044771578d5f272899220"
     },
     {
       "name": "google-analytics",
       "type": "archive",
       "description": "Collect and analyze Google Analytics 4 (GA4) website data in a local SQLite database. Stores pageviews, active users, reading dwell time, traffic sources, and outbound clicks so you can run SQL queries or view reports on site performance. Activate when analyzing website traffic, measuring reader engagement and dwell time, evaluating the impact of site updates or milestones, or querying Google Analytics with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/google-analytics.tar.gz",
-      "digest": "sha256:0f315992d65610b80dc90585712ddd7317239c6f42cfa3b05c586e3fd425ac6a"
+      "digest": "sha256:d904df0b9021f1525395a97a2f9889653740201dea19242ae9e93bbceebc9f60"
     },
     {
       "name": "pagespeed-insights",

@@ -30,6 +30,8 @@ Validates:
 7. CLI argument parsing, help interface, and validation.
 """
 
+import datetime
+import json
 import os
 import re
 import sqlite3
@@ -37,7 +39,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 # Locate directory roots
@@ -583,6 +585,256 @@ class TestGoogleAnalyticsCLI(unittest.TestCase):
             result = subprocess.run(cmd, capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("--days", result.stderr)
+
+
+class _StubCredentials:
+    """Minimal Credentials stand-in matching google-auth naive UTC expiry semantics."""
+
+    def __init__(
+        self,
+        token=None,
+        refresh_token=None,
+        token_uri=None,
+        client_id=None,
+        client_secret=None,
+        scopes=None,
+        expiry=None,
+    ):
+        self.token = token
+        self.refresh_token = refresh_token
+        self.token_uri = token_uri
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.scopes = scopes
+        self.expiry = expiry
+
+    @property
+    def expired(self):
+        if not self.expiry:
+            return False
+        now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        return now_utc >= (self.expiry - datetime.timedelta(minutes=5))
+
+    def refresh(self, request):
+        raise NotImplementedError("Subclasses or mocks must implement refresh()")
+
+
+class TestGoogleAnalyticsAuth(unittest.TestCase):
+    """Tests OAuth credential persistence, expiry serialization, and auto-refresh."""
+
+    def _build_google_modules(self, creds_cls, request_cls):
+        google_mod = ModuleType("google")
+        oauth2_mod = ModuleType("google.oauth2")
+        oauth2_creds_mod = ModuleType("google.oauth2.credentials")
+        oauth2_creds_mod.Credentials = creds_cls
+        oauth2_sa_mod = ModuleType("google.oauth2.service_account")
+        auth_mod = ModuleType("google.auth")
+        transport_mod = ModuleType("google.auth.transport")
+        requests_mod = ModuleType("google.auth.transport.requests")
+        requests_mod.Request = request_cls
+
+        google_mod.oauth2 = oauth2_mod
+        google_mod.auth = auth_mod
+        oauth2_mod.credentials = oauth2_creds_mod
+        oauth2_mod.service_account = oauth2_sa_mod
+        auth_mod.transport = transport_mod
+        transport_mod.requests = requests_mod
+
+        return google_mod, {
+            "google": google_mod,
+            "google.oauth2": oauth2_mod,
+            "google.oauth2.credentials": oauth2_creds_mod,
+            "google.oauth2.service_account": oauth2_sa_mod,
+            "google.auth": auth_mod,
+            "google.auth.transport": transport_mod,
+            "google.auth.transport.requests": requests_mod,
+        }
+
+    def test_credentials_to_dict_serializes_iso_utc_expiry(self):
+        naive_expiry = datetime.datetime(2026, 11, 26, 22, 15, 0)
+        creds = SimpleNamespace(
+            token="access-123",
+            refresh_token="refresh-456",
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id="client-id",
+            client_secret="client-secret",
+            scopes=["https://www.googleapis.com/auth/analytics.readonly"],
+            expiry=naive_expiry,
+        )
+        data = google_analytics.credentials_to_dict(creds)
+        self.assertEqual(data["expiry"], "2026-11-26T22:15:00Z")
+
+        # Aware non-UTC timestamps normalize cleanly to UTC ISO-8601 Z
+        offset_tz = datetime.timezone(datetime.timedelta(hours=-3))
+        aware_creds = SimpleNamespace(
+            token="access-123",
+            refresh_token="refresh-456",
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id="client-id",
+            client_secret="client-secret",
+            scopes=("https://www.googleapis.com/auth/analytics.readonly",),
+            expiry=datetime.datetime(2026, 11, 26, 19, 15, 0, tzinfo=offset_tz),
+        )
+        aware_data = google_analytics.credentials_to_dict(aware_creds)
+        self.assertEqual(aware_data["expiry"], "2026-11-26T22:15:00Z")
+
+        no_expiry_creds = SimpleNamespace(
+            token="access-123",
+            refresh_token="refresh-456",
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id="client-id",
+            client_secret="client-secret",
+            scopes=None,
+            expiry=None,
+        )
+        self.assertNotIn("expiry", google_analytics.credentials_to_dict(no_expiry_creds))
+
+    def test_save_credentials_creates_parent_directories(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            creds_path = os.path.join(tmpdir, "nested", ".config", "ga4", "credentials.json")
+            creds = SimpleNamespace(
+                token="tok-1",
+                refresh_token="ref-1",
+                token_uri="https://oauth2.googleapis.com/token",
+                client_id="cid",
+                client_secret="csec",
+                scopes=["https://www.googleapis.com/auth/analytics.readonly"],
+                expiry=datetime.datetime(2026, 12, 1, 12, 0, 0),
+            )
+            google_analytics.save_credentials_to_disk(creds, creds_path)
+            self.assertTrue(os.path.exists(creds_path))
+            with open(creds_path, "r", encoding="utf-8") as fh:
+                saved = json.load(fh)
+            self.assertEqual(saved["token"], "tok-1")
+            self.assertEqual(saved["expiry"], "2026-12-01T12:00:00Z")
+
+    def test_load_credentials_refreshes_expired_and_expiryless_tokens_and_persists(self):
+        refresh_calls = []
+        future_expiry = datetime.datetime.now(datetime.timezone.utc).replace(
+            tzinfo=None, microsecond=0
+        ) + datetime.timedelta(hours=1)
+        past_expiry = datetime.datetime.now(datetime.timezone.utc).replace(
+            tzinfo=None, microsecond=0
+        ) - datetime.timedelta(minutes=10)
+
+        if google_analytics.HAS_GOOGLE_API:
+            creds_cls = google_analytics.google.oauth2.credentials.Credentials
+        else:
+            creds_cls = _StubCredentials
+
+        def fake_refresh(self_creds, request):
+            refresh_calls.append(request)
+            self_creds.token = "refreshed-token"
+            self_creds.expiry = future_expiry
+
+        class FakeRequest:
+            pass
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            creds_path = os.path.join(tmpdir, "credentials.json")
+            cases = [
+                ("expired", past_expiry.isoformat() + "Z"),
+                ("missing_expiry", None),
+            ]
+            for label, raw_expiry in cases:
+                with self.subTest(case=label):
+                    refresh_calls.clear()
+                    payload = {
+                        "token": "stale-token",
+                        "refresh_token": "valid-refresh-token",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "client_id": "cid",
+                        "client_secret": "csec",
+                        "scopes": ["https://www.googleapis.com/auth/analytics.readonly"],
+                    }
+                    if raw_expiry is not None:
+                        payload["expiry"] = raw_expiry
+                    with open(creds_path, "w", encoding="utf-8") as fh:
+                        json.dump(payload, fh)
+
+                    if google_analytics.HAS_GOOGLE_API:
+                        with (
+                            patch.object(creds_cls, "refresh", autospec=True, side_effect=fake_refresh),
+                            patch("google.auth.transport.requests.Request", FakeRequest),
+                        ):
+                            loaded = google_analytics.load_credentials(creds_path)
+                    else:
+                        fake_google, mod_map = self._build_google_modules(creds_cls, FakeRequest)
+                        with (
+                            patch.dict(sys.modules, mod_map),
+                            patch.object(creds_cls, "refresh", autospec=True, side_effect=fake_refresh),
+                            patch.object(google_analytics, "HAS_GOOGLE_API", True),
+                            patch.object(google_analytics, "google", fake_google, create=True),
+                        ):
+                            loaded = google_analytics.load_credentials(creds_path)
+
+                    self.assertEqual(len(refresh_calls), 1)
+                    self.assertIsInstance(refresh_calls[0], FakeRequest)
+                    self.assertEqual(loaded.token, "refreshed-token")
+                    self.assertEqual(loaded.expiry, future_expiry)
+
+                    with open(creds_path, "r", encoding="utf-8") as fh:
+                        persisted = json.load(fh)
+                    self.assertEqual(persisted["token"], "refreshed-token")
+                    self.assertEqual(persisted["expiry"], future_expiry.isoformat() + "Z")
+
+                    # Subsequent load while token is still fresh should NOT refresh
+                    refresh_calls.clear()
+                    if google_analytics.HAS_GOOGLE_API:
+                        with (
+                            patch.object(creds_cls, "refresh", autospec=True, side_effect=fake_refresh),
+                            patch("google.auth.transport.requests.Request", FakeRequest),
+                        ):
+                            loaded_again = google_analytics.load_credentials(creds_path)
+                    else:
+                        fake_google, mod_map = self._build_google_modules(creds_cls, FakeRequest)
+                        with (
+                            patch.dict(sys.modules, mod_map),
+                            patch.object(creds_cls, "refresh", autospec=True, side_effect=fake_refresh),
+                            patch.object(google_analytics, "HAS_GOOGLE_API", True),
+                            patch.object(google_analytics, "google", fake_google, create=True),
+                        ):
+                            loaded_again = google_analytics.load_credentials(creds_path)
+
+                    self.assertEqual(refresh_calls, [])
+                    self.assertEqual(loaded_again.token, "refreshed-token")
+
+    def test_resolve_default_credentials_file_persists_to_home_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fake_home = os.path.join(tmpdir, "home")
+            cwd_dir = os.path.join(tmpdir, "workdir")
+            os.makedirs(fake_home)
+            os.makedirs(cwd_dir)
+
+            expected_global = os.path.join(fake_home, ".config", "ga4", "credentials.json")
+            orig_cwd = os.getcwd()
+            try:
+                os.chdir(cwd_dir)
+                with patch.dict(os.environ, {"HOME": fake_home}):
+                    # Neither ~/.config/ga4/credentials.json nor ./credentials.json exists -> global path
+                    self.assertEqual(
+                        google_analytics.resolve_default_credentials_file(),
+                        expected_global,
+                    )
+
+                    # Local ./credentials.json exists when global does not -> local fallback
+                    with open(os.path.join(cwd_dir, "credentials.json"), "w", encoding="utf-8") as fh:
+                        fh.write("{}")
+                    self.assertEqual(
+                        google_analytics.resolve_default_credentials_file(),
+                        "credentials.json",
+                    )
+
+                    # Global ~/.config/ga4/credentials.json takes precedence over ./credentials.json
+                    os.makedirs(os.path.dirname(expected_global), exist_ok=True)
+                    with open(expected_global, "w", encoding="utf-8") as fh:
+                        fh.write("{}")
+                    self.assertEqual(
+                        google_analytics.resolve_default_credentials_file(),
+                        expected_global,
+                    )
+            finally:
+                os.chdir(orig_cwd)
 
 
 if __name__ == "__main__":

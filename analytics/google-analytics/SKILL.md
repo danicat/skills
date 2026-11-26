@@ -12,7 +12,7 @@ metadata:
   category: analytics
   tags: "google-analytics, ga4, web-traffic, pageviews, engagement"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.3.0"
+  version: "0.3.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -64,7 +64,7 @@ uv run scripts/google_analytics.py report milestone-impact --db path/to/database
 uv run scripts/google_analytics.py query "SELECT page_path, total_views, total_users, avg_dwell_sec, avg_bounce_pct FROM v_page_performance LIMIT 10" --db path/to/database.db
 ```
 
-When you omit `--db`, the script writes to `google_analytics.db` in the current working directory.
+When you omit `--db`, the script writes to `google_analytics.db` in the current working directory. By default, `auth` saves OAuth credentials (including token expiry for automatic refresh across runs) to `~/.config/ga4/credentials.json` unless `./credentials.json` already exists.
 
 ---
 
