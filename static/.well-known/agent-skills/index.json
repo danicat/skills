@@ -31,10 +31,10 @@
     },
     {
       "name": "intercom",
-      "type": "skill-md",
-      "description": "Cross-project and cross-session collaboration between Antigravity agents using the agentapi CLI and conversation_summaries.db. Finds active peer sessions across workspaces, looks up target project IDs, and routes messages to live sessions in other projects with return-address headers. Activate when collaborating between agents in different projects, handing off tasks across workspaces, finding peer session IDs, or sending cross-project messages with agentapi.",
-      "url": "https://skills.danicat.dev/workflows/intercom/SKILL.md",
-      "digest": "sha256:51a237ce45ec71cd5a0dff50f9f51bd995390cf5e7f2782f9f0b3648b19a5c62"
+      "type": "archive",
+      "description": "Cross-project and cross-session collaboration between Antigravity agents using scripts/session.py. Messages active peer sessions or starts new sessions in another project with automatic return-address headers. Activate when collaborating between agents in different projects, handing off tasks across workspaces, or messaging another session.",
+      "url": "https://skills.danicat.dev/.well-known/agent-skills/intercom.tar.gz",
+      "digest": "sha256:29800eabfe46c81dadbce9d76c6882dfa55cd574e7ad3f79e9488a4c68fc9844"
     },
     {
       "name": "less-is-more",
@@ -90,7 +90,7 @@
       "type": "archive",
       "description": "Collect and analyze social media data from Buffer in a local SQLite database. Stores your full post history and metrics across connected channels (such as LinkedIn, X/Twitter, Bluesky, and others) so you can run SQL queries or view reports on engagement, clicks, and views. Activate when you need to analyze social media performance, find the best days or times to post, identify top-performing content, or query Buffer data with SQL.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/buffer-analytics.tar.gz",
-      "digest": "sha256:b0714802abb85288eeb1c473a82a61ecadac1d095c1ab6455104ea8c2a7c2cad"
+      "digest": "sha256:95cf07a44b75d9aa15cb687a6eeab6d06424ce22822da01c36f6d5548112827d"
     },
     {
       "name": "google-analytics",
@@ -167,21 +167,21 @@
       "type": "archive",
       "description": "Generate, animate, edit, interpolate, extend, and upscale video clips (3 to 15 seconds, 360p to 4K at 24 FPS) with native synchronized audio using Gemini Omni 1.2 Flash (gemini-omni-1.2-flash) via uv run scripts/omni.py and the Google Gen AI Interactions API across Gemini Enterprise / Vertex AI (global) and Gemini API. Activate when creating videos from text or images, editing or extending clips, or upscaling video resolution.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/gemini-omni.tar.gz",
-      "digest": "sha256:0773457f57425242246af341ba0867b7fa7e03b41b363b44732336c56803ae7a"
+      "digest": "sha256:ebbd0a6c63b9ad9dff6e3e2b9727e9f93df2738507702931a9c728ef7e2fb284"
     },
     {
       "name": "lyria",
       "type": "archive",
       "description": "Generate 44.1 kHz stereo music, full songs with lyrics, and instrumental tracks from text prompts or reference images using Google Lyria models (lyria-3.5, lyria-3-clip-preview, lyria-3-pro-preview) via uv run scripts/lyria.py, the gemini-api CLI, or Google Gen AI SDKs across Gemini Enterprise / Vertex AI (global) and Gemini API. Activate when composing soundtracks, generating songs, or creating audio from images.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/lyria.tar.gz",
-      "digest": "sha256:2a12820ed6612af869cea2abe06540a773b4fd866a2a9fdf8ea9ef832a2d94ec"
+      "digest": "sha256:7e2c93c11a009601b334fdd7a2305d50a0eb900cb560c24d682174bd4bcd0249"
     },
     {
       "name": "nano-banana",
       "type": "archive",
       "description": "Conversational image generation and multimodal editing with Google Nano Banana models via uv run scripts/banana.py, the gemini-api CLI, and Google Gen AI SDKs. Generates up to 4K visuals, panoramas, character sheets, and chroma-key sprite grids with multi-image reference consistency and Search grounding. Activate when generating or editing images, sprites, or art, or when asked to \"banana\" an image.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/nano-banana.tar.gz",
-      "digest": "sha256:a44b9eeb05a8db383b3ea7492772a763e883eb590324c17ad2b567adc844a6c1"
+      "digest": "sha256:816f91ade24ed78616dad53ad2b1c438968433f15f562298e5e0e6ac008e65b0"
     },
     {
       "name": "design-docs",
