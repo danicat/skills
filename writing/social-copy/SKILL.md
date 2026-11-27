@@ -11,7 +11,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, copywriting, campaigns, devrel"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.0"
+  version: "0.5.1"
   catalog: https://skills.danicat.dev
 ---
 
@@ -43,9 +43,12 @@ Load only the reference files needed for the target channels:
 ## 2. Core voice and hook judgment
 
 1. **Peer-to-peer engineering voice**: Write like a senior engineer speaking to peers. Name the concrete bottleneck, metric, or failure mode in Line 1, state real trade-offs (memory, latency, complexity), and use exact technical nouns (*lock-free ring buffer*, *connection pool*) instead of slogans.
-2. **Hook economy without banned-word lists**: The visible preview before `...see more` (`140` chars on mobile, `210` chars on desktop) carries the highest opportunity cost. Static banned-word lists fail in both directions: synthetic copy passes by dodging listed words, while genuine personal milestones get blocked. Judge the opening lines by reader utility: within two seconds, does a cold reader see a concrete engineering problem or outcome rather than author housekeeping (*"I've been quiet lately"*, *"In Part 3 of my series"*)?
-3. **Standalone zero-click value**: Deliver a complete technical insight directly in the timeline so readers learn something useful even without clicking an outbound URL.
-4. **Clean punctuation without em dashes**: Break clauses with periods, commas, or colons. Never use mid-sentence em dashes, en dashes, or spaced double hyphens.
+2. **Zero fabricated author voice (never put words in the author's mouth)**: Never invent first-person quotes, emotions, excitement, anecdotes, or personal reactions absent from the author's real writing or interview.
+3. **Hook economy without banned-word lists**: The visible preview before `...see more` (`140` chars on mobile, `210` chars on desktop) carries the highest opportunity cost. Static banned-word lists fail in both directions: synthetic copy passes by dodging listed words, while genuine personal milestones get blocked. Judge the opening lines by reader utility: within two seconds, does a cold reader see a concrete engineering problem or outcome rather than author housekeeping (*"I've been quiet lately"*, *"In Part 3 of my series"*)?
+4. **Standalone framing (no `Part N` homework)**: Never label or lead public social posts with series numbering (`Part 4`, `Part 7`); frame every article as standalone so cold readers are not discouraged by perceived prerequisites.
+5. **Standalone zero-click value**: Deliver a complete technical insight directly in the timeline so readers learn something useful even without clicking an outbound URL.
+6. **Clean punctuation without em dashes**: Break clauses with periods, commas, or colons. Never use mid-sentence em dashes, en dashes, or spaced double hyphens.
+7. **Reset over patch-looping**: If the author rejects a draft's angle, tone, or voice, stop micro-patching the same text. Ask one focused question about their preferred hook or rebuild fresh from their real quotes and prior approved posts.
 
 ---
 
@@ -123,7 +126,8 @@ Infuse the author's `1:1` quotes from `CANONICAL.md` while copyediting for clean
 Run these checks alongside [references/anti_patterns.md](references/anti_patterns.md) (and optionally load the `deslopify` skill for deeper prose cleanup) before showing a draft:
 1. **Line-1 deletion test**: Delete Sentence 1 temporarily; if Sentence 2 opens with stronger technical tension, keep Sentence 2 as your opener.
 2. **Cold-stranger test**: Confirm the first `140` characters address an engineering problem or result rather than the author's posting schedule.
-3. **Formatting and link check**: Place primary URLs directly in the post body on LinkedIn, X, `Bluesky`, Threads, and Reddit instead of hiding them in a first comment. Avoid Unicode bold fonts and mid-sentence em dashes, attach descriptive `alt` text to every image, and respect platform hashtag caps (`0` on X, `1` on Threads, `0` to `1` on `Bluesky`, `1` to `3` on LinkedIn, `3` to `5` on Instagram).
+3. **Question-hook answer prediction test**: Before using a question hook, predict what a cold reader answers in `1` second. Cut it if the default answer is *"I don't care"* or a shrug; only keep a question hook when the predictable answer sets up an immediate twist or shared pain point.
+4. **Formatting and link check**: Place primary URLs directly in the post body on LinkedIn, X, `Bluesky`, Threads, and Reddit instead of hiding them in a first comment. Avoid Unicode bold fonts and mid-sentence em dashes, attach descriptive `alt` text to every image, and respect platform hashtag caps (`0` on X, `1` on Threads, `0` to `1` on `Bluesky`, `1` to `3` on LinkedIn, `3` to `5` on Instagram).
 
 ### Stage 6: Per-post approval and cadence check
 Get explicit user approval for every individual post before scheduling or publishing. Ask whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule** (`customScheduled`) unless already specified, test payloads with `--dry-run`, and match each feed's decay horizon:

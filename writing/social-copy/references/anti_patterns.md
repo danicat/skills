@@ -23,6 +23,11 @@ Watch out for generic filler phrases that substitute hype for substance:
 
 ### Structural and workflow anti-patterns
 - **The self-referential preamble trap (failing the Cold-Stranger and Line-1 Deletion tests):** Feeds truncate after ~140 characters on mobile (~210 on desktop). Spending those opening words on author housekeeping (*"I've been heads down working on new content so you haven't heard from me..."*) or chronological recaps (*"In Part 3 of my series, I showed..."*) wastes the fold. Run the **Line-1 Deletion test**: if deleting Sentence 1 lets Sentence 2 open with the technical problem, metric, or tension, cut Sentence 1.
+- **Putting words in the author's mouth:** Never fabricate first-person feelings, excitement, reactions, anecdotes, or quotes not backed by the source article or verbatim user quotes.
+- **Series-part homework (`Part N` in public posts):** Never label or lead public social posts with series numbering (`Part 4`, `Part 7`). Mentioning series numbering discourages cold readers who assume they missed required context; frame every article as standalone.
+- **Unpredicted question hooks:** Avoid asking abstract *"What if..."* questions where a scrolling reader's honest answer in `1` second is *"I don't care"* or a shrug. Only keep a question hook when the predictable answer sets up an immediate twist or shared pain point.
+- **Useless benchmarks, log dates, and spec-sheet dumps:** Cut raw timings or token counts without a clear target, baseline, or cost bound; arbitrary calendar or log dates (`Nov 20`) or timestamp gaps (`16 seconds later`); and modality lists, max-token caps, or rule-of-three pipeline jargon.
+- **Patch-looping rejected copy:** Stop micro-editing clauses on copy the author called boring, off-angle, or off-voice. Reset by asking one focused question about their preferred hook or rebuilding fresh from their real quotes and prior approved posts.
 - **Inventing synthetic copywriter strawmen:** Never invent dramatic problems or claims missing from the author's real code or article just to create a punchy hook.
 - **Simultaneous multi-channel draft generation before core approval:** Never generate `linkedin.md`, `twitter.md`, `bluesky.md`, and other files all at once. Draft and iterate on **one primary channel first** (for example, `linkedin.md`) until the user approves it, then adapt secondary channels one by one.
 - **Negative parallelism:** Avoid repetitive *"It's not just about X, it's about Y"* structures. State what it is directly.
@@ -80,4 +85,6 @@ Before presenting or scheduling social copy, verify:
 - [ ] Version numbers, language syntax, and CLI flags match current stable releases.
 - [ ] Architecture trade-offs name what was sacrificed (memory, CPU, or complexity).
 - [ ] Zero unverified hype appears.
+- [ ] Every product or API capability claim is verified against the full source article and official documentation (never narrow multi-feature APIs or distort analogies into false claims).
+- [ ] Every first-person reaction, opinion, or quote comes directly from the author's own text or messages.
 - [ ] **At least one native media item** (diagram, screenshot, video, or code card) is attached in frontmatter. Naked text-only posts are prohibited.
