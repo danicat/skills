@@ -36,7 +36,7 @@ LinkedIn truncates posts behind `...see more`:
 > Never treat hook writing as a mechanical banned-word list. That causes two failures: assuming any sentence avoiding blacklisted words is good copy, and rejecting genuine milestone openings when the milestone is the real story. Judge the visible `140` to `210` chars by opportunity cost: does Line 1 give a cold reader an immediate technical reason to expand instead of wasting space on chronological recaps or scheduling updates?
 
 ### Post length and grounded voice benchmarks
-- **Optimal post length:** **1,300 to 2,000 characters** (`200` to `350` words) for strong dwell without reader fatigue.
+- **Optimal post length:** **900 to 2,000 characters** (`150` to `350` words) for strong dwell without reader fatigue. Treat `2,000` as a ceiling and never pad a sharp `1,000`-character post with secondary topics just to add length.
 - **Hard limit:** `3,000` characters.
 - **Grounded senior-engineer voice over textbook summaries:** Share real design trade-offs, failure modes, and field notes rather than a sterile textbook checklist.
 
@@ -54,8 +54,9 @@ LinkedIn truncates posts behind `...see more`:
    > *"We dropped P99 database latency from 850ms to 24ms across 12,000 req/s. It did not require sharding, only fixing one overlooked cache serialization flaw."*
 2. **Contrarian architectural insight:**
    > *"Most microservices migrations fail not from Kubernetes complexity, but from enforcing distributed transactions. Here is why we reverted to an asynchronous outbox."*
-3. **Incident post-mortem hook:**
-   > *"At 03:14 UTC, an unnoticed DNS propagation drift took down our primary auth cluster for 42 minutes. Here is the post-mortem and the 3 guardrails we deployed."*
+3. **Show-don't-tell curiosity hook:**
+   Show a concrete encoded string, code snippet, or real artifact whose predictable reader reaction sets up an immediate twist.
+   > *"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0. Looks like a valid JWT until you notice the missing third segment. Here is why our gateway accepted it anyway:"*
 4. **Trade-off dilemma:**
    > *"Eventual consistency looks cheap on paper until billing pipelines drop idempotent reconciliation. Here's how we solved double-spend risks in Go."*
 5. **Developer ROI and cost compression:**
@@ -69,35 +70,21 @@ LinkedIn truncates posts behind `...see more`:
 | :--- | :--- | :--- |
 | **Bad (chronological recap)** | *"In my previous article, I set up a basic worker pool in Go. Today in Part 5, I'm excited to share..."* | Burns the mobile preview on past housekeeping; a cold reader sees no reason to click `...see more`. |
 | **Bad (author housekeeping)** | *"I've been heads down shipping new projects this week so you haven't heard from me lately. Today I want to discuss..."* | Centers on the author's calendar instead of an engineering problem. |
-| **Good (immediate tension)** | *"Unbounded goroutines under bursty webhooks will OOM your Go service before autoscaling reacts. Here is bounded backpressure:"* | Names a concrete failure mode and fix inside the visible window. Series links move to the bottom. |
+| **Good (immediate tension)** | *"Unbounded goroutines under bursty webhooks will OOM your Go service before autoscaling reacts. Here is bounded backpressure:"* | Names a concrete failure mode and fix inside the visible window. |
 
 ---
 
 ## 4. Post archetypes and templates
 
-### Template A: Architectural deep dive or field note
+### Template A: One-hero-idea field note
+Use a continuous narrative (`Hook -> Plain explanation -> Core approach -> Direct link`) focused on one core idea. Structured bullet lists are optional only when comparing discrete items.
+
 ```markdown
-[Direct hook naming metric, failure mode, or architectural decision]
+[Hook: concrete metric, failure mode, artifact, or architectural decision]
 
-[1 to 2 sentences on context: traffic volume, legacy stack, or scaling limits]
+[Plain explanation: 1 to 3 short sentences grounding why the problem happens in real systems]
 
-THE PROBLEM:
-• [Friction point or failure mode 1]
-• [Friction point or failure mode 2]
-
-THE ARCHITECTURAL APPROACH:
-1. [Concrete technical change 1]
-2. [Concrete technical change 2]
-3. [Concrete technical change 3]
-
-THE TRADE-OFFS:
-[Honest discussion of what was sacrificed: memory, operational complexity, or write throughput]
-
-QUANTITATIVE OUTCOME:
-• [Metric 1: Latency / CPU / Memory delta]
-• [Metric 2: Cost / Uptime delta]
-
-[Specific discussion question for peer engineers]
+[Core approach: the single key fix, mechanism, or design shift and what it changes]
 
 Full architecture breakdown and benchmarks: https://example.com/posts/architecture-deep-dive
 

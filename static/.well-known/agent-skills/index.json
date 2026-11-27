@@ -237,7 +237,7 @@
       "type": "archive",
       "description": "Editorial workflow and platform playbooks for developer social media copy and campaigns. Extracts technical evidence from git history or author interviews, builds a canonical narrative (CANONICAL.md), adapts posts sequentially for LinkedIn, X, Bluesky, Instagram, Reddit, and Threads, and checks for AI cliches. Activate when drafting or auditing developer social posts and launches.",
       "url": "https://skills.danicat.dev/.well-known/agent-skills/social-copy.tar.gz",
-      "digest": "sha256:ca2a86e89eca794bc3eb997f7adc6cde90d7c902eab9d72f1d10e661b214a8c7"
+      "digest": "sha256:6a104cb6ee72b7364e9e869b7506c957d5d75f6dbb65ebf72fe2f31b0d3af991"
     }
   ]
 }

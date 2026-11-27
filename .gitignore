@@ -10,6 +10,7 @@ _site/
 public/
 .hugo_build.lock
 resources/
+data/freshness.json
 static/llms-full.txt
 static/index.md
 static/.well-known/ai-catalog.json

@@ -11,7 +11,7 @@ metadata:
   category: writing
   tags: "social-media, developer-marketing, copywriting, campaigns, devrel"
   author: Daniela Petruzalek (daniela@danicat.dev)
-  version: "0.5.1"
+  version: "0.5.2"
   catalog: https://skills.danicat.dev
 ---
 
@@ -25,7 +25,7 @@ Draft, audit, and schedule developer-native social media posts and multi-channel
 
 Load only the reference files needed for the target channels:
 
-- **LinkedIn**: Read [references/linkedin_playbook.md](references/linkedin_playbook.md) for `1,300` to `2,000` character engineering field notes, PDF carousels, and in-body link placement.
+- **LinkedIn**: Read [references/linkedin_playbook.md](references/linkedin_playbook.md) for `900` to `2,000` character engineering field notes, PDF carousels, and in-body link placement.
 - **X (Twitter)**: Read [references/twitter_playbook.md](references/twitter_playbook.md) for X Premium long-form posts (`800` to `2,500` chars), standard `280`-character posts, and `3` to `5` post micro-threads.
 - **`Bluesky`**: Read [references/bluesky_playbook.md](references/bluesky_playbook.md) for AT Protocol posts (`300` graphemes max), `180s` video clips, and mandatory image `alt` text.
 - **Instagram**: Read [references/instagram_playbook.md](references/instagram_playbook.md) for `4:5` carousels (`6` to `10` slides sweet spot, `20` max), micro-blog captions, and DM triggers.
@@ -44,11 +44,12 @@ Load only the reference files needed for the target channels:
 
 1. **Peer-to-peer engineering voice**: Write like a senior engineer speaking to peers. Name the concrete bottleneck, metric, or failure mode in Line 1, state real trade-offs (memory, latency, complexity), and use exact technical nouns (*lock-free ring buffer*, *connection pool*) instead of slogans.
 2. **Zero fabricated author voice (never put words in the author's mouth)**: Never invent first-person quotes, emotions, excitement, anecdotes, or personal reactions absent from the author's real writing or interview.
-3. **Hook economy without banned-word lists**: The visible preview before `...see more` (`140` chars on mobile, `210` chars on desktop) carries the highest opportunity cost. Static banned-word lists fail in both directions: synthetic copy passes by dodging listed words, while genuine personal milestones get blocked. Judge the opening lines by reader utility: within two seconds, does a cold reader see a concrete engineering problem or outcome rather than author housekeeping (*"I've been quiet lately"*, *"In Part 3 of my series"*)?
-4. **Standalone framing (no `Part N` homework)**: Never label or lead public social posts with series numbering (`Part 4`, `Part 7`); frame every article as standalone so cold readers are not discouraged by perceived prerequisites.
-5. **Standalone zero-click value**: Deliver a complete technical insight directly in the timeline so readers learn something useful even without clicking an outbound URL.
-6. **Clean punctuation without em dashes**: Break clauses with periods, commas, or colons. Never use mid-sentence em dashes, en dashes, or spaced double hyphens.
-7. **Reset over patch-looping**: If the author rejects a draft's angle, tone, or voice, stop micro-patching the same text. Ask one focused question about their preferred hook or rebuild fresh from their real quotes and prior approved posts.
+3. **One hero idea per post (less is more)**: Focus each post on one core idea instead of summarizing the whole article. Save secondary angles and trade-offs for the blog post or a follow-up wave.
+4. **Hook economy without banned-word lists**: The visible preview before `...see more` (`140` chars on mobile, `210` chars on desktop) carries the highest opportunity cost. Static banned-word lists fail in both directions: synthetic copy passes by dodging listed words, while genuine personal milestones get blocked. Judge the opening lines by reader utility: within two seconds, does a cold reader see a concrete engineering problem or outcome rather than author housekeeping (*"I've been quiet lately"*, *"In Part 3 of my series"*)?
+5. **Standalone framing (no `Part N` homework)**: Never label or lead public social posts with series numbering (`Part 4`, `Part 7`); frame every article as standalone so cold readers are not discouraged by perceived prerequisites.
+6. **Standalone zero-click value**: Deliver a complete technical insight directly in the timeline so readers learn something useful even without clicking an outbound URL.
+7. **Clean punctuation without em dashes**: Break clauses with periods, commas, or colons. Never use mid-sentence em dashes, en dashes, or spaced double hyphens.
+8. **Reset over patch-looping**: If the author rejects a draft's angle, tone, or voice, stop micro-patching the same text. Ask one focused question about their preferred hook or rebuild fresh from their real quotes and prior approved posts.
 
 ---
 
@@ -96,7 +97,8 @@ media:
 Never invent features, benchmarks, or war stories.
 1. **Inspect full git history and docs**: Run full `git log` with commit bodies, `git show --stat` diffs, design docs, and benchmark outputs. Never rely on `git log --oneline` commit titles alone.
 2. **Interview the author one question at a time**: When working from an open-ended idea, interview the author one question at a time to surface real friction points, surprises, and trade-offs. Record every raw user remark verbatim (`1:1`) under `## References and sources` in `CANONICAL.md`, and sync any later user feedback to `CANONICAL.md` before updating channel drafts.
-3. **Draft `CANONICAL.md`**: Document the real motivation, repositories changed, measured performance deltas, failure modes, trade-offs, and verbatim `1:1` user quotes.
+3. **Lock one hero angle (Blog-to-Social Angle Lock)**: Even when a full article already exists, align with the author on one hero angle first (ask for their 1-sentence take or pitch 2 to 3 one-line hooks) before drafting a full post.
+4. **Draft `CANONICAL.md`**: Document the real motivation, repositories changed, measured performance deltas, failure modes, trade-offs, and verbatim `1:1` user quotes.
 
 ### Stage 2: Canonical approval gate
 > [!CAUTION]
@@ -109,8 +111,8 @@ Identify the target platforms for the campaign and load each matching `reference
 > [!CAUTION]
 > **One channel at a time**: Never generate all platform files at once. Draft and refine **one primary channel first** (such as `linkedin.md`) until the user approves it, then adapt secondary channels one by one.
 
-Infuse the author's `1:1` quotes from `CANONICAL.md` while copyediting for clean grammar and platform limits:
-- **LinkedIn** (`linkedin.md`): `1,300` to `2,000` chars (`3,000` cap) with direct in-body URLs and up to `9` images or a PDF carousel.
+Before drafting any channel post, confirm the locked hero angle from Stage 1 (if not yet locked, ask for the author's 1-sentence take or pitch 2 to 3 one-line hooks first). Infuse the author's `1:1` quotes from `CANONICAL.md` while copyediting for clean grammar and platform limits:
+- **LinkedIn** (`linkedin.md`): `900` to `2,000` chars (`3,000` cap) with direct in-body URLs and up to `9` images or a PDF carousel. Short and crisp beats padded: never inflate a tight post to chase a character count.
 - **X (Twitter)** (`twitter.md`): Check account tier first. Use `800` to `2,500` char long-form posts (`25,000` cap) only on **X Premium**; use `180` to `280` char single posts or `3` to `5` post micro-threads on **standard X accounts and standard single-post API queues** (up to `4` images or video).
 - **`Bluesky`** (`bluesky.md`): Single post or thread with every post at or under `300` graphemes, plus mandatory `alt` text (up to `4` images or `180s` video).
 - **Instagram** (`instagram.md`): `4:5` carousel (`6` to `10` slides recommended, `20` max) and caption under `2,200` chars (`<125` char hook).
@@ -127,7 +129,8 @@ Run these checks alongside [references/anti_patterns.md](references/anti_pattern
 1. **Line-1 deletion test**: Delete Sentence 1 temporarily; if Sentence 2 opens with stronger technical tension, keep Sentence 2 as your opener.
 2. **Cold-stranger test**: Confirm the first `140` characters address an engineering problem or result rather than the author's posting schedule.
 3. **Question-hook answer prediction test**: Before using a question hook, predict what a cold reader answers in `1` second. Cut it if the default answer is *"I don't care"* or a shrug; only keep a question hook when the predictable answer sets up an immediate twist or shared pain point.
-4. **Formatting and link check**: Place primary URLs directly in the post body on LinkedIn, X, `Bluesky`, Threads, and Reddit instead of hiding them in a first comment. Avoid Unicode bold fonts and mid-sentence em dashes, attach descriptive `alt` text to every image, and respect platform hashtag caps (`0` on X, `1` on Threads, `0` to `1` on `Bluesky`, `1` to `3` on LinkedIn, `3` to `5` on Instagram).
+4. **Subtraction pass**: Delete every sentence, clause, or parenthetical where *"What breaks if I delete this?"* has no real answer.
+5. **Formatting and link check**: Place primary URLs directly in the post body on LinkedIn, X, `Bluesky`, Threads, and Reddit instead of hiding them in a first comment. Avoid Unicode bold fonts and mid-sentence em dashes, attach descriptive `alt` text to every image, and respect platform hashtag caps (`0` on X, `1` on Threads, `0` to `1` on `Bluesky`, `1` to `3` on LinkedIn, `3` to `5` on Instagram).
 
 ### Stage 6: Per-post approval and cadence check
 Get explicit user approval for every individual post before scheduling or publishing. Ask whether to **Publish Immediately** (`shareNow`), **Add to Queue** (`addToQueue`), or **Schedule** (`customScheduled`) unless already specified, test payloads with `--dry-run`, and match each feed's decay horizon:
